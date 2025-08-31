@@ -138,6 +138,18 @@ export default function Index() {
 
   const analytics = getAnalyticsData();
 
+  const testApiConnectivity = async () => {
+    try {
+      const response = await fetch("/api/ping");
+      const data = await response.json();
+      console.log("API test successful:", data);
+      return true;
+    } catch (error) {
+      console.error("API test failed:", error);
+      return false;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!url.trim()) return;
