@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import { handleAudit, handleDemoAudit } from "./routes/audit";
+import { storeAudit, getAudit, listAudits, deleteAudit } from "./routes/audit-storage";
 
 export function createServer() {
   const app = express();
