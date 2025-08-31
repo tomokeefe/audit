@@ -299,7 +299,7 @@ export default function Index() {
                 </div>
                 <Button
                   type="submit"
-                  disabled={isLoading || isDemoLoading}
+                  disabled={isLoading}
                   className="h-12 px-8 bg-brand-500 hover:bg-brand-600 text-white font-semibold"
                 >
                   {isLoading ? (
