@@ -389,6 +389,31 @@ Website Data:
 - Brand Elements: ${websiteData.brandElements}
 - Data Source: ${websiteData.fallbackUsed ? "Fallback Analysis" : "Live Website Scraping"}
 
+Performance Analysis:
+- Page Size: ${websiteData.performance?.pageSizeKB || 0}KB
+- Response Time: ${websiteData.performance?.responseTime || 0}ms
+- SSL/HTTPS: ${websiteData.performance?.hasSSL ? "Yes" : "No"}
+- Mobile Viewport: ${websiteData.performance?.mobileViewport ? "Yes" : "No"}
+- Service Worker: ${websiteData.performance?.hasServiceWorker ? "Yes" : "No"}
+
+Site Structure:
+- Discovered Pages: ${websiteData.siteStructure?.pageCount || 0} pages
+- Navigation Items: ${websiteData.siteStructure?.navigation?.menuItems?.join(", ") || "Limited"}
+- Has Search: ${websiteData.siteStructure?.navigation?.hasSearch ? "Yes" : "No"}
+- Has Contact Info: ${websiteData.siteStructure?.contentStructure?.hasContactInfo ? "Yes" : "No"}
+- Has About Page: ${websiteData.siteStructure?.contentStructure?.hasAboutPage ? "Yes" : "No"}
+
+UX Features:
+- Forms: ${websiteData.uxFeatures?.forms?.count || 0} forms found
+- Form Labels: ${websiteData.uxFeatures?.forms?.hasLabels ? "Present" : "Missing"}
+- Interactive Elements: ${websiteData.uxFeatures?.interactivity?.buttons || 0} buttons, ${websiteData.uxFeatures?.interactivity?.dropdowns || 0} dropdowns
+- Images: ${websiteData.uxFeatures?.media?.images || 0} images
+- Missing Alt Text: ${websiteData.uxFeatures?.accessibility?.missingAltText || 0} images without alt text
+- Accessibility Features: ${websiteData.uxFeatures?.accessibility?.hasSkipLinks ? "Skip links present" : "No skip links"}, ${websiteData.uxFeatures?.accessibility?.hasAriaLabels ? "ARIA labels present" : "Limited ARIA labels"}
+- Social Integration: ${websiteData.uxFeatures?.social?.socialLinks || 0} social links
+
+Analysis Depth: ${websiteData.analysisDepth || "basic"}
+
 Please provide a detailed analysis covering these 6 key areas:
 
 1. **Brand Consistency** (Score 0-100): Evaluate logo placement, color scheme consistency, typography consistency, brand voice, and messaging alignment.
