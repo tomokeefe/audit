@@ -63,12 +63,14 @@ export default function Index() {
         body: JSON.stringify(auditRequest),
       });
 
+      // Read the response body once
+      const responseData = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to start audit');
+        throw new Error(responseData.error || `Server error: ${response.status}`);
       }
 
-      const auditResult: AuditResponse = await response.json();
+      const auditResult: AuditResponse = responseData;
 
       // Store audit result in localStorage for the results page
       localStorage.setItem(`audit_${auditResult.id}`, JSON.stringify(auditResult));
@@ -78,7 +80,11 @@ export default function Index() {
 
     } catch (error) {
       console.error("Audit error:", error);
-      setError(error instanceof Error ? error.message : 'An unexpected error occurred');
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('An unexpected error occurred. Please check the URL and try again.');
+      }
     } finally {
       setIsLoading(false);
     }
