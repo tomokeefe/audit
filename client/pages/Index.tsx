@@ -351,30 +351,6 @@ export default function Index() {
             </form>
           </div>
 
-          {/* Stats Cards */}
-          <div className="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-3">
-            <div className="bg-brand-50 rounded-lg p-6 text-center">
-              <div className="flex justify-center items-center mb-3">
-                <BarChart3 className="h-8 w-8 text-brand-600" />
-              </div>
-              <div className="text-2xl font-bold text-gray-900">150+</div>
-              <div className="text-gray-600">Audits Completed</div>
-            </div>
-            <div className="bg-brand-50 rounded-lg p-6 text-center">
-              <div className="flex justify-center items-center mb-3">
-                <TrendingUp className="h-8 w-8 text-brand-600" />
-              </div>
-              <div className="text-2xl font-bold text-gray-900">85%</div>
-              <div className="text-gray-600">Average Score Improvement</div>
-            </div>
-            <div className="bg-brand-50 rounded-lg p-6 text-center">
-              <div className="flex justify-center items-center mb-3">
-                <Globe className="h-8 w-8 text-brand-600" />
-              </div>
-              <div className="text-2xl font-bold text-gray-900">50+</div>
-              <div className="text-gray-600">Industries Analyzed</div>
-            </div>
-          </div>
         </div>
       </div>
 
