@@ -78,6 +78,52 @@ export default function Index() {
     loadRecentAudits();
   }, []);
 
+  // Analytics calculations
+  const getAnalyticsData = () => {
+    if (allAudits.length === 0) return null;
+
+    const totalAudits = allAudits.length;
+    const averageScore = Math.round(
+      allAudits.reduce((sum, audit) => sum + audit.overallScore, 0) / totalAudits
+    );
+
+    // Score distribution for pie chart
+    const excellent = allAudits.filter(a => a.overallScore >= 80).length;
+    const good = allAudits.filter(a => a.overallScore >= 60 && a.overallScore < 80).length;
+    const needsImprovement = allAudits.filter(a => a.overallScore < 60).length;
+
+    const scoreDistribution = [
+      { name: 'Excellent', value: excellent, color: '#22c55e' },
+      { name: 'Good', value: good, color: '#eab308' },
+      { name: 'Needs Improvement', value: needsImprovement, color: '#ef4444' }
+    ].filter(item => item.value > 0);
+
+    // Recent trend data (last 7 audits)
+    const recentTrend = allAudits
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .slice(-7)
+      .map((audit, index) => ({
+        audit: `Audit ${index + 1}`,
+        score: audit.overallScore,
+        date: new Date(audit.date).toLocaleDateString()
+      }));
+
+    // Top improvement opportunities
+    const improvementOpportunities = Math.round(
+      allAudits.filter(a => a.overallScore < 80).length / totalAudits * 100
+    );
+
+    return {
+      totalAudits,
+      averageScore,
+      scoreDistribution,
+      recentTrend,
+      improvementOpportunities
+    };
+  };
+
+  const analytics = getAnalyticsData();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!url.trim()) return;
