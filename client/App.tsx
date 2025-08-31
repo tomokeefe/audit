@@ -35,4 +35,13 @@ const App = () => (
   </QueryClientProvider>
 );
 
-createRoot(document.getElementById("root")!).render(<App />);
+// Prevent double root creation during HMR
+const container = document.getElementById("root")!;
+if (!container._reactRootContainer) {
+  const root = createRoot(container);
+  container._reactRootContainer = root;
+  root.render(<App />);
+} else {
+  // In development with HMR, re-render on the existing root
+  container._reactRootContainer.render(<App />);
+}
