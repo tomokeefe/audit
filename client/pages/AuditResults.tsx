@@ -117,9 +117,9 @@ Best regards`);
       return;
     }
 
-    // Set share URL
-    const currentUrl = `${window.location.origin}/audit/${id}`;
-    setShareUrl(currentUrl);
+    // Set share URL to the dedicated sharing route
+    const shareLink = `${window.location.origin}/share/audit/${id}`;
+    setShareUrl(shareLink);
 
     const loadAuditData = async () => {
       try {
