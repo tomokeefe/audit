@@ -168,9 +168,25 @@ export default function Index() {
 
       console.log("Starting audit request for:", url);
 
-      // Add timeout and better error handling
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 45000); // 45 second timeout
+      // Add timeout with proper AbortSignal reason (prevents "aborted without reason")
+      const createTimeoutSignal = (ms: number): AbortSignal => {
+        const anyAbortSignal: any = AbortSignal as any;
+        if (anyAbortSignal && typeof anyAbortSignal.timeout === "function") {
+          return anyAbortSignal.timeout(ms);
+        }
+        const controller = new AbortController();
+        const timeout = setTimeout(() => {
+          try {
+            // Provide a reason when aborting to avoid generic AbortError messages
+            (controller as any).abort(new DOMException("Timeout", "TimeoutError"));
+          } catch {
+            controller.abort();
+          }
+        }, ms);
+        // If fetch completes, the caller won't use this timeout anymore
+        // Return the signal; caller does not need the timer reference
+        return controller.signal;
+      };
 
       const response = await fetch("/api/audit", {
         method: "POST",
@@ -178,10 +194,9 @@ export default function Index() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(auditRequest),
-        signal: controller.signal,
+        signal: createTimeoutSignal(60000), // 60s timeout
       });
 
-      clearTimeout(timeoutId);
       console.log("API response status:", response.status);
 
       // Check if response is valid
