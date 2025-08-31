@@ -69,22 +69,54 @@ export default function AuditResults() {
       return;
     }
 
-    try {
-      const storedData = localStorage.getItem(`audit_${id}`);
-      if (!storedData) {
-        setError("Audit not found. The audit may have expired or the link is invalid.");
-        setLoading(false);
-        return;
-      }
+    const loadAuditData = async () => {
+      try {
+        // First, try to load from server
+        const response = await fetch(`/api/audits/${id}`);
 
-      const audit: AuditResponse = JSON.parse(storedData);
-      setAuditData(audit);
-    } catch (error) {
-      console.error("Error loading audit data:", error);
-      setError("Failed to load audit data");
-    } finally {
-      setLoading(false);
-    }
+        if (response.ok) {
+          const serverAudit: AuditResponse = await response.json();
+          setAuditData(serverAudit);
+          console.log('Loaded audit from server');
+          return;
+        }
+
+        // If server load fails, try localStorage as fallback
+        console.log('Server load failed, trying localStorage...');
+        const storedData = localStorage.getItem(`audit_${id}`);
+        if (storedData) {
+          const audit: AuditResponse = JSON.parse(storedData);
+          setAuditData(audit);
+          console.log('Loaded audit from localStorage');
+          return;
+        }
+
+        // If both fail, show error
+        setError("Audit not found. The audit may have expired or the link is invalid.");
+
+      } catch (error) {
+        console.error("Error loading audit data:", error);
+
+        // Try localStorage as last resort
+        try {
+          const storedData = localStorage.getItem(`audit_${id}`);
+          if (storedData) {
+            const audit: AuditResponse = JSON.parse(storedData);
+            setAuditData(audit);
+            console.log('Loaded audit from localStorage as fallback');
+            return;
+          }
+        } catch (localError) {
+          console.error("localStorage fallback also failed:", localError);
+        }
+
+        setError("Failed to load audit data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAuditData();
   }, [id]);
 
   if (loading) {
