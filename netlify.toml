@@ -1,10 +1,7 @@
 [build]
-  command = "npm run build"
+  command = "npm run build:client"
   functions = "netlify/functions"
   publish = "dist/spa"
-
-[build.environment]
-  NODE_VERSION = "18"
 
 [functions]
   external_node_modules = ["express", "axios", "cheerio", "@google/generative-ai", "cors", "dotenv"]
