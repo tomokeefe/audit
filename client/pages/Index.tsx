@@ -271,18 +271,6 @@ export default function Index() {
     }
   };
 
-  const testApiConnectivity = async () => {
-    try {
-      const response = await fetch("/api/ping");
-      const data = await response.json();
-      console.log("API test successful:", data);
-      return true;
-    } catch (error) {
-      console.error("API test failed:", error);
-      return false;
-    }
-  };
-
   const getScoreColor = (score: number) => {
     if (score >= 80) return "text-green-600 bg-green-50";
     if (score >= 60) return "text-yellow-600 bg-yellow-50";
