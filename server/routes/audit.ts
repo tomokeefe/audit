@@ -2,33 +2,9 @@ import { RequestHandler } from "express";
 import axios from "axios";
 import * as cheerio from "cheerio";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { AuditRequest, AuditResponse } from "@shared/api";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-
-interface AuditRequest {
-  url: string;
-}
-
-interface AuditSection {
-  name: string;
-  score: number;
-  maxScore: number;
-  issues: number;
-  recommendations: number;
-  details: string;
-}
-
-interface AuditResponse {
-  id: string;
-  url: string;
-  title: string;
-  description: string;
-  overallScore: number;
-  date: string;
-  status: string;
-  sections: AuditSection[];
-  summary: string;
-}
 
 // Function to scrape website content
 async function scrapeWebsite(url: string) {
