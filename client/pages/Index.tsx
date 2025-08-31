@@ -43,6 +43,7 @@ export default function Index() {
   const [error, setError] = useState("");
   const [recentAudits, setRecentAudits] = useState<AuditSummary[]>([]);
   const [loadingAudits, setLoadingAudits] = useState(true);
+  const [allAudits, setAllAudits] = useState<AuditSummary[]>([]);
   const navigate = useNavigate();
 
   const loadRecentAudits = async () => {
