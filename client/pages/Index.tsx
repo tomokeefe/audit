@@ -110,35 +110,51 @@ export default function Index() {
 
           {/* URL Input Form */}
           <div className="mt-12 max-w-2xl mx-auto">
-            <form onSubmit={handleSubmit} className="flex gap-4">
-              <div className="flex-1 relative">
-                <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                <Input
-                  type="url"
-                  placeholder="Enter website URL to audit (e.g., https://example.com)"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  className="pl-10 h-12 text-lg"
-                  required
-                />
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="flex gap-4">
+                <div className="flex-1 relative">
+                  <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                  <Input
+                    type="url"
+                    placeholder="Enter website URL to audit (e.g., https://example.com)"
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                    className="pl-10 h-12 text-lg"
+                    required
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="h-12 px-8 bg-brand-500 hover:bg-brand-600 text-white font-semibold"
+                >
+                  {isLoading ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Analyzing...
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <Search className="h-5 w-5" />
+                      Start Audit
+                    </div>
+                  )}
+                </Button>
               </div>
-              <Button 
-                type="submit" 
-                disabled={isLoading}
-                className="h-12 px-8 bg-brand-500 hover:bg-brand-600 text-white font-semibold"
-              >
-                {isLoading ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Analyzing...
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <Search className="h-5 w-5" />
-                    Start Audit
-                  </div>
-                )}
-              </Button>
+
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                  <p className="text-sm">{error}</p>
+                </div>
+              )}
+
+              {isLoading && (
+                <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg">
+                  <p className="text-sm">
+                    Analyzing website content and generating comprehensive brand audit... This may take up to 30 seconds.
+                  </p>
+                </div>
+              )}
             </form>
           </div>
 
