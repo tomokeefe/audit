@@ -52,8 +52,13 @@ export default function Index() {
       const response = await fetch("/api/audits");
       if (response.ok) {
         const data = await response.json();
+        const audits = data.audits || [];
+
+        // Store all audits for analytics
+        setAllAudits(audits);
+
         // Get the 3 most recent audits
-        const recent = data.audits
+        const recent = audits
           .sort((a: AuditSummary, b: AuditSummary) =>
             new Date(b.date).getTime() - new Date(a.date).getTime()
           )
