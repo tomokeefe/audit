@@ -113,6 +113,58 @@ export default function Index() {
     }
   };
 
+  const handleDemoAudit = async () => {
+    setIsDemoLoading(true);
+    setError("");
+
+    try {
+      const demoUrl = "https://example.com";
+      const auditRequest: AuditRequest = { url: demoUrl };
+
+      const response = await fetch('/api/audit/demo', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(auditRequest),
+      });
+
+      // Check if response is valid
+      if (!response.ok) {
+        let errorMessage = `Server error: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+        } catch {
+          errorMessage = `Server error: ${response.status} ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
+      }
+
+      // Parse successful response
+      let responseData;
+      try {
+        responseData = await response.json();
+      } catch (parseError) {
+        throw new Error('Invalid response from server. Please try again.');
+      }
+
+      const auditResult: AuditResponse = responseData;
+
+      // Store audit result in localStorage for the results page
+      localStorage.setItem(`audit_${auditResult.id}`, JSON.stringify(auditResult));
+
+      // Navigate to audit results page
+      navigate(`/audit/${auditResult.id}`);
+
+    } catch (error) {
+      console.error("Demo audit error:", error);
+      setError(error instanceof Error ? error.message : 'Failed to create demo audit');
+    } finally {
+      setIsDemoLoading(false);
+    }
+  };
+
   const getScoreColor = (score: number) => {
     if (score >= 80) return "text-green-600 bg-green-50";
     if (score >= 60) return "text-yellow-600 bg-yellow-50";
