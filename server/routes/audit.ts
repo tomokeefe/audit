@@ -281,6 +281,27 @@ export const handleAudit: RequestHandler = async (req, res) => {
     const auditResult = await generateAudit(websiteData);
     console.log('Audit generated successfully. Overall score:', auditResult.overallScore);
 
+    // Step 3: Store audit result for sharing
+    try {
+      const response = await fetch('http://localhost:8080/api/audits', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(auditResult),
+      });
+
+      if (response.ok) {
+        const storeResult = await response.json();
+        console.log('Audit stored for sharing at:', storeResult.shareUrl);
+      } else {
+        console.warn('Failed to store audit for sharing, but continuing...');
+      }
+    } catch (storeError) {
+      console.warn('Error storing audit for sharing:', storeError);
+      // Continue even if storage fails
+    }
+
     // Ensure response headers are set correctly
     res.setHeader('Content-Type', 'application/json');
     res.status(200).json(auditResult);
