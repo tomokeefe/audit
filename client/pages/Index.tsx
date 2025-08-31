@@ -241,6 +241,23 @@ export default function Index() {
         JSON.stringify(auditResult),
       );
 
+      // Store audit server-side for sharing and persistence
+      try {
+        await fetch("/api/audits", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(auditResult),
+        });
+        console.log("Demo audit stored server-side successfully");
+        // Reload recent audits to show the new one
+        loadRecentAudits();
+      } catch (storeError) {
+        console.warn("Failed to store demo audit server-side:", storeError);
+        // Continue anyway as we have localStorage backup
+      }
+
       // Navigate to audit results page
       navigate(`/audit/${auditResult.id}`);
     } catch (error) {
