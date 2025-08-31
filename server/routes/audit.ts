@@ -127,14 +127,28 @@ Be thorough, professional, and provide actionable insights based on the availabl
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();
-    
+
     // Parse the JSON response
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      throw new Error('Invalid response format from AI');
+      console.error('No JSON found in AI response:', text);
+      throw new Error('Invalid response format from AI service');
     }
-    
-    const auditData = JSON.parse(jsonMatch[0]);
+
+    let auditData;
+    try {
+      auditData = JSON.parse(jsonMatch[0]);
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError);
+      console.error('Raw AI response:', text);
+      throw new Error('Failed to parse AI response');
+    }
+
+    // Validate required fields
+    if (!auditData.title || !auditData.sections || !Array.isArray(auditData.sections)) {
+      console.error('Invalid audit data structure:', auditData);
+      throw new Error('Invalid audit response structure');
+    }
     
     // Generate a unique ID and add metadata
     const auditId = Date.now().toString();
