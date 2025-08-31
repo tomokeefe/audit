@@ -7,12 +7,11 @@ export default function Header() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">B</span>
-            </div>
-            <span className="text-xl font-semibold text-gray-900">
-              Brand Whisperer
-            </span>
+            <img
+              src="https://cdn.builder.io/api/v1/image/assets%2F57f3921c477141799725b87f2761d2c2%2Ff2dd7552d6e3445893146adbf2af6d10?format=webp&width=800"
+              alt="Brand Whisperer Logo"
+              className="h-8 w-auto"
+            />
           </Link>
 
           {/* Navigation */}
