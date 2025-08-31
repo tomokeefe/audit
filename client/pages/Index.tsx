@@ -27,6 +27,8 @@ export default function Index() {
   const [isLoading, setIsLoading] = useState(false);
   const [isDemoLoading, setIsDemoLoading] = useState(false);
   const [error, setError] = useState("");
+  const [recentAudits, setRecentAudits] = useState<AuditSummary[]>([]);
+  const [loadingAudits, setLoadingAudits] = useState(true);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
