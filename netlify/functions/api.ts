@@ -35,6 +35,7 @@ export const handler: Handler = async (event, context) => {
 
   try {
     // Handle different routes
+    // Note: paths come without /api prefix due to Netlify redirect
     if (path === "/ping" && method === "GET") {
       return {
         statusCode: 200,
