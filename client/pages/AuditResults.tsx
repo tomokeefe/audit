@@ -227,16 +227,55 @@ export default function AuditResults() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5" />
-                  Implementation Roadmap
+                  Executive Summary & Action Plan
                 </CardTitle>
                 <CardDescription>
-                  Prioritized action plan for implementing improvements
+                  Key findings and prioritized recommendations for {auditData.title}
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-gray-600">
-                  A detailed implementation roadmap will be provided here, outlining priorities 
-                  and timelines for addressing the identified issues and opportunities.
+                <div className="prose prose-sm max-w-none text-gray-700">
+                  {auditData.summary.split('\n').map((paragraph, index) => (
+                    paragraph.trim() && (
+                      <p key={index} className="mb-4">
+                        {paragraph.trim()}
+                      </p>
+                    )
+                  ))}
+                </div>
+
+                {/* Priority Matrix */}
+                <div className="mt-8 p-6 bg-brand-50 rounded-lg">
+                  <h4 className="font-semibold text-gray-900 mb-4">Implementation Priority</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                      <h5 className="font-medium text-red-800 mb-2">High Priority</h5>
+                      <div className="text-sm text-red-700">
+                        {auditData.sections
+                          .filter(s => s.score < 60)
+                          .map(s => s.name)
+                          .join(', ') || 'No critical issues found'}
+                      </div>
+                    </div>
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                      <h5 className="font-medium text-yellow-800 mb-2">Medium Priority</h5>
+                      <div className="text-sm text-yellow-700">
+                        {auditData.sections
+                          .filter(s => s.score >= 60 && s.score < 80)
+                          .map(s => s.name)
+                          .join(', ') || 'No moderate issues found'}
+                      </div>
+                    </div>
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                      <h5 className="font-medium text-green-800 mb-2">Strengths to Maintain</h5>
+                      <div className="text-sm text-green-700">
+                        {auditData.sections
+                          .filter(s => s.score >= 80)
+                          .map(s => s.name)
+                          .join(', ') || 'Focus on improving other areas'}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
