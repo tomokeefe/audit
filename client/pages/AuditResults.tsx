@@ -189,23 +189,37 @@ export default function AuditResults() {
           </TabsContent>
 
           <TabsContent value="recommendations" className="mt-8">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Info className="h-5 w-5" />
-                  Detailed Recommendations
-                </CardTitle>
-                <CardDescription>
-                  Comprehensive recommendations to improve your brand's digital presence
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-gray-600">
-                  Detailed recommendations will be displayed here based on the audit analysis.
-                  This section would contain specific, actionable advice for each evaluated area.
-                </div>
-              </CardContent>
-            </Card>
+            <div className="space-y-6">
+              {auditData.sections.map((section, index) => (
+                <Card key={index}>
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      <span className="flex items-center gap-2">
+                        <Info className="h-5 w-5" />
+                        {section.name}
+                      </span>
+                      <div className={`text-lg font-bold ${getScoreColor(section.score)}`}>
+                        {section.score}%
+                      </div>
+                    </CardTitle>
+                    <CardDescription>
+                      Detailed analysis and recommendations for {section.name.toLowerCase()}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="prose prose-sm max-w-none text-gray-700">
+                      {section.details.split('\n').map((paragraph, pIndex) => (
+                        paragraph.trim() && (
+                          <p key={pIndex} className="mb-3">
+                            {paragraph.trim()}
+                          </p>
+                        )
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </TabsContent>
 
           <TabsContent value="next-steps" className="mt-8">
