@@ -62,13 +62,23 @@ export default function Index() {
     try {
       const auditRequest: AuditRequest = { url };
 
+      console.log("Starting audit request for:", url);
+
+      // Add timeout and better error handling
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 45000); // 45 second timeout
+
       const response = await fetch("/api/audit", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(auditRequest),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
+      console.log("API response status:", response.status);
 
       // Check if response is valid
       if (!response.ok) {
@@ -76,9 +86,10 @@ export default function Index() {
         try {
           const errorData = await response.json();
           errorMessage = errorData.error || errorMessage;
-        } catch {
-          // If we can't parse error JSON, use the status message
+          console.error("API error details:", errorData);
+        } catch (parseError) {
           errorMessage = `Server error: ${response.status} ${response.statusText}`;
+          console.error("Failed to parse error response:", parseError);
         }
         throw new Error(errorMessage);
       }
