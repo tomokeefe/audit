@@ -31,6 +31,33 @@ export default function Index() {
   const [loadingAudits, setLoadingAudits] = useState(true);
   const navigate = useNavigate();
 
+  const loadRecentAudits = async () => {
+    try {
+      setLoadingAudits(true);
+      const response = await fetch("/api/audits");
+      if (response.ok) {
+        const data = await response.json();
+        // Get the 3 most recent audits
+        const recent = data.audits
+          .sort((a: AuditSummary, b: AuditSummary) =>
+            new Date(b.date).getTime() - new Date(a.date).getTime()
+          )
+          .slice(0, 3);
+        setRecentAudits(recent);
+      }
+    } catch (error) {
+      console.error("Failed to load recent audits:", error);
+      // Fallback to empty array on error
+      setRecentAudits([]);
+    } finally {
+      setLoadingAudits(false);
+    }
+  };
+
+  useEffect(() => {
+    loadRecentAudits();
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!url.trim()) return;
