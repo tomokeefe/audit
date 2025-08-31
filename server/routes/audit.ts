@@ -409,25 +409,7 @@ export const handleDemoAudit: RequestHandler = async (req, res) => {
     demoAudit.overallScore = avgScore;
 
     // Store demo audit result for sharing
-    try {
-      const response = await fetch('http://localhost:8080/api/audits', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(demoAudit),
-      });
-
-      if (response.ok) {
-        const storeResult = await response.json();
-        console.log('Demo audit stored for sharing at:', storeResult.shareUrl);
-      } else {
-        console.warn('Failed to store demo audit for sharing, but continuing...');
-      }
-    } catch (storeError) {
-      console.warn('Error storing demo audit for sharing:', storeError);
-      // Continue even if storage fails
-    }
+    await storeAuditResult(demoAudit);
 
     console.log('Demo audit created successfully');
     res.status(200).json(demoAudit);
