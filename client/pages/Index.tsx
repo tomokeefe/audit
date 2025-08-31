@@ -460,6 +460,172 @@ export default function Index() {
         </div>
       </div>
 
+      {/* Analytics Dashboard Section */}
+      {analytics && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 bg-white">
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">Analytics Dashboard</h2>
+            <p className="text-gray-600">Track your brand audit performance and insights</p>
+          </div>
+
+          {/* Key Metrics */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-brand-100 rounded-lg flex items-center justify-center">
+                    <BarChart3 className="h-6 w-6 text-brand-600" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">Total Audits</p>
+                    <p className="text-3xl font-bold text-gray-900">{analytics.totalAudits}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                    <Target className="h-6 w-6 text-green-600" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">Average Score</p>
+                    <p className="text-3xl font-bold text-gray-900">{analytics.averageScore}%</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                    <TrendingUp className="h-6 w-6 text-yellow-600" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">Need Improvement</p>
+                    <p className="text-3xl font-bold text-gray-900">{analytics.improvementOpportunities}%</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Charts */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            {/* Score Distribution Chart */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Score Distribution</CardTitle>
+                <CardDescription>How your audits are performing</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={analytics.scoreDistribution}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={120}
+                        paddingAngle={5}
+                        dataKey="value"
+                      >
+                        {analytics.scoreDistribution.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="flex justify-center gap-6 mt-4">
+                  {analytics.scoreDistribution.map((item) => (
+                    <div key={item.name} className="flex items-center gap-2">
+                      <div
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: item.color }}
+                      />
+                      <span className="text-sm text-gray-600">{item.name} ({item.value})</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Trend Chart */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Performance Trend</CardTitle>
+                <CardDescription>Score progression over recent audits</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={analytics.recentTrend}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="audit" />
+                      <YAxis domain={[0, 100]} />
+                      <Tooltip
+                        formatter={(value: number) => [`${value}%`, 'Score']}
+                        labelFormatter={(label) => `${label}`}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="score"
+                        stroke="#3b82f6"
+                        strokeWidth={3}
+                        dot={{ fill: '#3b82f6', strokeWidth: 2, r: 6 }}
+                        activeDot={{ r: 8 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Performance Insights */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Award className="h-5 w-5 text-yellow-500" />
+                Performance Insights
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2">Quick Stats</h4>
+                  <ul className="space-y-2 text-sm text-gray-600">
+                    <li>• Total audits completed: {analytics.totalAudits}</li>
+                    <li>• Average performance score: {analytics.averageScore}%</li>
+                    <li>• Audits needing improvement: {analytics.improvementOpportunities}%</li>
+                    <li>• Performance category: {analytics.averageScore >= 80 ? 'Excellent' : analytics.averageScore >= 60 ? 'Good' : 'Needs Focus'}</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2">Recommendations</h4>
+                  <ul className="space-y-2 text-sm text-gray-600">
+                    {analytics.averageScore < 70 && (
+                      <li>• Focus on improving fundamental brand elements</li>
+                    )}
+                    {analytics.improvementOpportunities > 50 && (
+                      <li>• Consider a comprehensive brand strategy review</li>
+                    )}
+                    <li>• Monitor performance trends regularly</li>
+                    <li>• Use audit insights to guide brand improvements</li>
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       {/* Previous Audits Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="flex justify-between items-center mb-8">
