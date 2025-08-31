@@ -14,7 +14,9 @@ export const handler: Handler = async (event, context) => {
 
   const method = event.httpMethod;
 
-  console.log(`Function called with path: ${event.path}, processed path: ${path}, method: ${method}`);
+  console.log(
+    `Function called with path: ${event.path}, processed path: ${path}, method: ${method}`,
+  );
 
   // Set CORS headers
   const headers = {
@@ -61,26 +63,30 @@ export const handler: Handler = async (event, context) => {
         id: Date.now().toString(),
         url,
         title: "Example Brand Audit Report",
-        description: "Comprehensive brand analysis and recommendations for " + url,
+        description:
+          "Comprehensive brand analysis and recommendations for " + url,
         date: new Date().toLocaleDateString(),
         overallScore: Math.floor(Math.random() * 40) + 60,
         sections: [
           {
             name: "Brand Consistency",
             score: Math.floor(Math.random() * 40) + 60,
-            details: "Brand consistency analysis shows good alignment across visual elements.",
+            details:
+              "Brand consistency analysis shows good alignment across visual elements.",
             issues: Math.floor(Math.random() * 5),
             recommendations: Math.floor(Math.random() * 8) + 2,
           },
           {
             name: "User Experience",
             score: Math.floor(Math.random() * 40) + 60,
-            details: "User experience evaluation reveals several improvement opportunities.",
+            details:
+              "User experience evaluation reveals several improvement opportunities.",
             issues: Math.floor(Math.random() * 5),
             recommendations: Math.floor(Math.random() * 8) + 2,
           },
         ],
-        summary: "This audit reveals several key areas for improvement in brand consistency and user experience.",
+        summary:
+          "This audit reveals several key areas for improvement in brand consistency and user experience.",
       };
 
       return {
