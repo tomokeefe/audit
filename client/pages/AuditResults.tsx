@@ -119,18 +119,18 @@ export default function AuditResults() {
       {/* Overall Score Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-center mb-8">
-          <Card className={`w-80 ${getScoreBg(mockAuditData.overallScore)}`}>
+          <Card className={`w-80 ${getScoreBg(auditData.overallScore)}`}>
             <CardContent className="pt-6 text-center">
-              <div className={`text-4xl font-bold mb-2 ${getScoreColor(mockAuditData.overallScore)}`}>
-                {mockAuditData.overallScore}%
+              <div className={`text-4xl font-bold mb-2 ${getScoreColor(auditData.overallScore)}`}>
+                {auditData.overallScore}%
               </div>
               <div className="text-gray-600 mb-4">Overall Score</div>
-              <Progress 
-                value={mockAuditData.overallScore} 
+              <Progress
+                value={auditData.overallScore}
                 className="h-3 mb-2"
               />
               <div className="text-sm text-gray-500">
-                Based on {mockAuditData.sections.length} evaluation criteria
+                Based on {auditData.sections.length} evaluation criteria
               </div>
             </CardContent>
           </Card>
