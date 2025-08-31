@@ -1,14 +1,19 @@
 {
+  "version": 2,
   "builds": [
     {
-      "src": "package.json",
+      "src": "server/node-build.ts",
       "use": "@vercel/node"
+    },
+    {
+      "src": "dist/spa/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/server/index.ts"
+      "dest": "/server/node-build.ts"
     },
     {
       "src": "/(.*)",
@@ -19,7 +24,7 @@
     "GEMINI_API_KEY": "@gemini-api-key"
   },
   "functions": {
-    "server/index.ts": {
+    "server/node-build.ts": {
       "maxDuration": 30
     }
   }
