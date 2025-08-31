@@ -651,6 +651,32 @@ UX Features:
 
 Analysis Depth: ${websiteData.analysisDepth || "basic"}
 
+Multi-Page Analysis Results:
+${websiteData.multiPageAnalysis ? `
+- Pages Analyzed: ${websiteData.multiPageAnalysis.pagesAnalyzed} pages across the website
+- Page Types Found: ${websiteData.multiPageAnalysis.pageTypes.map(p => `${p.type} (${p.url})`).join(', ')}
+- Total Content Length: ${Math.round(websiteData.multiPageAnalysis.totalContentLength / 1000)}K characters
+- Average Images per Page: ${Math.round(websiteData.multiPageAnalysis.avgImagesPerPage)} images
+- Average Forms per Page: ${websiteData.multiPageAnalysis.avgFormsPerPage.toFixed(1)} forms
+
+Cross-Page Consistency Analysis:
+- Brand Consistency Score: ${websiteData.multiPageAnalysis.crossPageConsistency.brandConsistency.score}%
+- Navigation Consistency Score: ${websiteData.multiPageAnalysis.crossPageConsistency.navigationConsistency.score}%
+- Content Consistency Score: ${websiteData.multiPageAnalysis.crossPageConsistency.contentConsistency.score}%
+- Brand Issues Found: ${websiteData.multiPageAnalysis.crossPageConsistency.brandConsistency.issues.join('; ') || 'None'}
+- Navigation Issues: ${websiteData.multiPageAnalysis.crossPageConsistency.navigationConsistency.issues.join('; ') || 'None'}
+- Content Issues: ${websiteData.multiPageAnalysis.crossPageConsistency.contentConsistency.issues.join('; ') || 'None'}
+
+Individual Page Analysis:
+${websiteData.multiPageAnalysis.pageDetails.slice(0, 5).map(page => `
+- ${page.pageType.toUpperCase()}: ${page.url}
+  * Title: "${page.title}"
+  * H1 headings: ${page.headings.h1.length} (${page.headings.h1.slice(0, 2).join(', ')})
+  * Images: ${page.images.total} total, ${page.images.missingAlt} without alt text
+  * Forms: ${page.forms.count} forms, Labels: ${page.forms.hasLabels ? 'Yes' : 'No'}
+  * Content Length: ${Math.round(page.contentLength / 1000)}K characters`).join('\n')}
+` : 'Single page analysis only - multi-page crawling not available'}
+
 Please provide a detailed analysis covering these 6 key areas:
 
 1. **Brand Consistency** (Score 0-100): Evaluate logo placement, color scheme consistency, typography consistency, brand voice, and messaging alignment.
