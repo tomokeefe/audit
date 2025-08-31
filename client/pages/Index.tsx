@@ -4,7 +4,13 @@ import { AuditRequest, AuditResponse } from "@shared/api";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Search, Globe, Calendar, TrendingUp, BarChart3 } from "lucide-react";
 
@@ -17,26 +23,26 @@ const mockAudits = [
     score: 69,
     date: "August 31, 2025",
     status: "completed",
-    category: "Investment Banking"
+    category: "Investment Banking",
   },
   {
-    id: "2", 
+    id: "2",
     url: "https://techstartup.io",
     title: "TechStartup.io",
     score: 85,
     date: "August 28, 2025",
     status: "completed",
-    category: "Technology"
+    category: "Technology",
   },
   {
     id: "3",
-    url: "https://retailbrand.com", 
+    url: "https://retailbrand.com",
     title: "Retail Brand",
     score: 72,
     date: "August 25, 2025",
     status: "completed",
-    category: "E-commerce"
-  }
+    category: "E-commerce",
+  },
 ];
 
 export default function Index() {
@@ -56,10 +62,10 @@ export default function Index() {
     try {
       const auditRequest: AuditRequest = { url };
 
-      const response = await fetch('/api/audit', {
-        method: 'POST',
+      const response = await fetch("/api/audit", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(auditRequest),
       });
@@ -82,31 +88,35 @@ export default function Index() {
       try {
         responseData = await response.json();
       } catch (parseError) {
-        throw new Error('Invalid response from server. Please try again.');
+        throw new Error("Invalid response from server. Please try again.");
       }
 
       // Validate response structure
       if (!responseData.id || !responseData.sections) {
-        throw new Error('Invalid audit response format. Please try again.');
+        throw new Error("Invalid audit response format. Please try again.");
       }
 
       const auditResult: AuditResponse = responseData;
 
       // Store audit result in localStorage for the results page
-      localStorage.setItem(`audit_${auditResult.id}`, JSON.stringify(auditResult));
+      localStorage.setItem(
+        `audit_${auditResult.id}`,
+        JSON.stringify(auditResult),
+      );
 
       // Navigate to audit results page
       navigate(`/audit/${auditResult.id}`);
-
     } catch (error) {
       console.error("Audit error:", error);
 
-      if (error instanceof TypeError && error.message.includes('fetch')) {
-        setError('Network error. Please check your connection and try again.');
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        setError("Network error. Please check your connection and try again.");
       } else if (error instanceof Error) {
         setError(error.message);
       } else {
-        setError('An unexpected error occurred. Please check the URL and try again.');
+        setError(
+          "An unexpected error occurred. Please check the URL and try again.",
+        );
       }
     } finally {
       setIsLoading(false);
@@ -121,10 +131,10 @@ export default function Index() {
       const demoUrl = "https://example.com";
       const auditRequest: AuditRequest = { url: demoUrl };
 
-      const response = await fetch('/api/audit/demo', {
-        method: 'POST',
+      const response = await fetch("/api/audit/demo", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(auditRequest),
       });
@@ -146,20 +156,24 @@ export default function Index() {
       try {
         responseData = await response.json();
       } catch (parseError) {
-        throw new Error('Invalid response from server. Please try again.');
+        throw new Error("Invalid response from server. Please try again.");
       }
 
       const auditResult: AuditResponse = responseData;
 
       // Store audit result in localStorage for the results page
-      localStorage.setItem(`audit_${auditResult.id}`, JSON.stringify(auditResult));
+      localStorage.setItem(
+        `audit_${auditResult.id}`,
+        JSON.stringify(auditResult),
+      );
 
       // Navigate to audit results page
       navigate(`/audit/${auditResult.id}`);
-
     } catch (error) {
       console.error("Demo audit error:", error);
-      setError(error instanceof Error ? error.message : 'Failed to create demo audit');
+      setError(
+        error instanceof Error ? error.message : "Failed to create demo audit",
+      );
     } finally {
       setIsDemoLoading(false);
     }
@@ -174,7 +188,7 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      
+
       {/* Hero Section */}
       <div className="bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -184,8 +198,9 @@ export default function Index() {
               <span className="brand-text-gradient">Brand Audits</span>
             </h1>
             <p className="mt-6 max-w-3xl mx-auto text-xl text-gray-600">
-              Get comprehensive website analysis with detailed scoring, insights, and actionable recommendations 
-              to enhance your brand's digital presence.
+              Get comprehensive website analysis with detailed scoring,
+              insights, and actionable recommendations to enhance your brand's
+              digital presence.
             </p>
           </div>
 
@@ -230,7 +245,9 @@ export default function Index() {
                     <div className="w-full border-t border-gray-300"></div>
                   </div>
                   <div className="relative flex justify-center text-sm">
-                    <span className="px-3 bg-white text-gray-500">or try a demo</span>
+                    <span className="px-3 bg-white text-gray-500">
+                      or try a demo
+                    </span>
                   </div>
                 </div>
                 <Button
@@ -266,7 +283,8 @@ export default function Index() {
               {isLoading && (
                 <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg">
                   <p className="text-sm">
-                    Analyzing website content and generating comprehensive brand audit... This may take up to 30 seconds.
+                    Analyzing website content and generating comprehensive brand
+                    audit... This may take up to 30 seconds.
                   </p>
                 </div>
               )}
@@ -274,7 +292,8 @@ export default function Index() {
               {isDemoLoading && (
                 <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
                   <p className="text-sm">
-                    Creating demo audit report with sample insights and recommendations...
+                    Creating demo audit report with sample insights and
+                    recommendations...
                   </p>
                 </div>
               )}
@@ -319,7 +338,10 @@ export default function Index() {
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {mockAudits.map((audit) => (
-            <Card key={audit.id} className="hover:shadow-lg transition-shadow cursor-pointer">
+            <Card
+              key={audit.id}
+              className="hover:shadow-lg transition-shadow cursor-pointer"
+            >
               <CardHeader>
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
@@ -333,7 +355,9 @@ export default function Index() {
                       {audit.category}
                     </Badge>
                   </div>
-                  <div className={`px-3 py-1 rounded-full text-sm font-semibold ${getScoreColor(audit.score)}`}>
+                  <div
+                    className={`px-3 py-1 rounded-full text-sm font-semibold ${getScoreColor(audit.score)}`}
+                  >
                     {audit.score}%
                   </div>
                 </div>
@@ -344,7 +368,7 @@ export default function Index() {
                     <Calendar className="h-4 w-4" />
                     {audit.date}
                   </div>
-                  <Link 
+                  <Link
                     to={`/audit/${audit.id}`}
                     className="text-brand-600 hover:text-brand-700 font-medium"
                   >
@@ -361,9 +385,12 @@ export default function Index() {
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <BarChart3 className="h-8 w-8 text-gray-400" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No audits yet</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              No audits yet
+            </h3>
             <p className="text-gray-600 mb-6">
-              Enter a website URL above to get started with your first brand audit.
+              Enter a website URL above to get started with your first brand
+              audit.
             </p>
           </div>
         )}

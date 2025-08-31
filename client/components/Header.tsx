@@ -16,20 +16,20 @@ export default function Header() {
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link 
-              to="/" 
+            <Link
+              to="/"
               className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
             >
               Dashboard
             </Link>
-            <Link 
-              to="/audits" 
+            <Link
+              to="/audits"
               className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
             >
               Audits
             </Link>
-            <Link 
-              to="/reports" 
+            <Link
+              to="/reports"
               className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
             >
               Reports
