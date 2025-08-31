@@ -287,26 +287,41 @@ Best regards`);
     <div className="min-h-screen bg-gray-50">
       <Header />
 
-      {/* Compact Header Panel - Above the Fold */}
+      {/* Figma-inspired Header Design */}
       <div className="bg-white border-b shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="py-6">
-            {/* Top Header Row */}
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2 text-sm text-gray-500">
-                <Globe className="h-4 w-4" />
-                {auditData.url}
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="text-right">
-                  <div className="text-sm text-gray-500">Audit Report</div>
-                  <div className="font-semibold text-gray-900">{auditData.date}</div>
+          <div className="py-8">
+            {/* Hero Section Layout - Figma Design */}
+            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8">
+              {/* Left Column - Website Info and Content */}
+              <div className="flex-1 lg:max-w-xl">
+                {/* URL Bar */}
+                <div className="flex items-center gap-2 text-sm text-gray-500 mb-4 p-3 bg-gray-50 rounded-lg border">
+                  <Globe className="h-4 w-4" />
+                  <span className="font-medium">{auditData.url}</span>
                 </div>
+
+                {/* Date */}
+                <div className="text-xs text-gray-500 mb-2">
+                  Audit Report - {auditData.date}
+                </div>
+
+                {/* Main Title */}
+                <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
+                  {auditData.title}
+                </h1>
+
+                {/* Description */}
+                <p className="text-gray-600 leading-relaxed mb-6">
+                  {auditData.description}
+                </p>
+
+                {/* Copy Link Button */}
                 <Button
                   onClick={copyToClipboard}
                   variant="outline"
                   size="sm"
-                  className="border-brand-300 text-brand-700 hover:bg-brand-50"
+                  className="border-orange-300 text-orange-700 hover:bg-orange-50"
                 >
                   {copied ? (
                     <>
@@ -321,64 +336,24 @@ Best regards`);
                   )}
                 </Button>
               </div>
-            </div>
 
-            {/* Main Content Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-              {/* Left Column - Title and Description */}
-              <div className="lg:col-span-2">
-                <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-3">
-                  {auditData.title}
-                </h1>
-                <p className="text-gray-600 leading-relaxed">
-                  {auditData.description}
-                </p>
-              </div>
-
-              {/* Right Column - Score Panel */}
+              {/* Right Column - Large Score Panel */}
               <div className="flex justify-center lg:justify-end">
-                <Card className={`w-full max-w-xs ${getScoreBg(auditData.overallScore)} border-2`}>
-                  <CardContent className="pt-6 text-center">
-                    <div
-                      className={`text-5xl font-bold mb-2 ${getScoreColor(auditData.overallScore)}`}
-                    >
+                <Card className="w-80 h-52 bg-yellow-50 border-yellow-200 border-2 shadow-lg">
+                  <CardContent className="pt-8 text-center h-full flex flex-col justify-center">
+                    <div className="text-6xl font-bold mb-2 text-orange-600">
                       {auditData.overallScore}%
                     </div>
-                    <div className="text-gray-600 font-medium mb-3">Overall Score</div>
-                    <Progress value={auditData.overallScore} className="h-2 mb-3" />
-                    <div className="text-sm text-gray-500">
+                    <div className="text-gray-700 font-semibold text-lg mb-4">Overall Score</div>
+                    <Progress
+                      value={auditData.overallScore}
+                      className="h-3 mb-3"
+                    />
+                    <div className="text-sm text-gray-600">
                       Based on {auditData.sections.length} evaluation criteria
                     </div>
                   </CardContent>
                 </Card>
-              </div>
-            </div>
-
-            {/* Quick Stats Row */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-100">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-gray-900">
-                  {auditData.sections.length}
-                </div>
-                <div className="text-sm text-gray-600">Areas Evaluated</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-red-600">
-                  {auditData.sections.reduce((sum, section) => sum + section.issues, 0)}
-                </div>
-                <div className="text-sm text-gray-600">Issues Found</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">
-                  {auditData.sections.reduce((sum, section) => sum + section.recommendations, 0)}
-                </div>
-                <div className="text-sm text-gray-600">Recommendations</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">
-                  {auditData.sections.filter(s => s.score >= 80).length}
-                </div>
-                <div className="text-sm text-gray-600">Strong Areas</div>
               </div>
             </div>
           </div>
