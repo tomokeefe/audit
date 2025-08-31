@@ -1,15 +1,24 @@
 [build]
-  command = "npm run build:client"
+  command = "npm run build"
   functions = "netlify/functions"
-  publish = "dist/spa"
+  publish = "dist"
 
+[build.environment]
+  NODE_VERSION = "18"
 
 [functions]
-  external_node_modules = ["express"]
+  external_node_modules = ["express", "axios", "cheerio", "@google/generative-ai", "cors", "dotenv"]
   node_bundler = "esbuild"
   
 [[redirects]]
-  force = true
   from = "/api/*"
-  status = 200
   to = "/.netlify/functions/api/:splat"
+  status = 200
+  force = true
+
+# SPA fallback for client-side routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  conditions = {Role = ["general"], "!Path = ["/api/*", "/.netlify/*"]"}
