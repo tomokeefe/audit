@@ -190,7 +190,7 @@ export default function Index() {
           </div>
 
           {/* URL Input Form */}
-          <div className="mt-12 max-w-2xl mx-auto">
+          <div className="mt-12 max-w-3xl mx-auto">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="flex gap-4">
                 <div className="flex-1 relative">
@@ -206,7 +206,7 @@ export default function Index() {
                 </div>
                 <Button
                   type="submit"
-                  disabled={isLoading}
+                  disabled={isLoading || isDemoLoading}
                   className="h-12 px-8 bg-brand-500 hover:bg-brand-600 text-white font-semibold"
                 >
                   {isLoading ? (
@@ -221,6 +221,40 @@ export default function Index() {
                     </div>
                   )}
                 </Button>
+              </div>
+
+              {/* Demo Section */}
+              <div className="text-center">
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-300"></div>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-3 bg-white text-gray-500">or try a demo</span>
+                  </div>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleDemoAudit}
+                  disabled={isLoading || isDemoLoading}
+                  className="mt-4 h-12 px-8 border-brand-300 text-brand-700 hover:bg-brand-50"
+                >
+                  {isDemoLoading ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
+                      Creating Demo...
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <BarChart3 className="h-5 w-5" />
+                      View Demo Audit
+                    </div>
+                  )}
+                </Button>
+                <p className="text-sm text-gray-500 mt-2">
+                  See a sample audit report instantly
+                </p>
               </div>
 
               {error && (
