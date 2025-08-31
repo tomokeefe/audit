@@ -39,7 +39,6 @@ interface AuditSummary {
 export default function Index() {
   const [url, setUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isDemoLoading, setIsDemoLoading] = useState(false);
   const [error, setError] = useState("");
   const [recentAudits, setRecentAudits] = useState<AuditSummary[]>([]);
   const [loadingAudits, setLoadingAudits] = useState(true);
