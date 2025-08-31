@@ -63,11 +63,30 @@ export default function Index() {
         body: JSON.stringify(auditRequest),
       });
 
-      // Read the response body once
-      const responseData = await response.json();
-
+      // Check if response is valid
       if (!response.ok) {
-        throw new Error(responseData.error || `Server error: ${response.status}`);
+        let errorMessage = `Server error: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+        } catch {
+          // If we can't parse error JSON, use the status message
+          errorMessage = `Server error: ${response.status} ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
+      }
+
+      // Parse successful response
+      let responseData;
+      try {
+        responseData = await response.json();
+      } catch (parseError) {
+        throw new Error('Invalid response from server. Please try again.');
+      }
+
+      // Validate response structure
+      if (!responseData.id || !responseData.sections) {
+        throw new Error('Invalid audit response format. Please try again.');
       }
 
       const auditResult: AuditResponse = responseData;
@@ -80,7 +99,10 @@ export default function Index() {
 
     } catch (error) {
       console.error("Audit error:", error);
-      if (error instanceof Error) {
+
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        setError('Network error. Please check your connection and try again.');
+      } else if (error instanceof Error) {
         setError(error.message);
       } else {
         setError('An unexpected error occurred. Please check the URL and try again.');
