@@ -18,21 +18,21 @@ export function createServer() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  // Example API routes
-  app.get("/api/ping", (_req, res) => {
+  // Example API routes (no /api prefix needed for Netlify functions)
+  app.get("/ping", (_req, res) => {
     const ping = process.env.PING_MESSAGE ?? "ping";
     res.json({ message: ping });
   });
 
-  app.get("/api/demo", handleDemo);
-  app.post("/api/audit", handleAudit);
-  app.post("/api/audit/demo", handleDemoAudit);
+  app.get("/demo", handleDemo);
+  app.post("/audit", handleAudit);
+  app.post("/audit/demo", handleDemoAudit);
 
   // Audit storage endpoints
-  app.post("/api/audits", storeAudit);
-  app.get("/api/audits/:id", getAudit);
-  app.get("/api/audits", listAudits);
-  app.delete("/api/audits/:id", deleteAudit);
+  app.post("/audits", storeAudit);
+  app.get("/audits/:id", getAudit);
+  app.get("/audits", listAudits);
+  app.delete("/audits/:id", deleteAudit);
 
   return app;
 }
