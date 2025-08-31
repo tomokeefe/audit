@@ -679,7 +679,13 @@ ${websiteData.multiPageAnalysis.pageDetails.slice(0, 5).map(page => `
 
 Please provide a detailed analysis covering these 6 key areas:
 
-1. **Brand Consistency** (Score 0-100): Evaluate logo placement, color scheme consistency, typography consistency, brand voice, and messaging alignment.
+1. **Brand Consistency** (Score 0-100): Use the cross-page analysis to evaluate:
+   - Logo presence and placement consistency across all analyzed pages
+   - Brand element consistency (colors, fonts, imagery) throughout the site
+   - Title tag patterns and brand name usage across different page types
+   - Navigation and header/footer consistency across the entire website
+   - Brand voice and messaging alignment across different content areas
+   - Visual identity coherence from homepage to internal pages
 
 2. **User Experience (UX)** (Score 0-100): Use the comprehensive multi-page analysis to evaluate:
    - Navigation consistency across all analyzed pages and user journey flow
