@@ -506,25 +506,25 @@ Best regards`);
                             <div className="space-y-3">
                               <div className="flex items-center gap-2 mb-4">
                                 <Lightbulb className="h-5 w-5 text-green-600" />
-                                <h4 className="text-lg font-semibold text-gray-900">
-                                  Recommendations
+                                <h4 className="text-lg font-bold text-gray-900">
+                                  Recommendations:
                                 </h4>
                               </div>
-                              <div className="space-y-3">
+                              <ul className="space-y-3">
                                 {contentSection.content.map(
                                   (recommendation, itemIndex) => (
-                                    <div
+                                    <li
                                       key={itemIndex}
-                                      className="flex gap-3 p-3 bg-green-50 border border-green-100 rounded-lg"
+                                      className="flex gap-3 p-4 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors"
                                     >
-                                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                                      <p className="text-green-800 text-sm leading-relaxed">
+                                      <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                                      <p className="text-green-800 leading-relaxed">
                                         {recommendation}
                                       </p>
-                                    </div>
+                                    </li>
                                   ),
                                 )}
-                              </div>
+                              </ul>
                             </div>
                           )}
                         </div>
