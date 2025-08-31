@@ -98,15 +98,15 @@ export default function AuditResults() {
           <div className="flex justify-between items-start">
             <div>
               <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
-                <Globe className="h-4 w-4" />
-                {mockAuditData.url}
-              </div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                {mockAuditData.title}
-              </h1>
-              <p className="text-lg text-gray-600 max-w-3xl">
-                {mockAuditData.description}
-              </p>
+              <Globe className="h-4 w-4" />
+              {auditData.url}
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              {auditData.title}
+            </h1>
+            <p className="text-lg text-gray-600 max-w-3xl">
+              {auditData.description}
+            </p>
             </div>
             <div className="text-right">
               <div className="text-sm text-gray-500 mb-1">Audit Report</div>
