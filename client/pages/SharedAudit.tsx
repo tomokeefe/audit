@@ -154,54 +154,73 @@ export default function SharedAudit() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Clean Header */}
+      {/* Header with Brand Logo */}
       <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">
-            <div className="flex items-center justify-center gap-2 text-sm text-gray-500 mb-2">
-              <img
-                src="https://cdn.builder.io/api/v1/image/assets%2F57f3921c477141799725b87f2761d2c2%2Ff2dd7552d6e3445893146adbf2af6d10?format=webp&width=800"
-                alt="Brand Whisperer Logo"
-                className="h-8 w-auto"
-              />
-              <span>Brand Whisperer Audit Report</span>
-            </div>
-            <div className="flex items-center justify-center gap-2 text-sm text-gray-500 mb-4">
-              <Globe className="h-4 w-4" />
-              {auditData.url}
-            </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              {auditData.title}
-            </h1>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-4">
-              {auditData.description}
-            </p>
-            <div className="text-sm text-gray-500">
-              <Calendar className="h-4 w-4 inline mr-1" />
-              {auditData.date}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-center">
+            <img
+              src="https://cdn.builder.io/api/v1/image/assets%2F57f3921c477141799725b87f2761d2c2%2Ff2dd7552d6e3445893146adbf2af6d10?format=webp&width=800"
+              alt="Brand Whisperer Logo"
+              className="h-8 w-auto"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Figma-inspired Header Design - Same as AuditResults */}
+      <div className="bg-white border-b shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="py-8">
+            {/* Hero Section Layout - Figma Design */}
+            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8">
+              {/* Left Column - Website Info and Content */}
+              <div className="flex-1 lg:max-w-xl">
+                {/* URL Bar */}
+                <div className="flex items-center gap-2 text-sm text-gray-500 mb-4 p-3 bg-gray-50 rounded-lg border">
+                  <Globe className="h-4 w-4" />
+                  <span className="font-medium">{auditData.url}</span>
+                </div>
+
+                {/* Date */}
+                <div className="text-xs text-gray-500 mb-2">
+                  Audit Report - {auditData.date}
+                </div>
+
+                {/* Main Title */}
+                <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
+                  {auditData.title}
+                </h1>
+
+                {/* Description */}
+                <p className="text-gray-600 leading-relaxed mb-6">
+                  {auditData.description}
+                </p>
+              </div>
+
+              {/* Right Column - Large Score Panel */}
+              <div className="flex justify-center lg:justify-end">
+                <Card className="w-80 h-52 bg-yellow-50 border-yellow-200 border-2 shadow-lg">
+                  <CardContent className="pt-8 text-center h-full flex flex-col justify-center">
+                    <div className="text-6xl font-bold mb-2 text-orange-600">
+                      {auditData.overallScore}%
+                    </div>
+                    <div className="text-gray-700 font-semibold text-lg mb-4">Overall Score</div>
+                    <Progress
+                      value={auditData.overallScore}
+                      className="h-3 mb-3"
+                    />
+                    <div className="text-sm text-gray-600">
+                      Based on {auditData.sections.length} evaluation criteria
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Overall Score Section */}
-        <div className="flex justify-center mb-8">
-          <Card className={`w-80 ${getScoreBg(auditData.overallScore)}`}>
-            <CardContent className="pt-6 text-center">
-              <div
-                className={`text-4xl font-bold mb-2 ${getScoreColor(auditData.overallScore)}`}
-              >
-                {auditData.overallScore}%
-              </div>
-              <div className="text-gray-600 mb-4">Overall Score</div>
-              <Progress value={auditData.overallScore} className="h-3 mb-2" />
-              <div className="text-sm text-gray-500">
-                Based on {auditData.sections.length} evaluation criteria
-              </div>
-            </CardContent>
-          </Card>
-        </div>
 
         {/* Tabs Navigation */}
         <Tabs defaultValue="results" className="w-full">
