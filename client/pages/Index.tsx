@@ -12,7 +12,21 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, Globe, Calendar, TrendingUp, BarChart3 } from "lucide-react";
+import { Search, Globe, Calendar, TrendingUp, BarChart3, Target, Award, Activity } from "lucide-react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  LineChart,
+  Line
+} from "recharts";
 
 interface AuditSummary {
   id: string;
