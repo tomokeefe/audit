@@ -45,19 +45,20 @@ function parseAuditContent(content: string) {
   let currentContent: string[] = [];
 
   for (const line of lines) {
-    if (line.match(/\*\*Issues?\*\*:?/i)) {
+    // Check for both markdown (**Issues**:) and plain text (Issues:) formats
+    if (line.match(/(\*\*)?Issues?\*?\*?:?/i)) {
       if (currentContent.length > 0) {
         sections.push({ type: currentSection, content: [...currentContent] });
         currentContent = [];
       }
       currentSection = "issues";
-    } else if (line.match(/\*\*Recommendations?\*\*:?/i)) {
+    } else if (line.match(/(\*\*)?Recommendations?\*?\*?:?/i)) {
       if (currentContent.length > 0) {
         sections.push({ type: currentSection, content: [...currentContent] });
         currentContent = [];
       }
       currentSection = "recommendations";
-    } else if (!line.match(/\*\*(Issues?|Recommendations?)\*\*:?/i)) {
+    } else if (!line.match(/(\*\*)?(Issues?|Recommendations?)\*?\*?:?/i)) {
       // Clean up markdown formatting and numbered lists
       const cleanLine = line
         .replace(/^\*\*|\*\*$/g, "") // Remove bold markdown
