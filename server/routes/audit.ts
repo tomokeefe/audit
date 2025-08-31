@@ -543,6 +543,11 @@ async function scrapeWebsite(url: string) {
       const siteStructure = await analyzeSiteStructure(url, response.data);
       const uxFeatures = await analyzeUXFeatures(response.data);
 
+      // Perform multi-page crawling
+      console.log('Starting comprehensive multi-page crawling...');
+      const multiPageResults = await crawlMultiplePages(url, siteStructure.discoveredPages, 8);
+      const crossPageAnalysis = analyzeCrossPageConsistency(multiPageResults);
+
       return {
         title: title.trim(),
         description: description.trim(),
@@ -560,7 +565,19 @@ async function scrapeWebsite(url: string) {
         performance: performanceData,
         siteStructure: siteStructure,
         uxFeatures: uxFeatures,
-        analysisDepth: "comprehensive",
+        // Multi-page crawling results
+        multiPageAnalysis: {
+          pagesAnalyzed: multiPageResults.length,
+          pageDetails: multiPageResults,
+          crossPageConsistency: crossPageAnalysis,
+          totalContentLength: multiPageResults.reduce((sum, page) => sum + page.contentLength, 0),
+          avgImagesPerPage: multiPageResults.length > 0 ?
+            multiPageResults.reduce((sum, page) => sum + page.images.total, 0) / multiPageResults.length : 0,
+          avgFormsPerPage: multiPageResults.length > 0 ?
+            multiPageResults.reduce((sum, page) => sum + page.forms.count, 0) / multiPageResults.length : 0,
+          pageTypes: multiPageResults.map(page => ({ url: page.url, type: page.pageType })),
+        },
+        analysisDepth: "comprehensive-multipage",
       };
     } catch (error) {
       console.error(
