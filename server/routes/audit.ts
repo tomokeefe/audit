@@ -711,12 +711,18 @@ For each section, provide:
 - Number of recommendations (estimate based on issues)
 - Detailed explanation of findings and specific recommendations
 
-IMPORTANT for UX Analysis: Use the provided performance, site structure, and accessibility data to give specific, actionable recommendations. For example:
-- If mobile viewport is missing, recommend adding viewport meta tag
-- If forms lack labels, suggest specific accessibility improvements
-- If page size is large, recommend optimization strategies
-- If navigation items are limited, suggest site architecture improvements
-- If accessibility features are missing, provide specific WCAG guidelines to follow
+CRITICAL - Use ALL Multi-Page Data: This analysis includes comprehensive crawling of multiple pages. Use the cross-page consistency scores, individual page analysis, and multi-page metrics to provide:
+
+- Specific recommendations based on actual page-by-page findings
+- Cross-page consistency issues and solutions
+- Site-wide accessibility improvements based on missing alt text counts and form analysis
+- Navigation improvements based on actual navigation consistency scores
+- Performance optimizations based on real page size and load time data
+- Brand consistency fixes based on logo presence and title tag patterns across pages
+- Content strategy improvements based on heading structure analysis across all pages
+- User experience enhancements based on actual site architecture and page type distribution
+
+Reference specific pages, metrics, and cross-page issues found in your recommendations. This is a comprehensive multi-page audit, not a single-page analysis.
 
 Also provide:
 - An overall score (average of all sections)
