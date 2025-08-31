@@ -23,5 +23,11 @@ export function createServer() {
   app.post("/api/audit", handleAudit);
   app.post("/api/audit/demo", handleDemoAudit);
 
+  // Audit storage endpoints
+  app.post("/api/audits", storeAudit);
+  app.get("/api/audits/:id", getAudit);
+  app.get("/api/audits", listAudits);
+  app.delete("/api/audits/:id", deleteAudit);
+
   return app;
 }
