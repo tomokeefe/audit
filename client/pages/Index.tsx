@@ -42,18 +42,46 @@ const mockAudits = [
 export default function Index() {
   const [url, setUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!url.trim()) return;
-    
+
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
+    setError("");
+
+    try {
+      const auditRequest: AuditRequest = { url };
+
+      const response = await fetch('/api/audit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(auditRequest),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to start audit');
+      }
+
+      const auditResult: AuditResponse = await response.json();
+
+      // Store audit result in localStorage for the results page
+      localStorage.setItem(`audit_${auditResult.id}`, JSON.stringify(auditResult));
+
+      // Navigate to audit results page
+      navigate(`/audit/${auditResult.id}`);
+
+    } catch (error) {
+      console.error("Audit error:", error);
+      setError(error instanceof Error ? error.message : 'An unexpected error occurred');
+    } finally {
       setIsLoading(false);
-      // In a real app, this would navigate to the new audit
-      console.log("Starting audit for:", url);
-    }, 2000);
+    }
   };
 
   const getScoreColor = (score: number) => {
