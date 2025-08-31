@@ -52,7 +52,7 @@ function createFallbackData(url: string) {
     // Limited fallback data for UX analysis
     performance: {
       pageSizeKB: 0,
-      hasSSL: url.startsWith('https://'),
+      hasSSL: url.startsWith("https://"),
       redirectCount: 0,
       responseTime: 0,
       mobileViewport: false,
@@ -79,13 +79,24 @@ function createFallbackData(url: string) {
       pageCount: 0,
     },
     uxFeatures: {
-      forms: { count: 0, hasLabels: false, hasValidation: false, hasContactForm: false },
-      accessibility: { hasAltText: false, missingAltText: 0, hasSkipLinks: false, hasAriaLabels: false, headingStructure: false },
+      forms: {
+        count: 0,
+        hasLabels: false,
+        hasValidation: false,
+        hasContactForm: false,
+      },
+      accessibility: {
+        hasAltText: false,
+        missingAltText: 0,
+        hasSkipLinks: false,
+        hasAriaLabels: false,
+        headingStructure: false,
+      },
       interactivity: { buttons: 0, dropdowns: 0, modals: 0, carousels: 0 },
       media: { images: 0, videos: 0, hasLazyLoading: false },
-      social: { socialLinks: 0, hasSocialSharing: false }
+      social: { socialLinks: 0, hasSocialSharing: false },
     },
-    analysisDepth: 'limited',
+    analysisDepth: "limited",
   };
 }
 
@@ -111,20 +122,22 @@ async function analyzeWebsitePerformance(url: string) {
 
     performanceData.responseTime = endTime - startTime;
     performanceData.pageSizeKB = Math.round(response.data.length / 1024);
-    performanceData.hasSSL = url.startsWith('https://');
+    performanceData.hasSSL = url.startsWith("https://");
     performanceData.redirectCount = response.request._redirectCount || 0;
 
     // Check for mobile viewport and other UX indicators
     const $ = cheerio.load(response.data);
     performanceData.mobileViewport = $('meta[name="viewport"]').length > 0;
-    performanceData.hasServiceWorker = response.data.includes('serviceWorker') || response.data.includes('sw.js');
+    performanceData.hasServiceWorker =
+      response.data.includes("serviceWorker") ||
+      response.data.includes("sw.js");
 
     return performanceData;
   } catch (error) {
-    console.warn('Performance analysis failed:', error);
+    console.warn("Performance analysis failed:", error);
     return {
       pageSizeKB: 0,
-      hasSSL: url.startsWith('https://'),
+      hasSSL: url.startsWith("https://"),
       redirectCount: 0,
       responseTime: 0,
       mobileViewport: false,
@@ -139,9 +152,14 @@ async function analyzeSiteStructure(baseUrl: string, html: string) {
 
   // Extract all internal links
   const links = new Set<string>();
-  $('a[href]').each((_, el) => {
-    const href = $(el).attr('href');
-    if (href && !href.startsWith('http') && !href.startsWith('mailto:') && !href.startsWith('tel:')) {
+  $("a[href]").each((_, el) => {
+    const href = $(el).attr("href");
+    if (
+      href &&
+      !href.startsWith("http") &&
+      !href.startsWith("mailto:") &&
+      !href.startsWith("tel:")
+    ) {
       try {
         const fullUrl = new URL(href, baseUrl).href;
         if (fullUrl.includes(new URL(baseUrl).hostname)) {
@@ -155,16 +173,16 @@ async function analyzeSiteStructure(baseUrl: string, html: string) {
 
   // Analyze navigation structure
   const navigation = {
-    mainNav: $('nav, .nav, .navbar, .navigation').first().text().trim(),
-    breadcrumbs: $('.breadcrumb, .breadcrumbs').text().trim(),
-    footer: $('footer').text().trim(),
+    mainNav: $("nav, .nav, .navbar, .navigation").first().text().trim(),
+    breadcrumbs: $(".breadcrumb, .breadcrumbs").text().trim(),
+    footer: $("footer").text().trim(),
     menuItems: [] as string[],
     hasSearch: $('input[type="search"], [role="search"], .search').length > 0,
-    hasLanguageSelector: $('[lang], .language, .lang').length > 0,
+    hasLanguageSelector: $("[lang], .language, .lang").length > 0,
   };
 
   // Extract menu structure
-  $('nav a, .nav a, .navbar a, .menu a').each((_, el) => {
+  $("nav a, .nav a, .navbar a, .menu a").each((_, el) => {
     const text = $(el).text().trim();
     if (text && text.length > 0 && text.length < 50) {
       navigation.menuItems.push(text);
@@ -181,11 +199,11 @@ async function analyzeSiteStructure(baseUrl: string, html: string) {
     hasProducts: false,
   };
 
-  $('h1, h2, h3, h4, h5, h6').each((_, el) => {
-    contentStructure.headingLevels.push($(el).prop('tagName').toLowerCase());
+  $("h1, h2, h3, h4, h5, h6").each((_, el) => {
+    contentStructure.headingLevels.push($(el).prop("tagName").toLowerCase());
   });
 
-  $('section, .section, article, .article').each((_, el) => {
+  $("section, .section, article, .article").each((_, el) => {
     const text = $(el).text().trim();
     if (text.length > 0) {
       contentStructure.sections.push(text.substring(0, 100));
@@ -194,7 +212,9 @@ async function analyzeSiteStructure(baseUrl: string, html: string) {
 
   // Check for common page types
   const pageText = $.text().toLowerCase();
-  contentStructure.hasContactInfo = /contact|phone|email|address/.test(pageText);
+  contentStructure.hasContactInfo = /contact|phone|email|address/.test(
+    pageText,
+  );
   contentStructure.hasAboutPage = /about|our story|who we are/.test(pageText);
   contentStructure.hasBlog = /blog|news|articles/.test(pageText);
   contentStructure.hasProducts = /product|service|shop|buy/.test(pageText);
@@ -213,33 +233,35 @@ async function analyzeUXFeatures(html: string) {
 
   return {
     forms: {
-      count: $('form').length,
-      hasLabels: $('label').length > 0,
-      hasValidation: $('[required], .required').length > 0,
-      hasContactForm: $('form').text().toLowerCase().includes('contact'),
+      count: $("form").length,
+      hasLabels: $("label").length > 0,
+      hasValidation: $("[required], .required").length > 0,
+      hasContactForm: $("form").text().toLowerCase().includes("contact"),
     },
     accessibility: {
-      hasAltText: $('img[alt]').length > 0,
-      missingAltText: $('img').length - $('img[alt]').length,
+      hasAltText: $("img[alt]").length > 0,
+      missingAltText: $("img").length - $("img[alt]").length,
       hasSkipLinks: $('[href="#content"], [href="#main"]').length > 0,
-      hasAriaLabels: $('[aria-label], [aria-labelledby]').length > 0,
-      headingStructure: $('h1').length === 1, // Should have exactly one H1
+      hasAriaLabels: $("[aria-label], [aria-labelledby]").length > 0,
+      headingStructure: $("h1").length === 1, // Should have exactly one H1
     },
     interactivity: {
       buttons: $('button, input[type="button"], input[type="submit"]').length,
-      dropdowns: $('select, .dropdown').length,
-      modals: $('[data-modal], .modal').length,
-      carousels: $('[data-carousel], .carousel, .slider').length,
+      dropdowns: $("select, .dropdown").length,
+      modals: $("[data-modal], .modal").length,
+      carousels: $("[data-carousel], .carousel, .slider").length,
     },
     media: {
-      images: $('img').length,
+      images: $("img").length,
       videos: $('video, iframe[src*="youtube"], iframe[src*="vimeo"]').length,
       hasLazyLoading: $('[loading="lazy"], [data-src]').length > 0,
     },
     social: {
-      socialLinks: $('[href*="facebook"], [href*="twitter"], [href*="linkedin"], [href*="instagram"]').length,
-      hasSocialSharing: $('.share, .social-share').length > 0,
-    }
+      socialLinks: $(
+        '[href*="facebook"], [href*="twitter"], [href*="linkedin"], [href*="instagram"]',
+      ).length,
+      hasSocialSharing: $(".share, .social-share").length > 0,
+    },
   };
 }
 
@@ -340,7 +362,7 @@ async function scrapeWebsite(url: string) {
         performance: performanceData,
         siteStructure: siteStructure,
         uxFeatures: uxFeatures,
-        analysisDepth: 'comprehensive',
+        analysisDepth: "comprehensive",
       };
     } catch (error) {
       console.error(
@@ -550,12 +572,10 @@ export const handleAudit: RequestHandler = async (req, res) => {
     try {
       new URL(url);
     } catch {
-      return res
-        .status(400)
-        .json({
-          error:
-            "Invalid URL format. Please enter a valid URL starting with http:// or https://",
-        });
+      return res.status(400).json({
+        error:
+          "Invalid URL format. Please enter a valid URL starting with http:// or https://",
+      });
     }
 
     console.log("Starting audit for URL:", url);
