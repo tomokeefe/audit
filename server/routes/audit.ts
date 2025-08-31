@@ -158,35 +158,54 @@ Be thorough, professional, and provide actionable insights based on the availabl
 
 export const handleAudit: RequestHandler = async (req, res) => {
   try {
+    // Check if Gemini API key is configured
+    if (!process.env.GEMINI_API_KEY) {
+      console.error('GEMINI_API_KEY environment variable is not set');
+      return res.status(500).json({ error: 'Server configuration error. Please contact support.' });
+    }
+
     const { url } = req.body as AuditRequest;
-    
+
     if (!url) {
       return res.status(400).json({ error: 'URL is required' });
     }
-    
+
     // Validate URL format
     try {
       new URL(url);
     } catch {
-      return res.status(400).json({ error: 'Invalid URL format' });
+      return res.status(400).json({ error: 'Invalid URL format. Please enter a valid URL starting with http:// or https://' });
     }
-    
+
     console.log('Starting audit for URL:', url);
-    
+
     // Step 1: Scrape website content
     const websiteData = await scrapeWebsite(url);
-    console.log('Website data extracted successfully');
-    
+    console.log('Website data extracted successfully. Title:', websiteData.title);
+
     // Step 2: Generate audit using Gemini AI
     const auditResult = await generateAudit(websiteData);
-    console.log('Audit generated successfully');
-    
+    console.log('Audit generated successfully. Overall score:', auditResult.overallScore);
+
+    // Ensure response headers are set correctly
+    res.setHeader('Content-Type', 'application/json');
     res.status(200).json(auditResult);
-    
+
   } catch (error) {
     console.error('Audit error:', error);
-    res.status(500).json({ 
-      error: error instanceof Error ? error.message : 'Internal server error' 
-    });
+
+    // Provide more specific error messages
+    let errorMessage = 'Internal server error';
+    if (error instanceof Error) {
+      if (error.message.includes('fetch') || error.message.includes('timeout')) {
+        errorMessage = 'Unable to access the website. Please check the URL and try again.';
+      } else if (error.message.includes('Invalid response format')) {
+        errorMessage = 'AI service error. Please try again in a moment.';
+      } else {
+        errorMessage = error.message;
+      }
+    }
+
+    res.status(500).json({ error: errorMessage });
   }
 };
