@@ -281,6 +281,11 @@ async function scrapeWebsite(url: string) {
         `Successfully scraped ${url}. Title: "${title.slice(0, 50)}..."`,
       );
 
+      // Perform comprehensive analysis
+      const performanceData = await analyzeWebsitePerformance(url);
+      const siteStructure = await analyzeSiteStructure(url, response.data);
+      const uxFeatures = await analyzeUXFeatures(response.data);
+
       return {
         title: title.trim(),
         description: description.trim(),
@@ -294,6 +299,11 @@ async function scrapeWebsite(url: string) {
         htmlLength: response.data.length,
         url,
         fallbackUsed: false,
+        // Enhanced UX analysis data
+        performance: performanceData,
+        siteStructure: siteStructure,
+        uxFeatures: uxFeatures,
+        analysisDepth: 'comprehensive',
       };
     } catch (error) {
       console.error(
