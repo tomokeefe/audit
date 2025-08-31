@@ -236,35 +236,85 @@ export default function AuditResults() {
 
           <TabsContent value="recommendations" className="mt-8">
             <div className="space-y-6">
-              {auditData.sections.map((section, index) => (
-                <Card key={index}>
-                  <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                      <span className="flex items-center gap-2">
-                        <Info className="h-5 w-5" />
-                        {section.name}
-                      </span>
-                      <div className={`text-lg font-bold ${getScoreColor(section.score)}`}>
-                        {section.score}%
-                      </div>
-                    </CardTitle>
-                    <CardDescription>
-                      Detailed analysis and recommendations for {section.name.toLowerCase()}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="prose prose-sm max-w-none text-gray-700">
-                      {section.details.split('\n').map((paragraph, pIndex) => (
-                        paragraph.trim() && (
-                          <p key={pIndex} className="mb-3">
-                            {paragraph.trim()}
-                          </p>
-                        )
+              {auditData.sections.map((section, index) => {
+                const parsedContent = parseAuditContent(section.details);
+
+                return (
+                  <Card key={index} className="overflow-hidden">
+                    <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 border-b">
+                      <CardTitle className="flex items-center justify-between">
+                        <span className="flex items-center gap-3">
+                          <div className={`p-2 rounded-lg ${getScoreBg(section.score)}`}>
+                            <Info className="h-5 w-5" />
+                          </div>
+                          <div>
+                            <div className="text-xl font-semibold text-gray-900">{section.name}</div>
+                            <div className="text-sm text-gray-600 font-normal">
+                              {section.issues} issues • {section.recommendations} recommendations
+                            </div>
+                          </div>
+                        </span>
+                        <div className={`px-4 py-2 rounded-full text-lg font-bold ${getScoreColor(section.score)} ${getScoreBg(section.score)} border`}>
+                          {section.score}%
+                        </div>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                      {parsedContent.map((contentSection, cIndex) => (
+                        <div key={cIndex} className="p-6 border-b last:border-b-0">
+                          {contentSection.type === 'overview' && (
+                            <div className="space-y-3">
+                              <div className="flex items-center gap-2 mb-4">
+                                <Info className="h-5 w-5 text-blue-600" />
+                                <h4 className="text-lg font-semibold text-gray-900">Overview</h4>
+                              </div>
+                              {contentSection.content.map((item, itemIndex) => (
+                                <p key={itemIndex} className="text-gray-700 leading-relaxed">
+                                  {item}
+                                </p>
+                              ))}
+                            </div>
+                          )}
+
+                          {contentSection.type === 'issues' && (
+                            <div className="space-y-3">
+                              <div className="flex items-center gap-2 mb-4">
+                                <XCircle className="h-5 w-5 text-red-600" />
+                                <h4 className="text-lg font-semibold text-gray-900">Issues Identified</h4>
+                              </div>
+                              <div className="space-y-3">
+                                {contentSection.content.map((issue, itemIndex) => (
+                                  <div key={itemIndex} className="flex gap-3 p-3 bg-red-50 border border-red-100 rounded-lg">
+                                    <AlertTriangle className="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" />
+                                    <p className="text-red-800 text-sm leading-relaxed">{issue}</p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {contentSection.type === 'recommendations' && (
+                            <div className="space-y-3">
+                              <div className="flex items-center gap-2 mb-4">
+                                <Lightbulb className="h-5 w-5 text-green-600" />
+                                <h4 className="text-lg font-semibold text-gray-900">Recommendations</h4>
+                              </div>
+                              <div className="space-y-3">
+                                {contentSection.content.map((recommendation, itemIndex) => (
+                                  <div key={itemIndex} className="flex gap-3 p-3 bg-green-50 border border-green-100 rounded-lg">
+                                    <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                                    <p className="text-green-800 text-sm leading-relaxed">{recommendation}</p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </TabsContent>
 
