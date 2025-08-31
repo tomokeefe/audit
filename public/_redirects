@@ -1,0 +1,5 @@
+# API routes must come first
+/api/*  /.netlify/functions/api/:splat  200
+
+# SPA fallback for client-side routing (must be last)
+/*  /index.html  200
