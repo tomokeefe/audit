@@ -303,3 +303,97 @@ export const handleAudit: RequestHandler = async (req, res) => {
     res.status(500).json({ error: errorMessage });
   }
 };
+
+export const handleDemoAudit: RequestHandler = async (req, res) => {
+  try {
+    const { url } = req.body as AuditRequest;
+
+    if (!url) {
+      return res.status(400).json({ error: 'URL is required' });
+    }
+
+    console.log('Creating demo audit for:', url);
+
+    // Create demo audit result instantly
+    const domain = new URL(url).hostname.replace('www.', '');
+    const companyName = domain.split('.')[0].charAt(0).toUpperCase() + domain.split('.')[0].slice(1);
+
+    const demoAudit: AuditResponse = {
+      id: Date.now().toString(),
+      url: url,
+      title: `${companyName} Brand Audit Report`,
+      description: `Comprehensive brand analysis and recommendations for ${domain}`,
+      overallScore: Math.floor(Math.random() * 30) + 60, // Random score between 60-90
+      date: new Date().toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      }),
+      status: 'completed',
+      sections: [
+        {
+          name: "Brand Consistency",
+          score: Math.floor(Math.random() * 20) + 75,
+          maxScore: 100,
+          issues: Math.floor(Math.random() * 5) + 2,
+          recommendations: Math.floor(Math.random() * 6) + 4,
+          details: `The ${companyName} brand shows good consistency across key elements. The logo placement and color scheme maintain coherence throughout the website. However, there are opportunities to strengthen brand voice and messaging alignment to create a more unified brand experience.`
+        },
+        {
+          name: "User Experience (UX)",
+          score: Math.floor(Math.random() * 25) + 65,
+          maxScore: 100,
+          issues: Math.floor(Math.random() * 6) + 3,
+          recommendations: Math.floor(Math.random() * 7) + 5,
+          details: `The user experience shows promise with clear navigation elements. The website structure facilitates basic user journeys, though improvements in mobile responsiveness and accessibility features would enhance overall usability. Consider implementing more intuitive user flow patterns.`
+        },
+        {
+          name: "Visual Design",
+          score: Math.floor(Math.random() * 20) + 70,
+          maxScore: 100,
+          issues: Math.floor(Math.random() * 4) + 2,
+          recommendations: Math.floor(Math.random() * 5) + 3,
+          details: `The visual design demonstrates solid foundations with appropriate use of whitespace and typography. The color palette supports brand recognition, though there are opportunities to enhance visual hierarchy and create more engaging aesthetic elements.`
+        },
+        {
+          name: "Content Quality",
+          score: Math.floor(Math.random() * 25) + 55,
+          maxScore: 100,
+          issues: Math.floor(Math.random() * 8) + 5,
+          recommendations: Math.floor(Math.random() * 9) + 7,
+          details: `Content clarity varies across different sections of the website. While some messaging is effective, there are opportunities to strengthen call-to-action elements and improve information architecture for better user engagement and conversion.`
+        },
+        {
+          name: "SEO & Performance",
+          score: Math.floor(Math.random() * 30) + 50,
+          maxScore: 100,
+          issues: Math.floor(Math.random() * 7) + 4,
+          recommendations: Math.floor(Math.random() * 8) + 6,
+          details: `Technical SEO elements need attention. Title tags and meta descriptions could be optimized for better search engine visibility. The website structure shows potential but requires improvements in heading hierarchy and content optimization.`
+        },
+        {
+          name: "Security & Compliance",
+          score: Math.floor(Math.random() * 20) + 75,
+          maxScore: 100,
+          issues: Math.floor(Math.random() * 3) + 1,
+          recommendations: Math.floor(Math.random() * 4) + 2,
+          details: `Security measures appear adequate with HTTPS implementation. Privacy policy and contact information are accessible. Further enhancements in compliance documentation and trust signals would strengthen user confidence.`
+        }
+      ],
+      summary: `${companyName} demonstrates solid brand fundamentals with clear opportunities for enhancement. The website shows promise in brand consistency and visual design, while areas like content quality and SEO performance would benefit from focused improvements. Implementing the recommended changes would significantly strengthen the overall digital brand presence and user experience.`
+    };
+
+    // Recalculate overall score based on section scores
+    const avgScore = Math.round(demoAudit.sections.reduce((sum, section) => sum + section.score, 0) / demoAudit.sections.length);
+    demoAudit.overallScore = avgScore;
+
+    console.log('Demo audit created successfully');
+    res.status(200).json(demoAudit);
+
+  } catch (error) {
+    console.error('Demo audit error:', error);
+    res.status(500).json({
+      error: 'Failed to create demo audit'
+    });
+  }
+};
