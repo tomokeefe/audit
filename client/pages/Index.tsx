@@ -138,11 +138,29 @@ export default function Index() {
     }
   };
 
+  const testApiConnectivity = async () => {
+    try {
+      const response = await fetch("/api/ping");
+      const data = await response.json();
+      console.log("API test successful:", data);
+      return true;
+    } catch (error) {
+      console.error("API test failed:", error);
+      return false;
+    }
+  };
+
   const handleDemoAudit = async () => {
     setIsDemoLoading(true);
     setError("");
 
     try {
+      // Test API connectivity first
+      const isConnected = await testApiConnectivity();
+      if (!isConnected) {
+        throw new Error("Unable to connect to server. Please try again.");
+      }
+
       const demoUrl = "https://example.com";
       const auditRequest: AuditRequest = { url: demoUrl };
 
