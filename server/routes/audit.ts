@@ -265,6 +265,204 @@ async function analyzeUXFeatures(html: string) {
   };
 }
 
+// Function to perform comprehensive multi-page crawling
+async function crawlMultiplePages(baseUrl: string, discoveredPages: string[], maxPages: number = 8) {
+  const crawlResults = [];
+  const userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+
+  // Prioritize important pages
+  const priorityPages = discoveredPages.filter(url => {
+    const path = url.toLowerCase();
+    return path.includes('/about') ||
+           path.includes('/contact') ||
+           path.includes('/services') ||
+           path.includes('/products') ||
+           path.includes('/pricing') ||
+           path.includes('/blog') ||
+           path.includes('/home');
+  });
+
+  // Combine priority pages with others, limit total
+  const pagesToCrawl = [...new Set([...priorityPages, ...discoveredPages])].slice(0, maxPages);
+
+  console.log(`Starting multi-page crawl for ${pagesToCrawl.length} pages`);
+
+  for (let i = 0; i < pagesToCrawl.length; i++) {
+    const pageUrl = pagesToCrawl[i];
+
+    try {
+      console.log(`Crawling page ${i + 1}/${pagesToCrawl.length}: ${pageUrl}`);
+
+      // Rate limiting - wait between requests
+      if (i > 0) {
+        await new Promise(resolve => setTimeout(resolve, 1500)); // 1.5 second delay
+      }
+
+      const response = await axios.get(pageUrl, {
+        timeout: 8000,
+        maxRedirects: 3,
+        validateStatus: (status) => status < 500,
+        headers: {
+          "User-Agent": userAgent,
+          "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+          "Accept-Language": "en-US,en;q=0.5",
+          "Cache-Control": "max-age=0",
+        },
+      });
+
+      if (response.status >= 400) {
+        console.log(`Skipping ${pageUrl} - HTTP ${response.status}`);
+        continue;
+      }
+
+      const $ = cheerio.load(response.data);
+
+      // Analyze this specific page
+      const pageAnalysis = {
+        url: pageUrl,
+        title: $('title').text().trim(),
+        description: $('meta[name="description"]').attr('content') || '',
+        headings: {
+          h1: $('h1').map((_, el) => $(el).text().trim()).get(),
+          h2: $('h2').map((_, el) => $(el).text().trim()).get(),
+          h3: $('h3').map((_, el) => $(el).text().trim()).get(),
+        },
+        contentLength: $.text().length,
+        images: {
+          total: $('img').length,
+          withAlt: $('img[alt]').length,
+          missingAlt: $('img').length - $('img[alt]').length,
+        },
+        links: {
+          internal: $('a[href]').filter((_, el) => {
+            const href = $(el).attr('href');
+            return href && !href.startsWith('http') && !href.startsWith('mailto:');
+          }).length,
+          external: $('a[href]').filter((_, el) => {
+            const href = $(el).attr('href');
+            return href && href.startsWith('http') && !href.includes(new URL(baseUrl).hostname);
+          }).length,
+        },
+        forms: {
+          count: $('form').length,
+          hasLabels: $('label').length > 0,
+          hasValidation: $('[required], .required').length > 0,
+        },
+        navigation: {
+          breadcrumbs: $('.breadcrumb, .breadcrumbs, [aria-label*="breadcrumb"]').text().trim(),
+          mainNav: $('nav, .nav, .navbar').first().text().trim(),
+        },
+        brandElements: {
+          logo: $('.logo, .brand, #logo, #brand, [alt*="logo"]').length > 0,
+          colorScheme: $('[style*="color"], [class*="color-"]').length > 0,
+          fonts: $('[style*="font"], [class*="font-"]').length > 0,
+        },
+        pageType: determinePageType(pageUrl, $.text()),
+        loadTime: Date.now(), // Placeholder for actual load time
+        socialElements: {
+          socialLinks: $('[href*="facebook"], [href*="twitter"], [href*="linkedin"], [href*="instagram"]').length,
+          shareButtons: $('.share, .social-share, [data-share]').length,
+        }
+      };
+
+      crawlResults.push(pageAnalysis);
+
+    } catch (error) {
+      console.warn(`Failed to crawl ${pageUrl}:`, error instanceof Error ? error.message : error);
+      // Continue with other pages even if one fails
+    }
+  }
+
+  console.log(`Completed crawling ${crawlResults.length} pages successfully`);
+  return crawlResults;
+}
+
+// Helper function to determine page type
+function determinePageType(url: string, content: string): string {
+  const path = url.toLowerCase();
+  const text = content.toLowerCase();
+
+  if (path.includes('/about') || text.includes('about us')) return 'about';
+  if (path.includes('/contact') || text.includes('contact us')) return 'contact';
+  if (path.includes('/services') || text.includes('our services')) return 'services';
+  if (path.includes('/products') || text.includes('products')) return 'products';
+  if (path.includes('/pricing') || text.includes('pricing')) return 'pricing';
+  if (path.includes('/blog') || path.includes('/news')) return 'blog';
+  if (path === '/' || path.includes('/home')) return 'homepage';
+
+  return 'other';
+}
+
+// Function to analyze cross-page consistency
+function analyzeCrossPageConsistency(crawlResults: any[]) {
+  if (crawlResults.length < 2) {
+    return {
+      brandConsistency: { score: 50, issues: ['Insufficient pages analyzed for consistency check'] },
+      navigationConsistency: { score: 50, issues: ['Limited navigation analysis'] },
+      contentConsistency: { score: 50, issues: ['Single page analysis only'] },
+    };
+  }
+
+  const analysis = {
+    brandConsistency: {
+      score: 85,
+      issues: [] as string[],
+      recommendations: [] as string[],
+    },
+    navigationConsistency: {
+      score: 80,
+      issues: [] as string[],
+      recommendations: [] as string[],
+    },
+    contentConsistency: {
+      score: 75,
+      issues: [] as string[],
+      recommendations: [] as string[],
+    },
+  };
+
+  // Check logo consistency
+  const pagesWithLogo = crawlResults.filter(page => page.brandElements.logo).length;
+  const logoConsistency = (pagesWithLogo / crawlResults.length) * 100;
+
+  if (logoConsistency < 80) {
+    analysis.brandConsistency.score -= 15;
+    analysis.brandConsistency.issues.push('Logo not consistently present across all pages');
+    analysis.brandConsistency.recommendations.push('Ensure logo appears on all pages for brand recognition');
+  }
+
+  // Check navigation consistency
+  const uniqueNavs = new Set(crawlResults.map(page => page.navigation.mainNav)).size;
+  if (uniqueNavs > 2) { // Allow for some variation
+    analysis.navigationConsistency.score -= 20;
+    analysis.navigationConsistency.issues.push('Navigation structure varies significantly between pages');
+    analysis.navigationConsistency.recommendations.push('Standardize navigation menu across all pages');
+  }
+
+  // Check title tag patterns
+  const titlePatterns = crawlResults.map(page => {
+    const title = page.title;
+    return title.includes('|') || title.includes('-') ? 'structured' : 'simple';
+  });
+  const consistentTitles = titlePatterns.filter(p => p === titlePatterns[0]).length;
+
+  if (consistentTitles / crawlResults.length < 0.8) {
+    analysis.contentConsistency.score -= 10;
+    analysis.contentConsistency.issues.push('Title tag format inconsistent across pages');
+    analysis.contentConsistency.recommendations.push('Establish consistent title tag pattern (e.g., "Page Title | Brand Name")');
+  }
+
+  // Check heading structure consistency
+  const pagesWithH1 = crawlResults.filter(page => page.headings.h1.length > 0).length;
+  if (pagesWithH1 / crawlResults.length < 0.9) {
+    analysis.contentConsistency.score -= 15;
+    analysis.contentConsistency.issues.push('Some pages missing H1 headings');
+    analysis.contentConsistency.recommendations.push('Ensure every page has exactly one H1 heading');
+  }
+
+  return analysis;
+}
+
 // Function to scrape website content with retry logic and fallback
 async function scrapeWebsite(url: string) {
   const userAgents = [
