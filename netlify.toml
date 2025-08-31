@@ -1,11 +1,11 @@
 [build]
-  command = "npm run build:client"
+  command = "npm run build"
   functions = "netlify/functions"
   publish = "dist/spa"
 
 [functions]
-  external_node_modules = ["express", "axios", "cheerio", "@google/generative-ai", "cors", "dotenv"]
   node_bundler = "esbuild"
+  included_files = ["dist/server/**/*"]
   
 [[redirects]]
   from = "/api/*"
