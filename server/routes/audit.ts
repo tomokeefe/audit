@@ -681,14 +681,15 @@ Please provide a detailed analysis covering these 6 key areas:
 
 1. **Brand Consistency** (Score 0-100): Evaluate logo placement, color scheme consistency, typography consistency, brand voice, and messaging alignment.
 
-2. **User Experience (UX)** (Score 0-100): Based on the comprehensive data provided, analyze:
-   - Navigation structure and clarity (menu items, search functionality, breadcrumbs)
-   - Page performance (load time, page size optimization)
-   - Mobile responsiveness (viewport meta tag, responsive design indicators)
-   - Accessibility features (alt text, ARIA labels, skip links, form labels)
-   - Interactive elements (forms, buttons, dropdowns, user flow)
-   - Site architecture (page discovery, content organization)
-   - User engagement features (social integration, contact accessibility)
+2. **User Experience (UX)** (Score 0-100): Use the comprehensive multi-page analysis to evaluate:
+   - Navigation consistency across all analyzed pages and user journey flow
+   - Page performance metrics (actual load times, page sizes, optimization)
+   - Mobile responsiveness indicators and cross-device usability
+   - Accessibility compliance across the entire site (alt text coverage, form labeling, ARIA usage)
+   - Interactive elements and their consistency across pages
+   - Site architecture and information hierarchy based on actual page discovery
+   - Content organization and user flow patterns across different page types
+   - Cross-page consistency in user interface elements and interactions
 
 3. **Visual Design** (Score 0-100): Assess visual hierarchy, color usage, typography choices, white space usage, and overall aesthetic appeal.
 
