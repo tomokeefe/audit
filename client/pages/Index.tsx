@@ -257,9 +257,9 @@ export default function Index() {
       console.error("Audit error:", error);
 
       if (error instanceof Error) {
-        if (error.name === "AbortError") {
+        if (error.name === "AbortError" || error.message.toLowerCase().includes("aborted")) {
           setError(
-            "Request timed out. The website may be taking too long to analyze. Please try again.",
+            "Request timed out while analyzing the site. Please try again or use a different URL.",
           );
         } else if (
           error.message.includes("fetch") ||
