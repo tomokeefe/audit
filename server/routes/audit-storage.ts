@@ -1,9 +1,8 @@
 import { RequestHandler } from "express";
 import { AuditResponse } from "@shared/api";
+import { auditStorage } from "./audit";
 
-// In-memory storage for audit results
-// In production, this would be replaced with a proper database
-const auditStorage = new Map<string, AuditResponse>();
+// Use shared storage from audit.ts
 
 // Store audit result
 export const storeAudit: RequestHandler = async (req, res) => {
