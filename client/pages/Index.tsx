@@ -14,36 +14,13 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Search, Globe, Calendar, TrendingUp, BarChart3 } from "lucide-react";
 
-// Mock data for previous audits
-const mockAudits = [
-  {
-    id: "1",
-    url: "https://castle-placement.com",
-    title: "Castle Placement Website",
-    score: 69,
-    date: "August 31, 2025",
-    status: "completed",
-    category: "Investment Banking",
-  },
-  {
-    id: "2",
-    url: "https://techstartup.io",
-    title: "TechStartup.io",
-    score: 85,
-    date: "August 28, 2025",
-    status: "completed",
-    category: "Technology",
-  },
-  {
-    id: "3",
-    url: "https://retailbrand.com",
-    title: "Retail Brand",
-    score: 72,
-    date: "August 25, 2025",
-    status: "completed",
-    category: "E-commerce",
-  },
-];
+interface AuditSummary {
+  id: string;
+  title: string;
+  url: string;
+  date: string;
+  overallScore: number;
+}
 
 export default function Index() {
   const [url, setUrl] = useState("");
