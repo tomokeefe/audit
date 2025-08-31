@@ -466,14 +466,35 @@ Best regards`);
                                   Overview
                                 </h4>
                               </div>
-                              {contentSection.content.map((item, itemIndex) => (
-                                <p
-                                  key={itemIndex}
-                                  className="text-gray-700 leading-relaxed"
-                                >
-                                  {item}
-                                </p>
-                              ))}
+                              {contentSection.content.map((item, itemIndex) => {
+                                // Check if this item is an "Issues:" or "Recommendations:" header
+                                if (item.match(/^Issues?:?$/i)) {
+                                  return (
+                                    <h4 key={itemIndex} className="text-lg font-bold text-gray-900 mt-6 mb-2">
+                                      Issues:
+                                    </h4>
+                                  );
+                                }
+                                if (item.match(/^Recommendations?:?$/i)) {
+                                  return (
+                                    <h4 key={itemIndex} className="text-lg font-bold text-gray-900 mt-6 mb-2">
+                                      Recommendations:
+                                    </h4>
+                                  );
+                                }
+
+                                return (
+                                  <div
+                                    key={itemIndex}
+                                    className="flex gap-3 items-start"
+                                  >
+                                    <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+                                    <p className="text-gray-700 leading-relaxed flex-1">
+                                      {item}
+                                    </p>
+                                  </div>
+                                );
+                              })}
                             </div>
                           )}
 
