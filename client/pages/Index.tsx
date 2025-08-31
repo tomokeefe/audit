@@ -60,6 +60,12 @@ export default function Index() {
     setError("");
 
     try {
+      // Test API connectivity first
+      const isConnected = await testApiConnectivity();
+      if (!isConnected) {
+        throw new Error("Unable to connect to server. Please try again.");
+      }
+
       const auditRequest: AuditRequest = { url };
 
       console.log("Starting audit request for:", url);
