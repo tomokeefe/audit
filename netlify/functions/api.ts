@@ -1,8 +1,20 @@
 import type { Handler } from "@netlify/functions";
 
 export const handler: Handler = async (event, context) => {
-  const path = event.path.replace("/.netlify/functions/api", "");
+  // Handle both direct function calls and redirected API calls
+  let path = event.path;
+  if (path.startsWith("/.netlify/functions/api")) {
+    path = path.replace("/.netlify/functions/api", "");
+  } else if (path.startsWith("/api")) {
+    path = path.replace("/api", "");
+  }
+
+  // If path is empty, default to root
+  if (!path) path = "/";
+
   const method = event.httpMethod;
+
+  console.log(`Function called with path: ${event.path}, processed path: ${path}, method: ${method}`);
 
   // Set CORS headers
   const headers = {
