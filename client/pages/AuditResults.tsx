@@ -61,6 +61,8 @@ export default function AuditResults() {
   const [auditData, setAuditData] = useState<AuditResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [shareUrl, setShareUrl] = useState("");
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (!id) {
