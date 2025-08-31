@@ -150,9 +150,9 @@ export default function AuditResults() {
               <CardHeader>
                 <CardTitle className="text-xl">Audit Overview</CardTitle>
                 <CardDescription>
-                  This audit evaluates the website of {mockAuditData.title} as of {mockAuditData.date}, 
-                  focusing on messaging, user experience (UX), usability, and additional aspects such as 
-                  design, content quality, SEO, security, and compliance. The analysis provides detailed 
+                  This audit evaluates the website of {auditData.title} as of {auditData.date},
+                  focusing on messaging, user experience (UX), usability, and additional aspects such as
+                  design, content quality, SEO, security, and compliance. The analysis provides detailed
                   insights and actionable recommendations.
                 </CardDescription>
               </CardHeader>
@@ -160,7 +160,7 @@ export default function AuditResults() {
 
             {/* Section Scores */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {mockAuditData.sections.map((section, index) => (
+              {auditData.sections.map((section, index) => (
                 <Card key={index} className="hover:shadow-md transition-shadow">
                   <CardHeader className="pb-3">
                     <div className="flex justify-between items-start">
