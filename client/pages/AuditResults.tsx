@@ -287,32 +287,21 @@ Best regards`);
     <div className="min-h-screen bg-gray-50">
       <Header />
 
-      {/* Header Section */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex justify-between items-start">
-            <div>
-              <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
+      {/* Compact Header Panel - Above the Fold */}
+      <div className="bg-white border-b shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="py-6">
+            {/* Top Header Row */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2 text-sm text-gray-500">
                 <Globe className="h-4 w-4" />
                 {auditData.url}
               </div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                {auditData.title}
-              </h1>
-              <p className="text-lg text-gray-600 max-w-3xl">
-                {auditData.description}
-              </p>
-            </div>
-            <div className="text-right space-y-3">
-              <div>
-                <div className="text-sm text-gray-500 mb-1">Audit Report</div>
-                <div className="font-semibold text-gray-900">
-                  {auditData.date}
+              <div className="flex items-center gap-4">
+                <div className="text-right">
+                  <div className="text-sm text-gray-500">Audit Report</div>
+                  <div className="font-semibold text-gray-900">{auditData.date}</div>
                 </div>
-              </div>
-
-              {/* Share Section */}
-              <div className="flex flex-col gap-2">
                 <Button
                   onClick={copyToClipboard}
                   variant="outline"
@@ -331,68 +320,76 @@ Best regards`);
                     </>
                   )}
                 </Button>
+              </div>
+            </div>
 
-                <div className="flex gap-1">
-                  <Button
-                    onClick={shareViaEmail}
-                    variant="outline"
-                    size="sm"
-                    className="px-2"
-                    title="Share via Email"
-                  >
-                    <Mail className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    onClick={shareViaLinkedIn}
-                    variant="outline"
-                    size="sm"
-                    className="px-2"
-                    title="Share on LinkedIn"
-                  >
-                    <MessageCircle className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    onClick={shareViaTwitter}
-                    variant="outline"
-                    size="sm"
-                    className="px-2"
-                    title="Share on Twitter"
-                  >
-                    <Share2 className="h-4 w-4" />
-                  </Button>
-                </div>
+            {/* Main Content Row */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+              {/* Left Column - Title and Description */}
+              <div className="lg:col-span-2">
+                <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-3">
+                  {auditData.title}
+                </h1>
+                <p className="text-gray-600 leading-relaxed">
+                  {auditData.description}
+                </p>
+              </div>
 
-                <div className="text-xs text-gray-500 max-w-48">
-                  Share this report with your client or team
+              {/* Right Column - Score Panel */}
+              <div className="flex justify-center lg:justify-end">
+                <Card className={`w-full max-w-xs ${getScoreBg(auditData.overallScore)} border-2`}>
+                  <CardContent className="pt-6 text-center">
+                    <div
+                      className={`text-5xl font-bold mb-2 ${getScoreColor(auditData.overallScore)}`}
+                    >
+                      {auditData.overallScore}%
+                    </div>
+                    <div className="text-gray-600 font-medium mb-3">Overall Score</div>
+                    <Progress value={auditData.overallScore} className="h-2 mb-3" />
+                    <div className="text-sm text-gray-500">
+                      Based on {auditData.sections.length} evaluation criteria
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            {/* Quick Stats Row */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-100">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-900">
+                  {auditData.sections.length}
                 </div>
+                <div className="text-sm text-gray-600">Areas Evaluated</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-red-600">
+                  {auditData.sections.reduce((sum, section) => sum + section.issues, 0)}
+                </div>
+                <div className="text-sm text-gray-600">Issues Found</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600">
+                  {auditData.sections.reduce((sum, section) => sum + section.recommendations, 0)}
+                </div>
+                <div className="text-sm text-gray-600">Recommendations</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-600">
+                  {auditData.sections.filter(s => s.score >= 80).length}
+                </div>
+                <div className="text-sm text-gray-600">Strong Areas</div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Overall Score Section */}
+      {/* Detailed Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex justify-center mb-8">
-          <Card className={`w-80 ${getScoreBg(auditData.overallScore)}`}>
-            <CardContent className="pt-6 text-center">
-              <div
-                className={`text-4xl font-bold mb-2 ${getScoreColor(auditData.overallScore)}`}
-              >
-                {auditData.overallScore}%
-              </div>
-              <div className="text-gray-600 mb-4">Overall Score</div>
-              <Progress value={auditData.overallScore} className="h-3 mb-2" />
-              <div className="text-sm text-gray-500">
-                Based on {auditData.sections.length} evaluation criteria
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
         {/* Navigation Tabs */}
         <Tabs defaultValue="results" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 max-w-md mx-auto">
+          <TabsList className="grid w-full grid-cols-3 max-w-md mx-auto mb-8">
             <TabsTrigger value="results">Audit Results</TabsTrigger>
             <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
             <TabsTrigger value="next-steps">Next Steps</TabsTrigger>
