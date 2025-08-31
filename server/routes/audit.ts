@@ -49,6 +49,43 @@ function createFallbackData(url: string) {
     htmlLength: 0,
     url,
     fallbackUsed: true,
+    // Limited fallback data for UX analysis
+    performance: {
+      pageSizeKB: 0,
+      hasSSL: url.startsWith('https://'),
+      redirectCount: 0,
+      responseTime: 0,
+      mobileViewport: false,
+      hasServiceWorker: false,
+    },
+    siteStructure: {
+      discoveredPages: [],
+      navigation: {
+        mainNav: "Limited access",
+        breadcrumbs: "",
+        footer: "",
+        menuItems: ["Home", "About", "Services", "Contact"],
+        hasSearch: false,
+        hasLanguageSelector: false,
+      },
+      contentStructure: {
+        headingLevels: [],
+        sections: [],
+        hasContactInfo: true,
+        hasAboutPage: true,
+        hasBlog: false,
+        hasProducts: false,
+      },
+      pageCount: 0,
+    },
+    uxFeatures: {
+      forms: { count: 0, hasLabels: false, hasValidation: false, hasContactForm: false },
+      accessibility: { hasAltText: false, missingAltText: 0, hasSkipLinks: false, hasAriaLabels: false, headingStructure: false },
+      interactivity: { buttons: 0, dropdowns: 0, modals: 0, carousels: 0 },
+      media: { images: 0, videos: 0, hasLazyLoading: false },
+      social: { socialLinks: 0, hasSocialSharing: false }
+    },
+    analysisDepth: 'limited',
   };
 }
 
