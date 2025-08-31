@@ -403,63 +403,72 @@ export default function Index() {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          {mockAudits.map((audit) => (
-            <Card
-              key={audit.id}
-              className="hover:shadow-lg transition-shadow cursor-pointer"
-            >
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <CardTitle className="text-lg font-semibold text-gray-900 mb-1">
-                      {audit.title}
-                    </CardTitle>
-                    <CardDescription className="text-sm text-gray-600 mb-2">
-                      {audit.url}
-                    </CardDescription>
-                    <Badge variant="secondary" className="text-xs">
-                      {audit.category}
-                    </Badge>
-                  </div>
-                  <div
-                    className={`px-3 py-1 rounded-full text-sm font-semibold ${getScoreColor(audit.score)}`}
-                  >
-                    {audit.score}%
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between text-sm text-gray-500">
-                  <div className="flex items-center gap-1">
-                    <Calendar className="h-4 w-4" />
-                    {audit.date}
-                  </div>
-                  <Link
-                    to={`/audit/${audit.id}`}
-                    className="text-brand-600 hover:text-brand-700 font-medium"
-                  >
-                    View Report →
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {mockAudits.length === 0 && (
+        {loadingAudits ? (
           <div className="text-center py-12">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <BarChart3 className="h-8 w-8 text-gray-400" />
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No audits yet
-            </h3>
-            <p className="text-gray-600 mb-6">
-              Enter a website URL above to get started with your first brand
-              audit.
-            </p>
+            <BarChart3 className="h-12 w-12 text-brand-600 mx-auto mb-4 animate-pulse" />
+            <p className="text-gray-600">Loading recent audits...</p>
           </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+              {recentAudits.map((audit) => (
+                <Card
+                  key={audit.id}
+                  className="hover:shadow-lg transition-shadow cursor-pointer"
+                >
+                  <CardHeader>
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <CardTitle className="text-lg font-semibold text-gray-900 mb-1">
+                          {audit.title}
+                        </CardTitle>
+                        <CardDescription className="text-sm text-gray-600 mb-2">
+                          {audit.url}
+                        </CardDescription>
+                        <Badge variant="secondary" className="text-xs">
+                          {audit.overallScore >= 80 ? 'Excellent' : audit.overallScore >= 60 ? 'Good' : 'Needs Improvement'}
+                        </Badge>
+                      </div>
+                      <div
+                        className={`px-3 py-1 rounded-full text-sm font-semibold ${getScoreColor(audit.overallScore)}`}
+                      >
+                        {audit.overallScore}%
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center justify-between text-sm text-gray-500">
+                      <div className="flex items-center gap-1">
+                        <Calendar className="h-4 w-4" />
+                        {new Date(audit.date).toLocaleDateString()}
+                      </div>
+                      <Link
+                        to={`/audit/${audit.id}`}
+                        className="text-brand-600 hover:text-brand-700 font-medium"
+                      >
+                        View Report →
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {recentAudits.length === 0 && (
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <BarChart3 className="h-8 w-8 text-gray-400" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  No audits yet
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  Enter a website URL above to get started with your first brand
+                  audit.
+                </p>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
