@@ -238,9 +238,67 @@ Best regards`);
               {auditData.description}
             </p>
             </div>
-            <div className="text-right">
-              <div className="text-sm text-gray-500 mb-1">Audit Report</div>
-              <div className="font-semibold text-gray-900">{auditData.date}</div>
+            <div className="text-right space-y-3">
+              <div>
+                <div className="text-sm text-gray-500 mb-1">Audit Report</div>
+                <div className="font-semibold text-gray-900">{auditData.date}</div>
+              </div>
+
+              {/* Share Section */}
+              <div className="flex flex-col gap-2">
+                <Button
+                  onClick={copyToClipboard}
+                  variant="outline"
+                  size="sm"
+                  className="border-brand-300 text-brand-700 hover:bg-brand-50"
+                >
+                  {copied ? (
+                    <>
+                      <Check className="h-4 w-4 mr-2" />
+                      Copied!
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-4 w-4 mr-2" />
+                      Copy Link
+                    </>
+                  )}
+                </Button>
+
+                <div className="flex gap-1">
+                  <Button
+                    onClick={shareViaEmail}
+                    variant="outline"
+                    size="sm"
+                    className="px-2"
+                    title="Share via Email"
+                  >
+                    <Mail className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    onClick={shareViaLinkedIn}
+                    variant="outline"
+                    size="sm"
+                    className="px-2"
+                    title="Share on LinkedIn"
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    onClick={shareViaTwitter}
+                    variant="outline"
+                    size="sm"
+                    className="px-2"
+                    title="Share on Twitter"
+                  >
+                    <Share2 className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                <div className="text-xs text-gray-500 max-w-48">
+                  Share this report with your client or team
+                </div>
+              </div>
             </div>
           </div>
         </div>
