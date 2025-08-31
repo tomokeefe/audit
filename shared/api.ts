@@ -10,3 +10,31 @@
 export interface DemoResponse {
   message: string;
 }
+
+/**
+ * Audit-related interfaces
+ */
+export interface AuditRequest {
+  url: string;
+}
+
+export interface AuditSection {
+  name: string;
+  score: number;
+  maxScore: number;
+  issues: number;
+  recommendations: number;
+  details: string;
+}
+
+export interface AuditResponse {
+  id: string;
+  url: string;
+  title: string;
+  description: string;
+  overallScore: number;
+  date: string;
+  status: string;
+  sections: AuditSection[];
+  summary: string;
+}
