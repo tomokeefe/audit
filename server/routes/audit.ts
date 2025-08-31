@@ -6,6 +6,24 @@ import { AuditRequest, AuditResponse } from "@shared/api";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
+// In-memory storage for audit results (shared with audit-storage.ts)
+// In production, this would be replaced with a proper database
+const auditStorage = new Map<string, AuditResponse>();
+
+// Utility function to store audit
+async function storeAuditResult(auditData: AuditResponse): Promise<void> {
+  try {
+    auditStorage.set(auditData.id, auditData);
+    console.log(`Stored audit ${auditData.id} for sharing`);
+  } catch (error) {
+    console.warn('Error storing audit for sharing:', error);
+    // Don't throw - storage failure shouldn't break audit creation
+  }
+}
+
+// Export the storage for use in audit-storage.ts
+export { auditStorage };
+
 // Function to create fallback website data when scraping fails
 function createFallbackData(url: string) {
   const domain = new URL(url).hostname.replace('www.', '');
