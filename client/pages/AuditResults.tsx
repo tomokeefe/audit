@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, Globe, TrendingUp, AlertTriangle, CheckCircle, Info, XCircle, Lightbulb } from "lucide-react";
+import { Calendar, Globe, TrendingUp, AlertTriangle, CheckCircle, Info, XCircle, Lightbulb, Share2, Copy, Check, Mail, MessageCircle } from "lucide-react";
 
 // Function to parse and style audit section content
 function parseAuditContent(content: string) {
