@@ -64,12 +64,62 @@ export default function AuditResults() {
   const [shareUrl, setShareUrl] = useState("");
   const [copied, setCopied] = useState(false);
 
+  // Sharing functions
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error('Failed to copy to clipboard:', error);
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = shareUrl;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const shareViaEmail = () => {
+    const subject = encodeURIComponent(`Brand Audit Report: ${auditData?.title || 'Audit Results'}`);
+    const body = encodeURIComponent(`Hi,
+
+I'd like to share this brand audit report with you:
+
+${auditData?.title || 'Brand Audit Report'}
+Overall Score: ${auditData?.overallScore || 'N/A'}%
+
+View the full report here: ${shareUrl}
+
+Best regards`);
+
+    window.open(`mailto:?subject=${subject}&body=${body}`);
+  };
+
+  const shareViaLinkedIn = () => {
+    const text = encodeURIComponent(`Check out this brand audit report: ${auditData?.title || 'Brand Audit Report'} - Overall Score: ${auditData?.overallScore || 'N/A'}%`);
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}&title=${text}`);
+  };
+
+  const shareViaTwitter = () => {
+    const text = encodeURIComponent(`Brand Audit Report: ${auditData?.title || 'Audit Results'} - Score: ${auditData?.overallScore || 'N/A'}% 📊`);
+    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(shareUrl)}`);
+  };
+
   useEffect(() => {
     if (!id) {
       setError("Audit ID not provided");
       setLoading(false);
       return;
     }
+
+    // Set share URL
+    const currentUrl = `${window.location.origin}/audit/${id}`;
+    setShareUrl(currentUrl);
 
     const loadAuditData = async () => {
       try {
