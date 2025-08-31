@@ -128,16 +128,28 @@ export default function Index() {
 
       if (error instanceof Error) {
         if (error.name === "AbortError") {
-          setError("Request timed out. The website may be taking too long to analyze. Please try again.");
-        } else if (error.message.includes("fetch") || error.message.includes("network") || error.message.includes("Failed to fetch")) {
-          setError("Network error. Unable to connect to the server. Please check your connection and try again.");
+          setError(
+            "Request timed out. The website may be taking too long to analyze. Please try again.",
+          );
+        } else if (
+          error.message.includes("fetch") ||
+          error.message.includes("network") ||
+          error.message.includes("Failed to fetch")
+        ) {
+          setError(
+            "Network error. Unable to connect to the server. Please check your connection and try again.",
+          );
         } else if (error.message.includes("timeout")) {
-          setError("Request timed out. Please try with a different website or try again later.");
+          setError(
+            "Request timed out. Please try with a different website or try again later.",
+          );
         } else {
           setError(error.message);
         }
       } else {
-        setError("An unexpected error occurred. Please check the URL and try again.");
+        setError(
+          "An unexpected error occurred. Please check the URL and try again.",
+        );
       }
     } finally {
       setIsLoading(false);
