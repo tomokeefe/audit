@@ -441,6 +441,13 @@ For each section, provide:
 - Number of recommendations (estimate based on issues)
 - Detailed explanation of findings and specific recommendations
 
+IMPORTANT for UX Analysis: Use the provided performance, site structure, and accessibility data to give specific, actionable recommendations. For example:
+- If mobile viewport is missing, recommend adding viewport meta tag
+- If forms lack labels, suggest specific accessibility improvements
+- If page size is large, recommend optimization strategies
+- If navigation items are limited, suggest site architecture improvements
+- If accessibility features are missing, provide specific WCAG guidelines to follow
+
 Also provide:
 - An overall score (average of all sections)
 - A brief summary of the website's strengths and key areas for improvement
