@@ -35,13 +35,12 @@ const App = () => (
   </QueryClientProvider>
 );
 
-// Prevent double root creation during HMR
+// Proper root management for React 18
 const container = document.getElementById("root")!;
-if (!container._reactRootContainer) {
-  const root = createRoot(container);
-  container._reactRootContainer = root;
-  root.render(<App />);
-} else {
-  // In development with HMR, re-render on the existing root
-  container._reactRootContainer.render(<App />);
+
+// Create root only once and store it
+if (!(window as any).__react_root) {
+  (window as any).__react_root = createRoot(container);
 }
+
+(window as any).__react_root.render(<App />);
