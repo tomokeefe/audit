@@ -344,7 +344,9 @@ Best regards`);
                     <div className="text-6xl font-bold mb-2 text-orange-600">
                       {auditData.overallScore}%
                     </div>
-                    <div className="text-gray-700 font-semibold text-lg mb-4">Overall Score</div>
+                    <div className="text-gray-700 font-semibold text-lg mb-4">
+                      Overall Score
+                    </div>
                     <Progress
                       value={auditData.overallScore}
                       className="h-3 mb-3"

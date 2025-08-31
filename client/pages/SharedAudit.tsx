@@ -204,7 +204,9 @@ export default function SharedAudit() {
                     <div className="text-6xl font-bold mb-2 text-orange-600">
                       {auditData.overallScore}%
                     </div>
-                    <div className="text-gray-700 font-semibold text-lg mb-4">Overall Score</div>
+                    <div className="text-gray-700 font-semibold text-lg mb-4">
+                      Overall Score
+                    </div>
                     <Progress
                       value={auditData.overallScore}
                       className="h-3 mb-3"
@@ -221,7 +223,6 @@ export default function SharedAudit() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
         {/* Tabs Navigation */}
         <Tabs defaultValue="results" className="w-full">
           <TabsList className="grid w-full grid-cols-3 max-w-md mx-auto">

@@ -11,20 +11,20 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { 
-  BarChart3, 
-  Calendar, 
+import {
+  BarChart3,
+  Calendar,
   Search,
   Filter,
   Plus,
-  AlertCircle
+  AlertCircle,
 } from "lucide-react";
 import { AuditResponse } from "@shared/api";
 
@@ -82,16 +82,22 @@ export default function Audits() {
 
   // Filter and sort audits
   const filteredAudits = audits
-    .filter(audit => {
+    .filter((audit) => {
       // Search filter
-      const matchesSearch = audit.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           audit.url.toLowerCase().includes(searchTerm.toLowerCase());
-      
+      const matchesSearch =
+        audit.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        audit.url.toLowerCase().includes(searchTerm.toLowerCase());
+
       // Score filter
-      if (filterBy === "excellent") return matchesSearch && audit.overallScore >= 80;
-      if (filterBy === "good") return matchesSearch && audit.overallScore >= 60 && audit.overallScore < 80;
-      if (filterBy === "needs-improvement") return matchesSearch && audit.overallScore < 60;
-      
+      if (filterBy === "excellent")
+        return matchesSearch && audit.overallScore >= 80;
+      if (filterBy === "good")
+        return (
+          matchesSearch && audit.overallScore >= 60 && audit.overallScore < 80
+        );
+      if (filterBy === "needs-improvement")
+        return matchesSearch && audit.overallScore < 60;
+
       return matchesSearch;
     })
     .sort((a, b) => {
@@ -115,7 +121,9 @@ export default function Audits() {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">All Audits</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              All Audits
+            </h1>
             <p className="text-gray-600">
               Manage and review all your brand audits
             </p>
@@ -153,7 +161,7 @@ export default function Audits() {
                   <SelectItem value="title">Alphabetical</SelectItem>
                 </SelectContent>
               </Select>
-              
+
               <Select value={filterBy} onValueChange={setFilterBy}>
                 <SelectTrigger className="w-48">
                   <SelectValue placeholder="Filter by score" />
@@ -162,7 +170,9 @@ export default function Audits() {
                   <SelectItem value="all">All Scores</SelectItem>
                   <SelectItem value="excellent">Excellent (80+)</SelectItem>
                   <SelectItem value="good">Good (60-79)</SelectItem>
-                  <SelectItem value="needs-improvement">Needs Improvement (&lt;60)</SelectItem>
+                  <SelectItem value="needs-improvement">
+                    Needs Improvement (&lt;60)
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -187,12 +197,17 @@ export default function Audits() {
             <CardHeader>
               <div className="flex items-center gap-2">
                 <AlertCircle className="h-5 w-5 text-red-500" />
-                <CardTitle className="text-red-700">Error Loading Audits</CardTitle>
+                <CardTitle className="text-red-700">
+                  Error Loading Audits
+                </CardTitle>
               </div>
             </CardHeader>
             <CardContent>
               <p className="text-gray-600 mb-4">{error}</p>
-              <Button onClick={() => window.location.reload()} className="w-full">
+              <Button
+                onClick={() => window.location.reload()}
+                className="w-full"
+              >
                 Try Again
               </Button>
             </CardContent>
@@ -204,10 +219,9 @@ export default function Audits() {
               {audits.length === 0 ? "No Audits Yet" : "No Matching Audits"}
             </h3>
             <p className="text-gray-600 mb-6">
-              {audits.length === 0 
-                ? "Get started by creating your first brand audit." 
-                : "Try adjusting your search or filter criteria."
-              }
+              {audits.length === 0
+                ? "Get started by creating your first brand audit."
+                : "Try adjusting your search or filter criteria."}
             </p>
             <Button asChild>
               <Link to="/">

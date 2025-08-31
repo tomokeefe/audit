@@ -12,7 +12,16 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, Globe, Calendar, TrendingUp, BarChart3, Target, Award, Activity } from "lucide-react";
+import {
+  Search,
+  Globe,
+  Calendar,
+  TrendingUp,
+  BarChart3,
+  Target,
+  Award,
+  Activity,
+} from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -25,7 +34,7 @@ import {
   Pie,
   Cell,
   LineChart,
-  Line
+  Line,
 } from "recharts";
 
 interface AuditSummary {
@@ -58,8 +67,9 @@ export default function Index() {
 
         // Get the 3 most recent audits
         const recent = audits
-          .sort((a: AuditSummary, b: AuditSummary) =>
-            new Date(b.date).getTime() - new Date(a.date).getTime()
+          .sort(
+            (a: AuditSummary, b: AuditSummary) =>
+              new Date(b.date).getTime() - new Date(a.date).getTime(),
           )
           .slice(0, 3);
         setRecentAudits(recent);
@@ -83,19 +93,24 @@ export default function Index() {
 
     const totalAudits = allAudits.length;
     const averageScore = Math.round(
-      allAudits.reduce((sum, audit) => sum + audit.overallScore, 0) / totalAudits
+      allAudits.reduce((sum, audit) => sum + audit.overallScore, 0) /
+        totalAudits,
     );
 
     // Score distribution for pie chart
-    const excellent = allAudits.filter(a => a.overallScore >= 80).length;
-    const good = allAudits.filter(a => a.overallScore >= 60 && a.overallScore < 80).length;
-    const needsImprovement = allAudits.filter(a => a.overallScore < 60).length;
+    const excellent = allAudits.filter((a) => a.overallScore >= 80).length;
+    const good = allAudits.filter(
+      (a) => a.overallScore >= 60 && a.overallScore < 80,
+    ).length;
+    const needsImprovement = allAudits.filter(
+      (a) => a.overallScore < 60,
+    ).length;
 
     const scoreDistribution = [
-      { name: 'Excellent', value: excellent, color: '#22c55e' },
-      { name: 'Good', value: good, color: '#eab308' },
-      { name: 'Needs Improvement', value: needsImprovement, color: '#ef4444' }
-    ].filter(item => item.value > 0);
+      { name: "Excellent", value: excellent, color: "#22c55e" },
+      { name: "Good", value: good, color: "#eab308" },
+      { name: "Needs Improvement", value: needsImprovement, color: "#ef4444" },
+    ].filter((item) => item.value > 0);
 
     // Recent trend data (last 7 audits)
     const recentTrend = allAudits
@@ -104,12 +119,12 @@ export default function Index() {
       .map((audit, index) => ({
         audit: `Audit ${index + 1}`,
         score: audit.overallScore,
-        date: new Date(audit.date).toLocaleDateString()
+        date: new Date(audit.date).toLocaleDateString(),
       }));
 
     // Top improvement opportunities
     const improvementOpportunities = Math.round(
-      allAudits.filter(a => a.overallScore < 80).length / totalAudits * 100
+      (allAudits.filter((a) => a.overallScore < 80).length / totalAudits) * 100,
     );
 
     return {
@@ -117,7 +132,7 @@ export default function Index() {
       averageScore,
       scoreDistribution,
       recentTrend,
-      improvementOpportunities
+      improvementOpportunities,
     };
   };
 
@@ -256,7 +271,6 @@ export default function Index() {
     }
   };
 
-
   const getScoreColor = (score: number) => {
     if (score >= 80) return "text-green-600 bg-green-50";
     if (score >= 60) return "text-yellow-600 bg-yellow-50";
@@ -316,7 +330,6 @@ export default function Index() {
                 </Button>
               </div>
 
-
               {error && (
                 <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
                   <p className="text-sm">{error}</p>
@@ -331,13 +344,10 @@ export default function Index() {
                   </p>
                 </div>
               )}
-
             </form>
           </div>
-
         </div>
       </div>
-
 
       {/* Previous Audits Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -371,7 +381,11 @@ export default function Index() {
                           {audit.url}
                         </CardDescription>
                         <Badge variant="secondary" className="text-xs">
-                          {audit.overallScore >= 80 ? 'Excellent' : audit.overallScore >= 60 ? 'Good' : 'Needs Improvement'}
+                          {audit.overallScore >= 80
+                            ? "Excellent"
+                            : audit.overallScore >= 60
+                              ? "Good"
+                              : "Needs Improvement"}
                         </Badge>
                       </div>
                       <div
