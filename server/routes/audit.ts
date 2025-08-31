@@ -130,7 +130,11 @@ async function generateAudit(websiteData: any): Promise<AuditResponse> {
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
   const prompt = `
-As a professional brand and UX auditor, analyze the following website data and provide a comprehensive brand audit. 
+As a professional brand and UX auditor, analyze the following website data and provide a comprehensive brand audit.
+
+${websiteData.fallbackUsed ?
+'NOTE: Limited data available due to website access restrictions. This analysis is based on URL structure and general web best practices.' :
+'This analysis is based on extracted website content.'}
 
 Website Data:
 - URL: ${websiteData.url}
@@ -141,6 +145,7 @@ Website Data:
 - Navigation: ${websiteData.navigation}
 - Footer: ${websiteData.footer}
 - Brand Elements: ${websiteData.brandElements}
+- Data Source: ${websiteData.fallbackUsed ? 'Fallback Analysis' : 'Live Website Scraping'}
 
 Please provide a detailed analysis covering these 6 key areas:
 
