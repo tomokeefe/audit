@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import AuditResults from "./pages/AuditResults";
+import SharedAudit from "./pages/SharedAudit";
 import Audits from "./pages/Audits";
 import Reports from "./pages/Reports";
 import NotFound from "./pages/NotFound";
