@@ -52,6 +52,160 @@ function createFallbackData(url: string) {
   };
 }
 
+// Function to analyze website performance and UX metrics
+async function analyzeWebsitePerformance(url: string) {
+  try {
+    const performanceData = {
+      pageSizeKB: 0,
+      hasSSL: false,
+      redirectCount: 0,
+      responseTime: 0,
+      mobileViewport: false,
+      hasServiceWorker: false,
+    };
+
+    const startTime = Date.now();
+    const response = await axios.get(url, {
+      timeout: 10000,
+      maxRedirects: 5,
+      validateStatus: (status) => status < 500,
+    });
+    const endTime = Date.now();
+
+    performanceData.responseTime = endTime - startTime;
+    performanceData.pageSizeKB = Math.round(response.data.length / 1024);
+    performanceData.hasSSL = url.startsWith('https://');
+    performanceData.redirectCount = response.request._redirectCount || 0;
+
+    // Check for mobile viewport and other UX indicators
+    const $ = cheerio.load(response.data);
+    performanceData.mobileViewport = $('meta[name="viewport"]').length > 0;
+    performanceData.hasServiceWorker = response.data.includes('serviceWorker') || response.data.includes('sw.js');
+
+    return performanceData;
+  } catch (error) {
+    console.warn('Performance analysis failed:', error);
+    return {
+      pageSizeKB: 0,
+      hasSSL: url.startsWith('https://'),
+      redirectCount: 0,
+      responseTime: 0,
+      mobileViewport: false,
+      hasServiceWorker: false,
+    };
+  }
+}
+
+// Function to discover and analyze site structure
+async function analyzeSiteStructure(baseUrl: string, html: string) {
+  const $ = cheerio.load(html);
+
+  // Extract all internal links
+  const links = new Set<string>();
+  $('a[href]').each((_, el) => {
+    const href = $(el).attr('href');
+    if (href && !href.startsWith('http') && !href.startsWith('mailto:') && !href.startsWith('tel:')) {
+      try {
+        const fullUrl = new URL(href, baseUrl).href;
+        if (fullUrl.includes(new URL(baseUrl).hostname)) {
+          links.add(fullUrl);
+        }
+      } catch (e) {
+        // Invalid URL, skip
+      }
+    }
+  });
+
+  // Analyze navigation structure
+  const navigation = {
+    mainNav: $('nav, .nav, .navbar, .navigation').first().text().trim(),
+    breadcrumbs: $('.breadcrumb, .breadcrumbs').text().trim(),
+    footer: $('footer').text().trim(),
+    menuItems: [] as string[],
+    hasSearch: $('input[type="search"], [role="search"], .search').length > 0,
+    hasLanguageSelector: $('[lang], .language, .lang').length > 0,
+  };
+
+  // Extract menu structure
+  $('nav a, .nav a, .navbar a, .menu a').each((_, el) => {
+    const text = $(el).text().trim();
+    if (text && text.length > 0 && text.length < 50) {
+      navigation.menuItems.push(text);
+    }
+  });
+
+  // Analyze page structure and content organization
+  const contentStructure = {
+    headingLevels: [] as string[],
+    sections: [] as string[],
+    hasContactInfo: false,
+    hasAboutPage: false,
+    hasBlog: false,
+    hasProducts: false,
+  };
+
+  $('h1, h2, h3, h4, h5, h6').each((_, el) => {
+    contentStructure.headingLevels.push($(el).prop('tagName').toLowerCase());
+  });
+
+  $('section, .section, article, .article').each((_, el) => {
+    const text = $(el).text().trim();
+    if (text.length > 0) {
+      contentStructure.sections.push(text.substring(0, 100));
+    }
+  });
+
+  // Check for common page types
+  const pageText = $.text().toLowerCase();
+  contentStructure.hasContactInfo = /contact|phone|email|address/.test(pageText);
+  contentStructure.hasAboutPage = /about|our story|who we are/.test(pageText);
+  contentStructure.hasBlog = /blog|news|articles/.test(pageText);
+  contentStructure.hasProducts = /product|service|shop|buy/.test(pageText);
+
+  return {
+    discoveredPages: Array.from(links).slice(0, 10), // Limit for performance
+    navigation,
+    contentStructure,
+    pageCount: links.size,
+  };
+}
+
+// Function to analyze UX and accessibility features
+async function analyzeUXFeatures(html: string) {
+  const $ = cheerio.load(html);
+
+  return {
+    forms: {
+      count: $('form').length,
+      hasLabels: $('label').length > 0,
+      hasValidation: $('[required], .required').length > 0,
+      hasContactForm: $('form').text().toLowerCase().includes('contact'),
+    },
+    accessibility: {
+      hasAltText: $('img[alt]').length > 0,
+      missingAltText: $('img').length - $('img[alt]').length,
+      hasSkipLinks: $('[href="#content"], [href="#main"]').length > 0,
+      hasAriaLabels: $('[aria-label], [aria-labelledby]').length > 0,
+      headingStructure: $('h1').length === 1, // Should have exactly one H1
+    },
+    interactivity: {
+      buttons: $('button, input[type="button"], input[type="submit"]').length,
+      dropdowns: $('select, .dropdown').length,
+      modals: $('[data-modal], .modal').length,
+      carousels: $('[data-carousel], .carousel, .slider').length,
+    },
+    media: {
+      images: $('img').length,
+      videos: $('video, iframe[src*="youtube"], iframe[src*="vimeo"]').length,
+      hasLazyLoading: $('[loading="lazy"], [data-src]').length > 0,
+    },
+    social: {
+      socialLinks: $('[href*="facebook"], [href*="twitter"], [href*="linkedin"], [href*="instagram"]').length,
+      hasSocialSharing: $('.share, .social-share').length > 0,
+    }
+  };
+}
+
 // Function to scrape website content with retry logic and fallback
 async function scrapeWebsite(url: string) {
   const userAgents = [
