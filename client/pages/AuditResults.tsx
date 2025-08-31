@@ -9,63 +9,72 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, Globe, TrendingUp, AlertTriangle, CheckCircle, Info } from "lucide-react";
 
-// Mock audit data - in a real app this would be fetched based on the ID
-const mockAuditData = {
-  id: "1",
-  url: "https://castle-placement.com",
-  title: "Castle Placement Website Audit",
-  description: "Comprehensive analysis and recommendations for enhancing your investment banking platform",
-  overallScore: 69,
-  date: "August 31, 2025",
-  status: "completed",
-  sections: [
-    {
-      name: "Brand Consistency",
-      score: 85,
-      maxScore: 100,
-      issues: 3,
-      recommendations: 5
-    },
-    {
-      name: "User Experience (UX)",
-      score: 72,
-      maxScore: 100,
-      issues: 7,
-      recommendations: 8
-    },
-    {
-      name: "Visual Design",
-      score: 68,
-      maxScore: 100,
-      issues: 5,
-      recommendations: 6
-    },
-    {
-      name: "Content Quality",
-      score: 61,
-      maxScore: 100,
-      issues: 12,
-      recommendations: 15
-    },
-    {
-      name: "SEO & Performance",
-      score: 55,
-      maxScore: 100,
-      issues: 9,
-      recommendations: 11
-    },
-    {
-      name: "Security & Compliance",
-      score: 78,
-      maxScore: 100,
-      issues: 4,
-      recommendations: 6
-    }
-  ]
-};
-
 export default function AuditResults() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const [auditData, setAuditData] = useState<AuditResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!id) {
+      setError("Audit ID not provided");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const storedData = localStorage.getItem(`audit_${id}`);
+      if (!storedData) {
+        setError("Audit not found. The audit may have expired or the link is invalid.");
+        setLoading(false);
+        return;
+      }
+
+      const audit: AuditResponse = JSON.parse(storedData);
+      setAuditData(audit);
+    } catch (error) {
+      console.error("Error loading audit data:", error);
+      setError("Failed to load audit data");
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center">
+            <div className="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <h2 className="text-xl font-semibold text-gray-900">Loading audit results...</h2>
+            <p className="text-gray-600 mt-2">Please wait while we retrieve your audit data.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !auditData) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <AlertTriangle className="h-8 w-8 text-red-600" />
+            </div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Audit Not Found</h2>
+            <p className="text-gray-600 mb-8">{error}</p>
+            <Button onClick={() => navigate('/')} className="bg-brand-500 hover:bg-brand-600">
+              Back to Dashboard
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const getScoreColor = (score: number) => {
     if (score >= 80) return "text-green-600";
