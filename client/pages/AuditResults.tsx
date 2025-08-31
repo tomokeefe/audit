@@ -110,7 +110,7 @@ export default function AuditResults() {
             </div>
             <div className="text-right">
               <div className="text-sm text-gray-500 mb-1">Audit Report</div>
-              <div className="font-semibold text-gray-900">{mockAuditData.date}</div>
+              <div className="font-semibold text-gray-900">{auditData.date}</div>
             </div>
           </div>
         </div>
