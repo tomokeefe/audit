@@ -9,6 +9,52 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, Globe, TrendingUp, AlertTriangle, CheckCircle, Info, XCircle, Lightbulb } from "lucide-react";
 
+// Function to parse and style audit section content
+function parseAuditContent(content: string) {
+  const lines = content.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+
+  const sections: Array<{
+    type: 'overview' | 'issues' | 'recommendations';
+    content: string[];
+  }> = [];
+
+  let currentSection: 'overview' | 'issues' | 'recommendations' = 'overview';
+  let currentContent: string[] = [];
+
+  for (const line of lines) {
+    if (line.match(/\*\*Issues?\*\*:?/i)) {
+      if (currentContent.length > 0) {
+        sections.push({ type: currentSection, content: [...currentContent] });
+        currentContent = [];
+      }
+      currentSection = 'issues';
+    } else if (line.match(/\*\*Recommendations?\*\*:?/i)) {
+      if (currentContent.length > 0) {
+        sections.push({ type: currentSection, content: [...currentContent] });
+        currentContent = [];
+      }
+      currentSection = 'recommendations';
+    } else if (!line.match(/\*\*(Issues?|Recommendations?)\*\*:?/i)) {
+      // Clean up markdown formatting and numbered lists
+      const cleanLine = line
+        .replace(/^\*\*|\*\*$/g, '') // Remove bold markdown
+        .replace(/^\d+\.\s*/, '') // Remove numbered list formatting
+        .trim();
+
+      if (cleanLine) {
+        currentContent.push(cleanLine);
+      }
+    }
+  }
+
+  // Add the final section
+  if (currentContent.length > 0) {
+    sections.push({ type: currentSection, content: currentContent });
+  }
+
+  return sections;
+}
+
 export default function AuditResults() {
   const { id } = useParams();
   const navigate = useNavigate();
