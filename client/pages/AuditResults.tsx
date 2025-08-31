@@ -90,20 +90,42 @@ export default function AuditResults() {
   // Sharing functions
   const copyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(shareUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      // Check if clipboard API is available and allowed
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(shareUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+        return;
+      }
     } catch (error) {
-      console.error("Failed to copy to clipboard:", error);
-      // Fallback for older browsers
+      console.warn("Clipboard API not available:", error);
+    }
+
+    // Fallback method for iframe/restricted environments
+    try {
       const textArea = document.createElement("textarea");
       textArea.value = shareUrl;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
+      textArea.style.top = "-999999px";
       document.body.appendChild(textArea);
+      textArea.focus();
       textArea.select();
-      document.execCommand("copy");
+
+      const successful = document.execCommand("copy");
       document.body.removeChild(textArea);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+
+      if (successful) {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } else {
+        // If all else fails, select the URL for manual copy
+        prompt("Copy this URL:", shareUrl);
+      }
+    } catch (fallbackError) {
+      console.error("Fallback copy failed:", fallbackError);
+      // Last resort - show URL to user
+      prompt("Copy this URL:", shareUrl);
     }
   };
 
