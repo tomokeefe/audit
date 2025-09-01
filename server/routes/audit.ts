@@ -266,112 +266,129 @@ async function analyzeUXFeatures(html: string) {
 }
 
 // Function to perform comprehensive multi-page crawling
-async function crawlMultiplePages(baseUrl: string, discoveredPages: string[], maxPages: number = 8) {
-  const crawlResults = [];
+async function crawlMultiplePages(baseUrl: string, discoveredPages: string[], maxPages: number = 6) {
+  const crawlResults: any[] = [];
   const userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 
   // Prioritize important pages
-  const priorityPages = discoveredPages.filter(url => {
+  const priorityPages = discoveredPages.filter((url) => {
     const path = url.toLowerCase();
-    return path.includes('/about') ||
-           path.includes('/contact') ||
-           path.includes('/services') ||
-           path.includes('/products') ||
-           path.includes('/pricing') ||
-           path.includes('/blog') ||
-           path.includes('/home');
+    return (
+      path.includes("/about") ||
+      path.includes("/contact") ||
+      path.includes("/services") ||
+      path.includes("/products") ||
+      path.includes("/pricing") ||
+      path.includes("/blog") ||
+      path.includes("/home")
+    );
   });
 
   // Combine priority pages with others, limit total
   const pagesToCrawl = [...new Set([...priorityPages, ...discoveredPages])].slice(0, maxPages);
-
   console.log(`Starting multi-page crawl for ${pagesToCrawl.length} pages`);
 
-  for (let i = 0; i < pagesToCrawl.length; i++) {
-    const pageUrl = pagesToCrawl[i];
+  const concurrency = Math.min(3, pagesToCrawl.length);
+  let index = 0;
 
-    try {
-      console.log(`Crawling page ${i + 1}/${pagesToCrawl.length}: ${pageUrl}`);
+  async function worker(workerId: number) {
+    while (index < pagesToCrawl.length) {
+      const i = index++;
+      const pageUrl = pagesToCrawl[i];
+      if (!pageUrl) break;
 
-      // Rate limiting - wait between requests
-      if (i > 0) {
-        await new Promise(resolve => setTimeout(resolve, 1500)); // 1.5 second delay
-      }
+      try {
+        console.log(`Worker ${workerId} crawling ${i + 1}/${pagesToCrawl.length}: ${pageUrl}`);
+        // Small stagger between requests
+        await new Promise((r) => setTimeout(r, workerId * 200));
 
-      const response = await axios.get(pageUrl, {
-        timeout: 8000,
-        maxRedirects: 3,
-        validateStatus: (status) => status < 500,
-        headers: {
-          "User-Agent": userAgent,
-          "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-          "Accept-Language": "en-US,en;q=0.5",
-          "Cache-Control": "max-age=0",
-        },
-      });
+        const response = await axios.get(pageUrl, {
+          timeout: 5000,
+          maxRedirects: 3,
+          validateStatus: (status) => status < 500,
+          headers: {
+            "User-Agent": userAgent,
+            Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.5",
+            "Cache-Control": "max-age=0",
+          },
+        });
 
-      if (response.status >= 400) {
-        console.log(`Skipping ${pageUrl} - HTTP ${response.status}`);
-        continue;
-      }
-
-      const $ = cheerio.load(response.data);
-
-      // Analyze this specific page
-      const pageAnalysis = {
-        url: pageUrl,
-        title: $('title').text().trim(),
-        description: $('meta[name="description"]').attr('content') || '',
-        headings: {
-          h1: $('h1').map((_, el) => $(el).text().trim()).get(),
-          h2: $('h2').map((_, el) => $(el).text().trim()).get(),
-          h3: $('h3').map((_, el) => $(el).text().trim()).get(),
-        },
-        contentLength: $.text().length,
-        images: {
-          total: $('img').length,
-          withAlt: $('img[alt]').length,
-          missingAlt: $('img').length - $('img[alt]').length,
-        },
-        links: {
-          internal: $('a[href]').filter((_, el) => {
-            const href = $(el).attr('href');
-            return href && !href.startsWith('http') && !href.startsWith('mailto:');
-          }).length,
-          external: $('a[href]').filter((_, el) => {
-            const href = $(el).attr('href');
-            return href && href.startsWith('http') && !href.includes(new URL(baseUrl).hostname);
-          }).length,
-        },
-        forms: {
-          count: $('form').length,
-          hasLabels: $('label').length > 0,
-          hasValidation: $('[required], .required').length > 0,
-        },
-        navigation: {
-          breadcrumbs: $('.breadcrumb, .breadcrumbs, [aria-label*="breadcrumb"]').text().trim(),
-          mainNav: $('nav, .nav, .navbar').first().text().trim(),
-        },
-        brandElements: {
-          logo: $('.logo, .brand, #logo, #brand, [alt*="logo"]').length > 0,
-          colorScheme: $('[style*="color"], [class*="color-"]').length > 0,
-          fonts: $('[style*="font"], [class*="font-"]').length > 0,
-        },
-        pageType: determinePageType(pageUrl, $.text()),
-        loadTime: Date.now(), // Placeholder for actual load time
-        socialElements: {
-          socialLinks: $('[href*="facebook"], [href*="twitter"], [href*="linkedin"], [href*="instagram"]').length,
-          shareButtons: $('.share, .social-share, [data-share]').length,
+        if (response.status >= 400) {
+          console.log(`Skipping ${pageUrl} - HTTP ${response.status}`);
+          continue;
         }
-      };
 
-      crawlResults.push(pageAnalysis);
+        const $ = cheerio.load(response.data);
 
-    } catch (error) {
-      console.warn(`Failed to crawl ${pageUrl}:`, error instanceof Error ? error.message : error);
-      // Continue with other pages even if one fails
+        const pageAnalysis = {
+          url: pageUrl,
+          title: $("title").text().trim(),
+          description: $('meta[name="description"]').attr("content") || "",
+          headings: {
+            h1: $("h1").map((_, el) => $(el).text().trim()).get(),
+            h2: $("h2").map((_, el) => $(el).text().trim()).get(),
+            h3: $("h3").map((_, el) => $(el).text().trim()).get(),
+          },
+          contentLength: $.text().length,
+          images: {
+            total: $("img").length,
+            withAlt: $("img[alt]").length,
+            missingAlt: $("img").length - $("img[alt]").length,
+          },
+          links: {
+            internal: $("a[href]").filter((_, el) => {
+              const href = $(el).attr("href");
+              return href && !href.startsWith("http") && !href.startsWith("mailto:");
+            }).length,
+            external: $("a[href]").filter((_, el) => {
+              const href = $(el).attr("href");
+              return href && href.startsWith("http") && !href.includes(new URL(baseUrl).hostname);
+            }).length,
+          },
+          forms: {
+            count: $("form").length,
+            hasLabels: $("label").length > 0,
+            hasValidation: $("[required], .required").length > 0,
+          },
+          navigation: {
+            breadcrumbs: $(
+              '.breadcrumb, .breadcrumbs, [aria-label*="breadcrumb"]'
+            )
+              .text()
+              .trim(),
+            mainNav: $("nav, .nav, .navbar").first().text().trim(),
+          },
+          brandElements: {
+            logo:
+              $(".logo, .brand, #logo, #brand, [alt*=\"logo\"]").length > 0,
+            colorScheme: $('[style*="color"], [class*="color-"]').length > 0,
+            fonts: $('[style*="font"], [class*="font-"]').length > 0,
+          },
+          pageType: determinePageType(pageUrl, $.text()),
+          loadTime: Date.now(), // Placeholder
+          socialElements: {
+            socialLinks:
+              $(
+                '[href*="facebook"], [href*="twitter"], [href*="linkedin"], [href*="instagram"]'
+              ).length,
+            shareButtons: $(".share, .social-share, [data-share]").length,
+          },
+        };
+
+        crawlResults.push(pageAnalysis);
+      } catch (error) {
+        console.warn(
+          `Failed to crawl ${pageUrl}:`,
+          error instanceof Error ? error.message : error
+        );
+      }
     }
   }
+
+  await Promise.all(
+    Array.from({ length: concurrency }, (_, i) => worker(i + 1))
+  );
 
   console.log(`Completed crawling ${crawlResults.length} pages successfully`);
   return crawlResults;
