@@ -91,9 +91,14 @@ export default function Index() {
     } catch (error) {
       console.error("Failed to load recent audits:", error);
       // Provide more detailed error information
+      let errorMsg = "Unknown error";
       if (error instanceof TypeError && error.message.includes("fetch")) {
-        console.error("Network error: Unable to connect to the API server");
+        errorMsg = "Network error: Unable to connect to the API server";
+        console.error(errorMsg);
+      } else if (error instanceof Error) {
+        errorMsg = error.message;
       }
+      setApiStatus(prev => ({ ...prev, audits: false, error: errorMsg }));
       // Fallback to empty array on error
       setRecentAudits([]);
       setAllAudits([]);
