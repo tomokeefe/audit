@@ -833,15 +833,33 @@ Be thorough, professional, and provide actionable insights based on the availabl
 `;
 
   try {
+    console.log("Calling Gemini AI for audit generation...");
+
+    // Check if we have a valid API key
+    if (!genAI) {
+      throw new Error("AI service not properly initialized");
+    }
+
     const result = await model.generateContent(prompt);
+
+    if (!result || !result.response) {
+      throw new Error("Empty response from AI service");
+    }
+
     const response = await result.response;
     const text = response.text();
+
+    if (!text || text.trim().length === 0) {
+      throw new Error("Empty text response from AI service");
+    }
+
+    console.log("AI response received, length:", text.length);
 
     // Parse the JSON response
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      console.error("No JSON found in AI response:", text);
-      throw new Error("Invalid response format from AI service");
+      console.error("No JSON found in AI response:", text.substring(0, 500));
+      throw new Error("Invalid response format from AI service - no JSON found");
     }
 
     let auditData;
@@ -849,19 +867,38 @@ Be thorough, professional, and provide actionable insights based on the availabl
       auditData = JSON.parse(jsonMatch[0]);
     } catch (parseError) {
       console.error("JSON parse error:", parseError);
-      console.error("Raw AI response:", text);
-      throw new Error("Failed to parse AI response");
+      console.error("Matched JSON text:", jsonMatch[0].substring(0, 500));
+      throw new Error("Failed to parse AI response - invalid JSON format");
     }
 
     // Validate required fields
-    if (
-      !auditData.title ||
-      !auditData.sections ||
-      !Array.isArray(auditData.sections)
-    ) {
-      console.error("Invalid audit data structure:", auditData);
-      throw new Error("Invalid audit response structure");
+    if (!auditData || typeof auditData !== 'object') {
+      console.error("Invalid audit data type:", typeof auditData);
+      throw new Error("Invalid audit response structure - not an object");
     }
+
+    if (!auditData.title || typeof auditData.title !== 'string') {
+      console.error("Missing or invalid title:", auditData.title);
+      throw new Error("Invalid audit response structure - missing title");
+    }
+
+    if (!auditData.sections || !Array.isArray(auditData.sections)) {
+      console.error("Missing or invalid sections:", auditData.sections);
+      throw new Error("Invalid audit response structure - missing sections array");
+    }
+
+    if (auditData.sections.length === 0) {
+      console.error("Empty sections array");
+      throw new Error("Invalid audit response structure - empty sections");
+    }
+
+    // Validate overallScore
+    if (typeof auditData.overallScore !== 'number' || auditData.overallScore < 0 || auditData.overallScore > 100) {
+      console.warn("Invalid overall score, using default:", auditData.overallScore);
+      auditData.overallScore = 75; // Default fallback score
+    }
+
+    console.log("Audit data validated successfully");
 
     // Generate a unique ID and add metadata
     const auditId = Date.now().toString();
@@ -875,15 +912,32 @@ Be thorough, professional, and provide actionable insights based on the availabl
       id: auditId,
       url: websiteData.url,
       title: auditData.title,
-      description: auditData.description,
+      description: auditData.description || "Comprehensive brand audit analysis",
       overallScore: auditData.overallScore,
       date: currentDate,
       status: "completed",
       sections: auditData.sections,
-      summary: auditData.summary,
+      summary: auditData.summary || "Audit completed successfully",
     };
   } catch (error) {
     console.error("Error generating audit:", error);
+    console.error("Error type:", error instanceof Error ? error.constructor.name : typeof error);
+
+    if (error instanceof Error) {
+      if (error.message.includes("quota") || error.message.includes("limit")) {
+        throw new Error("AI service quota exceeded. Please try again later.");
+      } else if (error.message.includes("authentication") || error.message.includes("API key")) {
+        throw new Error("AI service authentication error. Please contact support.");
+      } else if (error.message.includes("timeout")) {
+        throw new Error("AI service timeout. Please try again.");
+      } else if (error.message.includes("network") || error.message.includes("connection")) {
+        throw new Error("Network error connecting to AI service. Please try again.");
+      } else {
+        // Re-throw our custom errors as-is
+        throw error;
+      }
+    }
+
     throw new Error("Failed to generate audit analysis. Please try again.");
   }
 }
