@@ -682,7 +682,7 @@ Best regards`);
 
                             {/* Show SWOT Matrix for Competitor Analysis */}
                             {section.name.toLowerCase().includes("competitor") && (
-                              <SWOTMatrix sectionName={section.name} />
+                              <SWOTMatrix sectionName={section.name} auditData={auditData} />
                             )}
                           </div>
                         </AccordionContent>
