@@ -822,7 +822,7 @@ Write: "Optimize title tags to include primary keywords within 55 characters, ad
 
 Please provide a detailed analysis covering these 9 key areas based on the updated comprehensive audit framework:
 
-1. **Branding** (Score 0-100, Weight: 20%): Core identity, positioning, and market perception:
+1. **Branding** (Score 0-100, Weight: 18%): Core identity, positioning, and market perception:
    - Logo presence and placement consistency across all analyzed pages
    - Brand element consistency (colors, fonts, imagery) throughout the site
    - Title tag patterns and brand name usage across different page types
@@ -830,7 +830,7 @@ Please provide a detailed analysis covering these 9 key areas based on the updat
    - Visual identity coherence from homepage to internal pages
    - Market positioning clarity and differentiation
 
-2. **Design** (Score 0-100, Weight: 15%): Visual consistency and aesthetic effectiveness:
+2. **Design** (Score 0-100, Weight: 13%): Visual consistency and aesthetic effectiveness:
    - Visual hierarchy and layout consistency across pages
    - Color scheme usage and brand alignment
    - Typography choices and readability
@@ -838,7 +838,7 @@ Please provide a detailed analysis covering these 9 key areas based on the updat
    - Mobile-responsive design implementation
    - Cross-page design consistency
 
-3. **Messaging** (Score 0-100, Weight: 15%): Communication tone, clarity, and alignment:
+3. **Messaging** (Score 0-100, Weight: 13%): Communication tone, clarity, and alignment:
    - Content clarity and messaging effectiveness
    - Brand voice consistency across all pages
    - Value proposition clarity and communication
@@ -846,7 +846,7 @@ Please provide a detailed analysis covering these 9 key areas based on the updat
    - Audience-appropriate messaging tone
    - Messaging hierarchy and information flow
 
-4. **Usability** (Score 0-100, Weight: 15%): User-friendliness across digital touchpoints:
+4. **Usability** (Score 0-100, Weight: 13%): User-friendliness across digital touchpoints:
    - Navigation consistency across all analyzed pages and user journey flow
    - Page performance metrics (actual load times, page sizes, optimization)
    - Mobile responsiveness indicators and cross-device usability
@@ -855,7 +855,7 @@ Please provide a detailed analysis covering these 9 key areas based on the updat
    - Site architecture and information hierarchy based on actual page discovery
    - Content organization and user flow patterns across different page types
 
-5. **Content Strategy** (Score 0-100, Weight: 10%): Content creation, distribution, and effectiveness:
+5. **Content Strategy** (Score 0-100, Weight: 9%): Content creation, distribution, and effectiveness:
    - Content quality and relevance across all pages
    - Information architecture and content organization
    - Content freshness and regular updates
@@ -863,7 +863,7 @@ Please provide a detailed analysis covering these 9 key areas based on the updat
    - Content variety and engagement potential
    - Cross-page content consistency and flow
 
-6. **Digital Presence** (Score 0-100, Weight: 10%): Online visibility and performance:
+6. **Digital Presence** (Score 0-100, Weight: 9%): Online visibility and performance:
    - SEO optimization (title tags, meta descriptions, heading structure)
    - Technical SEO elements visible in the HTML
    - Social media integration and presence
@@ -879,7 +879,7 @@ Please provide a detailed analysis covering these 9 key areas based on the updat
    - Conversion optimization elements
    - Customer feedback and review integration
 
-8. **Competitor Analysis** (Score 0-100, Weight: 10%): Benchmarks against rivals in positioning, performance, and market opportunities:
+8. **Competitor Analysis** (Score 0-100, Weight: 5%): Benchmarks against rivals in positioning, performance, and market opportunities:
    - **Strengths Comparison (0-30)**: Conduct SWOT analysis to identify where the brand excels or lags compared to competitors
    - **Market Positioning (0-30)**: Evaluate relative market share, pricing, and differentiation strategies
    - **Performance Metrics (0-20)**: Compare KPIs such as website performance, social engagement, and online presence
@@ -887,7 +887,19 @@ Please provide a detailed analysis covering these 9 key areas based on the updat
    - Competitive advantage identification and leverage opportunities
    - Market differentiation analysis and recommendations
 
-9. **Consistency & Compliance** (Score 0-100, Weight: 5%): Uniformity and legal adherence across brand assets:
+9. **Conversion Optimization** (Score 0-100, Weight: 10%): Business results and revenue generation effectiveness:
+   - Lead capture form design, placement, and effectiveness across all pages
+   - Call-to-action (CTA) strength, visibility, and conversion-focused language
+   - Sales funnel optimization and user journey conversion points
+   - Trust signals implementation (testimonials, reviews, security badges, certifications)
+   - Contact and checkout process optimization and friction reduction
+   - Landing page conversion elements and persuasive design
+   - Social proof integration and credibility indicators
+   - Value proposition clarity and benefit communication
+   - Pricing transparency and purchase decision support
+   - Mobile conversion optimization and responsive form design
+
+10. **Consistency & Compliance** (Score 0-100, Weight: 5%): Uniformity and legal adherence across brand assets:
    - HTTPS usage and security compliance
    - Privacy policy presence and accessibility
    - Legal compliance and professional credibility indicators
@@ -915,11 +927,11 @@ CRITICAL - Use ALL Multi-Page Data: This analysis includes comprehensive crawlin
 Reference specific pages, metrics, and cross-page issues found in your recommendations. This is a comprehensive multi-page audit, not a single-page analysis.
 
 Also provide:
-- An overall score calculated using the weighted average: (0.20 × Branding) + (0.15 × Design) + (0.15 × Messaging) + (0.15 × Usability) + (0.10 × Content Strategy) + (0.10 × Digital Presence) + (0.05 × Customer Experience) + (0.10 × Competitor Analysis) + (0.05 × Consistency & Compliance)
+- An overall score calculated using the weighted average: (0.18 × Branding) + (0.13 × Design) + (0.13 × Messaging) + (0.13 × Usability) + (0.09 × Content Strategy) + (0.09 × Digital Presence) + (0.05 × Customer Experience) + (0.05 × Competitor Analysis) + (0.10 × Conversion Optimization) + (0.05 × Consistency & Compliance)
 - A brief summary of the website's strengths and key areas for improvement
 - A professional title for this audit report
 
-Respond in this exact JSON format with ALL 9 sections:
+Respond in this exact JSON format with ALL 10 sections:
 {
   "title": "Professional audit title",
   "description": "Brief description of the audit scope",
@@ -988,6 +1000,14 @@ Respond in this exact JSON format with ALL 9 sections:
       "issues": 4,
       "recommendations": 6,
       "details": "Detailed analysis including Strengths Comparison, Market Positioning, Performance Metrics, and Opportunities/Threats with specific competitive insights and recommendations..."
+    },
+    {
+      "name": "Conversion Optimization",
+      "score": 68,
+      "maxScore": 100,
+      "issues": 5,
+      "recommendations": 7,
+      "details": "Detailed analysis of lead capture forms, CTA effectiveness, sales funnel optimization, trust signals, and conversion-focused design elements with specific recommendations for improving business results..."
     },
     {
       "name": "Consistency & Compliance",
