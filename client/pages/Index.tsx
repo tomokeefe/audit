@@ -95,7 +95,42 @@ export default function Index() {
     }
   };
 
+  // Debug function to test API connectivity
+  const testAPIConnection = async () => {
+    console.log("Testing API connection...");
+    try {
+      // Test with a simple ping first
+      const pingResponse = await fetch("/api/ping");
+      console.log("Ping response status:", pingResponse.status);
+      console.log("Ping response ok:", pingResponse.ok);
+
+      if (pingResponse.ok) {
+        const pingData = await pingResponse.json();
+        console.log("Ping data:", pingData);
+      }
+
+      // Then test the audits endpoint
+      const auditsResponse = await fetch("/api/audits");
+      console.log("Audits response status:", auditsResponse.status);
+      console.log("Audits response ok:", auditsResponse.ok);
+      console.log("Audits response url:", auditsResponse.url);
+
+      if (auditsResponse.ok) {
+        const auditsData = await auditsResponse.json();
+        console.log("Audits data:", auditsData);
+      } else {
+        const errorText = await auditsResponse.text();
+        console.log("Audits error response:", errorText);
+      }
+    } catch (error) {
+      console.error("API test failed:", error);
+    }
+  };
+
   useEffect(() => {
+    // Add debug logging
+    console.log("Component mounted, loading recent audits...");
+    testAPIConnection();
     loadRecentAudits();
   }, []);
 
