@@ -315,45 +315,65 @@ export default function SharedAudit() {
                               </div>
                               {(() => {
                                 let currentSection = "overview";
-                                return contentSection.content.map((item, itemIndex) => {
-                                  // Check if this item is an "Issues:" or "Recommendations:" header
-                                  if (item.match(/^Issues?:?$/i)) {
-                                    currentSection = "issues";
-                                    return (
-                                      <h4 key={itemIndex} className="text-lg font-bold text-gray-900 mt-6 mb-2 flex items-center gap-2">
-                                        <XCircle className="h-5 w-5 text-red-600" />
-                                        Issues:
-                                      </h4>
-                                    );
-                                  }
-                                  if (item.match(/^Recommendations?:?$/i)) {
-                                    currentSection = "recommendations";
-                                    return (
-                                      <h4 key={itemIndex} className="text-lg font-bold text-gray-900 mt-6 mb-2 flex items-center gap-2">
-                                        <Lightbulb className="h-5 w-5 text-green-600" />
-                                        Recommendations:
-                                      </h4>
-                                    );
-                                  }
+                                return contentSection.content.map(
+                                  (item, itemIndex) => {
+                                    // Check if this item is an "Issues:" or "Recommendations:" header
+                                    if (item.match(/^Issues?:?$/i)) {
+                                      currentSection = "issues";
+                                      return (
+                                        <h4
+                                          key={itemIndex}
+                                          className="text-lg font-bold text-gray-900 mt-6 mb-2 flex items-center gap-2"
+                                        >
+                                          <XCircle className="h-5 w-5 text-red-600" />
+                                          Issues:
+                                        </h4>
+                                      );
+                                    }
+                                    if (item.match(/^Recommendations?:?$/i)) {
+                                      currentSection = "recommendations";
+                                      return (
+                                        <h4
+                                          key={itemIndex}
+                                          className="text-lg font-bold text-gray-900 mt-6 mb-2 flex items-center gap-2"
+                                        >
+                                          <Lightbulb className="h-5 w-5 text-green-600" />
+                                          Recommendations:
+                                        </h4>
+                                      );
+                                    }
 
-                                  // Style bullets based on current section
-                                  const bulletColor = currentSection === "issues" ? "bg-red-500" :
-                                                    currentSection === "recommendations" ? "bg-green-500" : "bg-gray-400";
-                                  const textColor = currentSection === "issues" ? "text-gray-700" :
-                                                  currentSection === "recommendations" ? "text-gray-700" : "text-gray-700";
+                                    // Style bullets based on current section
+                                    const bulletColor =
+                                      currentSection === "issues"
+                                        ? "bg-red-500"
+                                        : currentSection === "recommendations"
+                                          ? "bg-green-500"
+                                          : "bg-gray-400";
+                                    const textColor =
+                                      currentSection === "issues"
+                                        ? "text-gray-700"
+                                        : currentSection === "recommendations"
+                                          ? "text-gray-700"
+                                          : "text-gray-700";
 
-                                  return (
-                                    <div
-                                      key={itemIndex}
-                                      className="flex gap-3 items-start p-2 rounded-lg hover:bg-gray-50 transition-colors"
-                                    >
-                                      <div className={`w-2 h-2 ${bulletColor} rounded-full mt-2 flex-shrink-0`}></div>
-                                      <p className={`${textColor} leading-relaxed flex-1`}>
-                                        {item}
-                                      </p>
-                                    </div>
-                                  );
-                                });
+                                    return (
+                                      <div
+                                        key={itemIndex}
+                                        className="flex gap-3 items-start p-2 rounded-lg hover:bg-gray-50 transition-colors"
+                                      >
+                                        <div
+                                          className={`w-2 h-2 ${bulletColor} rounded-full mt-2 flex-shrink-0`}
+                                        ></div>
+                                        <p
+                                          className={`${textColor} leading-relaxed flex-1`}
+                                        >
+                                          {item}
+                                        </p>
+                                      </div>
+                                    );
+                                  },
+                                );
                               })()}
                             </div>
                           )}

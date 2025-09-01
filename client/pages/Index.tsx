@@ -178,7 +178,9 @@ export default function Index() {
         const timeout = setTimeout(() => {
           try {
             // Provide a reason when aborting to avoid generic AbortError messages
-            (controller as any).abort(new DOMException("Timeout", "TimeoutError"));
+            (controller as any).abort(
+              new DOMException("Timeout", "TimeoutError"),
+            );
           } catch {
             controller.abort();
           }
@@ -257,7 +259,10 @@ export default function Index() {
       console.error("Audit error:", error);
 
       if (error instanceof Error) {
-        if (error.name === "AbortError" || error.message.toLowerCase().includes("aborted")) {
+        if (
+          error.name === "AbortError" ||
+          error.message.toLowerCase().includes("aborted")
+        ) {
           setError(
             "Request timed out while analyzing the site. Please try again or use a different URL.",
           );

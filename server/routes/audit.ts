@@ -266,9 +266,14 @@ async function analyzeUXFeatures(html: string) {
 }
 
 // Function to perform comprehensive multi-page crawling
-async function crawlMultiplePages(baseUrl: string, discoveredPages: string[], maxPages: number = 6) {
+async function crawlMultiplePages(
+  baseUrl: string,
+  discoveredPages: string[],
+  maxPages: number = 6,
+) {
   const crawlResults: any[] = [];
-  const userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+  const userAgent =
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 
   // Prioritize important pages
   const priorityPages = discoveredPages.filter((url) => {
@@ -285,7 +290,9 @@ async function crawlMultiplePages(baseUrl: string, discoveredPages: string[], ma
   });
 
   // Combine priority pages with others, limit total
-  const pagesToCrawl = [...new Set([...priorityPages, ...discoveredPages])].slice(0, maxPages);
+  const pagesToCrawl = [
+    ...new Set([...priorityPages, ...discoveredPages]),
+  ].slice(0, maxPages);
   console.log(`Starting multi-page crawl for ${pagesToCrawl.length} pages`);
 
   const concurrency = Math.min(3, pagesToCrawl.length);
@@ -298,7 +305,9 @@ async function crawlMultiplePages(baseUrl: string, discoveredPages: string[], ma
       if (!pageUrl) break;
 
       try {
-        console.log(`Worker ${workerId} crawling ${i + 1}/${pagesToCrawl.length}: ${pageUrl}`);
+        console.log(
+          `Worker ${workerId} crawling ${i + 1}/${pagesToCrawl.length}: ${pageUrl}`,
+        );
         // Small stagger between requests
         await new Promise((r) => setTimeout(r, workerId * 200));
 
@@ -308,7 +317,8 @@ async function crawlMultiplePages(baseUrl: string, discoveredPages: string[], ma
           validateStatus: (status) => status < 500,
           headers: {
             "User-Agent": userAgent,
-            Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            Accept:
+              "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "Accept-Language": "en-US,en;q=0.5",
             "Cache-Control": "max-age=0",
           },
@@ -326,9 +336,15 @@ async function crawlMultiplePages(baseUrl: string, discoveredPages: string[], ma
           title: $("title").text().trim(),
           description: $('meta[name="description"]').attr("content") || "",
           headings: {
-            h1: $("h1").map((_, el) => $(el).text().trim()).get(),
-            h2: $("h2").map((_, el) => $(el).text().trim()).get(),
-            h3: $("h3").map((_, el) => $(el).text().trim()).get(),
+            h1: $("h1")
+              .map((_, el) => $(el).text().trim())
+              .get(),
+            h2: $("h2")
+              .map((_, el) => $(el).text().trim())
+              .get(),
+            h3: $("h3")
+              .map((_, el) => $(el).text().trim())
+              .get(),
           },
           contentLength: $.text().length,
           images: {
@@ -339,11 +355,17 @@ async function crawlMultiplePages(baseUrl: string, discoveredPages: string[], ma
           links: {
             internal: $("a[href]").filter((_, el) => {
               const href = $(el).attr("href");
-              return href && !href.startsWith("http") && !href.startsWith("mailto:");
+              return (
+                href && !href.startsWith("http") && !href.startsWith("mailto:")
+              );
             }).length,
             external: $("a[href]").filter((_, el) => {
               const href = $(el).attr("href");
-              return href && href.startsWith("http") && !href.includes(new URL(baseUrl).hostname);
+              return (
+                href &&
+                href.startsWith("http") &&
+                !href.includes(new URL(baseUrl).hostname)
+              );
             }).length,
           },
           forms: {
@@ -353,25 +375,23 @@ async function crawlMultiplePages(baseUrl: string, discoveredPages: string[], ma
           },
           navigation: {
             breadcrumbs: $(
-              '.breadcrumb, .breadcrumbs, [aria-label*="breadcrumb"]'
+              '.breadcrumb, .breadcrumbs, [aria-label*="breadcrumb"]',
             )
               .text()
               .trim(),
             mainNav: $("nav, .nav, .navbar").first().text().trim(),
           },
           brandElements: {
-            logo:
-              $(".logo, .brand, #logo, #brand, [alt*=\"logo\"]").length > 0,
+            logo: $('.logo, .brand, #logo, #brand, [alt*="logo"]').length > 0,
             colorScheme: $('[style*="color"], [class*="color-"]').length > 0,
             fonts: $('[style*="font"], [class*="font-"]').length > 0,
           },
           pageType: determinePageType(pageUrl, $.text()),
           loadTime: Date.now(), // Placeholder
           socialElements: {
-            socialLinks:
-              $(
-                '[href*="facebook"], [href*="twitter"], [href*="linkedin"], [href*="instagram"]'
-              ).length,
+            socialLinks: $(
+              '[href*="facebook"], [href*="twitter"], [href*="linkedin"], [href*="instagram"]',
+            ).length,
             shareButtons: $(".share, .social-share, [data-share]").length,
           },
         };
@@ -380,14 +400,14 @@ async function crawlMultiplePages(baseUrl: string, discoveredPages: string[], ma
       } catch (error) {
         console.warn(
           `Failed to crawl ${pageUrl}:`,
-          error instanceof Error ? error.message : error
+          error instanceof Error ? error.message : error,
         );
       }
     }
   }
 
   await Promise.all(
-    Array.from({ length: concurrency }, (_, i) => worker(i + 1))
+    Array.from({ length: concurrency }, (_, i) => worker(i + 1)),
   );
 
   console.log(`Completed crawling ${crawlResults.length} pages successfully`);
@@ -399,24 +419,33 @@ function determinePageType(url: string, content: string): string {
   const path = url.toLowerCase();
   const text = content.toLowerCase();
 
-  if (path.includes('/about') || text.includes('about us')) return 'about';
-  if (path.includes('/contact') || text.includes('contact us')) return 'contact';
-  if (path.includes('/services') || text.includes('our services')) return 'services';
-  if (path.includes('/products') || text.includes('products')) return 'products';
-  if (path.includes('/pricing') || text.includes('pricing')) return 'pricing';
-  if (path.includes('/blog') || path.includes('/news')) return 'blog';
-  if (path === '/' || path.includes('/home')) return 'homepage';
+  if (path.includes("/about") || text.includes("about us")) return "about";
+  if (path.includes("/contact") || text.includes("contact us"))
+    return "contact";
+  if (path.includes("/services") || text.includes("our services"))
+    return "services";
+  if (path.includes("/products") || text.includes("products"))
+    return "products";
+  if (path.includes("/pricing") || text.includes("pricing")) return "pricing";
+  if (path.includes("/blog") || path.includes("/news")) return "blog";
+  if (path === "/" || path.includes("/home")) return "homepage";
 
-  return 'other';
+  return "other";
 }
 
 // Function to analyze cross-page consistency
 function analyzeCrossPageConsistency(crawlResults: any[]) {
   if (crawlResults.length < 2) {
     return {
-      brandConsistency: { score: 50, issues: ['Insufficient pages analyzed for consistency check'] },
-      navigationConsistency: { score: 50, issues: ['Limited navigation analysis'] },
-      contentConsistency: { score: 50, issues: ['Single page analysis only'] },
+      brandConsistency: {
+        score: 50,
+        issues: ["Insufficient pages analyzed for consistency check"],
+      },
+      navigationConsistency: {
+        score: 50,
+        issues: ["Limited navigation analysis"],
+      },
+      contentConsistency: { score: 50, issues: ["Single page analysis only"] },
     };
   }
 
@@ -439,42 +468,65 @@ function analyzeCrossPageConsistency(crawlResults: any[]) {
   };
 
   // Check logo consistency
-  const pagesWithLogo = crawlResults.filter(page => page.brandElements.logo).length;
+  const pagesWithLogo = crawlResults.filter(
+    (page) => page.brandElements.logo,
+  ).length;
   const logoConsistency = (pagesWithLogo / crawlResults.length) * 100;
 
   if (logoConsistency < 80) {
     analysis.brandConsistency.score -= 15;
-    analysis.brandConsistency.issues.push('Logo not consistently present across all pages');
-    analysis.brandConsistency.recommendations.push('Ensure logo appears on all pages for brand recognition');
+    analysis.brandConsistency.issues.push(
+      "Logo not consistently present across all pages",
+    );
+    analysis.brandConsistency.recommendations.push(
+      "Ensure logo appears on all pages for brand recognition",
+    );
   }
 
   // Check navigation consistency
-  const uniqueNavs = new Set(crawlResults.map(page => page.navigation.mainNav)).size;
-  if (uniqueNavs > 2) { // Allow for some variation
+  const uniqueNavs = new Set(
+    crawlResults.map((page) => page.navigation.mainNav),
+  ).size;
+  if (uniqueNavs > 2) {
+    // Allow for some variation
     analysis.navigationConsistency.score -= 20;
-    analysis.navigationConsistency.issues.push('Navigation structure varies significantly between pages');
-    analysis.navigationConsistency.recommendations.push('Standardize navigation menu across all pages');
+    analysis.navigationConsistency.issues.push(
+      "Navigation structure varies significantly between pages",
+    );
+    analysis.navigationConsistency.recommendations.push(
+      "Standardize navigation menu across all pages",
+    );
   }
 
   // Check title tag patterns
-  const titlePatterns = crawlResults.map(page => {
+  const titlePatterns = crawlResults.map((page) => {
     const title = page.title;
-    return title.includes('|') || title.includes('-') ? 'structured' : 'simple';
+    return title.includes("|") || title.includes("-") ? "structured" : "simple";
   });
-  const consistentTitles = titlePatterns.filter(p => p === titlePatterns[0]).length;
+  const consistentTitles = titlePatterns.filter(
+    (p) => p === titlePatterns[0],
+  ).length;
 
   if (consistentTitles / crawlResults.length < 0.8) {
     analysis.contentConsistency.score -= 10;
-    analysis.contentConsistency.issues.push('Title tag format inconsistent across pages');
-    analysis.contentConsistency.recommendations.push('Establish consistent title tag pattern (e.g., "Page Title | Brand Name")');
+    analysis.contentConsistency.issues.push(
+      "Title tag format inconsistent across pages",
+    );
+    analysis.contentConsistency.recommendations.push(
+      'Establish consistent title tag pattern (e.g., "Page Title | Brand Name")',
+    );
   }
 
   // Check heading structure consistency
-  const pagesWithH1 = crawlResults.filter(page => page.headings.h1.length > 0).length;
+  const pagesWithH1 = crawlResults.filter(
+    (page) => page.headings.h1.length > 0,
+  ).length;
   if (pagesWithH1 / crawlResults.length < 0.9) {
     analysis.contentConsistency.score -= 15;
-    analysis.contentConsistency.issues.push('Some pages missing H1 headings');
-    analysis.contentConsistency.recommendations.push('Ensure every page has exactly one H1 heading');
+    analysis.contentConsistency.issues.push("Some pages missing H1 headings");
+    analysis.contentConsistency.recommendations.push(
+      "Ensure every page has exactly one H1 heading",
+    );
   }
 
   return analysis;
@@ -561,8 +613,12 @@ async function scrapeWebsite(url: string) {
       const uxFeatures = await analyzeUXFeatures(response.data);
 
       // Perform multi-page crawling
-      console.log('Starting comprehensive multi-page crawling...');
-      const multiPageResults = await crawlMultiplePages(url, siteStructure.discoveredPages, 8);
+      console.log("Starting comprehensive multi-page crawling...");
+      const multiPageResults = await crawlMultiplePages(
+        url,
+        siteStructure.discoveredPages,
+        8,
+      );
       const crossPageAnalysis = analyzeCrossPageConsistency(multiPageResults);
 
       return {
@@ -587,12 +643,28 @@ async function scrapeWebsite(url: string) {
           pagesAnalyzed: multiPageResults.length,
           pageDetails: multiPageResults,
           crossPageConsistency: crossPageAnalysis,
-          totalContentLength: multiPageResults.reduce((sum, page) => sum + page.contentLength, 0),
-          avgImagesPerPage: multiPageResults.length > 0 ?
-            multiPageResults.reduce((sum, page) => sum + page.images.total, 0) / multiPageResults.length : 0,
-          avgFormsPerPage: multiPageResults.length > 0 ?
-            multiPageResults.reduce((sum, page) => sum + page.forms.count, 0) / multiPageResults.length : 0,
-          pageTypes: multiPageResults.map(page => ({ url: page.url, type: page.pageType })),
+          totalContentLength: multiPageResults.reduce(
+            (sum, page) => sum + page.contentLength,
+            0,
+          ),
+          avgImagesPerPage:
+            multiPageResults.length > 0
+              ? multiPageResults.reduce(
+                  (sum, page) => sum + page.images.total,
+                  0,
+                ) / multiPageResults.length
+              : 0,
+          avgFormsPerPage:
+            multiPageResults.length > 0
+              ? multiPageResults.reduce(
+                  (sum, page) => sum + page.forms.count,
+                  0,
+                ) / multiPageResults.length
+              : 0,
+          pageTypes: multiPageResults.map((page) => ({
+            url: page.url,
+            type: page.pageType,
+          })),
         },
         analysisDepth: "comprehensive-multipage",
       };
@@ -669,9 +741,11 @@ UX Features:
 Analysis Depth: ${websiteData.analysisDepth || "basic"}
 
 Multi-Page Analysis Results:
-${websiteData.multiPageAnalysis ? `
+${
+  websiteData.multiPageAnalysis
+    ? `
 - Pages Analyzed: ${websiteData.multiPageAnalysis.pagesAnalyzed} pages across the website
-- Page Types Found: ${websiteData.multiPageAnalysis.pageTypes.map(p => `${p.type} (${p.url})`).join(', ')}
+- Page Types Found: ${websiteData.multiPageAnalysis.pageTypes.map((p) => `${p.type} (${p.url})`).join(", ")}
 - Total Content Length: ${Math.round(websiteData.multiPageAnalysis.totalContentLength / 1000)}K characters
 - Average Images per Page: ${Math.round(websiteData.multiPageAnalysis.avgImagesPerPage)} images
 - Average Forms per Page: ${websiteData.multiPageAnalysis.avgFormsPerPage.toFixed(1)} forms
@@ -680,19 +754,26 @@ Cross-Page Consistency Analysis:
 - Brand Consistency Score: ${websiteData.multiPageAnalysis.crossPageConsistency.brandConsistency.score}%
 - Navigation Consistency Score: ${websiteData.multiPageAnalysis.crossPageConsistency.navigationConsistency.score}%
 - Content Consistency Score: ${websiteData.multiPageAnalysis.crossPageConsistency.contentConsistency.score}%
-- Brand Issues Found: ${websiteData.multiPageAnalysis.crossPageConsistency.brandConsistency.issues.join('; ') || 'None'}
-- Navigation Issues: ${websiteData.multiPageAnalysis.crossPageConsistency.navigationConsistency.issues.join('; ') || 'None'}
-- Content Issues: ${websiteData.multiPageAnalysis.crossPageConsistency.contentConsistency.issues.join('; ') || 'None'}
+- Brand Issues Found: ${websiteData.multiPageAnalysis.crossPageConsistency.brandConsistency.issues.join("; ") || "None"}
+- Navigation Issues: ${websiteData.multiPageAnalysis.crossPageConsistency.navigationConsistency.issues.join("; ") || "None"}
+- Content Issues: ${websiteData.multiPageAnalysis.crossPageConsistency.contentConsistency.issues.join("; ") || "None"}
 
 Individual Page Analysis:
-${websiteData.multiPageAnalysis.pageDetails.slice(0, 5).map(page => `
+${websiteData.multiPageAnalysis.pageDetails
+  .slice(0, 5)
+  .map(
+    (page) => `
 - ${page.pageType.toUpperCase()}: ${page.url}
   * Title: "${page.title}"
-  * H1 headings: ${page.headings.h1.length} (${page.headings.h1.slice(0, 2).join(', ')})
+  * H1 headings: ${page.headings.h1.length} (${page.headings.h1.slice(0, 2).join(", ")})
   * Images: ${page.images.total} total, ${page.images.missingAlt} without alt text
-  * Forms: ${page.forms.count} forms, Labels: ${page.forms.hasLabels ? 'Yes' : 'No'}
-  * Content Length: ${Math.round(page.contentLength / 1000)}K characters`).join('\n')}
-` : 'Single page analysis only - multi-page crawling not available'}
+  * Forms: ${page.forms.count} forms, Labels: ${page.forms.hasLabels ? "Yes" : "No"}
+  * Content Length: ${Math.round(page.contentLength / 1000)}K characters`,
+  )
+  .join("\n")}
+`
+    : "Single page analysis only - multi-page crawling not available"
+}
 
 Please provide a detailed analysis covering these 6 key areas:
 
