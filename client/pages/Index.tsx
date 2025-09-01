@@ -194,7 +194,7 @@ export default function Index() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(auditRequest),
-        signal: createTimeoutSignal(60000), // 60s timeout
+        signal: createTimeoutSignal(120000), // 120s timeout for multi-page crawl
       });
 
       console.log("API response status:", response.status);
