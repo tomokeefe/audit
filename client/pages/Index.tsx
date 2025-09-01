@@ -379,6 +379,26 @@ export default function Index() {
     <div className="min-h-screen bg-gray-50">
       <Header />
 
+      {/* Debug Panel - Remove this in production */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="bg-yellow-50 border-b border-yellow-200 p-3">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h3 className="text-sm font-medium text-yellow-800 mb-2">Debug: API Status</h3>
+            <div className="flex gap-4 text-xs">
+              <span className={`flex items-center gap-1 ${apiStatus.ping ? 'text-green-700' : 'text-red-700'}`}>
+                {apiStatus.ping ? '✓' : '✗'} Ping API
+              </span>
+              <span className={`flex items-center gap-1 ${apiStatus.audits ? 'text-green-700' : 'text-red-700'}`}>
+                {apiStatus.audits ? '✓' : '✗'} Audits API
+              </span>
+              {apiStatus.error && (
+                <span className="text-red-700">Error: {apiStatus.error}</span>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
       <div className="bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
