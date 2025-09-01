@@ -33,7 +33,116 @@ import {
   Check,
   Mail,
   MessageCircle,
+  Target,
+  TrendingDown,
+  Shield,
+  Zap,
 } from "lucide-react";
+
+// SWOT Matrix Component for Competitor Analysis
+function SWOTMatrix({ sectionName }: { sectionName: string }) {
+  // Sample SWOT data - in a real implementation, this would come from the audit data
+  const swotData = {
+    strengths: [
+      "Unique technology platform",
+      "Strong brand recognition",
+      "Experienced team",
+      "Market-leading features",
+    ],
+    weaknesses: [
+      "Limited market reach",
+      "Higher pricing",
+      "Smaller social presence",
+      "Fewer integrations",
+    ],
+    opportunities: [
+      "Emerging market segments",
+      "Partnership opportunities",
+      "Digital transformation trends",
+      "Mobile platform expansion",
+    ],
+    threats: [
+      "New competitive entrants",
+      "Economic uncertainty",
+      "Regulatory changes",
+      "Technology disruption",
+    ],
+  };
+
+  return (
+    <div className="mt-6 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border">
+      <div className="flex items-center gap-2 mb-4">
+        <Target className="h-5 w-5 text-blue-600" />
+        <h4 className="text-lg font-semibold text-gray-900">SWOT Analysis Matrix</h4>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Strengths */}
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <Zap className="h-4 w-4 text-green-600" />
+            <h5 className="font-semibold text-green-800">Strengths</h5>
+          </div>
+          <ul className="space-y-2">
+            {swotData.strengths.map((item, index) => (
+              <li key={index} className="flex gap-2 text-sm">
+                <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                <span className="text-green-700">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Weaknesses */}
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <TrendingDown className="h-4 w-4 text-red-600" />
+            <h5 className="font-semibold text-red-800">Weaknesses</h5>
+          </div>
+          <ul className="space-y-2">
+            {swotData.weaknesses.map((item, index) => (
+              <li key={index} className="flex gap-2 text-sm">
+                <div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
+                <span className="text-red-700">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Opportunities */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <TrendingUp className="h-4 w-4 text-blue-600" />
+            <h5 className="font-semibold text-blue-800">Opportunities</h5>
+          </div>
+          <ul className="space-y-2">
+            {swotData.opportunities.map((item, index) => (
+              <li key={index} className="flex gap-2 text-sm">
+                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                <span className="text-blue-700">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Threats */}
+        <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <Shield className="h-4 w-4 text-orange-600" />
+            <h5 className="font-semibold text-orange-800">Threats</h5>
+          </div>
+          <ul className="space-y-2">
+            {swotData.threats.map((item, index) => (
+              <li key={index} className="flex gap-2 text-sm">
+                <div className="w-1.5 h-1.5 bg-orange-500 rounded-full mt-2 flex-shrink-0"></div>
+                <span className="text-orange-700">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // Function to parse and style audit section content
 function parseAuditContent(content: string) {
