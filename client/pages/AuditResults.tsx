@@ -788,9 +788,12 @@ Best regards`);
                               </div>
                             </div>
 
-                            {/* Show SWOT Matrix for Competitor Analysis */}
+                            {/* Show SWOT Matrix and Competitive Metrics for Competitor Analysis */}
                             {section.name.toLowerCase().includes("competitor") && (
-                              <SWOTMatrix sectionName={section.name} auditData={auditData} />
+                              <>
+                                <CompetitiveMetrics auditData={auditData} />
+                                <SWOTMatrix sectionName={section.name} auditData={auditData} />
+                              </>
                             )}
                           </div>
                         </AccordionContent>
