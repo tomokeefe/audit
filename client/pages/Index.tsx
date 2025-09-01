@@ -277,27 +277,34 @@ export default function Index() {
       if (!response.ok) {
         let errorMessage = `Server error: ${response.status}`;
 
-        try {
-          // Read response as text first to avoid any stream consumption issues
-          const responseText = await response.text();
+        // Try to extract a meaningful error message safely
+        const contentType = response.headers.get("content-type") || "";
+        let responseText: string | null = null;
 
-          if (responseText && responseText.trim()) {
+        try {
+          if (!response.bodyUsed) {
+            // Prefer text to avoid JSON stream issues
+            responseText = await response.text();
+          }
+        } catch (readError) {
+          // If body was already consumed or unreadable, fall back to status text
+          console.warn("Unable to read error body:", readError);
+        }
+
+        if (responseText && responseText.trim()) {
+          if (contentType.includes("application/json")) {
             try {
-              // Try to parse as JSON
               const errorData = JSON.parse(responseText);
               errorMessage = errorData.error || errorMessage;
               console.error("API error details:", errorData);
-            } catch (jsonParseError) {
-              // If not valid JSON, use the text directly
-              errorMessage = `Server error: ${response.status} - ${responseText.substring(0, 100)}`;
-              console.error("Error response is not valid JSON:", responseText.substring(0, 200));
+            } catch {
+              errorMessage = `Server error: ${response.status} - ${responseText.substring(0, 120)}`;
             }
           } else {
-            errorMessage = `Server error: ${response.status} ${response.statusText}`;
+            errorMessage = `Server error: ${response.status} - ${responseText.substring(0, 120)}`;
           }
-        } catch (readError) {
+        } else {
           errorMessage = `Server error: ${response.status} ${response.statusText}`;
-          console.error("Failed to read error response:", readError);
         }
 
         throw new Error(errorMessage);
