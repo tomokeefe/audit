@@ -205,28 +205,29 @@ export default function Index() {
       if (!response.ok) {
         let errorMessage = `Server error: ${response.status}`;
 
-        // Clone the response to avoid "body stream already read" error
-        const clonedResponse = response.clone();
-
         try {
-          const errorData = await clonedResponse.json();
-          errorMessage = errorData.error || errorMessage;
-          console.error("API error details:", errorData);
-        } catch (parseError) {
-          // If JSON parsing fails, try to get text response
-          try {
-            const errorText = await response.text();
-            if (errorText && errorText.trim()) {
-              errorMessage = `Server error: ${response.status} - ${errorText.substring(0, 100)}`;
-            } else {
-              errorMessage = `Server error: ${response.status} ${response.statusText}`;
+          // Read response as text first to avoid any stream consumption issues
+          const responseText = await response.text();
+
+          if (responseText && responseText.trim()) {
+            try {
+              // Try to parse as JSON
+              const errorData = JSON.parse(responseText);
+              errorMessage = errorData.error || errorMessage;
+              console.error("API error details:", errorData);
+            } catch (jsonParseError) {
+              // If not valid JSON, use the text directly
+              errorMessage = `Server error: ${response.status} - ${responseText.substring(0, 100)}`;
+              console.error("Error response is not valid JSON:", responseText.substring(0, 200));
             }
-          } catch (textError) {
+          } else {
             errorMessage = `Server error: ${response.status} ${response.statusText}`;
-            console.error("Failed to parse error response as text:", textError);
           }
-          console.error("Failed to parse error response as JSON:", parseError);
+        } catch (readError) {
+          errorMessage = `Server error: ${response.status} ${response.statusText}`;
+          console.error("Failed to read error response:", readError);
         }
+
         throw new Error(errorMessage);
       }
 
