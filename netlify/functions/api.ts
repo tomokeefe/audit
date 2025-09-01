@@ -975,6 +975,7 @@ export const handler: Handler = async (event, context) => {
 
       try {
         // Step 1: Scrape website content with comprehensive analysis
+        console.log("Step 1: Starting website scraping for:", url);
         const websiteData = await scrapeWebsite(url);
         if (websiteData.fallbackUsed) {
           console.log("Using fallback data for analysis due to scraping issues");
@@ -986,6 +987,7 @@ export const handler: Handler = async (event, context) => {
         }
 
         // Step 2: Generate audit using Gemini AI
+        console.log("Step 2: Starting AI audit generation");
         const auditResult = await generateAudit(websiteData);
         console.log(
           "Audit generated successfully. Overall score:",
@@ -993,6 +995,7 @@ export const handler: Handler = async (event, context) => {
         );
 
         // Step 3: Store audit result for sharing
+        console.log("Step 3: Storing audit result");
         auditStorage.set(auditResult.id, auditResult);
         console.log(`Stored audit ${auditResult.id} for sharing`);
 
@@ -1003,29 +1006,59 @@ export const handler: Handler = async (event, context) => {
         };
       } catch (auditError) {
         console.error("Audit generation error:", auditError);
+        console.error("Error stack:", auditError instanceof Error ? auditError.stack : "No stack trace");
+
+        // Log additional debugging information
+        if (auditError instanceof Error) {
+          console.error("Error name:", auditError.name);
+          console.error("Error message:", auditError.message);
+        }
 
         // Provide more specific error messages
         let errorMessage = "Internal server error";
+        let statusCode = 500;
+
         if (auditError instanceof Error) {
           if (
             auditError.message.includes("fetch") ||
-            auditError.message.includes("timeout")
+            auditError.message.includes("timeout") ||
+            auditError.message.includes("ENOTFOUND") ||
+            auditError.message.includes("ECONNREFUSED")
           ) {
             errorMessage =
               "Unable to access the website. Please check the URL and try again.";
+            statusCode = 400;
           } else if (
-            auditError.message.includes("Invalid response format")
+            auditError.message.includes("Invalid response format") ||
+            auditError.message.includes("AI service") ||
+            auditError.message.includes("generateContent")
           ) {
             errorMessage = "AI service error. Please try again in a moment.";
+            statusCode = 503;
+          } else if (
+            auditError.message.includes("API key") ||
+            auditError.message.includes("authentication")
+          ) {
+            errorMessage = "Server configuration error. Please contact support.";
+            statusCode = 500;
           } else {
-            errorMessage = auditError.message;
+            // Use the actual error message but sanitize it
+            errorMessage = auditError.message.substring(0, 200);
           }
         }
 
         return {
-          statusCode: 500,
+          statusCode,
           headers,
-          body: JSON.stringify({ error: errorMessage }),
+          body: JSON.stringify({
+            error: errorMessage,
+            ...(process.env.NODE_ENV === 'development' && {
+              debug: {
+                originalError: auditError instanceof Error ? auditError.message : String(auditError),
+                timestamp: new Date().toISOString()
+              }
+            })
+          }),
         };
       }
     }
