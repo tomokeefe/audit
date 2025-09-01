@@ -37,6 +37,9 @@ import {
   TrendingDown,
   Shield,
   Zap,
+  BarChart3,
+  Activity,
+  Users,
 } from "lucide-react";
 
 // SWOT Matrix Component for Competitor Analysis
