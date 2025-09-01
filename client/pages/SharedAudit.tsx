@@ -22,7 +22,7 @@ import {
   Lightbulb,
 } from "lucide-react";
 
-// Function to parse and style audit section content (same as AuditResults)
+// Function to parse and style audit section content
 function parseAuditContent(content: string) {
   const lines = content
     .split("\n")
@@ -38,22 +38,24 @@ function parseAuditContent(content: string) {
   let currentContent: string[] = [];
 
   for (const line of lines) {
-    if (line.match(/\*\*Issues?\*\*:?/i)) {
+    // Check for both markdown (**Issues**:) and plain text (Issues:) formats
+    if (line.match(/(\*\*)?Issues?\*?\*?:?/i)) {
       if (currentContent.length > 0) {
         sections.push({ type: currentSection, content: [...currentContent] });
         currentContent = [];
       }
       currentSection = "issues";
-    } else if (line.match(/\*\*Recommendations?\*\*:?/i)) {
+    } else if (line.match(/(\*\*)?Recommendations?\*?\*?:?/i)) {
       if (currentContent.length > 0) {
         sections.push({ type: currentSection, content: [...currentContent] });
         currentContent = [];
       }
       currentSection = "recommendations";
-    } else if (!line.match(/\*\*(Issues?|Recommendations?)\*\*:?/i)) {
+    } else if (!line.match(/(\*\*)?(Issues?|Recommendations?)\*?\*?:?/i)) {
+      // Clean up markdown formatting and numbered lists
       const cleanLine = line
-        .replace(/^\*\*|\*\*$/g, "")
-        .replace(/^\d+\.\s*/, "")
+        .replace(/^\*\*|\*\*$/g, "") // Remove bold markdown
+        .replace(/^\d+\.\s*/, "") // Remove numbered list formatting
         .trim();
 
       if (cleanLine) {
@@ -62,6 +64,7 @@ function parseAuditContent(content: string) {
     }
   }
 
+  // Add the final section
   if (currentContent.length > 0) {
     sections.push({ type: currentSection, content: currentContent });
   }
