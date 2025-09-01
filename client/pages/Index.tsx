@@ -103,12 +103,17 @@ export default function Index() {
   // Debug function to test API connectivity
   const testAPIConnection = async () => {
     console.log("Testing API connection...");
+    let pingOk = false;
+    let auditsOk = false;
+    let errorMsg = "";
+
     try {
       // Test with a simple ping first
       const pingResponse = await fetch("/api/ping");
       console.log("Ping response status:", pingResponse.status);
       console.log("Ping response ok:", pingResponse.ok);
 
+      pingOk = pingResponse.ok;
       if (pingResponse.ok) {
         const pingData = await pingResponse.json();
         console.log("Ping data:", pingData);
@@ -120,16 +125,21 @@ export default function Index() {
       console.log("Audits response ok:", auditsResponse.ok);
       console.log("Audits response url:", auditsResponse.url);
 
+      auditsOk = auditsResponse.ok;
       if (auditsResponse.ok) {
         const auditsData = await auditsResponse.json();
         console.log("Audits data:", auditsData);
       } else {
         const errorText = await auditsResponse.text();
         console.log("Audits error response:", errorText);
+        errorMsg = `Audits API error: ${auditsResponse.status} ${auditsResponse.statusText}`;
       }
     } catch (error) {
       console.error("API test failed:", error);
+      errorMsg = error instanceof Error ? error.message : "Unknown error";
     }
+
+    setApiStatus({ ping: pingOk, audits: auditsOk, error: errorMsg });
   };
 
   useEffect(() => {
