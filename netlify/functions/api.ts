@@ -759,17 +759,33 @@ ${websiteData.multiPageAnalysis.pageDetails
     : "Single page analysis only - multi-page crawling not available"
 }
 
-Please provide a detailed analysis covering these 6 key areas:
+Please provide a detailed analysis covering these 9 key areas based on the updated comprehensive audit framework:
 
-1. **Brand Consistency** (Score 0-100): Use the cross-page analysis to evaluate:
+1. **Branding** (Score 0-100, Weight: 20%): Core identity, positioning, and market perception:
    - Logo presence and placement consistency across all analyzed pages
    - Brand element consistency (colors, fonts, imagery) throughout the site
    - Title tag patterns and brand name usage across different page types
-   - Navigation and header/footer consistency across the entire website
    - Brand voice and messaging alignment across different content areas
    - Visual identity coherence from homepage to internal pages
+   - Market positioning clarity and differentiation
 
-2. **User Experience (UX)** (Score 0-100): Use the comprehensive multi-page analysis to evaluate:
+2. **Design** (Score 0-100, Weight: 15%): Visual consistency and aesthetic effectiveness:
+   - Visual hierarchy and layout consistency across pages
+   - Color scheme usage and brand alignment
+   - Typography choices and readability
+   - White space usage and overall aesthetic appeal
+   - Mobile-responsive design implementation
+   - Cross-page design consistency
+
+3. **Messaging** (Score 0-100, Weight: 15%): Communication tone, clarity, and alignment:
+   - Content clarity and messaging effectiveness
+   - Brand voice consistency across all pages
+   - Value proposition clarity and communication
+   - Call-to-action strength and placement
+   - Audience-appropriate messaging tone
+   - Messaging hierarchy and information flow
+
+4. **Usability** (Score 0-100, Weight: 15%): User-friendliness across digital touchpoints:
    - Navigation consistency across all analyzed pages and user journey flow
    - Page performance metrics (actual load times, page sizes, optimization)
    - Mobile responsiveness indicators and cross-device usability
@@ -777,15 +793,46 @@ Please provide a detailed analysis covering these 6 key areas:
    - Interactive elements and their consistency across pages
    - Site architecture and information hierarchy based on actual page discovery
    - Content organization and user flow patterns across different page types
-   - Cross-page consistency in user interface elements and interactions
 
-3. **Visual Design** (Score 0-100): Assess visual hierarchy, color usage, typography choices, white space usage, and overall aesthetic appeal.
+5. **Content Strategy** (Score 0-100, Weight: 10%): Content creation, distribution, and effectiveness:
+   - Content quality and relevance across all pages
+   - Information architecture and content organization
+   - Content freshness and regular updates
+   - SEO content optimization and keyword strategy
+   - Content variety and engagement potential
+   - Cross-page content consistency and flow
 
-4. **Content Quality** (Score 0-100): Evaluate content clarity, messaging effectiveness, call-to-action strength, information architecture, and content relevance.
+6. **Digital Presence** (Score 0-100, Weight: 10%): Online visibility and performance:
+   - SEO optimization (title tags, meta descriptions, heading structure)
+   - Technical SEO elements visible in the HTML
+   - Social media integration and presence
+   - Online discoverability and search visibility
+   - Digital marketing integration
+   - Cross-platform consistency
 
-5. **SEO & Performance** (Score 0-100): Review title tag optimization, meta description quality, heading structure, content structure, and technical SEO elements visible in the HTML.
+7. **Customer Experience** (Score 0-100, Weight: 5%): Interactions and satisfaction across touchpoints:
+   - User journey optimization and flow
+   - Contact information accessibility and clarity
+   - Customer support integration and visibility
+   - Trust signals and credibility indicators
+   - Conversion optimization elements
+   - Customer feedback and review integration
 
-6. **Security & Compliance** (Score 0-100): Check for HTTPS usage, privacy policy presence, contact information availability, and professional credibility indicators.
+8. **Competitor Analysis** (Score 0-100, Weight: 10%): Benchmarks against rivals in positioning, performance, and market opportunities:
+   - **Strengths Comparison (0-30)**: Conduct SWOT analysis to identify where the brand excels or lags compared to competitors
+   - **Market Positioning (0-30)**: Evaluate relative market share, pricing, and differentiation strategies
+   - **Performance Metrics (0-20)**: Compare KPIs such as website performance, social engagement, and online presence
+   - **Opportunities/Threats (0-20)**: Identify market gaps, untapped channels, and emerging competitive risks
+   - Competitive advantage identification and leverage opportunities
+   - Market differentiation analysis and recommendations
+
+9. **Consistency & Compliance** (Score 0-100, Weight: 5%): Uniformity and legal adherence across brand assets:
+   - HTTPS usage and security compliance
+   - Privacy policy presence and accessibility
+   - Legal compliance and professional credibility indicators
+   - Brand consistency across all touchpoints
+   - Regulatory compliance indicators
+   - Professional standards adherence
 
 For each section, provide:
 - A numerical score (0-100)
