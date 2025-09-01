@@ -362,25 +362,25 @@ export default function SharedAudit() {
                             <div className="space-y-3">
                               <div className="flex items-center gap-2 mb-4">
                                 <XCircle className="h-5 w-5 text-red-600" />
-                                <h4 className="text-lg font-semibold text-gray-900">
-                                  Issues Identified
+                                <h4 className="text-lg font-bold text-gray-900">
+                                  Issues:
                                 </h4>
                               </div>
-                              <div className="space-y-3">
+                              <ul className="space-y-3">
                                 {contentSection.content.map(
                                   (issue, itemIndex) => (
-                                    <div
+                                    <li
                                       key={itemIndex}
-                                      className="flex gap-3 p-3 bg-red-50 border border-red-100 rounded-lg"
+                                      className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors"
                                     >
-                                      <AlertTriangle className="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" />
-                                      <p className="text-red-800 text-sm leading-relaxed">
+                                      <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
+                                      <p className="text-red-800 leading-relaxed">
                                         {issue}
                                       </p>
-                                    </div>
+                                    </li>
                                   ),
                                 )}
-                              </div>
+                              </ul>
                             </div>
                           )}
 
