@@ -204,13 +204,28 @@ export default function Index() {
       // Check if response is valid
       if (!response.ok) {
         let errorMessage = `Server error: ${response.status}`;
+
+        // Clone the response to avoid "body stream already read" error
+        const clonedResponse = response.clone();
+
         try {
-          const errorData = await response.json();
+          const errorData = await clonedResponse.json();
           errorMessage = errorData.error || errorMessage;
           console.error("API error details:", errorData);
         } catch (parseError) {
-          errorMessage = `Server error: ${response.status} ${response.statusText}`;
-          console.error("Failed to parse error response:", parseError);
+          // If JSON parsing fails, try to get text response
+          try {
+            const errorText = await response.text();
+            if (errorText && errorText.trim()) {
+              errorMessage = `Server error: ${response.status} - ${errorText.substring(0, 100)}`;
+            } else {
+              errorMessage = `Server error: ${response.status} ${response.statusText}`;
+            }
+          } catch (textError) {
+            errorMessage = `Server error: ${response.status} ${response.statusText}`;
+            console.error("Failed to parse error response as text:", textError);
+          }
+          console.error("Failed to parse error response as JSON:", parseError);
         }
         throw new Error(errorMessage);
       }
