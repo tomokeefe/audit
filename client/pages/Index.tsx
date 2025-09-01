@@ -58,26 +58,38 @@ export default function Index() {
     try {
       setLoadingAudits(true);
       const response = await fetch("/api/audits");
-      if (response.ok) {
-        const data = await response.json();
-        const audits = data.audits || [];
 
-        // Store all audits for analytics
-        setAllAudits(audits);
-
-        // Get the 3 most recent audits
-        const recent = audits
-          .sort(
-            (a: AuditSummary, b: AuditSummary) =>
-              new Date(b.date).getTime() - new Date(a.date).getTime(),
-          )
-          .slice(0, 3);
-        setRecentAudits(recent);
+      if (!response.ok) {
+        console.warn(`API returned ${response.status}: ${response.statusText}`);
+        // Handle non-200 responses gracefully
+        setRecentAudits([]);
+        setAllAudits([]);
+        return;
       }
+
+      const data = await response.json();
+      const audits = data.audits || [];
+
+      // Store all audits for analytics
+      setAllAudits(audits);
+
+      // Get the 3 most recent audits
+      const recent = audits
+        .sort(
+          (a: AuditSummary, b: AuditSummary) =>
+            new Date(b.date).getTime() - new Date(a.date).getTime(),
+        )
+        .slice(0, 3);
+      setRecentAudits(recent);
     } catch (error) {
       console.error("Failed to load recent audits:", error);
+      // Provide more detailed error information
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        console.error("Network error: Unable to connect to the API server");
+      }
       // Fallback to empty array on error
       setRecentAudits([]);
+      setAllAudits([]);
     } finally {
       setLoadingAudits(false);
     }
