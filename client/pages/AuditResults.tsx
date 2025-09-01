@@ -40,34 +40,59 @@ import {
 } from "lucide-react";
 
 // SWOT Matrix Component for Competitor Analysis
-function SWOTMatrix({ sectionName }: { sectionName: string }) {
-  // Sample SWOT data - in a real implementation, this would come from the audit data
-  const swotData = {
-    strengths: [
-      "Unique technology platform",
-      "Strong brand recognition",
-      "Experienced team",
-      "Market-leading features",
-    ],
-    weaknesses: [
-      "Limited market reach",
-      "Higher pricing",
-      "Smaller social presence",
-      "Fewer integrations",
-    ],
-    opportunities: [
-      "Emerging market segments",
-      "Partnership opportunities",
-      "Digital transformation trends",
-      "Mobile platform expansion",
-    ],
-    threats: [
-      "New competitive entrants",
-      "Economic uncertainty",
-      "Regulatory changes",
-      "Technology disruption",
-    ],
+function SWOTMatrix({ sectionName, auditData }: { sectionName: string; auditData?: any }) {
+  // Parse SWOT data from audit content if available
+  const parseSWOTFromContent = (content: string) => {
+    const defaultData = {
+      strengths: ["Strong brand positioning", "User-friendly interface", "Quality content"],
+      weaknesses: ["Limited competitive analysis", "Missing industry benchmarks", "Unclear market position"],
+      opportunities: ["Market differentiation", "Enhanced digital presence", "Strategic partnerships"],
+      threats: ["Increased competition", "Market saturation", "Technology changes"],
+    };
+
+    if (!content) return defaultData;
+
+    const sections = {
+      strengths: [] as string[],
+      weaknesses: [] as string[],
+      opportunities: [] as string[],
+      threats: [] as string[],
+    };
+
+    // Extract SWOT items from content using regex patterns
+    const strengthsMatch = content.match(/Strengths?[:\s]*([\s\S]*?)(?=\n\s*Weaknesses?|$)/i);
+    const weaknessesMatch = content.match(/Weaknesses?[:\s]*([\s\S]*?)(?=\n\s*Opportunities?|$)/i);
+    const opportunitiesMatch = content.match(/Opportunities?[:\s]*([\s\S]*?)(?=\n\s*Threats?|$)/i);
+    const threatsMatch = content.match(/Threats?[:\s]*([\s\S]*?)(?=\n|$)/i);
+
+    const extractItems = (text: string): string[] => {
+      return text
+        .split(/[-•*]\s*/)
+        .map(item => item.trim())
+        .filter(item => item.length > 10 && item.length < 100)
+        .slice(0, 4);
+    };
+
+    if (strengthsMatch) sections.strengths = extractItems(strengthsMatch[1]);
+    if (weaknessesMatch) sections.weaknesses = extractItems(weaknessesMatch[1]);
+    if (opportunitiesMatch) sections.opportunities = extractItems(opportunitiesMatch[1]);
+    if (threatsMatch) sections.threats = extractItems(threatsMatch[1]);
+
+    // Use defaults for empty sections
+    Object.keys(sections).forEach(key => {
+      if (sections[key as keyof typeof sections].length === 0) {
+        sections[key as keyof typeof sections] = defaultData[key as keyof typeof defaultData];
+      }
+    });
+
+    return sections;
   };
+
+  const competitorSection = auditData?.sections?.find((s: any) =>
+    s.name.toLowerCase().includes('competitor')
+  );
+
+  const swotData = parseSWOTFromContent(competitorSection?.details || "");
 
   return (
     <div className="mt-6 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border">
