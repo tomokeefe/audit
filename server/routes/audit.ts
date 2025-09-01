@@ -114,7 +114,7 @@ async function analyzeWebsitePerformance(url: string) {
 
     const startTime = Date.now();
     const response = await axios.get(url, {
-      timeout: 10000,
+      timeout: 6000,
       maxRedirects: 5,
       validateStatus: (status) => status < 500,
     });
