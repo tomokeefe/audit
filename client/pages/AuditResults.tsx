@@ -536,174 +536,137 @@ Best regards`);
           </TabsContent>
 
           <TabsContent value="recommendations" className="mt-8">
-            <div className="space-y-6">
-              {auditData.sections.map((section, index) => {
-                const parsedContent = parseAuditContent(section.details);
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Lightbulb className="h-5 w-5 text-green-600" />
+                  Detailed Recommendations by Category
+                </CardTitle>
+                <CardDescription>
+                  Expand each section below to view specific recommendations and action items.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Accordion type="multiple" className="w-full">
+                  {auditData.sections.map((section, index) => {
+                    const parsedContent = parseAuditContent(section.details);
+                    const recommendationsContent = parsedContent.find(
+                      (content) => content.type === "recommendations"
+                    );
 
-                return (
-                  <Card key={index} className="overflow-hidden">
-                    <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 border-b">
-                      <CardTitle className="flex items-center justify-between">
-                        <span className="flex items-center gap-3">
-                          <div
-                            className={`p-2 rounded-lg ${getScoreBg(section.score)}`}
-                          >
-                            <Info className="h-5 w-5" />
-                          </div>
-                          <div>
-                            <div className="text-xl font-semibold text-gray-900">
-                              {section.name}
-                            </div>
-                            <div className="text-sm text-gray-600 font-normal">
-                              {section.issues} issues •{" "}
-                              {section.recommendations} recommendations
-                            </div>
-                          </div>
-                        </span>
-                        <div
-                          className={`px-4 py-2 rounded-full text-lg font-bold ${getScoreColor(section.score)} ${getScoreBg(section.score)} border`}
-                        >
-                          {section.score}%
-                        </div>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                      {parsedContent.map((contentSection, cIndex) => (
-                        <div
-                          key={cIndex}
-                          className="p-6 border-b last:border-b-0"
-                        >
-                          {contentSection.type === "overview" && (
-                            <div className="space-y-3">
-                              <div className="flex items-center gap-2 mb-4">
-                                <Info className="h-5 w-5 text-blue-600" />
-                                <h4 className="text-lg font-semibold text-gray-900">
-                                  Overview
-                                </h4>
+                    // Only show sections that have recommendations
+                    if (!recommendationsContent || recommendationsContent.content.length === 0) {
+                      return null;
+                    }
+
+                    return (
+                      <AccordionItem key={index} value={`item-${index}`}>
+                        <AccordionTrigger className="hover:no-underline">
+                          <div className="flex items-center justify-between w-full pr-4">
+                            <div className="flex items-center gap-3">
+                              <div
+                                className={`p-2 rounded-lg ${getScoreBg(section.score)}`}
+                              >
+                                <Lightbulb className="h-4 w-4" />
                               </div>
-                              {(() => {
-                                let currentSection = "overview";
-                                return contentSection.content.map(
-                                  (item, itemIndex) => {
-                                    // Check if this item is an "Issues:" or "Recommendations:" header
-                                    if (item.match(/^Issues?:?$/i)) {
-                                      currentSection = "issues";
-                                      return (
-                                        <h4
-                                          key={itemIndex}
-                                          className="text-lg font-bold text-gray-900 mt-6 mb-2 flex items-center gap-2"
-                                        >
-                                          <XCircle className="h-5 w-5 text-red-600" />
-                                          Issues:
-                                        </h4>
-                                      );
-                                    }
-                                    if (item.match(/^Recommendations?:?$/i)) {
-                                      currentSection = "recommendations";
-                                      return (
-                                        <h4
-                                          key={itemIndex}
-                                          className="text-lg font-bold text-gray-900 mt-6 mb-2 flex items-center gap-2"
-                                        >
-                                          <Lightbulb className="h-5 w-5 text-green-600" />
-                                          Recommendations:
-                                        </h4>
-                                      );
-                                    }
-
-                                    // Style bullets based on current section
-                                    const bulletColor =
-                                      currentSection === "issues"
-                                        ? "bg-red-500"
-                                        : currentSection === "recommendations"
-                                          ? "bg-green-500"
-                                          : "bg-gray-400";
-                                    const textColor =
-                                      currentSection === "issues"
-                                        ? "text-gray-700"
-                                        : currentSection === "recommendations"
-                                          ? "text-gray-700"
-                                          : "text-gray-700";
-
-                                    return (
-                                      <div
-                                        key={itemIndex}
-                                        className="flex gap-3 items-start p-2 rounded-lg hover:bg-gray-50 transition-colors"
-                                      >
-                                        <div
-                                          className={`w-2 h-2 ${bulletColor} rounded-full mt-2 flex-shrink-0`}
-                                        ></div>
-                                        <p
-                                          className={`${textColor} leading-relaxed flex-1`}
-                                        >
+                              <div className="text-left">
+                                <div className="text-lg font-semibold text-gray-900">
+                                  {section.name}
+                                </div>
+                                <div className="text-sm text-gray-600 font-normal">
+                                  {section.recommendations} recommendations • Score: {section.score}%
+                                </div>
+                              </div>
+                            </div>
+                            <div
+                              className={`px-3 py-1 rounded-full text-sm font-bold ${getScoreColor(section.score)} ${getScoreBg(section.score)} border mr-2`}
+                            >
+                              {section.score}%
+                            </div>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <div className="pt-4 space-y-4">
+                            {/* Show Overview if available */}
+                            {parsedContent.find((content) => content.type === "overview") && (
+                              <div className="space-y-3">
+                                <div className="flex items-center gap-2 mb-3">
+                                  <Info className="h-4 w-4 text-blue-600" />
+                                  <h5 className="font-semibold text-gray-900">Overview</h5>
+                                </div>
+                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                  {parsedContent
+                                    .find((content) => content.type === "overview")
+                                    ?.content.map((item, itemIndex) => (
+                                      <div key={itemIndex} className="flex gap-3 items-start">
+                                        <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                                        <p className="text-blue-800 text-sm leading-relaxed">
                                           {item}
                                         </p>
                                       </div>
-                                    );
-                                  },
-                                );
-                              })()}
-                            </div>
-                          )}
-
-                          {contentSection.type === "issues" && (
-                            <div className="space-y-3">
-                              <div className="flex items-center gap-2 mb-4">
-                                <XCircle className="h-5 w-5 text-red-600" />
-                                <h4 className="text-lg font-bold text-gray-900">
-                                  Issues:
-                                </h4>
+                                    ))}
+                                </div>
                               </div>
-                              <ul className="space-y-3">
-                                {contentSection.content.map(
-                                  (issue, itemIndex) => (
-                                    <li
-                                      key={itemIndex}
-                                      className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors"
-                                    >
-                                      <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
-                                      <p className="text-red-800 leading-relaxed">
-                                        {issue}
-                                      </p>
-                                    </li>
-                                  ),
-                                )}
-                              </ul>
-                            </div>
-                          )}
+                            )}
 
-                          {contentSection.type === "recommendations" && (
-                            <div className="space-y-3">
-                              <div className="flex items-center gap-2 mb-4">
-                                <Lightbulb className="h-5 w-5 text-green-600" />
-                                <h4 className="text-lg font-bold text-gray-900">
-                                  Recommendations:
-                                </h4>
+                            {/* Show Issues if available */}
+                            {parsedContent.find((content) => content.type === "issues") && (
+                              <div className="space-y-3">
+                                <div className="flex items-center gap-2 mb-3">
+                                  <XCircle className="h-4 w-4 text-red-600" />
+                                  <h5 className="font-semibold text-gray-900">Issues Found</h5>
+                                </div>
+                                <div className="space-y-2">
+                                  {parsedContent
+                                    .find((content) => content.type === "issues")
+                                    ?.content.map((issue, itemIndex) => (
+                                      <div
+                                        key={itemIndex}
+                                        className="flex gap-3 p-3 bg-red-50 border border-red-200 rounded-lg"
+                                      >
+                                        <div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
+                                        <p className="text-red-800 text-sm leading-relaxed">
+                                          {issue}
+                                        </p>
+                                      </div>
+                                    ))}
+                                </div>
                               </div>
-                              <ul className="space-y-3">
-                                {contentSection.content.map(
-                                  (recommendation, itemIndex) => (
-                                    <li
-                                      key={itemIndex}
-                                      className="flex gap-3 p-4 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors"
-                                    >
-                                      <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                                      <p className="text-green-800 leading-relaxed">
-                                        {recommendation}
-                                      </p>
-                                    </li>
-                                  ),
-                                )}
-                              </ul>
+                            )}
+
+                            {/* Show Recommendations */}
+                            <div className="space-y-3">
+                              <div className="flex items-center gap-2 mb-3">
+                                <Lightbulb className="h-4 w-4 text-green-600" />
+                                <h5 className="font-semibold text-gray-900">Recommended Actions</h5>
+                              </div>
+                              <div className="space-y-2">
+                                {recommendationsContent.content.map((recommendation, itemIndex) => (
+                                  <div
+                                    key={itemIndex}
+                                    className="flex gap-3 p-3 bg-green-50 border border-green-200 rounded-lg"
+                                  >
+                                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                                    <p className="text-green-800 text-sm leading-relaxed">
+                                      {recommendation}
+                                    </p>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
-                          )}
-                        </div>
-                      ))}
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
+
+                            {/* Show SWOT Matrix for Competitor Analysis */}
+                            {section.name.toLowerCase().includes("competitor") && (
+                              <SWOTMatrix sectionName={section.name} />
+                            )}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    );
+                  })}
+                </Accordion>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="next-steps" className="mt-8">
