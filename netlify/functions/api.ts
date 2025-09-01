@@ -759,6 +759,51 @@ ${websiteData.multiPageAnalysis.pageDetails
     : "Single page analysis only - multi-page crawling not available"
 }
 
+SCORING GUIDELINES: Use these exact criteria for consistency:
+- 90-100: Exceptional - Industry-leading, best practices fully implemented
+- 80-89: Strong - Good implementation with minor areas for improvement
+- 70-79: Adequate - Meets basic standards but has notable gaps
+- 60-69: Below Average - Significant issues requiring attention
+- 50-59: Poor - Major problems affecting user experience
+- 0-49: Critical - Fundamental issues requiring immediate action
+
+SCORING RATIONALE TEMPLATE: Always justify scores using this format:
+"Score: [X] because [2-3 specific positive findings] but [1-2 specific areas for improvement]"
+
+Example: "Score: 78 because the brand logo is consistently placed across all pages and color scheme maintains coherence, but messaging tone varies between sections and lacks unified brand voice throughout the customer journey."
+
+CONTENT QUALITY EXAMPLES:
+
+EXCELLENT (85-95): "The homepage immediately communicates value proposition with clear, benefit-focused headlines like 'Reduce Customer Support Tickets by 40% with AI-Powered Solutions.' Navigation uses action-oriented labels ('Get Started,' 'View Pricing') rather than generic terms. Content hierarchy guides users through logical progression from problem identification to solution demonstration."
+
+POOR (45-65): "Homepage features vague headline like 'Welcome to Our Company' with no clear value proposition. Navigation uses unclear labels like 'Solutions' without context. Content lacks logical flow and fails to address user pain points or demonstrate benefits."
+
+USABILITY SCORING EXAMPLES:
+
+EXCELLENT (90-100): "Site loads in under 2 seconds, features consistent navigation across all 8 analyzed pages, includes comprehensive alt text for all 47 images, implements proper heading hierarchy (single H1 per page), and provides clear contact information on every page. Mobile responsiveness verified across different viewport sizes."
+
+POOR (50-65): "Page load times exceed 5 seconds, navigation structure varies between pages, 23 of 34 images lack alt text, multiple H1 tags per page breaking accessibility standards, and contact information difficult to locate."
+
+BRANDING EXAMPLES:
+
+STRONG (80-90): "Brand logo appears consistently in header across all analyzed pages, color palette (#2B4C8C primary, #F8F9FA secondary) used systematically throughout site, typography hierarchy (Roboto headlines, Open Sans body) maintained across content sections, and brand voice remains professional yet approachable in all copy."
+
+WEAK (55-70): "Logo placement inconsistent between homepage and internal pages, color usage varies significantly across sections, mixing serif and sans-serif fonts without clear hierarchy, and tone shifts from formal on About page to casual on Services page."
+
+PROFESSIONAL TONE TEMPLATES:
+- Use "demonstrates strong foundation" instead of "looks good"
+- Write "requires strategic enhancement" instead of "needs work"
+- State "implementation gaps identified" rather than "problems found"
+- Employ "optimization opportunities" instead of "issues"
+- Use "strategic recommendations" rather than "suggestions"
+
+RECOMMENDATION SPECIFICITY:
+Instead of: "Improve navigation"
+Write: "Implement breadcrumb navigation on all internal pages, reduce main menu items from 8 to 5 core categories, and add search functionality to header for improved user wayfinding."
+
+Instead of: "Fix SEO"
+Write: "Optimize title tags to include primary keywords within 55 characters, add meta descriptions to 12 pages currently missing them, and implement proper H1-H6 heading hierarchy across all content sections."
+
 Please provide a detailed analysis covering these 9 key areas based on the updated comprehensive audit framework:
 
 1. **Branding** (Score 0-100, Weight: 20%): Core identity, positioning, and market perception:
