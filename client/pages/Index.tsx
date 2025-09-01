@@ -52,6 +52,11 @@ export default function Index() {
   const [recentAudits, setRecentAudits] = useState<AuditSummary[]>([]);
   const [loadingAudits, setLoadingAudits] = useState(true);
   const [allAudits, setAllAudits] = useState<AuditSummary[]>([]);
+  const [apiStatus, setApiStatus] = useState<{
+    ping: boolean;
+    audits: boolean;
+    error?: string;
+  }>({ ping: false, audits: false });
   const navigate = useNavigate();
 
   const loadRecentAudits = async () => {
