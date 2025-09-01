@@ -77,6 +77,9 @@ export default function Index() {
       const data = await response.json();
       const audits = data.audits || [];
 
+      // Update API status to reflect success
+      setApiStatus(prev => ({ ...prev, audits: true, error: undefined }));
+
       // Store all audits for analytics
       setAllAudits(audits);
 
