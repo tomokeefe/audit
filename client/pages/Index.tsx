@@ -65,7 +65,9 @@ export default function Index() {
       const response = await fetch("/api/audits");
 
       if (!response.ok) {
-        console.warn(`API returned ${response.status}: ${response.statusText}`);
+        const errorMsg = `API returned ${response.status}: ${response.statusText}`;
+        console.warn(errorMsg);
+        setApiStatus(prev => ({ ...prev, audits: false, error: errorMsg }));
         // Handle non-200 responses gracefully
         setRecentAudits([]);
         setAllAudits([]);
