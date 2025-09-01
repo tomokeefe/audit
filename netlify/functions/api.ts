@@ -854,22 +854,86 @@ CRITICAL - Use ALL Multi-Page Data: This analysis includes comprehensive crawlin
 Reference specific pages, metrics, and cross-page issues found in your recommendations. This is a comprehensive multi-page audit, not a single-page analysis.
 
 Also provide:
-- An overall score (average of all sections)
+- An overall score calculated using the weighted average: (0.20 × Branding) + (0.15 × Design) + (0.15 × Messaging) + (0.15 × Usability) + (0.10 × Content Strategy) + (0.10 × Digital Presence) + (0.05 × Customer Experience) + (0.10 × Competitor Analysis) + (0.05 × Consistency & Compliance)
 - A brief summary of the website's strengths and key areas for improvement
 - A professional title for this audit report
 
-Respond in this exact JSON format:
+Respond in this exact JSON format with ALL 9 sections:
 {
   "title": "Professional audit title",
   "description": "Brief description of the audit scope",
   "overallScore": 75,
   "sections": [
     {
-      "name": "Brand Consistency",
+      "name": "Branding",
       "score": 85,
       "maxScore": 100,
       "issues": 3,
       "recommendations": 5,
+      "details": "Detailed analysis and recommendations for this section..."
+    },
+    {
+      "name": "Design",
+      "score": 78,
+      "maxScore": 100,
+      "issues": 4,
+      "recommendations": 6,
+      "details": "Detailed analysis and recommendations for this section..."
+    },
+    {
+      "name": "Messaging",
+      "score": 82,
+      "maxScore": 100,
+      "issues": 2,
+      "recommendations": 4,
+      "details": "Detailed analysis and recommendations for this section..."
+    },
+    {
+      "name": "Usability",
+      "score": 75,
+      "maxScore": 100,
+      "issues": 5,
+      "recommendations": 7,
+      "details": "Detailed analysis and recommendations for this section..."
+    },
+    {
+      "name": "Content Strategy",
+      "score": 80,
+      "maxScore": 100,
+      "issues": 3,
+      "recommendations": 5,
+      "details": "Detailed analysis and recommendations for this section..."
+    },
+    {
+      "name": "Digital Presence",
+      "score": 65,
+      "maxScore": 100,
+      "issues": 6,
+      "recommendations": 8,
+      "details": "Detailed analysis and recommendations for this section..."
+    },
+    {
+      "name": "Customer Experience",
+      "score": 72,
+      "maxScore": 100,
+      "issues": 4,
+      "recommendations": 6,
+      "details": "Detailed analysis and recommendations for this section..."
+    },
+    {
+      "name": "Competitor Analysis",
+      "score": 78,
+      "maxScore": 100,
+      "issues": 4,
+      "recommendations": 6,
+      "details": "Detailed analysis including Strengths Comparison, Market Positioning, Performance Metrics, and Opportunities/Threats with specific competitive insights and recommendations..."
+    },
+    {
+      "name": "Consistency & Compliance",
+      "score": 90,
+      "maxScore": 100,
+      "issues": 1,
+      "recommendations": 2,
       "details": "Detailed analysis and recommendations for this section..."
     }
   ],
