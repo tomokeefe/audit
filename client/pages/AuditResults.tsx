@@ -172,6 +172,111 @@ function SWOTMatrix({ sectionName, auditData }: { sectionName: string; auditData
   );
 }
 
+// Competitive Metrics Dashboard Component
+function CompetitiveMetrics({ auditData }: { auditData: any }) {
+  // Extract performance data from audit
+  const overallScore = auditData?.overallScore || 0;
+  const sections = auditData?.sections || [];
+
+  // Calculate competitive positioning metrics
+  const metrics = [
+    {
+      name: "Website Performance",
+      yourScore: sections.find((s: any) => s.name.toLowerCase().includes('usability'))?.score || 0,
+      industryAverage: 72,
+      icon: Activity,
+      color: "blue",
+    },
+    {
+      name: "Brand Strength",
+      yourScore: sections.find((s: any) => s.name.toLowerCase().includes('branding'))?.score || 0,
+      industryAverage: 75,
+      icon: Target,
+      color: "purple",
+    },
+    {
+      name: "User Experience",
+      yourScore: sections.find((s: any) => s.name.toLowerCase().includes('customer'))?.score || 0,
+      industryAverage: 68,
+      icon: Users,
+      color: "green",
+    },
+    {
+      name: "Digital Presence",
+      yourScore: sections.find((s: any) => s.name.toLowerCase().includes('digital'))?.score || 0,
+      industryAverage: 70,
+      icon: Globe,
+      color: "orange",
+    },
+  ];
+
+  const getMetricColor = (yourScore: number, industryAverage: number) => {
+    if (yourScore >= industryAverage + 10) return "text-green-600 bg-green-50 border-green-200";
+    if (yourScore >= industryAverage - 5) return "text-yellow-600 bg-yellow-50 border-yellow-200";
+    return "text-red-600 bg-red-50 border-red-200";
+  };
+
+  const getCompetitivePosition = (yourScore: number, industryAverage: number) => {
+    if (yourScore >= industryAverage + 10) return "Leading";
+    if (yourScore >= industryAverage - 5) return "Competitive";
+    return "Behind";
+  };
+
+  return (
+    <div className="mt-6 p-6 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border">
+      <div className="flex items-center gap-2 mb-4">
+        <BarChart3 className="h-5 w-5 text-gray-600" />
+        <h4 className="text-lg font-semibold text-gray-900">Competitive Positioning</h4>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {metrics.map((metric, index) => {
+          const Icon = metric.icon;
+          const colorClasses = getMetricColor(metric.yourScore, metric.industryAverage);
+          const position = getCompetitivePosition(metric.yourScore, metric.industryAverage);
+
+          return (
+            <div key={index} className="bg-white border rounded-lg p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Icon className={`h-4 w-4 text-${metric.color}-600`} />
+                  <h5 className="font-medium text-gray-900">{metric.name}</h5>
+                </div>
+                <span className={`px-2 py-1 rounded-full text-xs font-medium border ${colorClasses}`}>
+                  {position}
+                </span>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Your Score</span>
+                  <span className="font-semibold text-gray-900">{metric.yourScore}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    className={`bg-${metric.color}-500 h-2 rounded-full`}
+                    style={{ width: `${metric.yourScore}%` }}
+                  ></div>
+                </div>
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-gray-500">Industry Avg: {metric.industryAverage}%</span>
+                  <span className={metric.yourScore >= metric.industryAverage ? 'text-green-600' : 'text-red-600'}>
+                    {metric.yourScore >= metric.industryAverage ? '+' : ''}{metric.yourScore - metric.industryAverage}
+                  </span>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+        <p className="text-sm text-blue-800">
+          <strong>Competitive Insight:</strong> Your overall score of {overallScore}% places you{' '}
+          {overallScore >= 75 ? 'in the top tier' : overallScore >= 65 ? 'in the competitive range' : 'below average'} compared to industry benchmarks.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 // Function to parse and style audit section content
 function parseAuditContent(content: string) {
   const lines = content
