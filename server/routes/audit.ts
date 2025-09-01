@@ -880,12 +880,14 @@ Please provide a detailed analysis covering these 9 key areas based on the updat
    - Customer feedback and review integration
 
 8. **Competitor Analysis** (Score 0-100, Weight: 5%): Benchmarks against rivals in positioning, performance, and market opportunities:
-   - **Strengths Comparison (0-30)**: Conduct SWOT analysis to identify where the brand excels or lags compared to competitors
-   - **Market Positioning (0-30)**: Evaluate relative market share, pricing, and differentiation strategies
-   - **Performance Metrics (0-20)**: Compare KPIs such as website performance, social engagement, and online presence
-   - **Opportunities/Threats (0-20)**: Identify market gaps, untapped channels, and emerging competitive risks
-   - Competitive advantage identification and leverage opportunities
-   - Market differentiation analysis and recommendations
+   - **Strengths Analysis**: Identify 3-4 specific competitive advantages (e.g., "Faster page load times than industry average", "Unique value proposition in pricing transparency")
+   - **Weaknesses Analysis**: Pinpoint 3-4 areas where competitors likely outperform (e.g., "Limited social proof compared to market leaders", "Fewer customer testimonials than top competitors")
+   - **Market Opportunities**: List 3-4 actionable opportunities (e.g., "Untapped mobile optimization", "Emerging voice search optimization", "Local SEO gaps")
+   - **Competitive Threats**: Identify 3-4 specific threats (e.g., "Competitors using AI chatbots", "Industry moving toward subscription models", "New entrants with lower pricing")
+   - **Digital Presence Comparison**: Compare website performance, SEO optimization, and user experience against likely industry standards
+   - **Positioning Gap Analysis**: Identify unique positioning opportunities and differentiation strategies
+
+   Format as: "SWOT ANALYSIS:\nStrengths:\n- [specific strength 1]\n- [specific strength 2]\n\nWeaknesses:\n- [specific weakness 1]\n- [specific weakness 2]\n\nOpportunities:\n- [specific opportunity 1]\n- [specific opportunity 2]\n\nThreats:\n- [specific threat 1]\n- [specific threat 2]"
 
 9. **Conversion Optimization** (Score 0-100, Weight: 10%): Business results and revenue generation effectiveness:
    - Lead capture form design, placement, and effectiveness across all pages
