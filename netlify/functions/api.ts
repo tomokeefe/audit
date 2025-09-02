@@ -1984,24 +1984,48 @@ Please provide a detailed analysis covering these 9 key areas based on the updat
    - Professional standards adherence
 
 For each section, provide:
-- A numerical score (0-100)
-- Number of issues found (estimate based on analysis)
-- Number of recommendations (estimate based on issues)
-- Detailed explanation of findings and specific recommendations
+- A numerical score (0-100) - this will be enhanced with evidence-weighting, industry calibration, and confidence adjustments
+- Number of issues found (estimate based on analysis) - used for score-recommendation alignment validation
+- Number of recommendations (estimate based on analysis) - should correlate inversely with score
+- Confidence level (0.0-1.0) - higher confidence for sections with concrete evidence
+- Evidence level ('high', 'medium', 'low') - based on quantifiable data and specific examples
+- Implementation difficulty ('easy', 'medium', 'hard', 'very_hard') - for impact weighting
+- Estimated impact description (include 'high', 'medium', or 'low' impact keywords) - for priority calculation
+- Priority level ('critical', 'high', 'medium', 'low') - will be auto-calculated but can be suggested
+- Detailed explanation of findings with QUANTIFIABLE EVIDENCE
+
+EVIDENCE REQUIREMENTS for HIGH-QUALITY SCORING:
+- Include specific numbers, percentages, and metrics wherever possible
+- Cite exact examples from the website analysis (e.g., "Logo missing on 3 of 8 analyzed pages")
+- Reference cross-page consistency data when available
+- Use comparative language ("compared to industry standard", "vs. benchmark")
+- Quantify issues found (e.g., "15 images missing alt text out of 23 total")
+
+CONFIDENCE LEVEL GUIDELINES:
+- 0.9-1.0: Concrete evidence with quantifiable metrics and cross-page validation
+- 0.7-0.8: Good evidence with some quantifiable data
+- 0.5-0.6: Limited evidence or single-page analysis only
+- 0.3-0.4: Minimal evidence or fallback analysis
+
+IMPLEMENTATION DIFFICULTY GUIDELINES:
+- 'easy': Simple changes, no technical expertise required, 1-2 hours
+- 'medium': Moderate changes, some technical knowledge, 1-3 days
+- 'hard': Complex changes, technical expertise required, 1-2 weeks
+- 'very_hard': Major overhaul, significant resources, months
 
 CRITICAL: Format the "details" field for each section using this EXACT structure:
 
-Overview: [Brief overview of the section analysis]
+Overview: [Brief overview with quantifiable evidence - e.g., "Analysis of 8 pages shows logo consistency at 87.5% (7/8 pages)"]
 
 Issues:
-- [Specific issue 1 with evidence]
-- [Specific issue 2 with evidence]
-- [Additional issues as needed]
+- [Specific issue 1 with quantified evidence - e.g., "Logo missing on contact page (1 of 8 pages analyzed)"]
+- [Specific issue 2 with metrics - e.g., "Color inconsistency detected on 25% of analyzed pages"]
+- [Additional issues with evidence as needed]
 
 Recommendations:
-- [Actionable recommendation 1 with implementation details]
-- [Actionable recommendation 2 with implementation details]
-- [Additional recommendations as needed]
+- [Actionable recommendation 1 with implementation details and estimated impact - e.g., "Add consistent logo placement across all pages - estimated 15% brand recognition improvement"]
+- [Actionable recommendation 2 with specific steps - e.g., "Implement color style guide with primary (#2B4C8C) and secondary colors"]
+- [Additional recommendations with implementation timeframes as needed]
 
 Example details field:
 Overview: The website demonstrates strong brand consistency with logo placement on all 8 analyzed pages and systematic color usage. However, messaging tone varies between pages, reducing brand voice coherence.
