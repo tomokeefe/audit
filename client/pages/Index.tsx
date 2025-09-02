@@ -401,6 +401,97 @@ export default function Index() {
 
   const analytics = getAnalyticsData();
 
+  const initializeProgressSteps = () => {
+    const steps: ProgressStep[] = [
+      {
+        id: 'validation',
+        label: 'Validating URL',
+        description: 'Checking website accessibility and structure',
+        completed: false,
+        current: true,
+        duration: 2000
+      },
+      {
+        id: 'crawling',
+        label: 'Crawling Website',
+        description: 'Analyzing multiple pages and extracting content',
+        completed: false,
+        current: false,
+        duration: 8000
+      },
+      {
+        id: 'analysis',
+        label: 'AI Analysis',
+        description: 'Generating insights with industry benchmarks',
+        completed: false,
+        current: false,
+        duration: 15000
+      },
+      {
+        id: 'scoring',
+        label: 'Calculating Scores',
+        description: 'Applying evidence-weighted scoring system',
+        completed: false,
+        current: false,
+        duration: 5000
+      },
+      {
+        id: 'recommendations',
+        label: 'Creating Recommendations',
+        description: 'Building strategic implementation plan',
+        completed: false,
+        current: false,
+        duration: 5000
+      },
+      {
+        id: 'finalizing',
+        label: 'Finalizing Report',
+        description: 'Preparing comprehensive audit results',
+        completed: false,
+        current: false,
+        duration: 3000
+      }
+    ];
+    setProgressSteps(steps);
+    return steps;
+  };
+
+  const updateProgress = (stepId: string, completed: boolean = false) => {
+    setProgressSteps(prev => {
+      const updated = prev.map((step, index) => {
+        if (step.id === stepId) {
+          return { ...step, completed, current: !completed };
+        }
+        // Set next step as current if this one is completed
+        if (completed && prev.findIndex(s => s.id === stepId) === index - 1) {
+          return { ...step, current: true };
+        }
+        // Remove current from other steps
+        if (step.id !== stepId && completed) {
+          return { ...step, current: false };
+        }
+        return step;
+      });
+
+      // Calculate progress percentage
+      const completedCount = updated.filter(s => s.completed).length;
+      setCurrentProgress((completedCount / updated.length) * 100);
+
+      return updated;
+    });
+  };
+
+  const simulateProgressSteps = async (steps: ProgressStep[]) => {
+    for (let i = 0; i < steps.length; i++) {
+      const step = steps[i];
+      // Simulate step duration with some randomness
+      const duration = (step.duration || 3000) + Math.random() * 2000;
+
+      await new Promise(resolve => setTimeout(resolve, duration));
+      updateProgress(step.id, true);
+    }
+  };
+
   const testApiConnectivity = async () => {
     try {
       const response = await fetch("/api/ping");
