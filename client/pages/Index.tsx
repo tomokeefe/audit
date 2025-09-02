@@ -66,6 +66,9 @@ export default function Index() {
     audits: boolean;
     error?: string;
   }>({ ping: false, audits: false });
+  const [progressSteps, setProgressSteps] = useState<ProgressStep[]>([]);
+  const [currentProgress, setCurrentProgress] = useState(0);
+  const [showProgress, setShowProgress] = useState(false);
   const navigate = useNavigate();
 
   const loadRecentAudits = async () => {
