@@ -266,9 +266,18 @@ export default function Index() {
 
   useEffect(() => {
     // Add debug logging
-    console.log("Component mounted, loading recent audits...");
-    testAPIConnection();
-    loadRecentAudits();
+    console.log("Component mounted, testing API and loading recent audits...");
+
+    // Test API connection first, then load audits
+    const initializeAPI = async () => {
+      await testAPIConnection();
+      // Wait a moment for API status to update
+      setTimeout(() => {
+        loadRecentAudits();
+      }, 500);
+    };
+
+    initializeAPI();
   }, []);
 
   // Analytics calculations
