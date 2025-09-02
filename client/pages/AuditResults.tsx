@@ -40,6 +40,17 @@ import {
   BarChart3,
   Activity,
   Users,
+  Clock,
+  DollarSign,
+  CheckSquare,
+  AlertCircle,
+  Star,
+  ArrowRight,
+  PlayCircle,
+  Timer,
+  Award,
+  Briefcase,
+  Wrench,
 } from "lucide-react";
 
 // SWOT Matrix Component for Competitor Analysis
@@ -272,6 +283,282 @@ function CompetitiveMetrics({ auditData }: { auditData: any }) {
           <strong>Competitive Insight:</strong> Your overall score of {overallScore}% places you{' '}
           {overallScore >= 75 ? 'in the top tier' : overallScore >= 65 ? 'in the competitive range' : 'below average'} compared to industry benchmarks.
         </p>
+      </div>
+    </div>
+  );
+}
+
+// Enhanced Implementation Roadmap Component
+function ImplementationRoadmap({ auditData }: { auditData: any }) {
+  const sections = auditData?.sections || [];
+  const improvementImpact = auditData?.improvementImpact;
+
+  // Extract implementation phases based on enhanced scoring system
+  const quickWins = sections.filter((s: any) => 
+    s.implementationDifficulty === 'easy' && 
+    (s.priorityLevel === 'critical' || s.priorityLevel === 'high')
+  );
+
+  const shortTerm = sections.filter((s: any) => 
+    s.implementationDifficulty === 'medium' && 
+    (s.priorityLevel === 'critical' || s.priorityLevel === 'high')
+  );
+
+  const longTerm = sections.filter((s: any) => 
+    s.implementationDifficulty === 'hard' || s.implementationDifficulty === 'very_hard'
+  );
+
+  const phases = [
+    {
+      title: "Phase 1: Quick Wins",
+      timeframe: "1-2 weeks",
+      description: "High-impact, easy-to-implement improvements",
+      items: quickWins,
+      icon: Zap,
+      color: "green",
+      bgColor: "bg-green-50",
+      borderColor: "border-green-200",
+      textColor: "text-green-800"
+    },
+    {
+      title: "Phase 2: Short-term Goals",
+      timeframe: "1-3 months",
+      description: "Medium complexity improvements with significant impact",
+      items: shortTerm,
+      icon: Target,
+      color: "blue",
+      bgColor: "bg-blue-50",
+      borderColor: "border-blue-200",
+      textColor: "text-blue-800"
+    },
+    {
+      title: "Phase 3: Long-term Strategy",
+      timeframe: "3-6 months",
+      description: "Complex improvements requiring significant resources",
+      items: longTerm,
+      icon: Award,
+      color: "purple",
+      bgColor: "bg-purple-50",
+      borderColor: "border-purple-200",
+      textColor: "text-purple-800"
+    }
+  ];
+
+  return (
+    <div className="mt-8 space-y-6">
+      <div className="flex items-center gap-2 mb-4">
+        <Calendar className="h-5 w-5 text-gray-600" />
+        <h4 className="text-lg font-semibold text-gray-900">Implementation Roadmap</h4>
+      </div>
+
+      {phases.map((phase, index) => {
+        const Icon = phase.icon;
+        return (
+          <div key={index} className={`${phase.bgColor} border ${phase.borderColor} rounded-lg p-6`}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className={`p-2 rounded-lg bg-white border ${phase.borderColor}`}>
+                <Icon className={`h-5 w-5 text-${phase.color}-600`} />
+              </div>
+              <div>
+                <h5 className={`font-semibold ${phase.textColor}`}>{phase.title}</h5>
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <Clock className="h-3 w-3" />
+                  {phase.timeframe}
+                </div>
+              </div>
+            </div>
+            
+            <p className={`text-sm ${phase.textColor} mb-4`}>{phase.description}</p>
+
+            {phase.items.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {phase.items.map((item: any, itemIndex: number) => (
+                  <div key={itemIndex} className="bg-white border rounded-lg p-3">
+                    <div className="flex items-start justify-between mb-2">
+                      <h6 className="font-medium text-gray-900 text-sm">{item.name}</h6>
+                      <Badge variant="outline" className="text-xs">
+                        {item.score}%
+                      </Badge>
+                    </div>
+                    <div className="text-xs text-gray-600">
+                      {item.recommendations} recommendations • {item.estimatedImpact || 'Impact: Medium'}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-sm text-gray-600 italic">
+                No items identified for this phase based on current analysis.
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ROI Calculator Component
+function ROICalculator({ auditData }: { auditData: any }) {
+  const improvementImpact = auditData?.improvementImpact;
+  const metadata = auditData?.metadata;
+
+  return (
+    <div className="mt-8 p-6 bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg border border-green-200">
+      <div className="flex items-center gap-2 mb-4">
+        <DollarSign className="h-5 w-5 text-green-600" />
+        <h4 className="text-lg font-semibold text-gray-900">Expected ROI & Impact</h4>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div className="bg-white border border-green-200 rounded-lg p-4 text-center">
+          <div className="text-2xl font-bold text-green-600 mb-1">
+            {improvementImpact?.estimatedROI || "15-25%"}
+          </div>
+          <div className="text-sm text-gray-600">Expected Improvement</div>
+        </div>
+        
+        <div className="bg-white border border-green-200 rounded-lg p-4 text-center">
+          <div className="text-2xl font-bold text-green-600 mb-1">
+            {improvementImpact?.implementationTimeframe || "2-6 months"}
+          </div>
+          <div className="text-sm text-gray-600">Implementation Timeline</div>
+        </div>
+        
+        <div className="bg-white border border-green-200 rounded-lg p-4 text-center">
+          <div className="text-2xl font-bold text-green-600 mb-1">
+            {improvementImpact?.highPriority?.length || 0}
+          </div>
+          <div className="text-sm text-gray-600">High Priority Areas</div>
+        </div>
+      </div>
+
+      <div className="text-sm text-green-800">
+        <strong>Business Impact:</strong> Based on industry benchmarks and your current performance, 
+        implementing these recommendations could result in significant improvements to user engagement, 
+        conversion rates, and overall digital performance.
+      </div>
+    </div>
+  );
+}
+
+// Success Metrics Component
+function SuccessMetrics({ auditData }: { auditData: any }) {
+  const businessType = auditData?.metadata?.businessType || 'general';
+  const industry = auditData?.metadata?.industryDetected || 'general';
+
+  const getMetricsForIndustry = () => {
+    const baseMetrics = [
+      { name: "Overall Audit Score", target: "85%+", current: `${auditData.overallScore}%` },
+      { name: "Page Load Speed", target: "< 2.5s", current: "Monitor" },
+      { name: "Mobile Usability Score", target: "90%+", current: "Monitor" },
+      { name: "User Engagement", target: "+25%", current: "Baseline" }
+    ];
+
+    const industrySpecific = {
+      ecommerce: [
+        { name: "Conversion Rate", target: "+20%", current: "Baseline" },
+        { name: "Cart Abandonment", target: "-15%", current: "Monitor" }
+      ],
+      saas: [
+        { name: "Trial Conversion", target: "+30%", current: "Baseline" },
+        { name: "User Activation", target: "+25%", current: "Monitor" }
+      ],
+      healthcare: [
+        { name: "Appointment Bookings", target: "+20%", current: "Baseline" },
+        { name: "Patient Trust Score", target: "90%+", current: "Monitor" }
+      ]
+    };
+
+    return [
+      ...baseMetrics,
+      ...(industrySpecific[industry as keyof typeof industrySpecific] || [])
+    ];
+  };
+
+  return (
+    <div className="mt-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
+      <div className="flex items-center gap-2 mb-4">
+        <BarChart3 className="h-5 w-5 text-blue-600" />
+        <h4 className="text-lg font-semibold text-gray-900">Success Metrics to Track</h4>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {getMetricsForIndustry().map((metric, index) => (
+          <div key={index} className="bg-white border rounded-lg p-4">
+            <div className="flex justify-between items-start mb-2">
+              <h6 className="font-medium text-gray-900">{metric.name}</h6>
+              <Badge variant="outline" className="text-xs">
+                Target: {metric.target}
+              </Badge>
+            </div>
+            <div className="text-sm text-gray-600">
+              Current: {metric.current}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-4 p-3 bg-blue-100 border border-blue-300 rounded-lg">
+        <p className="text-sm text-blue-800">
+          <strong>Recommendation:</strong> Set up Google Analytics 4 and other tracking tools to monitor 
+          these metrics before and after implementation to measure success.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// Resource Center Component
+function ResourceCenter() {
+  const resources = [
+    {
+      category: "Tools & Platforms",
+      items: [
+        { name: "Google PageSpeed Insights", description: "Test page speed and performance", url: "https://pagespeed.web.dev/" },
+        { name: "Google Analytics 4", description: "Track website performance metrics", url: "https://analytics.google.com/" },
+        { name: "Google Search Console", description: "Monitor search performance", url: "https://search.google.com/search-console" }
+      ]
+    },
+    {
+      category: "Best Practices",
+      items: [
+        { name: "Web Content Accessibility Guidelines", description: "WCAG 2.1 compliance standards", url: "https://www.w3.org/WAI/WCAG21/quickref/" },
+        { name: "Core Web Vitals", description: "Google's page experience metrics", url: "https://web.dev/vitals/" },
+        { name: "SEO Starter Guide", description: "Google's official SEO guidelines", url: "https://developers.google.com/search/docs/fundamentals/seo-starter-guide" }
+      ]
+    }
+  ];
+
+  return (
+    <div className="mt-8 p-6 bg-gray-50 border border-gray-200 rounded-lg">
+      <div className="flex items-center gap-2 mb-4">
+        <Briefcase className="h-5 w-5 text-gray-600" />
+        <h4 className="text-lg font-semibold text-gray-900">Helpful Resources</h4>
+      </div>
+
+      <div className="space-y-6">
+        {resources.map((category, index) => (
+          <div key={index}>
+            <h5 className="font-semibold text-gray-900 mb-3">{category.category}</h5>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {category.items.map((resource, resourceIndex) => (
+                <div key={resourceIndex} className="bg-white border rounded-lg p-3">
+                  <h6 className="font-medium text-gray-900 text-sm mb-1">{resource.name}</h6>
+                  <p className="text-xs text-gray-600 mb-2">{resource.description}</p>
+                  <a 
+                    href={resource.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-xs text-blue-600 hover:text-blue-800 underline"
+                  >
+                    Visit Resource →
+                  </a>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -918,20 +1205,20 @@ Best regards`);
           </TabsContent>
 
           <TabsContent value="next-steps" className="mt-8">
-            <Card>
+            <Card className="mb-6">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5" />
-                  Executive Summary & Action Plan
+                  Strategic Implementation Plan
                 </CardTitle>
                 <CardDescription>
-                  Key findings and prioritized recommendations for{" "}
-                  {auditData.title}
+                  Comprehensive action plan with prioritized recommendations, timelines, and success metrics for {auditData.title}
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="prose prose-sm max-w-none text-gray-700">
-                  {auditData.summary.split("\n").map(
+                {/* Executive Summary */}
+                <div className="prose prose-sm max-w-none text-gray-700 mb-8">
+                  {auditData.summary?.split("\n").map(
                     (paragraph, index) =>
                       paragraph.trim() && (
                         <p key={index} className="mb-4">
@@ -941,45 +1228,107 @@ Best regards`);
                   )}
                 </div>
 
-                {/* Priority Matrix */}
-                <div className="mt-8 p-6 bg-brand-50 rounded-lg">
-                  <h4 className="font-semibold text-gray-900 mb-4">
-                    Implementation Priority
+                {/* Enhanced Implementation Roadmap */}
+                <ImplementationRoadmap auditData={auditData} />
+
+                {/* ROI Calculator */}
+                <ROICalculator auditData={auditData} />
+
+                {/* Success Metrics */}
+                <SuccessMetrics auditData={auditData} />
+
+                {/* Enhanced Priority Matrix */}
+                <div className="mt-8 p-6 bg-gradient-to-br from-orange-50 to-red-50 rounded-lg border border-orange-200">
+                  <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <AlertCircle className="h-5 w-5 text-orange-600" />
+                    Priority Action Matrix
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                      <h5 className="font-medium text-red-800 mb-2">
+                      <h5 className="font-medium text-red-800 mb-2 flex items-center gap-2">
+                        <AlertTriangle className="h-4 w-4" />
+                        Critical Priority
+                      </h5>
+                      <div className="text-sm text-red-700 space-y-1">
+                        {auditData.sections
+                          .filter((s) => s.priorityLevel === 'critical' || s.score < 50)
+                          .map((s, index) => (
+                            <div key={index} className="flex justify-between">
+                              <span>{s.name}</span>
+                              <Badge variant="destructive" className="text-xs">{s.score}%</Badge>
+                            </div>
+                          )) || <span>No critical issues found</span>}
+                      </div>
+                    </div>
+                    
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                      <h5 className="font-medium text-yellow-800 mb-2 flex items-center gap-2">
+                        <Clock className="h-4 w-4" />
                         High Priority
                       </h5>
-                      <div className="text-sm text-red-700">
+                      <div className="text-sm text-yellow-700 space-y-1">
                         {auditData.sections
-                          .filter((s) => s.score < 60)
-                          .map((s) => s.name)
-                          .join(", ") || "No critical issues found"}
+                          .filter((s) => s.priorityLevel === 'high' || (s.score >= 50 && s.score < 70))
+                          .map((s, index) => (
+                            <div key={index} className="flex justify-between">
+                              <span>{s.name}</span>
+                              <Badge variant="secondary" className="text-xs">{s.score}%</Badge>
+                            </div>
+                          )) || <span>No high priority items</span>}
                       </div>
                     </div>
-                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                      <h5 className="font-medium text-yellow-800 mb-2">
-                        Medium Priority
-                      </h5>
-                      <div className="text-sm text-yellow-700">
-                        {auditData.sections
-                          .filter((s) => s.score >= 60 && s.score < 80)
-                          .map((s) => s.name)
-                          .join(", ") || "No moderate issues found"}
-                      </div>
-                    </div>
+                    
                     <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                      <h5 className="font-medium text-green-800 mb-2">
-                        Strengths to Maintain
+                      <h5 className="font-medium text-green-800 mb-2 flex items-center gap-2">
+                        <Star className="h-4 w-4" />
+                        Strengths to Leverage
                       </h5>
-                      <div className="text-sm text-green-700">
+                      <div className="text-sm text-green-700 space-y-1">
                         {auditData.sections
                           .filter((s) => s.score >= 80)
-                          .map((s) => s.name)
-                          .join(", ") || "Focus on improving other areas"}
+                          .map((s, index) => (
+                            <div key={index} className="flex justify-between">
+                              <span>{s.name}</span>
+                              <Badge variant="default" className="text-xs bg-green-600">{s.score}%</Badge>
+                            </div>
+                          )) || <span>Focus on improving other areas</span>}
                       </div>
                     </div>
+                  </div>
+                </div>
+
+                {/* Resource Center */}
+                <ResourceCenter />
+
+                {/* Call to Action */}
+                <div className="mt-8 p-6 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg text-white">
+                  <div className="flex items-center gap-3 mb-4">
+                    <PlayCircle className="h-6 w-6" />
+                    <h4 className="text-lg font-semibold">Ready to Get Started?</h4>
+                  </div>
+                  <p className="mb-4 text-blue-100">
+                    Your audit analysis is complete. The next step is implementation. Consider scheduling a follow-up meeting 
+                    to discuss priorities and create a detailed execution timeline.
+                  </p>
+                  <div className="flex flex-wrap gap-3">
+                    <Button 
+                      variant="secondary" 
+                      size="sm"
+                      onClick={() => navigate('/')}
+                      className="flex items-center gap-2"
+                    >
+                      <ArrowRight className="h-4 w-4" />
+                      Run Another Audit
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={shareViaEmail}
+                      className="flex items-center gap-2 text-white border-white hover:bg-white hover:text-blue-600"
+                    >
+                      <Mail className="h-4 w-4" />
+                      Share Report
+                    </Button>
                   </div>
                 </div>
               </CardContent>
