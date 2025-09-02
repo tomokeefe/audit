@@ -62,45 +62,82 @@ export default function Index() {
   const loadRecentAudits = async () => {
     try {
       setLoadingAudits(true);
-      const response = await fetch("/api/audits");
 
-      if (!response.ok) {
-        const errorMsg = `API returned ${response.status}: ${response.statusText}`;
-        console.warn(errorMsg);
-        setApiStatus(prev => ({ ...prev, audits: false, error: errorMsg }));
-        // Handle non-200 responses gracefully
-        setRecentAudits([]);
-        setAllAudits([]);
-        return;
+      // Use same timeout mechanism as testAPIConnection
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000); // Longer timeout for data loading
+
+      try {
+        const response = await fetch("/api/audits", {
+          signal: controller.signal,
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          const errorMsg = `API returned ${response.status}: ${response.statusText}`;
+          console.warn(errorMsg);
+          setApiStatus(prev => ({ ...prev, audits: false, error: errorMsg }));
+          // Handle non-200 responses gracefully
+          setRecentAudits([]);
+          setAllAudits([]);
+          return;
+        }
+
+        let data;
+        try {
+          data = await response.json();
+        } catch (jsonError) {
+          console.error("Failed to parse audits response as JSON:", jsonError);
+          setApiStatus(prev => ({ ...prev, audits: false, error: "Invalid response format" }));
+          setRecentAudits([]);
+          setAllAudits([]);
+          return;
+        }
+
+        const audits = data.audits || [];
+
+        // Update API status to reflect success
+        setApiStatus(prev => ({ ...prev, audits: true, error: undefined }));
+
+        // Store all audits for analytics
+        setAllAudits(audits);
+
+        // Get the 3 most recent audits
+        const recent = audits
+          .sort(
+            (a: AuditSummary, b: AuditSummary) =>
+              new Date(b.date).getTime() - new Date(a.date).getTime(),
+          )
+          .slice(0, 3);
+        setRecentAudits(recent);
+
+        console.log(`Loaded ${audits.length} audits, showing ${recent.length} recent`);
+
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        throw fetchError; // Re-throw to be handled by outer catch
       }
 
-      const data = await response.json();
-      const audits = data.audits || [];
-
-      // Update API status to reflect success
-      setApiStatus(prev => ({ ...prev, audits: true, error: undefined }));
-
-      // Store all audits for analytics
-      setAllAudits(audits);
-
-      // Get the 3 most recent audits
-      const recent = audits
-        .sort(
-          (a: AuditSummary, b: AuditSummary) =>
-            new Date(b.date).getTime() - new Date(a.date).getTime(),
-        )
-        .slice(0, 3);
-      setRecentAudits(recent);
     } catch (error) {
       console.error("Failed to load recent audits:", error);
+
       // Provide more detailed error information
       let errorMsg = "Unknown error";
-      if (error instanceof TypeError && error.message.includes("fetch")) {
-        errorMsg = "Network error: Unable to connect to the API server";
-        console.error(errorMsg);
-      } else if (error instanceof Error) {
-        errorMsg = error.message;
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          errorMsg = "Request timed out while loading audits";
+        } else if (error.message.includes("fetch") || error.message.includes("network")) {
+          errorMsg = "Network error: Unable to connect to the API server";
+        } else {
+          errorMsg = error.message;
+        }
       }
+
       setApiStatus(prev => ({ ...prev, audits: false, error: errorMsg }));
       // Fallback to empty array on error
       setRecentAudits([]);
