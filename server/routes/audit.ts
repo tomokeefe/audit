@@ -803,16 +803,168 @@ function getIndustryBenchmarks(industry: string) {
   return benchmarks[industry] || benchmarks.general;
 }
 
-// Quality Assurance Functions
+// Enhanced Scoring System Functions (Server Implementation)
+
+// 1. Evidence-Weight Scoring Enhancement
+function calculateEvidenceWeightedScore(baseScore: number, evidenceLevel: string, evidenceData: any): number {
+  const evidenceMultipliers = {
+    'high': 1.0,
+    'medium': 0.9,
+    'low': 0.75,
+    'minimal': 0.6
+  };
+
+  let multiplier = evidenceMultipliers[evidenceLevel as keyof typeof evidenceMultipliers] || 0.8;
+
+  // Evidence quality thresholds
+  const hasQuantifiableData = evidenceData?.hasNumbers || false;
+  const hasSpecificExamples = evidenceData?.hasExamples || false;
+  const hasCrossPageEvidence = evidenceData?.crossPageEvidence || false;
+
+  // Bonus for high-quality evidence
+  if (evidenceLevel === 'high' && hasQuantifiableData && hasSpecificExamples) {
+    multiplier = Math.min(multiplier + 0.1, 1.05); // Allow slight bonus for exceptional evidence
+  }
+
+  // Penalty for insufficient evidence on high scores
+  if (baseScore > 80 && evidenceLevel === 'low') {
+    multiplier = Math.min(multiplier, 0.85); // Cap high scores with low evidence
+  }
+
+  return Math.round(baseScore * multiplier);
+}
+
+// 2. Industry Benchmark Calibration
+function calibrateScoreToIndustryBenchmarks(score: number, sectionName: string, industry: string): { score: number, comparison: string, percentile: number } {
+  const industryBenchmarks = {
+    ecommerce: {
+      'Branding': { average: 75, top10: 90, top25: 85 },
+      'Conversion Optimization': { average: 68, top10: 88, top25: 80 },
+      'Usability': { average: 70, top10: 85, top25: 78 },
+      'Customer Experience': { average: 72, top10: 87, top25: 82 }
+    },
+    saas: {
+      'Branding': { average: 78, top10: 92, top25: 87 },
+      'Usability': { average: 82, top10: 93, top25: 88 },
+      'Content Strategy': { average: 75, top10: 89, top25: 83 },
+      'Digital Presence': { average: 80, top10: 91, top25: 86 }
+    },
+    healthcare: {
+      'Consistency & Compliance': { average: 85, top10: 95, top25: 92 },
+      'Customer Experience': { average: 78, top10: 90, top25: 85 },
+      'Usability': { average: 75, top10: 88, top25: 82 }
+    },
+    finance: {
+      'Consistency & Compliance': { average: 88, top10: 96, top25: 93 },
+      'Customer Experience': { average: 80, top10: 92, top25: 87 },
+      'Design': { average: 73, top10: 86, top25: 81 }
+    },
+    general: {
+      'Branding': { average: 73, top10: 87, top25: 82 },
+      'Design': { average: 70, top10: 85, top25: 78 },
+      'Usability': { average: 72, top10: 86, top25: 80 },
+      'Content Strategy': { average: 69, top10: 83, top25: 77 }
+    }
+  };
+
+  const benchmarks = industryBenchmarks[industry as keyof typeof industryBenchmarks] || industryBenchmarks.general;
+  const sectionBenchmark = benchmarks[sectionName as keyof typeof benchmarks] || benchmarks['Branding'];
+
+  // Calculate percentile position
+  let percentile = 50; // Default to median
+  let comparison = 'average';
+
+  if (score >= sectionBenchmark.top10) {
+    percentile = 95;
+    comparison = 'top_10_percent';
+  } else if (score >= sectionBenchmark.top25) {
+    percentile = 85;
+    comparison = 'top_25_percent';
+  } else if (score >= sectionBenchmark.average + 5) {
+    percentile = 70;
+    comparison = 'above_average';
+  } else if (score >= sectionBenchmark.average - 5) {
+    percentile = 50;
+    comparison = 'average';
+  } else if (score >= sectionBenchmark.average - 15) {
+    percentile = 30;
+    comparison = 'below_average';
+  } else {
+    percentile = 15;
+    comparison = 'bottom_quartile';
+  }
+
+  return { score, comparison, percentile };
+}
+
+// 3. Confidence-Adjusted Scoring
+function adjustScoreForConfidence(score: number, confidence: number, hasEvidence: boolean): number {
+  // Apply confidence multiplier
+  let adjustedScore = score;
+
+  if (confidence < 0.6) {
+    adjustedScore = Math.round(score * 0.85); // 15% penalty for low confidence
+  } else if (confidence < 0.8) {
+    adjustedScore = Math.round(score * 0.95); // 5% penalty for medium confidence
+  }
+
+  // Additional penalty if low confidence AND lack of evidence
+  if (confidence < 0.7 && !hasEvidence) {
+    adjustedScore = Math.round(adjustedScore * 0.9);
+  }
+
+  return adjustedScore;
+}
+
+// 4. Implementation Impact Weighting
+function calculateImplementationImpactScore(baseScore: number, implementationDifficulty: string, estimatedImpact: string): { score: number, priorityLevel: string } {
+  const difficultyMultipliers = {
+    'easy': 1.1,
+    'medium': 1.0,
+    'hard': 0.95,
+    'very_hard': 0.9
+  };
+
+  const impactMultipliers = {
+    'high': 1.1,
+    'medium': 1.0,
+    'low': 0.9
+  };
+
+  const difficultyMult = difficultyMultipliers[implementationDifficulty as keyof typeof difficultyMultipliers] || 1.0;
+  const impactMult = impactMultipliers[estimatedImpact as keyof typeof impactMultipliers] || 1.0;
+
+  const weightedScore = Math.round(baseScore * difficultyMult * impactMult);
+
+  // Determine priority level
+  let priorityLevel = 'medium';
+  if (implementationDifficulty === 'easy' && estimatedImpact === 'high') {
+    priorityLevel = 'critical';
+  } else if (difficultyMult >= 1.05 || impactMult >= 1.05) {
+    priorityLevel = 'high';
+  } else if (difficultyMult <= 0.95 && impactMult <= 0.95) {
+    priorityLevel = 'low';
+  }
+
+  return { score: Math.min(weightedScore, 100), priorityLevel };
+}
+
+// 5. Enhanced Quality Assurance with Cross-Validation
 function validateAuditOutput(auditData: any, businessContext: any) {
   const errors: string[] = [];
   const warnings: string[] = [];
   let qualityScore = 0;
+  const validationMetrics = {
+    evidenceQuality: 0,
+    industryRelevance: 0,
+    recommendationAlignment: 0,
+    scoreConsistency: 0
+  };
 
   // Basic structure validation
   if (!auditData || typeof auditData !== 'object') {
     errors.push("Invalid audit data structure");
-    return { isValid: false, errors, warnings, qualityScore: 0 };
+    return { isValid: false, errors, warnings, qualityScore: 0, validationMetrics };
   }
 
   // Required fields validation
@@ -823,11 +975,16 @@ function validateAuditOutput(auditData: any, businessContext: any) {
     }
   }
 
-  // Sections validation
+  // Enhanced sections validation
   if (auditData.sections && Array.isArray(auditData.sections)) {
     if (auditData.sections.length !== 10) {
       errors.push(`Expected 10 sections, found ${auditData.sections.length}`);
     }
+
+    let evidenceQualitySum = 0;
+    let industryRelevanceSum = 0;
+    let recommendationAlignmentSum = 0;
+    let scoreConsistencySum = 0;
 
     auditData.sections.forEach((section: any, index: number) => {
       // Validate section structure
@@ -838,63 +995,60 @@ function validateAuditOutput(auditData: any, businessContext: any) {
         }
       }
 
-      // Validate score ranges
+      // Enhanced score validation
       if (typeof section.score === 'number') {
         if (section.score < 0 || section.score > 100) {
           errors.push(`Section ${section.name}: invalid score ${section.score}`);
         } else {
-          qualityScore += 10; // Each valid score adds to quality
+          qualityScore += 8;
+
+          // Score consistency check
+          const expectedScoreRange = calculateExpectedScoreRange(section);
+          if (section.score >= expectedScoreRange.min && section.score <= expectedScoreRange.max) {
+            scoreConsistencySum += 10;
+          } else {
+            warnings.push(`Section ${section.name}: score ${section.score} may be inconsistent with findings`);
+          }
         }
       }
 
-      // Validate recommendation quality
+      // Enhanced evidence quality validation
       if (section.details && typeof section.details === 'string') {
-        const detailLength = section.details.length;
-        if (detailLength < 100) {
-          warnings.push(`Section ${section.name}: details too brief (${detailLength} chars)`);
-        } else if (detailLength > 50) {
-          qualityScore += 5; // Detailed analysis adds quality
+        const evidenceMetrics = analyzeEvidenceQuality(section.details);
+        evidenceQualitySum += evidenceMetrics.score;
+
+        if (evidenceMetrics.score < 60) {
+          warnings.push(`Section ${section.name}: evidence quality below threshold (${evidenceMetrics.score}%)`);
         }
 
-        // Check for specific evidence
-        const hasSpecificEvidence = /\d+/.test(section.details); // Contains numbers
-        const hasMetrics = /(score|percent|%|pages?|images?|forms?)/.test(section.details.toLowerCase());
-        if (hasSpecificEvidence && hasMetrics) {
-          qualityScore += 10;
-        } else {
-          warnings.push(`Section ${section.name}: lacks specific evidence or metrics`);
+        // Recommendation-score alignment
+        const alignmentScore = validateRecommendationScoreAlignment(section);
+        recommendationAlignmentSum += alignmentScore;
+
+        if (alignmentScore < 70) {
+          warnings.push(`Section ${section.name}: recommendations may not align with score`);
         }
       }
     });
+
+    // Calculate validation metrics
+    const sectionCount = auditData.sections.length;
+    validationMetrics.evidenceQuality = evidenceQualitySum / sectionCount;
+    validationMetrics.industryRelevance = industryRelevanceSum / sectionCount;
+    validationMetrics.recommendationAlignment = recommendationAlignmentSum / sectionCount;
+    validationMetrics.scoreConsistency = scoreConsistencySum / sectionCount;
+
+    qualityScore += (validationMetrics.evidenceQuality + validationMetrics.recommendationAlignment) / 2;
   }
 
-  // Overall score validation
-  if (typeof auditData.overallScore === 'number') {
-    if (auditData.overallScore < 0 || auditData.overallScore > 100) {
-      errors.push(`Invalid overall score: ${auditData.overallScore}`);
-    } else {
-      qualityScore += 10;
-    }
-  }
-
-  // Industry-specific validation
+  // Industry-specific enhanced validation
   if (businessContext.industry) {
-    const industrySpecificTerms = {
-      ecommerce: ['product', 'cart', 'checkout', 'conversion'],
-      saas: ['onboarding', 'trial', 'features', 'dashboard'],
-      healthcare: ['credibility', 'accessibility', 'privacy', 'compliance'],
-      finance: ['security', 'trust', 'compliance', 'transparency']
-    };
+    const industryValidation = validateIndustrySpecificContent(auditData, businessContext);
+    validationMetrics.industryRelevance = industryValidation.score;
+    qualityScore += industryValidation.score / 5; // Weighted contribution
 
-    const terms = industrySpecificTerms[businessContext.industry as keyof typeof industrySpecificTerms];
-    if (terms) {
-      const auditText = JSON.stringify(auditData).toLowerCase();
-      const foundTerms = terms.filter(term => auditText.includes(term));
-      if (foundTerms.length >= 2) {
-        qualityScore += 15; // Industry-relevant analysis
-      } else {
-        warnings.push(`Analysis lacks industry-specific focus for ${businessContext.industry}`);
-      }
+    if (industryValidation.score < 70) {
+      warnings.push(`Analysis lacks comprehensive industry-specific focus for ${businessContext.industry}`);
     }
   }
 
@@ -906,50 +1060,365 @@ function validateAuditOutput(auditData: any, businessContext: any) {
     errors,
     warnings,
     qualityScore: finalQualityScore,
-    hasEvidence: qualityScore >= 60,
-    isIndustryRelevant: qualityScore >= 70
+    validationMetrics,
+    hasEvidence: validationMetrics.evidenceQuality >= 60,
+    isIndustryRelevant: validationMetrics.industryRelevance >= 70,
+    isRecommendationAligned: validationMetrics.recommendationAlignment >= 70
   };
 }
 
-function enhanceAuditQuality(auditData: any, validationResults: any, businessContext: any) {
-  // Apply automatic improvements based on validation
-  const enhanced = { ...auditData };
+// Helper function to analyze evidence quality
+function analyzeEvidenceQuality(content: string): { score: number, hasNumbers: boolean, hasExamples: boolean, hasMetrics: boolean } {
+  let score = 40; // Base score
 
-  // Ensure metadata is present
-  if (!enhanced.metadata) {
-    enhanced.metadata = {
-      analysisConfidence: validationResults.qualityScore / 100,
-      industryDetected: businessContext.industry,
-      businessType: businessContext.businessType,
-      evidenceQuality: validationResults.qualityScore >= 70 ? 'high' : validationResults.qualityScore >= 50 ? 'medium' : 'low',
-      qualityScore: validationResults.qualityScore,
-      validationWarnings: validationResults.warnings.length
-    };
+  const hasNumbers = /\b\d+\b/.test(content);
+  const hasPercentages = /%/.test(content);
+  const hasMetrics = /(score|percent|pages?|images?|forms?|seconds?|kb|mb|pixels?)/.test(content.toLowerCase());
+  const hasSpecificExamples = /(e\.g\.|for example|such as|including)/.test(content.toLowerCase());
+  const hasComparisons = /(compared to|vs\.|versus|than|better|worse)/.test(content.toLowerCase());
+  const contentLength = content.length;
+
+  if (hasNumbers) score += 15;
+  if (hasPercentages) score += 10;
+  if (hasMetrics) score += 15;
+  if (hasSpecificExamples) score += 10;
+  if (hasComparisons) score += 10;
+  if (contentLength > 200) score += 10;
+  if (contentLength > 500) score += 5;
+
+  return {
+    score: Math.min(score, 100),
+    hasNumbers,
+    hasExamples: hasSpecificExamples,
+    hasMetrics
+  };
+}
+
+// Helper function to calculate expected score range based on findings
+function calculateExpectedScoreRange(section: any): { min: number, max: number } {
+  const issues = section.issues || 0;
+  const recommendations = section.recommendations || 0;
+
+  // More issues should correlate with lower scores
+  let maxScore = 100 - (issues * 8); // Each issue reduces max by ~8 points
+  let minScore = Math.max(0, maxScore - 30); // Allow for 30-point range
+
+  // High recommendation count suggests more problems
+  if (recommendations > 7) {
+    maxScore = Math.min(maxScore, 80);
+  } else if (recommendations > 4) {
+    maxScore = Math.min(maxScore, 90);
   }
 
-  // Fix score ranges
-  enhanced.sections = enhanced.sections?.map((section: any) => {
-    const fixed = { ...section };
-    if (typeof fixed.score === 'number') {
-      fixed.score = Math.max(0, Math.min(100, Math.round(fixed.score)));
+  return { min: Math.max(minScore, 0), max: Math.min(maxScore, 100) };
+}
+
+// Helper function to validate recommendation-score alignment
+function validateRecommendationScoreAlignment(section: any): number {
+  const score = section.score || 0;
+  const recommendations = section.recommendations || 0;
+  const issues = section.issues || 0;
+
+  let alignmentScore = 70; // Base alignment score
+
+  // High scores should have fewer recommendations
+  if (score > 85 && recommendations > 5) {
+    alignmentScore -= 20;
+  } else if (score > 75 && recommendations > 7) {
+    alignmentScore -= 15;
+  }
+
+  // Low scores should have more recommendations
+  if (score < 60 && recommendations < 5) {
+    alignmentScore -= 15;
+  } else if (score < 50 && recommendations < 7) {
+    alignmentScore -= 20;
+  }
+
+  // Issue count should correlate with score
+  if (score > 80 && issues > 4) {
+    alignmentScore -= 10;
+  } else if (score < 60 && issues < 3) {
+    alignmentScore -= 10;
+  }
+
+  return Math.max(alignmentScore, 0);
+}
+
+// Helper function to validate industry-specific content
+function validateIndustrySpecificContent(auditData: any, businessContext: any): { score: number, foundTerms: string[] } {
+  const industrySpecificTerms = {
+    ecommerce: ['product', 'cart', 'checkout', 'conversion', 'purchase', 'inventory', 'payment', 'shipping'],
+    saas: ['onboarding', 'trial', 'features', 'dashboard', 'subscription', 'user experience', 'api', 'integration'],
+    healthcare: ['credibility', 'accessibility', 'privacy', 'compliance', 'patient', 'medical', 'hipaa', 'healthcare'],
+    finance: ['security', 'trust', 'compliance', 'transparency', 'regulation', 'financial', 'investment', 'banking'],
+    consulting: ['expertise', 'consultation', 'professional', 'advisory', 'strategy', 'consulting', 'business'],
+    portfolio: ['portfolio', 'creative', 'showcase', 'design', 'visual', 'artistic', 'gallery', 'projects']
+  };
+
+  const terms = industrySpecificTerms[businessContext.industry as keyof typeof industrySpecificTerms] || [];
+  if (terms.length === 0) return { score: 75, foundTerms: [] }; // Default for unknown industries
+
+  const auditText = JSON.stringify(auditData).toLowerCase();
+  const foundTerms = terms.filter(term => auditText.includes(term));
+
+  // Calculate score based on term coverage
+  const coverage = foundTerms.length / terms.length;
+  let score = Math.round(coverage * 100);
+
+  // Bonus for comprehensive coverage
+  if (coverage >= 0.75) score += 10;
+  if (coverage >= 0.5) score += 5;
+
+  return { score: Math.min(score, 100), foundTerms };
+}
+
+// 6. Dynamic Criteria Weighting Based on Business Context
+function getDynamicSectionWeights(businessContext: any): number[] {
+  const { industry, businessType, features } = businessContext;
+
+  // Base weights: [Branding, Design, Messaging, Usability, Content Strategy, Digital Presence, Customer Experience, Competitor Analysis, Conversion Optimization, Consistency & Compliance]
+  const baseWeights = [0.18, 0.13, 0.13, 0.13, 0.09, 0.09, 0.05, 0.05, 0.10, 0.05];
+
+  const industryAdjustments = {
+    ecommerce: {
+      // Emphasize conversion and customer experience
+      adjustments: { 8: +0.05, 6: +0.03, 0: +0.02, 3: +0.02 }, // Conversion Opt, Customer Exp, Branding, Usability
+      reductions: { 1: -0.02, 2: -0.02, 4: -0.01 } // Design, Messaging, Content Strategy
+    },
+    saas: {
+      // Emphasize usability and onboarding experience
+      adjustments: { 3: +0.07, 4: +0.03, 5: +0.02, 6: +0.03 }, // Usability, Content Strategy, Digital Presence, Customer Exp
+      reductions: { 1: -0.03, 7: -0.02 } // Design, Competitor Analysis
+    },
+    healthcare: {
+      // Emphasize compliance, credibility, and accessibility
+      adjustments: { 9: +0.10, 6: +0.05, 3: +0.03, 0: +0.02 }, // Compliance, Customer Exp, Usability, Branding
+      reductions: { 8: -0.05, 7: -0.03, 1: -0.02 } // Conversion Opt, Competitor Analysis, Design
+    },
+    finance: {
+      // Emphasize compliance, security, and trust
+      adjustments: { 9: +0.12, 6: +0.05, 0: +0.03 }, // Compliance, Customer Exp, Branding
+      reductions: { 8: -0.05, 1: -0.03, 7: -0.02 } // Conversion Opt, Design, Competitor Analysis
+    },
+    consulting: {
+      // Emphasize credibility and content strategy
+      adjustments: { 4: +0.06, 0: +0.04, 8: +0.03, 6: +0.02 }, // Content Strategy, Branding, Conversion Opt, Customer Exp
+      reductions: { 1: -0.03, 3: -0.02 } // Design, Usability
+    },
+    portfolio: {
+      // Emphasize design and branding
+      adjustments: { 1: +0.10, 0: +0.07, 5: +0.03 }, // Design, Branding, Digital Presence
+      reductions: { 9: -0.03, 8: -0.03, 7: -0.02, 3: -0.02 } // Compliance, Conversion Opt, Competitor Analysis, Usability
     }
-    return fixed;
+  };
+
+  const businessTypeAdjustments = {
+    b2b: {
+      // Emphasize credibility and professional appearance
+      adjustments: { 0: +0.02, 4: +0.02, 9: +0.01 }, // Branding, Content Strategy, Compliance
+      reductions: { 1: -0.01, 8: -0.02 } // Design, Conversion Optimization
+    },
+    b2c: {
+      // Emphasize user experience and conversion
+      adjustments: { 8: +0.02, 6: +0.02, 1: +0.01 }, // Conversion Opt, Customer Exp, Design
+      reductions: { 4: -0.01, 9: -0.01 } // Content Strategy, Compliance
+    },
+    marketplace: {
+      // Emphasize trust and usability
+      adjustments: { 3: +0.03, 6: +0.02, 9: +0.02 }, // Usability, Customer Exp, Compliance
+      reductions: { 2: -0.01, 1: -0.01 } // Messaging, Design
+    }
+  };
+
+  // Feature-based adjustments
+  const featureAdjustments = {
+    hasEcommerce: { 8: +0.03, 6: +0.02 }, // Conversion Opt, Customer Exp
+    hasBooking: { 3: +0.02, 6: +0.02 }, // Usability, Customer Exp
+    hasBlog: { 4: +0.03, 5: +0.02 }, // Content Strategy, Digital Presence
+    hasLogin: { 3: +0.02, 9: +0.01 } // Usability, Compliance
+  };
+
+  // Apply adjustments
+  let adjustedWeights = [...baseWeights];
+
+  // Industry adjustments
+  const industryAdj = industryAdjustments[industry as keyof typeof industryAdjustments];
+  if (industryAdj) {
+    Object.entries(industryAdj.adjustments || {}).forEach(([index, adjustment]) => {
+      adjustedWeights[parseInt(index)] += adjustment as number;
+    });
+    Object.entries(industryAdj.reductions || {}).forEach(([index, reduction]) => {
+      adjustedWeights[parseInt(index)] += reduction as number;
+    });
+  }
+
+  // Business type adjustments
+  const businessAdj = businessTypeAdjustments[businessType as keyof typeof businessTypeAdjustments];
+  if (businessAdj) {
+    Object.entries(businessAdj.adjustments || {}).forEach(([index, adjustment]) => {
+      adjustedWeights[parseInt(index)] += adjustment as number;
+    });
+    Object.entries(businessAdj.reductions || {}).forEach(([index, reduction]) => {
+      adjustedWeights[parseInt(index)] += reduction as number;
+    });
+  }
+
+  // Feature adjustments
+  Object.entries(features).forEach(([feature, hasFeature]) => {
+    if (hasFeature && featureAdjustments[feature as keyof typeof featureAdjustments]) {
+      const adjustments = featureAdjustments[feature as keyof typeof featureAdjustments];
+      Object.entries(adjustments).forEach(([index, adjustment]) => {
+        adjustedWeights[parseInt(index)] += adjustment as number;
+      });
+    }
   });
 
-  // Validate overall score calculation
+  // Normalize weights to sum to 1.0
+  const sum = adjustedWeights.reduce((a, b) => a + b, 0);
+  return adjustedWeights.map(w => w / sum);
+}
+
+// 7. Enhanced Quality Enhancement with All Improvements
+function enhanceAuditQuality(auditData: any, validationResults: any, businessContext: any) {
+  const enhanced = { ...auditData };
+
+  // Get dynamic weights for this business context
+  const dynamicWeights = getDynamicSectionWeights(businessContext);
+
+  // Enhanced metadata with all validation metrics
+  enhanced.metadata = {
+    analysisConfidence: validationResults.qualityScore / 100,
+    industryDetected: businessContext.industry,
+    businessType: businessContext.businessType,
+    evidenceQuality: validationResults.validationMetrics?.evidenceQuality >= 70 ? 'high' :
+                    validationResults.validationMetrics?.evidenceQuality >= 50 ? 'medium' : 'low',
+    qualityScore: validationResults.qualityScore,
+    validationWarnings: validationResults.warnings.length,
+    industryRelevanceScore: validationResults.validationMetrics?.industryRelevance || 0,
+    recommendationAlignment: validationResults.validationMetrics?.recommendationAlignment || 0,
+    scoreConsistency: validationResults.validationMetrics?.scoreConsistency || 0,
+    dynamicWeightsApplied: true,
+    scoringEnhancementsApplied: ['evidence_weighted', 'industry_calibrated', 'confidence_adjusted', 'impact_weighted']
+  };
+
+  // Apply all scoring enhancements to each section
+  enhanced.sections = enhanced.sections?.map((section: any, index: number) => {
+    const enhanced_section = { ...section };
+    let baseScore = enhanced_section.score;
+
+    // Apply evidence-weighted scoring
+    const evidenceData = analyzeEvidenceQuality(section.details || '');
+    const evidenceLevel = evidenceData.score >= 80 ? 'high' : evidenceData.score >= 60 ? 'medium' : 'low';
+    enhanced_section.evidenceLevel = evidenceLevel;
+    enhanced_section.evidenceScore = evidenceData.score;
+
+    baseScore = calculateEvidenceWeightedScore(baseScore, evidenceLevel, evidenceData);
+
+    // Apply industry benchmark calibration
+    const benchmarkResult = calibrateScoreToIndustryBenchmarks(baseScore, section.name, businessContext.industry);
+    enhanced_section.industryComparison = benchmarkResult.comparison;
+    enhanced_section.industryPercentile = benchmarkResult.percentile;
+
+    // Apply confidence adjustment
+    const confidence = section.confidence || 0.8;
+    const hasEvidence = validationResults.hasEvidence && evidenceData.score >= 60;
+    baseScore = adjustScoreForConfidence(baseScore, confidence, hasEvidence);
+    enhanced_section.confidence = confidence;
+
+    // Apply implementation impact weighting
+    const implementationDifficulty = section.implementationDifficulty || 'medium';
+    const estimatedImpactLevel = section.estimatedImpact?.includes('high') ? 'high' :
+                                section.estimatedImpact?.includes('low') ? 'low' : 'medium';
+
+    const impactResult = calculateImplementationImpactScore(baseScore, implementationDifficulty, estimatedImpactLevel);
+    enhanced_section.score = Math.max(0, Math.min(100, impactResult.score));
+    enhanced_section.priorityLevel = impactResult.priorityLevel;
+    enhanced_section.implementationDifficulty = implementationDifficulty;
+
+    // Add quality indicators
+    enhanced_section.qualityIndicators = {
+      evidenceQuality: evidenceLevel,
+      industryRelevant: benchmarkResult.percentile >= 50,
+      scoreReliable: confidence >= 0.7,
+      implementationFeasible: implementationDifficulty !== 'very_hard',
+      highPriority: impactResult.priorityLevel === 'critical' || impactResult.priorityLevel === 'high'
+    };
+
+    return enhanced_section;
+  });
+
+  // Recalculate overall score with dynamic weights
   if (enhanced.sections && enhanced.sections.length > 0) {
-    const weights = [0.18, 0.13, 0.13, 0.13, 0.09, 0.09, 0.05, 0.05, 0.10, 0.05];
-    const calculatedScore = enhanced.sections.reduce((sum: number, section: any, index: number) => {
-      return sum + (section.score * (weights[index] || 0.1));
+    const weightedScore = enhanced.sections.reduce((sum: number, section: any, index: number) => {
+      const weight = dynamicWeights[index] || (1 / enhanced.sections.length);
+      return sum + (section.score * weight);
     }, 0);
 
-    // Only update if significantly different
-    if (Math.abs(enhanced.overallScore - calculatedScore) > 5) {
-      enhanced.overallScore = Math.round(calculatedScore);
-    }
+    enhanced.overallScore = Math.round(weightedScore);
+    enhanced.weightingMethod = 'dynamic_context_based';
+    enhanced.appliedWeights = dynamicWeights;
   }
 
+  // Add improvement impact analysis
+  enhanced.improvementImpact = {
+    highPriority: enhanced.sections
+      .filter((s: any) => s.priorityLevel === 'critical' || s.priorityLevel === 'high')
+      .map((s: any) => s.name.toLowerCase().replace(/\s+/g, '_')),
+    estimatedROI: calculateEstimatedROI(enhanced.sections, businessContext),
+    implementationTimeframe: calculateImplementationTimeframe(enhanced.sections),
+    quickWins: enhanced.sections
+      .filter((s: any) => s.implementationDifficulty === 'easy' && s.priorityLevel === 'high')
+      .map((s: any) => s.name)
+  };
+
+  // Add reasoning chain for transparency
+  enhanced.reasoningChain = [
+    `Industry identification: Detected ${businessContext.industry} business based on content analysis`,
+    `Dynamic weighting: Applied ${businessContext.industry} industry-specific criteria weights`,
+    `Evidence analysis: Evaluated evidence quality across all sections`,
+    `Benchmark calibration: Compared against ${businessContext.industry} industry standards`,
+    `Confidence adjustment: Applied confidence-based score modifications`,
+    `Impact weighting: Prioritized based on implementation difficulty and estimated impact`,
+    `Quality assurance: Validated recommendation-score alignment and consistency`
+  ];
+
   return enhanced;
+}
+
+// Helper function to calculate estimated ROI
+function calculateEstimatedROI(sections: any[], businessContext: any): string {
+  const highImpactSections = sections.filter(s =>
+    s.priorityLevel === 'critical' || s.priorityLevel === 'high'
+  ).length;
+
+  const overallScoreImprovement = sections.reduce((sum, section) => {
+    const potentialImprovement = Math.max(0, 85 - section.score); // Assuming 85 as target
+    return sum + (potentialImprovement * 0.3); // Conservative estimate
+  }, 0) / sections.length;
+
+  if (businessContext.industry === 'ecommerce') {
+    return `${Math.round(overallScoreImprovement * 0.8)}-${Math.round(overallScoreImprovement * 1.2)}% improvement in conversion rate`;
+  } else if (businessContext.industry === 'saas') {
+    return `${Math.round(overallScoreImprovement * 0.6)}-${Math.round(overallScoreImprovement * 1.0)}% improvement in trial conversion`;
+  } else {
+    return `${Math.round(overallScoreImprovement * 0.5)}-${Math.round(overallScoreImprovement * 1.0)}% improvement in key business metrics`;
+  }
+}
+
+// Helper function to calculate implementation timeframe
+function calculateImplementationTimeframe(sections: any[]): string {
+  const difficulties = sections.map(s => s.implementationDifficulty || 'medium');
+  const hardCount = difficulties.filter(d => d === 'hard' || d === 'very_hard').length;
+  const easyCount = difficulties.filter(d => d === 'easy').length;
+
+  if (hardCount > 5) {
+    return '6-12 months for comprehensive improvements';
+  } else if (hardCount > 2) {
+    return '3-6 months for core improvements';
+  } else {
+    return '1-3 months for core improvements';
+  }
 }
 
 // Dynamic Prompt Adaptation
