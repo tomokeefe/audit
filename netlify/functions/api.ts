@@ -1994,12 +1994,16 @@ For each section, provide:
 - Priority level ('critical', 'high', 'medium', 'low') - will be auto-calculated but can be suggested
 - Detailed explanation of findings with QUANTIFIABLE EVIDENCE
 
-EVIDENCE REQUIREMENTS for HIGH-QUALITY SCORING:
-- Include specific numbers, percentages, and metrics wherever possible
-- Cite exact examples from the website analysis (e.g., "Logo missing on 3 of 8 analyzed pages")
-- Reference cross-page consistency data when available
-- Use comparative language ("compared to industry standard", "vs. benchmark")
-- Quantify issues found (e.g., "15 images missing alt text out of 23 total")
+CRITICAL EVIDENCE REQUIREMENTS for HIGH-QUALITY SCORING:
+- MANDATORY: Include exact page counts and percentages for all findings (e.g., "Logo missing on 3 of 8 pages analyzed = 37.5% inconsistency")
+- MANDATORY: Cite specific metrics with units (e.g., "Page load time: 4.2s vs industry standard 2.5s = 68% slower")
+- MANDATORY: Reference cross-page consistency percentages for all multi-page findings
+- MANDATORY: Use precise comparative language with quantified differences ("47% above industry average", "23% below benchmark")
+- MANDATORY: Quantify ALL issues with ratios (e.g., "15 images missing alt text out of 23 total = 65% accessibility compliance failure")
+- MANDATORY: Include before/after potential impact estimates (e.g., "Implementing recommendations could improve load time from 4.2s to 2.1s = 50% improvement")
+- REQUIRED: Reference specific industry benchmarks by name (e.g., "Google Core Web Vitals standard", "WCAG 2.1 AA compliance")
+- REQUIRED: Include ROI estimates for each major recommendation (e.g., "Estimated 15-25% increase in conversion rate")
+- REQUIRED: Specify implementation difficulty and time estimates (e.g., "2-hour fix for easy wins", "2-week implementation for complex changes")
 
 CONFIDENCE LEVEL GUIDELINES:
 - 0.9-1.0: Concrete evidence with quantifiable metrics and cross-page validation
