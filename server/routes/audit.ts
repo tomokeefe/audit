@@ -952,6 +952,140 @@ function enhanceAuditQuality(auditData: any, validationResults: any, businessCon
   return enhanced;
 }
 
+// Dynamic Prompt Adaptation
+function getDynamicPromptInstructions(businessContext: any, websiteData: any): string {
+  const { industry, businessType, features } = businessContext;
+
+  const baseInstructions = {
+    ecommerce: {
+      focus: 'conversion optimization, product presentation, checkout flow, trust signals, and mobile commerce experience',
+      scoringWeights: 'Increase weight for Conversion Optimization (15%) and Customer Experience (10%)',
+      specificChecks: [
+        'Product page clarity and appeal',
+        'Shopping cart functionality indicators',
+        'Trust badges and security certificates',
+        'Mobile checkout experience',
+        'Customer reviews and testimonials',
+        'Return/refund policy accessibility'
+      ],
+      successMetrics: 'conversion rate, cart abandonment reduction, mobile sales performance'
+    },
+    saas: {
+      focus: 'user onboarding clarity, feature communication, trial conversion elements, and support accessibility',
+      scoringWeights: 'Increase weight for Usability (20%) and Content Strategy (15%)',
+      specificChecks: [
+        'Free trial or demo accessibility',
+        'Feature documentation quality',
+        'Onboarding flow clarity',
+        'Support and help resources',
+        'Pricing transparency',
+        'Dashboard/app screenshots or demos'
+      ],
+      successMetrics: 'trial conversion rate, user activation, support ticket reduction'
+    },
+    healthcare: {
+      focus: 'credibility indicators, accessibility compliance, privacy policies, and appointment booking functionality',
+      scoringWeights: 'Increase weight for Consistency & Compliance (15%) and Customer Experience (10%)',
+      specificChecks: [
+        'Professional credentials display',
+        'HIPAA compliance indicators',
+        'Appointment booking system',
+        'Patient testimonials and reviews',
+        'Accessibility features (ADA compliance)',
+        'Contact information and location details'
+      ],
+      successMetrics: 'appointment bookings, patient trust indicators, compliance adherence'
+    },
+    finance: {
+      focus: 'security indicators, regulatory compliance, trust building elements, and clear financial communication',
+      scoringWeights: 'Increase weight for Consistency & Compliance (20%) and Customer Experience (10%)',
+      specificChecks: [
+        'Security certifications and badges',
+        'Regulatory compliance statements',
+        'Clear fee structure and terms',
+        'Customer protection information',
+        'Professional team credentials',
+        'Risk disclosure statements'
+      ],
+      successMetrics: 'customer trust, compliance score, security perception'
+    },
+    portfolio: {
+      focus: 'visual presentation, project showcases, contact accessibility, and personal branding',
+      scoringWeights: 'Increase weight for Design (20%) and Branding (25%)',
+      specificChecks: [
+        'Portfolio project presentation',
+        'Visual quality and consistency',
+        'Contact form and information',
+        'Social media integration',
+        'Skills and expertise display',
+        'Client testimonials or case studies'
+      ],
+      successMetrics: 'inquiry generation, portfolio engagement, professional credibility'
+    },
+    consulting: {
+      focus: 'expertise demonstration, case studies, client testimonials, and lead generation optimization',
+      scoringWeights: 'Increase weight for Content Strategy (15%) and Conversion Optimization (15%)',
+      specificChecks: [
+        'Service offering clarity',
+        'Case studies and success stories',
+        'Client testimonials and logos',
+        'Lead capture forms',
+        'Expert positioning content',
+        'Consultation booking process'
+      ],
+      successMetrics: 'lead generation, consultation bookings, credibility indicators'
+    }
+  };
+
+  const instructions = baseInstructions[industry as keyof typeof baseInstructions] || {
+    focus: 'user experience, content quality, mobile optimization, and general best practices',
+    scoringWeights: 'Apply standard weighting across all criteria',
+    specificChecks: [
+      'General user experience quality',
+      'Content readability and structure',
+      'Mobile responsiveness',
+      'Loading speed and performance',
+      'Contact information accessibility',
+      'Professional appearance'
+    ],
+    successMetrics: 'user engagement, bounce rate reduction, overall user satisfaction'
+  };
+
+  // Add business type modifiers
+  const businessTypeModifiers = {
+    b2b: 'Focus on professional credibility, lead generation, and enterprise trust signals.',
+    b2c: 'Emphasize user experience, emotional connection, and consumer conversion optimization.',
+    marketplace: 'Prioritize platform usability, seller/buyer trust, and transaction security.'
+  };
+
+  // Add feature-based adaptations
+  const featureAdaptations = [];
+  if (features.hasEcommerce) featureAdaptations.push('E-commerce functionality evaluation');
+  if (features.hasBooking) featureAdaptations.push('Appointment/booking system assessment');
+  if (features.hasLogin) featureAdaptations.push('User account and login experience review');
+  if (features.hasBlog) featureAdaptations.push('Content marketing and blog effectiveness analysis');
+
+  return `
+**PRIMARY FOCUS**: ${instructions.focus}
+
+**BUSINESS TYPE MODIFIER**: ${businessTypeModifiers[businessType as keyof typeof businessTypeModifiers] || ''}
+
+**SCORING ADAPTATIONS**: ${instructions.scoringWeights}
+
+**INDUSTRY-SPECIFIC EVALUATION CRITERIA**:
+${instructions.specificChecks.map(check => `- ${check}`).join('\n')}
+
+**FEATURE-BASED ADAPTATIONS**:
+${featureAdaptations.map(adaptation => `- ${adaptation}`).join('\n')}
+
+**SUCCESS METRICS TO EMPHASIZE**: ${instructions.successMetrics}
+
+**COMPETITIVE CONTEXT**: Compare against typical ${industry} industry standards and ${businessType} best practices.
+
+**RECOMMENDATION PRIORITY**: Focus on improvements that directly impact ${instructions.successMetrics} for ${industry} businesses.
+  `.trim();
+}
+
 // Function to generate audit using Gemini
 async function generateAudit(websiteData: any): Promise<AuditResponse> {
   const model = genAI.getGenerativeModel({
