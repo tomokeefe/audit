@@ -278,11 +278,16 @@ export default function Index() {
 
         try {
           // Test a simple fetch to see if server is responding
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 3000);
+
           const testResponse = await fetch("/api/ping", {
             method: 'GET',
             headers: { 'Accept': 'application/json' },
-            signal: AbortSignal.timeout ? AbortSignal.timeout(3000) : undefined
+            signal: controller.signal
           });
+
+          clearTimeout(timeoutId);
 
           if (testResponse.ok) {
             console.log("API server is responding, running full connection test...");
