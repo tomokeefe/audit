@@ -1118,8 +1118,11 @@ async function generateAudit(websiteData: any) {
     ],
   });
 
+  // Enhance with visual analysis
+  const enhancedWebsiteData = await enhanceWithVisualAnalysis(websiteData);
+
   // Detect business context and industry
-  const businessContext = detectBusinessContext(websiteData);
+  const businessContext = detectBusinessContext(enhancedWebsiteData);
 
   const prompt = `
 You are a senior digital consultant with 15+ years of experience conducting comprehensive brand audits for Fortune 500 companies. You excel at systematic analysis, data-driven insights, and actionable recommendations.
