@@ -1619,7 +1619,7 @@ Respond in this exact JSON format with ALL 10 sections:
       "maxScore": 100,
       "issues": 4,
       "recommendations": 6,
-      "details": "Detailed analysis and recommendations for this section..."
+      "details": "Overview: Visual design shows modern aesthetic with good use of whitespace and typography hierarchy. Color scheme is professional but could benefit from more visual interest and improved contrast ratios.\\n\\nIssues:\\n- Low contrast ratios on secondary text (3.2:1, should be 4.5:1)\\n- Inconsistent button styles across pages\\n- Missing visual hierarchy in content sections\\n- Limited use of visual elements to break up text\\n\\nRecommendations:\\n- Increase contrast ratios to meet WCAG AA standards\\n- Standardize button designs and hover states\\n- Implement consistent heading styles and spacing\\n- Add visual elements like icons and graphics to improve engagement\\n- Create design system documentation for consistency"
     },
     {
       "name": "Messaging",
