@@ -1452,6 +1452,62 @@ function getDynamicSectionWeights(businessContext: any): number[] {
   return adjustedWeights.map(w => w / sum);
 }
 
+// Function to calculate weighted overall score using specified weights
+function calculateWeightedOverallScore(sections: any[]): number {
+  // Standard weights as specified in the requirements
+  const standardWeights = [
+    0.20, // Branding
+    0.15, // Design
+    0.15, // Messaging
+    0.15, // Usability
+    0.10, // Content Strategy
+    0.10, // Digital Presence
+    0.05, // Customer Experience
+    0.10, // Competitor Analysis
+    0.05, // Conversion Optimization
+    0.05  // Consistency & Compliance
+  ];
+
+  // Ensure we have exactly 10 sections, pad with default scores if needed
+  const normalizedSections = [...sections];
+  while (normalizedSections.length < 10) {
+    normalizedSections.push({ score: 50.0 }); // Default score for missing sections
+  }
+
+  // Calculate weighted score using the specified formula
+  let weightedSum = 0;
+  for (let i = 0; i < Math.min(normalizedSections.length, standardWeights.length); i++) {
+    const score = parseFloat(normalizedSections[i].score) || 0;
+    weightedSum += standardWeights[i] * score;
+  }
+
+  return parseFloat(weightedSum.toFixed(1));
+}
+
+// Function to ensure scores are in decimal format
+function normalizeScoreToDecimal(score: any): number {
+  if (typeof score === 'number') {
+    return parseFloat(score.toFixed(1));
+  }
+  if (typeof score === 'string') {
+    const numScore = parseFloat(score);
+    return isNaN(numScore) ? 0.0 : parseFloat(numScore.toFixed(1));
+  }
+  return 0.0;
+}
+
+// Function to calculate sub-category averages (like Competitor Analysis example)
+function calculateSubCategoryAverage(subScores: Array<{score: number, maxScore: number}>): number {
+  if (!subScores || subScores.length === 0) return 0.0;
+
+  const totalPercentage = subScores.reduce((sum, subScore) => {
+    const percentage = (subScore.score / subScore.maxScore) * 100;
+    return sum + percentage;
+  }, 0);
+
+  return parseFloat((totalPercentage / subScores.length).toFixed(1));
+}
+
 // 7. Enhanced Quality Enhancement with All Improvements
 function enhanceAuditQuality(auditData: any, validationResults: any, businessContext: any) {
   const enhanced = { ...auditData };
