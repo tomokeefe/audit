@@ -2128,7 +2128,13 @@ Respond in this exact JSON format with ALL 10 sections:
       "maxScore": 100,
       "issues": 4,
       "recommendations": 6,
-      "details": "Overview: Visual design shows modern aesthetic with good use of whitespace and typography hierarchy. Color scheme is professional but could benefit from more visual interest and improved contrast ratios.\\n\\nIssues:\\n- Low contrast ratios on secondary text (3.2:1, should be 4.5:1)\\n- Inconsistent button styles across pages\\n- Missing visual hierarchy in content sections\\n- Limited use of visual elements to break up text\\n\\nRecommendations:\\n- Increase contrast ratios to meet WCAG AA standards\\n- Standardize button designs and hover states\\n- Implement consistent heading styles and spacing\\n- Add visual elements like icons and graphics to improve engagement\\n- Create design system documentation for consistency"
+      "confidence": 0.82,
+      "evidenceLevel": "high",
+      "industryComparison": "above_average",
+      "priorityLevel": "medium",
+      "implementationDifficulty": "medium",
+      "estimatedImpact": "medium - 10-15% improvement in user engagement",
+      "details": "Overview: Design analysis across 8 pages shows strong visual hierarchy with consistent typography on 87.5% of content areas. Color scheme maintains professional appearance but lacks secondary color diversity.\\n\\nIssues:\\n- Limited color palette restricts visual hierarchy (only 2 primary colors used)\\n- Button styles inconsistent across 25% of analyzed pages\\n- White space usage varies significantly on mobile vs desktop (40% difference)\\n- Image aspect ratios inconsistent in 4 of 8 gallery sections\\n\\nRecommendations:\\n- Expand color palette with 2-3 secondary colors for improved visual hierarchy\\n- Standardize button design system across all page templates\\n- Implement responsive white space guidelines for consistent mobile experience\\n- Establish image guidelines with standard aspect ratios (16:9, 4:3, 1:1)\\n- Create design component library for consistent implementation"
     },
     {
       "name": "Messaging",
