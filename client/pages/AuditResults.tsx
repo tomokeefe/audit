@@ -377,7 +377,7 @@ function ImplementationRoadmap({ auditData }: { auditData: any }) {
                     <div className="flex items-start justify-between mb-2">
                       <h6 className="font-medium text-gray-900 text-sm">{item.name}</h6>
                       <Badge variant="outline" className="text-xs">
-                        {item.score}%
+                        {typeof item.score === 'number' ? item.score.toFixed(1) : item.score}%
                       </Badge>
                     </div>
                     <div className="text-xs text-gray-600">
