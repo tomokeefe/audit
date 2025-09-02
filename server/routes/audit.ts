@@ -1414,6 +1414,24 @@ Be thorough, professional, and provide actionable insights based on the availabl
     // Apply quality improvements based on validation
     auditData = enhanceAuditQuality(auditData, validationResults, businessContext);
 
+    // Performance monitoring
+    const performanceMetrics = {
+      responseTime: Date.now() - startTime,
+      tokensUsed: text.length / 4, // Approximate token count
+      qualityScore: validationResults.qualityScore,
+      industryAccuracy: businessContext.confidence,
+      evidenceLevel: validationResults.hasEvidence,
+      completenessScore: auditData.sections?.length === 10 ? 100 : (auditData.sections?.length * 10) || 0
+    };
+
+    // Log performance for learning
+    console.log('Audit Performance Metrics:', {
+      url: websiteData.url,
+      industry: businessContext.industry,
+      ...performanceMetrics,
+      validationWarnings: validationResults.warnings.length
+    });
+
     // Generate a unique ID and add metadata
     const auditId = Date.now().toString();
     const currentDate = new Date().toLocaleDateString("en-US", {
@@ -1432,6 +1450,10 @@ Be thorough, professional, and provide actionable insights based on the availabl
       status: "completed",
       sections: auditData.sections,
       summary: auditData.summary,
+      metadata: auditData.metadata || {},
+      reasoningChain: auditData.reasoningChain || [],
+      improvementImpact: auditData.improvementImpact || {},
+      performanceMetrics,
     };
   } catch (error) {
     console.error("Error generating audit:", error);
