@@ -687,8 +687,22 @@ Best regards`);
                       (content) => content.type === "recommendations"
                     );
 
-                    // Only show sections that have recommendations
-                    if (!recommendationsContent || recommendationsContent.content.length === 0) {
+                    // Log debug info for troubleshooting
+                    console.log(`Section ${section.name}:`, {
+                      hasDetails: !!section.details,
+                      detailsLength: section.details?.length || 0,
+                      parsedSections: parsedContent.map(p => ({ type: p.type, contentLength: p.content.length })),
+                      hasRecommendations: !!recommendationsContent,
+                      recommendationsCount: section.recommendations || 0
+                    });
+
+                    // Show section if it has recommendations count or any content
+                    // Don't filter out sections - show them even if parsing fails
+                    const hasRecommendations = recommendationsContent && recommendationsContent.content.length > 0;
+                    const hasContent = section.details && section.details.length > 0;
+                    const hasRecommendationCount = (section.recommendations || 0) > 0;
+
+                    if (!hasContent && !hasRecommendationCount) {
                       return null;
                     }
 
