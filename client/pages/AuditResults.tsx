@@ -785,20 +785,32 @@ Best regards`);
                             <div className="space-y-3">
                               <div className="flex items-center gap-2 mb-3">
                                 <Lightbulb className="h-4 w-4 text-green-600" />
-                                <h5 className="font-semibold text-gray-900">Recommended Actions</h5>
+                                <h5 className="font-semibold text-gray-900">Analysis & Recommendations</h5>
                               </div>
                               <div className="space-y-2">
-                                {recommendationsContent.content.map((recommendation, itemIndex) => (
-                                  <div
-                                    key={itemIndex}
-                                    className="flex gap-3 p-3 bg-green-50 border border-green-200 rounded-lg"
-                                  >
-                                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                                    <p className="text-green-800 text-sm leading-relaxed">
-                                      {recommendation}
-                                    </p>
+                                {hasRecommendations ? (
+                                  // Show parsed recommendations if available
+                                  recommendationsContent.content.map((recommendation, itemIndex) => (
+                                    <div
+                                      key={itemIndex}
+                                      className="flex gap-3 p-3 bg-green-50 border border-green-200 rounded-lg"
+                                    >
+                                      <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                                      <p className="text-green-800 text-sm leading-relaxed">
+                                        {recommendation}
+                                      </p>
+                                    </div>
+                                  ))
+                                ) : (
+                                  // Fallback: show full content if parsing failed
+                                  <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                                    <div className="prose prose-sm max-w-none">
+                                      <div className="whitespace-pre-wrap text-gray-800 text-sm leading-relaxed">
+                                        {section.details}
+                                      </div>
+                                    </div>
                                   </div>
-                                ))}
+                                )}
                               </div>
                             </div>
 
