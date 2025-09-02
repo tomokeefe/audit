@@ -266,15 +266,51 @@ export default function Index() {
 
   useEffect(() => {
     // Add debug logging
-    console.log("Component mounted, testing API and loading recent audits...");
+    console.log("Component mounted, initializing API connection...");
 
-    // Test API connection first, then load audits
+    // Test API connection with retry logic for server startup
     const initializeAPI = async () => {
-      await testAPIConnection();
-      // Wait a moment for API status to update
-      setTimeout(() => {
-        loadRecentAudits();
-      }, 500);
+      let retries = 0;
+      const maxRetries = 3;
+
+      const attemptConnection = async (): Promise<void> => {
+        console.log(`API connection attempt ${retries + 1}/${maxRetries}`);
+
+        try {
+          await testAPIConnection();
+
+          // Check if connection was successful
+          const currentStatus = apiStatus;
+          if (currentStatus.ping || currentStatus.audits) {
+            console.log("API connection successful, loading audits...");
+            setTimeout(() => loadRecentAudits(), 300);
+            return;
+          }
+
+          // If connection failed and we have retries left
+          if (retries < maxRetries - 1) {
+            retries++;
+            console.log(`API connection failed, retrying in ${1000 + (retries * 500)}ms...`);
+            await new Promise(resolve => setTimeout(resolve, 1000 + (retries * 500)));
+            return attemptConnection();
+          } else {
+            console.log("All API connection attempts failed");
+            // Still try to load audits in case the status check is wrong
+            setTimeout(() => loadRecentAudits(), 300);
+          }
+        } catch (error) {
+          console.error("Error during API initialization:", error);
+          if (retries < maxRetries - 1) {
+            retries++;
+            await new Promise(resolve => setTimeout(resolve, 1000 + (retries * 500)));
+            return attemptConnection();
+          }
+        }
+      };
+
+      // Add initial delay to allow server to fully start
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      await attemptConnection();
     };
 
     initializeAPI();
