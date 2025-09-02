@@ -1365,6 +1365,8 @@ Respond in this exact JSON format with ALL 10 sections:
 Be thorough, professional, and provide actionable insights based on the available data.
 `;
 
+  const startTime = Date.now();
+
   try {
     console.log("Calling Gemini AI for audit generation...");
 
