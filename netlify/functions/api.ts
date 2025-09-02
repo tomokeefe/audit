@@ -2423,15 +2423,15 @@ export const handler: Handler = async (event, context) => {
         };
       }
 
-      // Check if Gemini API key is configured
-      if (!Netlify.env.get("GEMINI_API_KEY")) {
-        console.error("GEMINI_API_KEY environment variable is not set");
+      // Check if Gemini API key is configured, if not use demo mode
+      if (!GEMINI_API_KEY) {
+        console.log("GEMINI_API_KEY not set, generating demo audit");
+        const demoAudit = generateDemoAudit(url);
+        auditStorage.set(demoAudit.id, demoAudit);
         return {
-          statusCode: 500,
+          statusCode: 200,
           headers,
-          body: JSON.stringify({
-            error: "Server configuration error. Please contact support.",
-          }),
+          body: JSON.stringify(demoAudit),
         };
       }
 
