@@ -110,46 +110,121 @@ export default function Index() {
     }
   };
 
-  // Debug function to test API connectivity
+  // Improved API connectivity test with timeout and retry
   const testAPIConnection = async () => {
     console.log("Testing API connection...");
     let pingOk = false;
     let auditsOk = false;
     let errorMsg = "";
 
+    // Helper function to create fetch with timeout
+    const fetchWithTimeout = async (url: string, timeout = 5000) => {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+      try {
+        const response = await fetch(url, {
+          signal: controller.signal,
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+        });
+        clearTimeout(timeoutId);
+        return response;
+      } catch (error) {
+        clearTimeout(timeoutId);
+        throw error;
+      }
+    };
+
     try {
-      // Test with a simple ping first
-      const pingResponse = await fetch("/api/ping");
-      console.log("Ping response status:", pingResponse.status);
-      console.log("Ping response ok:", pingResponse.ok);
+      // Test ping endpoint with timeout
+      console.log("Testing /api/ping...");
+      try {
+        const pingResponse = await fetchWithTimeout("/api/ping", 5000);
+        console.log("Ping response status:", pingResponse.status);
+        console.log("Ping response ok:", pingResponse.ok);
 
-      pingOk = pingResponse.ok;
-      if (pingResponse.ok) {
-        const pingData = await pingResponse.json();
-        console.log("Ping data:", pingData);
+        pingOk = pingResponse.ok;
+        if (pingResponse.ok) {
+          try {
+            const pingData = await pingResponse.json();
+            console.log("Ping data:", pingData);
+          } catch (jsonError) {
+            console.warn("Ping response not JSON:", jsonError);
+            // Still consider it successful if status is ok
+          }
+        } else {
+          errorMsg = `Ping failed: ${pingResponse.status} ${pingResponse.statusText}`;
+        }
+      } catch (pingError) {
+        console.error("Ping request failed:", pingError);
+        if (pingError instanceof Error) {
+          if (pingError.name === 'AbortError') {
+            errorMsg = "Ping request timed out";
+          } else if (pingError.message.includes('fetch')) {
+            errorMsg = "Network error: Cannot reach API server";
+          } else {
+            errorMsg = `Ping error: ${pingError.message}`;
+          }
+        }
       }
 
-      // Then test the audits endpoint
-      const auditsResponse = await fetch("/api/audits");
-      console.log("Audits response status:", auditsResponse.status);
-      console.log("Audits response ok:", auditsResponse.ok);
-      console.log("Audits response url:", auditsResponse.url);
+      // Test audits endpoint only if ping succeeded or with retry
+      console.log("Testing /api/audits...");
+      try {
+        const auditsResponse = await fetchWithTimeout("/api/audits", 5000);
+        console.log("Audits response status:", auditsResponse.status);
+        console.log("Audits response ok:", auditsResponse.ok);
+        console.log("Audits response url:", auditsResponse.url);
 
-      auditsOk = auditsResponse.ok;
-      if (auditsResponse.ok) {
-        const auditsData = await auditsResponse.json();
-        console.log("Audits data:", auditsData);
-      } else {
-        const errorText = await auditsResponse.text();
-        console.log("Audits error response:", errorText);
-        errorMsg = `Audits API error: ${auditsResponse.status} ${auditsResponse.statusText}`;
+        auditsOk = auditsResponse.ok;
+        if (auditsResponse.ok) {
+          try {
+            const auditsData = await auditsResponse.json();
+            console.log("Audits data:", auditsData);
+          } catch (jsonError) {
+            console.warn("Audits response not JSON:", jsonError);
+            // Still consider it successful if status is ok
+          }
+        } else {
+          const errorText = await auditsResponse.text().catch(() => 'Unable to read error response');
+          console.log("Audits error response:", errorText);
+          if (!errorMsg) { // Only set if ping didn't already fail
+            errorMsg = `Audits API error: ${auditsResponse.status} ${auditsResponse.statusText}`;
+          }
+        }
+      } catch (auditsError) {
+        console.error("Audits request failed:", auditsError);
+        if (!errorMsg) { // Only set if ping didn't already fail
+          if (auditsError instanceof Error) {
+            if (auditsError.name === 'AbortError') {
+              errorMsg = "Audits request timed out";
+            } else if (auditsError.message.includes('fetch')) {
+              errorMsg = "Network error: Cannot reach audits API";
+            } else {
+              errorMsg = `Audits error: ${auditsError.message}`;
+            }
+          } else {
+            errorMsg = "Unknown audits API error";
+          }
+        }
       }
-    } catch (error) {
-      console.error("API test failed:", error);
-      errorMsg = error instanceof Error ? error.message : "Unknown error";
+
+      // If both failed, provide more helpful error message
+      if (!pingOk && !auditsOk && !errorMsg) {
+        errorMsg = "API server appears to be offline or unreachable";
+      }
+
+    } catch (generalError) {
+      console.error("General API test failed:", generalError);
+      errorMsg = generalError instanceof Error ? generalError.message : "Unexpected API test failure";
     }
 
+    // Update API status
     setApiStatus({ ping: pingOk, audits: auditsOk, error: errorMsg });
+    console.log("API test completed:", { ping: pingOk, audits: auditsOk, error: errorMsg });
   };
 
   useEffect(() => {
