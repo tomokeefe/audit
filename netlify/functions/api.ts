@@ -1444,8 +1444,6 @@ Be thorough, professional, and provide actionable insights based on the availabl
       day: "numeric",
     });
 
-    const startTime = Date.now();
-
     return {
       id: auditId,
       url: websiteData.url,
