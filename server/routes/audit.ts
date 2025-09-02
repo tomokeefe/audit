@@ -826,23 +826,50 @@ async function generateAudit(websiteData: any): Promise<AuditResponse> {
     ],
   });
 
+  // Detect business context and industry
+  const businessContext = detectBusinessContext(websiteData);
+
   const prompt = `
 You are a senior digital consultant with 15+ years of experience conducting comprehensive brand audits for Fortune 500 companies. You excel at systematic analysis, data-driven insights, and actionable recommendations.
 
+BUSINESS CONTEXT ANALYSIS:
+- Detected Industry: ${businessContext.industry} (confidence: ${Math.round(businessContext.confidence * 100)}%)
+- Business Type: ${businessContext.businessType}
+- Key Features: ${Object.entries(businessContext.features).filter(([_, value]) => value).map(([key, _]) => key).join(', ')}
+- Industry Benchmarks: ${businessContext.industryBenchmarks.priorities.join(', ')}
+
+INDUSTRY-SPECIFIC ANALYSIS FOCUS:
+${businessContext.industry === 'ecommerce' ?
+  'Focus on conversion optimization, product presentation, checkout flow, trust signals, and mobile commerce experience.' :
+  businessContext.industry === 'saas' ?
+  'Emphasize user onboarding clarity, feature communication, trial conversion elements, and support accessibility.' :
+  businessContext.industry === 'healthcare' ?
+  'Prioritize credibility indicators, accessibility compliance, privacy policies, and appointment booking functionality.' :
+  businessContext.industry === 'finance' ?
+  'Focus on security indicators, regulatory compliance, trust building elements, and clear financial communication.' :
+  'Apply general best practices with focus on user experience, content quality, and mobile optimization.'}
+
 ANALYSIS METHODOLOGY:
-1. First, understand the business context and industry
-2. Analyze each criterion systematically with evidence
-3. Compare against industry standards and best practices
-4. Identify specific, actionable improvement opportunities
-5. Provide measurable recommendations with impact assessment
+1. First, understand the business context and industry-specific requirements
+2. Analyze each criterion systematically with concrete evidence
+3. Compare against industry benchmarks: Load time <${businessContext.industryBenchmarks.loadTime}s, Mobile score >${businessContext.industryBenchmarks.mobileScore}%
+4. Identify specific, measurable improvement opportunities
+5. Provide actionable recommendations with estimated ROI impact
+
+EVIDENCE-BASED SCORING REQUIREMENTS:
+- Every score must include specific evidence (e.g., "Logo present on 8/8 pages analyzed")
+- Compare metrics against industry standards (e.g., "Load time 3.2s vs industry benchmark 2.0s")
+- Cite exact examples from the website analysis
+- Quantify issues found (e.g., "15 images missing alt text out of 23 total")
 
 EXAMPLE ANALYSIS PATTERN:
 For Branding (Score: 78):
-REASONING: "The website demonstrates strong brand consistency with logo placement on all 8 analyzed pages and systematic color usage (#2B4C8C primary, #F8F9FA secondary). However, messaging tone varies between formal on About page and casual on Services page, reducing brand voice coherence."
-EVIDENCE: "Logo present on 8/8 pages, consistent color palette, but 3 different tone variations detected"
-RECOMMENDATION: "Develop brand voice guidelines document and audit all copy for tone consistency"
+REASONING: "Website demonstrates strong brand consistency with logo placement on all 8 analyzed pages and systematic color usage (#2B4C8C primary, #F8F9FA secondary). However, messaging tone varies between formal on About page ('We provide professional solutions') and casual on Services page ('Let's get started!'), reducing brand voice coherence."
+EVIDENCE: "Logo present on 8/8 pages, consistent color palette across sections, but 3 different tone variations detected across page types"
+INDUSTRY_COMPARISON: "Brand consistency score above ${businessContext.industry} industry average of 72%"
+RECOMMENDATION: "Develop brand voice guidelines document specifying tone for each page type. Audit all copy for consistency. Estimated impact: 15-20% improvement in brand recognition."
 
-Now analyze the following website data using this systematic approach:
+Now analyze the following website data using this systematic, evidence-based approach:
 
 ${
   websiteData.fallbackUsed
