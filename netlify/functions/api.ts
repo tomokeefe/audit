@@ -72,144 +72,144 @@ function generateDemoAudit(url: string) {
     sections: [
       {
         name: "Branding",
-        score: 85.0,
+        score: brandingScore,
         subScores: [
-          { name: "Logo Consistency", score: 88.0, maxScore: 100 },
-          { name: "Color Palette", score: 85.0, maxScore: 100 },
-          { name: "Typography", score: 82.0, maxScore: 100 }
+          { name: "Logo Consistency", score: generateVariableScore(brandingScore + 3, 10, 8), maxScore: 100 },
+          { name: "Color Palette", score: generateVariableScore(brandingScore, 11, 5), maxScore: 100 },
+          { name: "Typography", score: generateVariableScore(brandingScore - 3, 12, 6), maxScore: 100 }
         ],
-        issues: 2,
-        recommendations: 3,
-        details: "Strong brand consistency with minor improvements needed. Logo appears on 8/10 pages analyzed (80% consistency). Brand colors are used consistently across the site. Recommend adding brand guidelines documentation and ensuring logo consistency on all pages.",
-        priorityLevel: "medium",
-        implementationDifficulty: "easy"
+        issues: Math.max(1, Math.min(6, Math.round((100 - brandingScore) / 15))),
+        recommendations: Math.max(2, Math.min(8, Math.round((100 - brandingScore) / 12))),
+        details: `Brand consistency analysis for ${domain}. Logo consistency ${brandingScore >= 80 ? 'strong' : brandingScore >= 60 ? 'moderate' : 'needs improvement'} across analyzed pages. ${brandingScore >= 75 ? 'Brand colors are used systematically.' : 'Color usage inconsistencies detected.'} Recommend ${brandingScore < 70 ? 'comprehensive brand guidelines development and' : ''} ensuring consistent brand implementation across all touchpoints.`,
+        priorityLevel: brandingScore < 60 ? "high" : brandingScore < 80 ? "medium" : "low",
+        implementationDifficulty: brandingScore < 50 ? "hard" : brandingScore < 75 ? "medium" : "easy"
       },
       {
         name: "Design",
-        score: 70.0,
+        score: designScore,
         subScores: [
-          { name: "Visual Hierarchy", score: 75.0, maxScore: 100 },
-          { name: "Layout Consistency", score: 68.0, maxScore: 100 },
-          { name: "Mobile Responsiveness", score: 67.0, maxScore: 100 }
+          { name: "Visual Hierarchy", score: generateVariableScore(designScore + 5, 20, 10), maxScore: 100 },
+          { name: "Layout Consistency", score: generateVariableScore(designScore - 2, 21, 8), maxScore: 100 },
+          { name: "Mobile Responsiveness", score: generateVariableScore(designScore - 3, 22, 12), maxScore: 100 }
         ],
-        issues: 3,
-        recommendations: 4,
-        details: "Modern design with good visual hierarchy. Mobile responsive design detected. Some typography inconsistencies found across 3 pages. Color contrast meets WCAG standards on most elements. Recommend standardizing typography and improving visual consistency.",
-        priorityLevel: "medium",
-        implementationDifficulty: "medium"
+        issues: Math.max(1, Math.min(7, Math.round((100 - designScore) / 12))),
+        recommendations: Math.max(2, Math.min(9, Math.round((100 - designScore) / 10))),
+        details: `Design evaluation for ${domain}. ${designScore >= 80 ? 'Excellent' : designScore >= 60 ? 'Good' : 'Poor'} visual hierarchy and layout structure. ${designScore >= 70 ? 'Mobile responsive design detected.' : 'Mobile optimization needs attention.'} ${designScore < 65 ? 'Significant design improvements needed.' : 'Recommend refining visual consistency and user interface elements.'}`,
+        priorityLevel: designScore < 55 ? "high" : designScore < 75 ? "medium" : "low",
+        implementationDifficulty: designScore < 45 ? "hard" : designScore < 70 ? "medium" : "easy"
       },
       {
         name: "Messaging",
-        score: 82.0,
+        score: messagingScore,
         subScores: [
-          { name: "Value Proposition", score: 85.0, maxScore: 100 },
-          { name: "Tone Consistency", score: 80.0, maxScore: 100 },
-          { name: "Call-to-Action Clarity", score: 81.0, maxScore: 100 }
+          { name: "Value Proposition", score: generateVariableScore(messagingScore + 3, 30, 8), maxScore: 100 },
+          { name: "Tone Consistency", score: generateVariableScore(messagingScore - 2, 31, 6), maxScore: 100 },
+          { name: "Call-to-Action Clarity", score: generateVariableScore(messagingScore + 1, 32, 7), maxScore: 100 }
         ],
-        issues: 2,
-        recommendations: 3,
-        details: "Clear value proposition on homepage. Messaging tone is consistent across pages. Call-to-action buttons are clear but could be more prominent. Recommend strengthening secondary messaging and improving CTA visibility.",
-        priorityLevel: "high",
-        implementationDifficulty: "easy"
+        issues: Math.max(1, Math.min(5, Math.round((100 - messagingScore) / 18))),
+        recommendations: Math.max(2, Math.min(7, Math.round((100 - messagingScore) / 15))),
+        details: `Messaging analysis for ${domain}. ${messagingScore >= 80 ? 'Clear and compelling' : messagingScore >= 60 ? 'Adequate' : 'Unclear'} value proposition. ${messagingScore >= 75 ? 'Consistent messaging tone across pages.' : 'Tone inconsistencies detected.'} ${messagingScore < 65 ? 'Major messaging overhaul recommended.' : 'Call-to-action buttons could be more prominent.'}`,
+        priorityLevel: messagingScore < 60 ? "high" : "medium",
+        implementationDifficulty: messagingScore < 50 ? "medium" : "easy"
       },
       {
         name: "Usability",
-        score: 75.0,
+        score: usabilityScore,
         subScores: [
-          { name: "Navigation Structure", score: 78.0, maxScore: 100 },
-          { name: "Search Functionality", score: 72.0, maxScore: 100 },
-          { name: "Form Usability", score: 75.0, maxScore: 100 }
+          { name: "Navigation Structure", score: generateVariableScore(usabilityScore + 3, 40, 8), maxScore: 100 },
+          { name: "Search Functionality", score: generateVariableScore(usabilityScore - 3, 41, 12), maxScore: 100 },
+          { name: "Form Usability", score: generateVariableScore(usabilityScore, 42, 10), maxScore: 100 }
         ],
-        issues: 4,
-        recommendations: 5,
-        details: "Navigation is intuitive with 7 main menu items. Search functionality detected. Some forms lack proper validation. Page load time averages 2.8 seconds. Recommend optimizing forms and improving page speed.",
-        priorityLevel: "high",
-        implementationDifficulty: "medium"
+        issues: Math.max(2, Math.min(8, Math.round((100 - usabilityScore) / 10))),
+        recommendations: Math.max(3, Math.min(10, Math.round((100 - usabilityScore) / 8))),
+        details: `Usability assessment for ${domain}. Navigation ${usabilityScore >= 75 ? 'is intuitive and well-structured' : usabilityScore >= 55 ? 'needs minor improvements' : 'requires significant restructuring'}. ${usabilityScore >= 70 ? 'Search functionality available.' : 'Search functionality missing or inadequate.'} ${usabilityScore < 60 ? 'Major usability issues affecting user experience.' : 'Forms and user interactions generally functional.'}`,
+        priorityLevel: usabilityScore < 60 ? "high" : "medium",
+        implementationDifficulty: usabilityScore < 50 ? "hard" : "medium"
       },
       {
         name: "Content Strategy",
-        score: 80.0,
+        score: contentScore,
         subScores: [
-          { name: "Content Quality", score: 82.0, maxScore: 100 },
-          { name: "SEO Optimization", score: 75.0, maxScore: 100 },
-          { name: "Content Structure", score: 83.0, maxScore: 100 }
+          { name: "Content Quality", score: generateVariableScore(contentScore + 2, 50, 10), maxScore: 100 },
+          { name: "SEO Optimization", score: generateVariableScore(contentScore - 5, 51, 15), maxScore: 100 },
+          { name: "Content Structure", score: generateVariableScore(contentScore + 3, 52, 8), maxScore: 100 }
         ],
-        issues: 5,
-        recommendations: 6,
-        details: "Content structure needs improvement. Blog section found with 12 articles. Some pages have thin content (under 300 words). SEO meta descriptions missing on 40% of pages. Recommend content audit and SEO optimization.",
-        priorityLevel: "high",
-        implementationDifficulty: "medium"
+        issues: Math.max(2, Math.min(8, Math.round((100 - contentScore) / 12))),
+        recommendations: Math.max(3, Math.min(10, Math.round((100 - contentScore) / 10))),
+        details: `Content strategy evaluation for ${domain}. ${contentScore >= 75 ? 'Well-structured content with good organization' : contentScore >= 55 ? 'Content structure needs improvement' : 'Significant content strategy overhaul required'}. ${contentScore >= 65 ? 'SEO elements partially optimized.' : 'Major SEO improvements needed.'} ${contentScore < 60 ? 'Content audit and comprehensive strategy development recommended.' : 'Focus on enhancing content depth and search optimization.'}`,
+        priorityLevel: contentScore < 65 ? "high" : "medium",
+        implementationDifficulty: contentScore < 50 ? "hard" : "medium"
       },
       {
         name: "Digital Presence",
-        score: 65.0,
+        score: digitalScore,
         subScores: [
-          { name: "Social Media Integration", score: 60.0, maxScore: 100 },
-          { name: "Online Reviews", score: 68.0, maxScore: 100 },
-          { name: "Digital Marketing", score: 67.0, maxScore: 100 }
+          { name: "Social Media Integration", score: generateVariableScore(digitalScore - 5, 60, 15), maxScore: 100 },
+          { name: "Online Reviews", score: generateVariableScore(digitalScore + 3, 61, 10), maxScore: 100 },
+          { name: "Digital Marketing", score: generateVariableScore(digitalScore + 2, 62, 12), maxScore: 100 }
         ],
-        issues: 4,
-        recommendations: 5,
-        details: "Social media links found for 3 platforms. Limited social proof elements. No customer testimonials visible. Email signup form detected. Recommend adding testimonials and expanding social proof.",
-        priorityLevel: "medium",
+        issues: Math.max(3, Math.min(8, Math.round((100 - digitalScore) / 10))),
+        recommendations: Math.max(4, Math.min(10, Math.round((100 - digitalScore) / 8))),
+        details: `Digital presence analysis for ${domain}. ${digitalScore >= 70 ? 'Solid social media integration' : digitalScore >= 50 ? 'Limited social media presence' : 'Minimal digital footprint'}. ${digitalScore >= 60 ? 'Some social proof elements present.' : 'Lacking customer testimonials and reviews.'} ${digitalScore < 55 ? 'Comprehensive digital marketing strategy needed.' : 'Recommend expanding social proof and online visibility.'}`,
+        priorityLevel: digitalScore < 55 ? "high" : "medium",
         implementationDifficulty: "easy"
       },
       {
         name: "Customer Experience",
-        score: 72.0,
+        score: customerScore,
         subScores: [
-          { name: "Support Accessibility", score: 70.0, maxScore: 100 },
-          { name: "Contact Options", score: 75.0, maxScore: 100 },
-          { name: "User Journey", score: 71.0, maxScore: 100 }
+          { name: "Support Accessibility", score: generateVariableScore(customerScore - 2, 70, 10), maxScore: 100 },
+          { name: "Contact Options", score: generateVariableScore(customerScore + 3, 71, 8), maxScore: 100 },
+          { name: "User Journey", score: generateVariableScore(customerScore - 1, 72, 12), maxScore: 100 }
         ],
-        issues: 3,
-        recommendations: 4,
-        details: "Contact information easily accessible. Live chat widget not detected. FAQ section found. Customer support could be more prominent. Recommend adding live chat and improving support visibility.",
-        priorityLevel: "medium",
+        issues: Math.max(2, Math.min(6, Math.round((100 - customerScore) / 15))),
+        recommendations: Math.max(3, Math.min(8, Math.round((100 - customerScore) / 12))),
+        details: `Customer experience evaluation for ${domain}. ${customerScore >= 80 ? 'Excellent customer support accessibility' : customerScore >= 60 ? 'Adequate support options' : 'Limited customer support visibility'}. ${customerScore >= 70 ? 'Multiple contact methods available.' : 'Contact information needs to be more prominent.'} ${customerScore < 65 ? 'Customer journey optimization required.' : 'User experience generally positive with room for enhancement.'}`,
+        priorityLevel: customerScore < 65 ? "medium" : "low",
         implementationDifficulty: "medium"
       },
       {
         name: "Competitor Analysis",
-        score: 78.0,
+        score: competitorScore,
         subScores: [
-          { name: "Strengths Comparison", score: 40.0, maxScore: 50 },
-          { name: "Weaknesses Assessment", score: 38.0, maxScore: 50 },
-          { name: "Market Positioning", score: 15.0, maxScore: 20 },
-          { name: "Competitive Advantage", score: 15.0, maxScore: 20 }
+          { name: "Strengths Comparison", score: generateVariableScore(competitorScore * 0.5, 80, 8), maxScore: 50 },
+          { name: "Weaknesses Assessment", score: generateVariableScore(competitorScore * 0.5 - 2, 81, 6), maxScore: 50 },
+          { name: "Market Positioning", score: generateVariableScore(competitorScore * 0.2, 82, 3), maxScore: 20 },
+          { name: "Competitive Advantage", score: generateVariableScore(competitorScore * 0.2 + 1, 83, 4), maxScore: 20 }
         ],
-        issues: 5,
-        recommendations: 7,
-        details: "Market positioning could be stronger. Value proposition needs differentiation from competitors. Pricing transparency limited compared to industry standards. Sub-scores average: (40/50 + 38/50 + 15/20 + 15/20) * 100 / 4 = 78.0. Recommend competitive analysis and positioning strategy.",
-        priorityLevel: "low",
-        implementationDifficulty: "hard"
+        issues: Math.max(3, Math.min(8, Math.round((100 - competitorScore) / 8))),
+        recommendations: Math.max(4, Math.min(10, Math.round((100 - competitorScore) / 7))),
+        details: `Competitive analysis for ${domain}. ${competitorScore >= 75 ? 'Strong market positioning relative to competitors' : competitorScore >= 55 ? 'Moderate competitive standing' : 'Competitive disadvantages identified'}. ${competitorScore >= 65 ? 'Clear value differentiation present.' : 'Value proposition needs better differentiation.'} Market positioning ${competitorScore < 60 ? 'requires strategic overhaul and' : 'could benefit from enhanced'} competitive analysis and positioning strategy.`,
+        priorityLevel: competitorScore < 60 ? "medium" : "low",
+        implementationDifficulty: competitorScore < 50 ? "hard" : "medium"
       },
       {
         name: "Conversion Optimization",
-        score: 90.0,
+        score: conversionScore,
         subScores: [
-          { name: "Conversion Funnel", score: 88.0, maxScore: 100 },
-          { name: "Trust Signals", score: 92.0, maxScore: 100 },
-          { name: "Lead Generation", score: 90.0, maxScore: 100 }
+          { name: "Conversion Funnel", score: generateVariableScore(conversionScore - 2, 90, 8), maxScore: 100 },
+          { name: "Trust Signals", score: generateVariableScore(conversionScore + 2, 91, 10), maxScore: 100 },
+          { name: "Lead Generation", score: generateVariableScore(conversionScore, 92, 12), maxScore: 100 }
         ],
-        issues: 4,
-        recommendations: 6,
-        details: "Contact forms found on 3 pages. Lead magnets limited. Trust signals need improvement. Conversion funnel has potential drop-off points. Recommend A/B testing CTAs and adding trust elements.",
-        priorityLevel: "high",
-        implementationDifficulty: "medium"
+        issues: Math.max(2, Math.min(7, Math.round((100 - conversionScore) / 12))),
+        recommendations: Math.max(3, Math.min(9, Math.round((100 - conversionScore) / 10))),
+        details: `Conversion optimization analysis for ${domain}. ${conversionScore >= 80 ? 'Strong conversion elements in place' : conversionScore >= 60 ? 'Basic conversion optimization present' : 'Significant conversion improvements needed'}. ${conversionScore >= 70 ? 'Trust signals adequate.' : 'Trust elements need enhancement.'} ${conversionScore < 65 ? 'Major conversion funnel optimization required.' : 'Recommend A/B testing CTAs and improving lead capture mechanisms.'}`,
+        priorityLevel: conversionScore < 65 ? "high" : "medium",
+        implementationDifficulty: conversionScore < 50 ? "hard" : "medium"
       },
       {
         name: "Consistency & Compliance",
-        score: 85.0,
+        score: complianceScore,
         subScores: [
-          { name: "Legal Compliance", score: 90.0, maxScore: 100 },
-          { name: "Accessibility Standards", score: 80.0, maxScore: 100 },
-          { name: "Brand Guidelines", score: 85.0, maxScore: 100 }
+          { name: "Legal Compliance", score: generateVariableScore(complianceScore + 5, 100, 5), maxScore: 100 },
+          { name: "Accessibility Standards", score: generateVariableScore(complianceScore - 5, 101, 12), maxScore: 100 },
+          { name: "Brand Guidelines", score: generateVariableScore(complianceScore, 102, 8), maxScore: 100 }
         ],
-        issues: 2,
-        recommendations: 3,
-        details: "Privacy policy and terms of service present. GDPR compliance indicators found. Brand guidelines followed consistently. Minor accessibility improvements needed. Recommend full accessibility audit.",
-        priorityLevel: "low",
-        implementationDifficulty: "easy"
+        issues: Math.max(1, Math.min(4, Math.round((100 - complianceScore) / 20))),
+        recommendations: Math.max(2, Math.min(6, Math.round((100 - complianceScore) / 15))),
+        details: `Compliance and consistency evaluation for ${domain}. ${complianceScore >= 85 ? 'Excellent legal and accessibility compliance' : complianceScore >= 65 ? 'Good compliance with minor gaps' : 'Compliance issues need attention'}. ${complianceScore >= 75 ? 'Privacy policy and terms present.' : 'Legal documentation may need updates.'} ${complianceScore < 70 ? 'Accessibility audit recommended.' : 'Brand guidelines generally followed with minor improvements needed.'}`,
+        priorityLevel: complianceScore < 70 ? "medium" : "low",
+        implementationDifficulty: complianceScore < 60 ? "medium" : "easy"
       }
     ],
     metadata: {
