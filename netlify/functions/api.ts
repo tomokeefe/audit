@@ -2562,15 +2562,28 @@ Be thorough, professional, and provide actionable insights based on the availabl
       day: "numeric",
     });
 
+    // Normalize all section scores to decimal format
+    const normalizedSections = auditData.sections?.map((section: any) => ({
+      ...section,
+      score: normalizeScoreToDecimal(section.score),
+      subScores: section.subScores ? section.subScores.map((sub: any) => ({
+        ...sub,
+        score: normalizeScoreToDecimal(sub.score)
+      })) : undefined
+    })) || [];
+
+    // Calculate weighted overall score using the specified formula
+    const weightedOverallScore = calculateWeightedOverallScore(normalizedSections);
+
     return {
       id: auditId,
       url: websiteData.url,
       title: auditData.title,
       description: auditData.description || "Comprehensive brand audit analysis",
-      overallScore: auditData.overallScore,
+      overallScore: weightedOverallScore,
       date: currentDate,
       status: "completed",
-      sections: auditData.sections,
+      sections: normalizedSections,
       summary: auditData.summary || "Audit completed successfully",
       metadata: auditData.metadata || {},
       reasoningChain: auditData.reasoningChain || [],
