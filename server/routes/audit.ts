@@ -1139,6 +1139,18 @@ Respond in this exact JSON format with ALL 10 sections:
       "maxScore": 100,
       "issues": 3,
       "recommendations": 5,
+      "confidence": 0.88,
+      "evidenceLevel": "high",
+      "industryComparison": "above_average",
+      "priorityLevel": "high",
+      "implementationDifficulty": "medium",
+      "estimatedImpact": "15-20% improvement in brand recognition",
+      "keyEvidence": [
+        "Logo present on 8/8 analyzed pages",
+        "Consistent color palette (#2B4C8C primary, #F8F9FA secondary)",
+        "3 different tone variations detected across page types"
+      ],
+      "reasoning": "Website demonstrates strong brand consistency with systematic color usage and logo placement. However, messaging tone varies between formal and casual approaches, reducing brand voice coherence.",
       "details": "Detailed analysis and recommendations for this section..."
     },
     {
