@@ -16,18 +16,44 @@ function generateDemoAudit(url: string) {
   const companyName = domain.split(".")[0].charAt(0).toUpperCase() + domain.split(".")[0].slice(1);
   const auditId = Math.random().toString(36).substring(2, 15);
 
+  // Generate realistic variable scores based on URL characteristics
+  const urlHash = Array.from(domain).reduce((hash, char) => {
+    return ((hash << 5) - hash + char.charCodeAt(0)) & 0xffffffff;
+  }, 0);
+
+  // Create deterministic but variable scores based on URL hash
+  const generateVariableScore = (baseScore: number, index: number, variance: number = 15): number => {
+    const seed = Math.abs(urlHash + index * 1000);
+    const random = (seed % 1000) / 1000; // 0-1 range
+    const variation = (random - 0.5) * variance * 2; // +/- variance
+    const score = Math.max(20, Math.min(95, baseScore + variation)); // Keep within realistic range
+    return parseFloat(score.toFixed(1));
+  };
+
+  // Generate variable scores for each section
+  const brandingScore = generateVariableScore(85, 0, 12);
+  const designScore = generateVariableScore(75, 1, 15);
+  const messagingScore = generateVariableScore(80, 2, 10);
+  const usabilityScore = generateVariableScore(78, 3, 18);
+  const contentScore = generateVariableScore(72, 4, 20);
+  const digitalScore = generateVariableScore(68, 5, 25);
+  const customerScore = generateVariableScore(74, 6, 15);
+  const competitorScore = generateVariableScore(70, 7, 12);
+  const conversionScore = generateVariableScore(76, 8, 18);
+  const complianceScore = generateVariableScore(82, 9, 8);
+
   // Calculate scores with decimal precision and weighted overall score
   const sectionScores = [
-    { name: "Branding", score: 85.0, weight: 0.20 },
-    { name: "Design", score: 70.0, weight: 0.15 },
-    { name: "Messaging", score: 82.0, weight: 0.15 },
-    { name: "Usability", score: 75.0, weight: 0.15 },
-    { name: "Content Strategy", score: 80.0, weight: 0.10 },
-    { name: "Digital Presence", score: 65.0, weight: 0.10 },
-    { name: "Customer Experience", score: 72.0, weight: 0.05 },
-    { name: "Competitor Analysis", score: 78.0, weight: 0.10 }, // Averaged from sub-scores: (40+38)/50*100 + (15+15)/20*100 = 78.0
-    { name: "Conversion Optimization", score: 90.0, weight: 0.05 },
-    { name: "Consistency & Compliance", score: 85.0, weight: 0.05 }
+    { name: "Branding", score: brandingScore, weight: 0.20 },
+    { name: "Design", score: designScore, weight: 0.15 },
+    { name: "Messaging", score: messagingScore, weight: 0.15 },
+    { name: "Usability", score: usabilityScore, weight: 0.15 },
+    { name: "Content Strategy", score: contentScore, weight: 0.10 },
+    { name: "Digital Presence", score: digitalScore, weight: 0.10 },
+    { name: "Customer Experience", score: customerScore, weight: 0.05 },
+    { name: "Competitor Analysis", score: competitorScore, weight: 0.10 },
+    { name: "Conversion Optimization", score: conversionScore, weight: 0.05 },
+    { name: "Consistency & Compliance", score: complianceScore, weight: 0.05 }
   ];
 
   // Calculate weighted overall score using the provided formula
