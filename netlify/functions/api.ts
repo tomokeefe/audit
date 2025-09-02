@@ -1577,16 +1577,18 @@ function enhanceAuditQuality(auditData: any, validationResults: any, businessCon
     return enhanced_section;
   });
 
-  // Recalculate overall score with dynamic weights
+  // Recalculate overall score with decimal precision using standard weights
   if (enhanced.sections && enhanced.sections.length > 0) {
-    const weightedScore = enhanced.sections.reduce((sum: number, section: any, index: number) => {
-      const weight = dynamicWeights[index] || (1 / enhanced.sections.length);
-      return sum + (section.score * weight);
-    }, 0);
+    // Normalize all section scores to decimal format first
+    enhanced.sections = enhanced.sections.map((section: any) => ({
+      ...section,
+      score: normalizeScoreToDecimal(section.score)
+    }));
 
-    enhanced.overallScore = Math.round(weightedScore);
-    enhanced.weightingMethod = 'dynamic_context_based';
-    enhanced.appliedWeights = dynamicWeights;
+    // Use the standard weighted calculation for consistency
+    enhanced.overallScore = calculateWeightedOverallScore(enhanced.sections);
+    enhanced.weightingMethod = 'standard_weighted_decimal';
+    enhanced.appliedWeights = [0.20, 0.15, 0.15, 0.15, 0.10, 0.10, 0.05, 0.10, 0.05, 0.05];
   }
 
   // Add improvement impact analysis
