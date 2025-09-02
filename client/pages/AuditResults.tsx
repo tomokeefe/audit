@@ -734,85 +734,98 @@ Best regards`);
                         </AccordionTrigger>
                         <AccordionContent>
                           <div className="pt-4 space-y-4">
-                            {/* Show Overview if available */}
-                            {parsedContent.find((content) => content.type === "overview") && (
-                              <div className="space-y-3">
-                                <div className="flex items-center gap-2 mb-3">
-                                  <Info className="h-4 w-4 text-blue-600" />
-                                  <h5 className="font-semibold text-gray-900">Overview</h5>
-                                </div>
-                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                                  {parsedContent
-                                    .find((content) => content.type === "overview")
-                                    ?.content.map((item, itemIndex) => (
-                                      <div key={itemIndex} className="flex gap-3 items-start">
-                                        <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                                        <p className="text-blue-800 text-sm leading-relaxed">
-                                          {item}
-                                        </p>
-                                      </div>
-                                    ))}
-                                </div>
-                              </div>
-                            )}
+                            {(() => {
+                              // Re-calculate these inside the render scope
+                              const hasRecommendationsContent = recommendationsContent && recommendationsContent.content.length > 0;
+                              const overviewContent = parsedContent.find((content) => content.type === "overview");
+                              const issuesContent = parsedContent.find((content) => content.type === "issues");
 
-                            {/* Show Issues if available */}
-                            {parsedContent.find((content) => content.type === "issues") && (
-                              <div className="space-y-3">
-                                <div className="flex items-center gap-2 mb-3">
-                                  <XCircle className="h-4 w-4 text-red-600" />
-                                  <h5 className="font-semibold text-gray-900">Issues Found</h5>
-                                </div>
-                                <div className="space-y-2">
-                                  {parsedContent
-                                    .find((content) => content.type === "issues")
-                                    ?.content.map((issue, itemIndex) => (
-                                      <div
-                                        key={itemIndex}
-                                        className="flex gap-3 p-3 bg-red-50 border border-red-200 rounded-lg"
-                                      >
-                                        <div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
-                                        <p className="text-red-800 text-sm leading-relaxed">
-                                          {issue}
-                                        </p>
+                              return (
+                                <>
+                                  {/* Show Overview if available */}
+                                  {overviewContent && overviewContent.content.length > 0 && (
+                                    <div className="space-y-3">
+                                      <div className="flex items-center gap-2 mb-3">
+                                        <Info className="h-4 w-4 text-blue-600" />
+                                        <h5 className="font-semibold text-gray-900">Overview</h5>
                                       </div>
-                                    ))}
-                                </div>
-                              </div>
-                            )}
-
-                            {/* Show Recommendations */}
-                            <div className="space-y-3">
-                              <div className="flex items-center gap-2 mb-3">
-                                <Lightbulb className="h-4 w-4 text-green-600" />
-                                <h5 className="font-semibold text-gray-900">Analysis & Recommendations</h5>
-                              </div>
-                              <div className="space-y-2">
-                                {hasRecommendations ? (
-                                  // Show parsed recommendations if available
-                                  recommendationsContent.content.map((recommendation, itemIndex) => (
-                                    <div
-                                      key={itemIndex}
-                                      className="flex gap-3 p-3 bg-green-50 border border-green-200 rounded-lg"
-                                    >
-                                      <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                                      <p className="text-green-800 text-sm leading-relaxed">
-                                        {recommendation}
-                                      </p>
+                                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                        {overviewContent.content.map((item, itemIndex) => (
+                                          <div key={itemIndex} className="flex gap-3 items-start mb-2 last:mb-0">
+                                            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                                            <p className="text-blue-800 text-sm leading-relaxed">
+                                              {item}
+                                            </p>
+                                          </div>
+                                        ))}
+                                      </div>
                                     </div>
-                                  ))
-                                ) : (
-                                  // Fallback: show full content if parsing failed
-                                  <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                                    <div className="prose prose-sm max-w-none">
-                                      <div className="whitespace-pre-wrap text-gray-800 text-sm leading-relaxed">
-                                        {section.details}
+                                  )}
+
+                                  {/* Show Issues if available */}
+                                  {issuesContent && issuesContent.content.length > 0 && (
+                                    <div className="space-y-3">
+                                      <div className="flex items-center gap-2 mb-3">
+                                        <XCircle className="h-4 w-4 text-red-600" />
+                                        <h5 className="font-semibold text-gray-900">Issues Found</h5>
                                       </div>
+                                      <div className="space-y-2">
+                                        {issuesContent.content.map((issue, itemIndex) => (
+                                          <div
+                                            key={itemIndex}
+                                            className="flex gap-3 p-3 bg-red-50 border border-red-200 rounded-lg"
+                                          >
+                                            <div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
+                                            <p className="text-red-800 text-sm leading-relaxed">
+                                              {issue}
+                                            </p>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* Show Recommendations/Analysis - Always show this section */}
+                                  <div className="space-y-3">
+                                    <div className="flex items-center gap-2 mb-3">
+                                      <Lightbulb className="h-4 w-4 text-green-600" />
+                                      <h5 className="font-semibold text-gray-900">
+                                        {hasRecommendationsContent ? 'Recommendations' : 'Analysis & Insights'}
+                                      </h5>
+                                    </div>
+                                    <div className="space-y-2">
+                                      {hasRecommendationsContent ? (
+                                        // Show parsed recommendations if available
+                                        recommendationsContent.content.map((recommendation, itemIndex) => (
+                                          <div
+                                            key={itemIndex}
+                                            className="flex gap-3 p-3 bg-green-50 border border-green-200 rounded-lg"
+                                          >
+                                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                                            <p className="text-green-800 text-sm leading-relaxed">
+                                              {recommendation}
+                                            </p>
+                                          </div>
+                                        ))
+                                      ) : (
+                                        // Fallback: show full content with better formatting
+                                        <div className="space-y-3">
+                                          {section.details.split('\n\n').filter(paragraph => paragraph.trim()).map((paragraph, pIndex) => (
+                                            <div key={pIndex} className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                                              <div className="prose prose-sm max-w-none">
+                                                <p className="text-gray-800 text-sm leading-relaxed whitespace-pre-wrap">
+                                                  {paragraph.trim()}
+                                                </p>
+                                              </div>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      )}
                                     </div>
                                   </div>
-                                )}
-                              </div>
-                            </div>
+                                </>
+                              );
+                            })()}
 
                             {/* Show SWOT Matrix and Competitive Metrics for Competitor Analysis */}
                             {section.name.toLowerCase().includes("competitor") && (
