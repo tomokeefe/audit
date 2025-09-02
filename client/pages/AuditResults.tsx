@@ -1182,7 +1182,7 @@ Best regards`);
                       <div
                         className={`text-2xl font-bold ${getScoreColor(section.score)}`}
                       >
-                        {section.score}%
+                        {typeof section.score === 'number' ? section.score.toFixed(1) : section.score}%
                       </div>
                     </div>
                     <Progress value={section.score} className="h-2" />
