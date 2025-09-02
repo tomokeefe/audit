@@ -214,11 +214,14 @@ export default function Index() {
 
       // Test audits endpoint only if ping succeeded or with retry
       console.log("Testing /api/audits...");
+      console.log("Audits URL will be:", new URL("/api/audits", window.location.origin).href);
+
       try {
         const auditsResponse = await fetchWithTimeout("/api/audits", 5000);
         console.log("Audits response status:", auditsResponse.status);
         console.log("Audits response ok:", auditsResponse.ok);
         console.log("Audits response url:", auditsResponse.url);
+        console.log("Audits response headers:", Object.fromEntries(auditsResponse.headers.entries()));
 
         auditsOk = auditsResponse.ok;
         if (auditsResponse.ok) {
