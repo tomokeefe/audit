@@ -748,13 +748,21 @@ Best regards`);
                     );
 
                     // Log debug info for troubleshooting
-                    console.log(`Section ${section.name}:`, {
+                    console.log(`\n=== SECTION: ${section.name} ===`);
+                    console.log('Raw details:', section.details?.substring(0, 200) + '...');
+                    console.log('Details structure:', {
                       hasDetails: !!section.details,
                       detailsLength: section.details?.length || 0,
-                      parsedSections: parsedContent.map(p => ({ type: p.type, contentLength: p.content.length })),
-                      hasRecommendations: !!recommendationsContent,
-                      recommendationsCount: section.recommendations || 0
+                      firstFewLines: section.details?.split('\n').slice(0, 3),
+                      containsRecommendations: section.details?.toLowerCase().includes('recommendation'),
+                      containsIssues: section.details?.toLowerCase().includes('issue'),
                     });
+                    console.log('Parsed sections:', parsedContent.map(p => ({
+                      type: p.type,
+                      contentLength: p.content.length,
+                      firstItem: p.content[0]?.substring(0, 50) + '...'
+                    })));
+                    console.log('=== END SECTION ===\n');
 
                     // Show section if it has recommendations count or any content
                     // Don't filter out sections - show them even if parsing fails
