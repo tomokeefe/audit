@@ -1272,7 +1272,7 @@ Best regards`);
                             <div
                               className={`px-3 py-1 rounded-full text-sm font-bold ${getScoreColor(section.score)} ${getScoreBg(section.score)} border mr-2`}
                             >
-                              {section.score}%
+                              {typeof section.score === 'number' ? section.score.toFixed(1) : section.score}%
                             </div>
                           </div>
                         </AccordionTrigger>
