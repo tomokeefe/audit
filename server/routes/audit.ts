@@ -693,7 +693,26 @@ async function scrapeWebsite(url: string) {
 
 // Function to generate audit using Gemini
 async function generateAudit(websiteData: any): Promise<AuditResponse> {
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = genAI.getGenerativeModel({
+    model: "gemini-1.5-flash",
+    generationConfig: {
+      temperature: 0.4, // Balanced creativity vs consistency
+      topP: 0.8, // Focus on high-probability tokens
+      topK: 40, // Limit vocabulary for more focused responses
+      maxOutputTokens: 8192, // Allow for detailed analysis
+      responseMimeType: "application/json", // Ensure JSON response
+    },
+    safetySettings: [
+      {
+        category: "HARM_CATEGORY_HARASSMENT",
+        threshold: "BLOCK_MEDIUM_AND_ABOVE",
+      },
+      {
+        category: "HARM_CATEGORY_HATE_SPEECH",
+        threshold: "BLOCK_MEDIUM_AND_ABOVE",
+      },
+    ],
+  });
 
   const prompt = `
 As a professional brand and UX auditor, analyze the following website data and provide a comprehensive brand audit.
