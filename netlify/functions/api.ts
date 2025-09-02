@@ -1206,7 +1206,18 @@ UX Features:
 - Accessibility Features: ${websiteData.uxFeatures?.accessibility?.hasSkipLinks ? "Skip links present" : "No skip links"}, ${websiteData.uxFeatures?.accessibility?.hasAriaLabels ? "ARIA labels present" : "Limited ARIA labels"}
 - Social Integration: ${websiteData.uxFeatures?.social?.socialLinks || 0} social links
 
-Analysis Depth: ${websiteData.analysisDepth || "basic"}
+Analysis Depth: ${enhancedWebsiteData.analysisDepth || "basic"}
+
+Visual Analysis Results:
+${enhancedWebsiteData.visualAnalysis ? `
+- Color Scheme Analysis: ${enhancedWebsiteData.visualAnalysis.colorSchemeAnalysis.hasColorMentions ? 'Colors mentioned in content' : 'No explicit color strategy'}
+- Layout Consistency Score: ${enhancedWebsiteData.visualAnalysis.layoutConsistency.score}%
+- Visual Hierarchy Score: ${enhancedWebsiteData.visualAnalysis.visualHierarchy.score}%
+- Branding Visuals: ${enhancedWebsiteData.visualAnalysis.brandingVisuals.logoConsistency ? 'Logo consistently placed' : 'Logo placement inconsistent'}
+- Visual Accessibility Score: ${enhancedWebsiteData.visualAnalysis.accessibilityVisual.score}%
+- Critical Accessibility Issues: ${enhancedWebsiteData.visualAnalysis.accessibilityVisual.criticalIssues.join(', ') || 'None'}
+- Suggested Colors: ${enhancedWebsiteData.visualAnalysis.colorSchemeAnalysis.suggestedColors.join(', ') || 'None detected'}
+` : 'Visual analysis not available'}
 
 Multi-Page Analysis Results:
 ${
