@@ -773,7 +773,7 @@ export default function Index() {
                   <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                   <Input
                     type="url"
-                    placeholder="Enter website URL to audit (e.g., https://example.com)"
+                    placeholder="Enter website URL to audit (e.g., example.com)"
                     value={url}
                     onChange={(e) => setUrl(e.target.value)}
                     className="pl-10 h-12 text-lg"
