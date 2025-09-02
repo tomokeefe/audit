@@ -259,7 +259,7 @@ function CompetitiveMetrics({ auditData }: { auditData: any }) {
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Your Score</span>
-                  <span className="font-semibold text-gray-900">{metric.yourScore}%</span>
+                  <span className="font-semibold text-gray-900">{typeof metric.yourScore === 'number' ? metric.yourScore.toFixed(1) : metric.yourScore}%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
