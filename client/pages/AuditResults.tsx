@@ -268,7 +268,7 @@ function CompetitiveMetrics({ auditData }: { auditData: any }) {
                   ></div>
                 </div>
                 <div className="flex justify-between items-center text-xs">
-                  <span className="text-gray-500">Industry Avg: {metric.industryAverage}%</span>
+                  <span className="text-gray-500">Industry Avg: {typeof metric.industryAverage === 'number' ? metric.industryAverage.toFixed(1) : metric.industryAverage}%</span>
                   <span className={metric.yourScore >= metric.industryAverage ? 'text-green-600' : 'text-red-600'}>
                     {metric.yourScore >= metric.industryAverage ? '+' : ''}{metric.yourScore - metric.industryAverage}
                   </span>
