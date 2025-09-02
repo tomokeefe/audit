@@ -509,6 +509,185 @@ function SuccessMetrics({ auditData }: { auditData: any }) {
   );
 }
 
+// Interactive Task Checklist Component
+function InteractiveTaskChecklist({ auditData }: { auditData: any }) {
+  const [checkedTasks, setCheckedTasks] = useState<Set<string>>(new Set());
+  const [activePhase, setActivePhase] = useState(0);
+
+  // Generate actionable tasks from audit sections
+  const generateTasks = () => {
+    const quickWins = auditData.sections
+      .filter((s: any) => s.implementationDifficulty === 'easy' && (s.priorityLevel === 'critical' || s.priorityLevel === 'high'))
+      .map((s: any) => ({
+        id: `quick-${s.name.toLowerCase().replace(/\s+/g, '-')}`,
+        phase: 0,
+        title: `Optimize ${s.name}`,
+        description: `Address ${s.issues} critical issues in ${s.name}`,
+        impact: s.estimatedImpact || 'Medium impact',
+        timeframe: '1-2 weeks'
+      }));
+
+    const shortTerm = auditData.sections
+      .filter((s: any) => s.implementationDifficulty === 'medium' && (s.priorityLevel === 'critical' || s.priorityLevel === 'high'))
+      .map((s: any) => ({
+        id: `short-${s.name.toLowerCase().replace(/\s+/g, '-')}`,
+        phase: 1,
+        title: `Enhance ${s.name}`,
+        description: `Implement ${s.recommendations} key improvements`,
+        impact: s.estimatedImpact || 'High impact',
+        timeframe: '1-3 months'
+      }));
+
+    const longTerm = auditData.sections
+      .filter((s: any) => s.implementationDifficulty === 'hard' || s.implementationDifficulty === 'very_hard')
+      .map((s: any) => ({
+        id: `long-${s.name.toLowerCase().replace(/\s+/g, '-')}`,
+        phase: 2,
+        title: `Transform ${s.name}`,
+        description: `Complete overhaul and optimization`,
+        impact: s.estimatedImpact || 'Transformational impact',
+        timeframe: '3-6 months'
+      }));
+
+    return [...quickWins, ...shortTerm, ...longTerm];
+  };
+
+  const tasks = generateTasks();
+  const phases = [
+    { name: 'Quick Wins', color: 'green', tasks: tasks.filter(t => t.phase === 0) },
+    { name: 'Short-term Goals', color: 'blue', tasks: tasks.filter(t => t.phase === 1) },
+    { name: 'Long-term Strategy', color: 'purple', tasks: tasks.filter(t => t.phase === 2) }
+  ];
+
+  const toggleTask = (taskId: string) => {
+    const newChecked = new Set(checkedTasks);
+    if (newChecked.has(taskId)) {
+      newChecked.delete(taskId);
+    } else {
+      newChecked.add(taskId);
+    }
+    setCheckedTasks(newChecked);
+  };
+
+  const getProgress = (phaseIndex: number) => {
+    const phaseTasks = phases[phaseIndex]?.tasks || [];
+    if (phaseTasks.length === 0) return 0;
+    const completed = phaseTasks.filter(task => checkedTasks.has(task.id)).length;
+    return Math.round((completed / phaseTasks.length) * 100);
+  };
+
+  return (
+    <div className="mt-8 p-6 bg-gradient-to-br from-indigo-50 to-blue-50 rounded-lg border border-indigo-200">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-2">
+          <CheckSquare className="h-5 w-5 text-indigo-600" />
+          <h4 className="text-lg font-semibold text-gray-900">Interactive Task Checklist</h4>
+        </div>
+        <div className="text-sm text-gray-600">
+          {checkedTasks.size} of {tasks.length} tasks completed
+        </div>
+      </div>
+
+      {/* Phase Selector */}
+      <div className="flex space-x-1 mb-6 bg-white p-1 rounded-lg border">
+        {phases.map((phase, index) => (
+          <button
+            key={index}
+            onClick={() => setActivePhase(index)}
+            className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+              activePhase === index
+                ? `bg-${phase.color}-100 text-${phase.color}-700 border border-${phase.color}-200`
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            <div className="flex items-center justify-center gap-2">
+              <span>{phase.name}</span>
+              <Badge variant="outline" className="text-xs">
+                {getProgress(index)}%
+              </Badge>
+            </div>
+          </button>
+        ))}
+      </div>
+
+      {/* Phase Progress */}
+      <div className="mb-6">
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-sm font-medium text-gray-900">
+            {phases[activePhase]?.name} Progress
+          </span>
+          <span className="text-sm text-gray-600">
+            {getProgress(activePhase)}% Complete
+          </span>
+        </div>
+        <Progress value={getProgress(activePhase)} className="h-2" />
+      </div>
+
+      {/* Tasks List */}
+      <div className="space-y-3">
+        {phases[activePhase]?.tasks.map((task) => (
+          <div
+            key={task.id}
+            className={`p-4 border rounded-lg transition-all ${
+              checkedTasks.has(task.id)
+                ? 'bg-green-50 border-green-200'
+                : 'bg-white border-gray-200 hover:border-gray-300'
+            }`}
+          >
+            <div className="flex items-start gap-3">
+              <button
+                onClick={() => toggleTask(task.id)}
+                className={`mt-1 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                  checkedTasks.has(task.id)
+                    ? 'bg-green-500 border-green-500 text-white'
+                    : 'border-gray-300 hover:border-gray-400'
+                }`}
+              >
+                {checkedTasks.has(task.id) && <Check className="h-3 w-3" />}
+              </button>
+              <div className="flex-1">
+                <h6 className={`font-medium ${
+                  checkedTasks.has(task.id) ? 'text-green-800 line-through' : 'text-gray-900'
+                }`}>
+                  {task.title}
+                </h6>
+                <p className={`text-sm mt-1 ${
+                  checkedTasks.has(task.id) ? 'text-green-600' : 'text-gray-600'
+                }`}>
+                  {task.description}
+                </p>
+                <div className="flex gap-4 mt-2">
+                  <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                    {task.impact}
+                  </span>
+                  <span className="text-xs text-gray-600 flex items-center gap-1">
+                    <Timer className="h-3 w-3" />
+                    {task.timeframe}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Overall Progress Summary */}
+      <div className="mt-6 p-4 bg-white border border-indigo-200 rounded-lg">
+        <div className="flex justify-between items-center mb-2">
+          <span className="font-medium text-gray-900">Overall Implementation Progress</span>
+          <span className="text-sm text-gray-600">
+            {Math.round((checkedTasks.size / tasks.length) * 100)}% Complete
+          </span>
+        </div>
+        <Progress value={(checkedTasks.size / tasks.length) * 100} className="h-3" />
+        <p className="text-xs text-gray-600 mt-2">
+          Keep track of your progress and celebrate each milestone!
+        </p>
+      </div>
+    </div>
+  );
+}
+
 // Resource Center Component
 function ResourceCenter() {
   const resources = [
@@ -517,7 +696,8 @@ function ResourceCenter() {
       items: [
         { name: "Google PageSpeed Insights", description: "Test page speed and performance", url: "https://pagespeed.web.dev/" },
         { name: "Google Analytics 4", description: "Track website performance metrics", url: "https://analytics.google.com/" },
-        { name: "Google Search Console", description: "Monitor search performance", url: "https://search.google.com/search-console" }
+        { name: "Google Search Console", description: "Monitor search performance", url: "https://search.google.com/search-console" },
+        { name: "GTmetrix", description: "Comprehensive performance analysis", url: "https://gtmetrix.com/" }
       ]
     },
     {
@@ -526,6 +706,14 @@ function ResourceCenter() {
         { name: "Web Content Accessibility Guidelines", description: "WCAG 2.1 compliance standards", url: "https://www.w3.org/WAI/WCAG21/quickref/" },
         { name: "Core Web Vitals", description: "Google's page experience metrics", url: "https://web.dev/vitals/" },
         { name: "SEO Starter Guide", description: "Google's official SEO guidelines", url: "https://developers.google.com/search/docs/fundamentals/seo-starter-guide" }
+      ]
+    },
+    {
+      category: "Design & UX",
+      items: [
+        { name: "Material Design", description: "Google's design system guidelines", url: "https://material.io/design" },
+        { name: "Human Interface Guidelines", description: "Apple's UX design principles", url: "https://developer.apple.com/design/human-interface-guidelines/" },
+        { name: "Nielsen Norman Group", description: "UX research and usability insights", url: "https://www.nngroup.com/" }
       ]
     }
   ];
@@ -543,16 +731,17 @@ function ResourceCenter() {
             <h5 className="font-semibold text-gray-900 mb-3">{category.category}</h5>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {category.items.map((resource, resourceIndex) => (
-                <div key={resourceIndex} className="bg-white border rounded-lg p-3">
+                <div key={resourceIndex} className="bg-white border rounded-lg p-3 hover:shadow-sm transition-shadow">
                   <h6 className="font-medium text-gray-900 text-sm mb-1">{resource.name}</h6>
                   <p className="text-xs text-gray-600 mb-2">{resource.description}</p>
-                  <a 
-                    href={resource.url} 
-                    target="_blank" 
+                  <a
+                    href={resource.url}
+                    target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-blue-600 hover:text-blue-800 underline"
+                    className="text-xs text-blue-600 hover:text-blue-800 underline flex items-center gap-1"
                   >
-                    Visit Resource →
+                    Visit Resource
+                    <ArrowRight className="h-3 w-3" />
                   </a>
                 </div>
               ))}
@@ -1230,6 +1419,9 @@ Best regards`);
 
                 {/* Enhanced Implementation Roadmap */}
                 <ImplementationRoadmap auditData={auditData} />
+
+                {/* Interactive Task Checklist */}
+                <InteractiveTaskChecklist auditData={auditData} />
 
                 {/* ROI Calculator */}
                 <ROICalculator auditData={auditData} />
