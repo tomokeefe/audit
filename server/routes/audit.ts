@@ -1860,6 +1860,21 @@ IMPLEMENTATION DIFFICULTY GUIDELINES:
 - 'hard': Complex changes, technical expertise required, 1-2 weeks
 - 'very_hard': Major overhaul, significant resources, months
 
+ENHANCED COMPETITIVE ANALYSIS REQUIREMENTS:
+For each section, MUST provide:
+- Specific industry benchmark comparison with exact percentiles (e.g., "Your score 78% ranks in top 25% for ${businessContext.industry} industry")
+- 3 specific competitive advantages with evidence (e.g., "Page load 2.1s vs industry average 3.2s = 34% faster")
+- 3 specific competitive gaps with quantified impact (e.g., "Missing mobile optimization affecting 65% of traffic")
+- Market opportunity assessment with actionable revenue impact estimates
+- Differentiation strategy recommendations with implementation roadmap
+
+MANDATORY COMPETITIVE INSIGHT FORMAT:
+"COMPETITIVE POSITION: [Top 10% / Top 25% / Above Average / Average / Below Average / Bottom 25%] in ${businessContext.industry} industry
+BENCHMARK DATA: Your score [X]% vs industry average [Y]% = [Z]% difference (percentile rank: [P]th)
+PERFORMANCE GAPS: [List 3 specific areas where competitors outperform with metrics]
+COMPETITIVE ADVANTAGES: [List 3 specific areas where you outperform with metrics]
+REVENUE IMPACT: Closing performance gaps could result in [X-Y]% improvement in [specific business metric]"
+
 CRITICAL: Format the "details" field for each section using this EXACT structure:
 
 Overview: [Brief overview with quantifiable evidence - e.g., "Analysis of 8 pages shows logo consistency at 87.5% (7/8 pages)"]
