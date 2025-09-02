@@ -1127,7 +1127,7 @@ Best regards`);
                 <Card className="w-80 h-52 bg-yellow-50 border-yellow-200 border-2 shadow-lg">
                   <CardContent className="pt-8 text-center h-full flex flex-col justify-center">
                     <div className="text-6xl font-bold mb-2 text-orange-600">
-                      {auditData.overallScore}%
+                      {typeof auditData.overallScore === 'number' ? auditData.overallScore.toFixed(1) : auditData.overallScore}%
                     </div>
                     <div className="text-gray-700 font-semibold text-lg mb-4">
                       Overall Score
