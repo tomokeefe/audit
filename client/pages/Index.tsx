@@ -519,18 +519,36 @@ export default function Index() {
 
       {/* Debug Panel - Remove this in production */}
       {process.env.NODE_ENV === 'development' && (
-        <div className="bg-yellow-50 border-b border-yellow-200 p-3">
+        <div className={`border-b p-3 ${apiStatus.error ? 'bg-red-50 border-red-200' : 'bg-yellow-50 border-yellow-200'}`}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h3 className="text-sm font-medium text-yellow-800 mb-2">Debug: API Status</h3>
-            <div className="flex gap-4 text-xs">
-              <span className={`flex items-center gap-1 ${apiStatus.ping ? 'text-green-700' : 'text-red-700'}`}>
-                {apiStatus.ping ? '✓' : '✗'} Ping API
-              </span>
-              <span className={`flex items-center gap-1 ${apiStatus.audits ? 'text-green-700' : 'text-red-700'}`}>
-                {apiStatus.audits ? '✓' : '✗'} Audits API
-              </span>
+            <div className="flex justify-between items-center">
+              <div>
+                <h3 className={`text-sm font-medium mb-2 ${apiStatus.error ? 'text-red-800' : 'text-yellow-800'}`}>
+                  Debug: API Status {!apiStatus.ping && !apiStatus.audits ? '(Connection Issues)' : ''}
+                </h3>
+                <div className="flex gap-4 text-xs">
+                  <span className={`flex items-center gap-1 ${apiStatus.ping ? 'text-green-700' : 'text-red-700'}`}>
+                    {apiStatus.ping ? '✓' : '✗'} Ping API {apiStatus.ping ? '(Connected)' : '(Failed)'}
+                  </span>
+                  <span className={`flex items-center gap-1 ${apiStatus.audits ? 'text-green-700' : 'text-red-700'}`}>
+                    {apiStatus.audits ? '✓' : '✗'} Audits API {apiStatus.audits ? '(Connected)' : '(Failed)'}
+                  </span>
+                  {apiStatus.error && (
+                    <span className="text-red-700 font-medium">Error: {apiStatus.error}</span>
+                  )}
+                </div>
+              </div>
               {apiStatus.error && (
-                <span className="text-red-700">Error: {apiStatus.error}</span>
+                <button
+                  onClick={() => {
+                    console.log("Retrying API connection...");
+                    testAPIConnection();
+                    setTimeout(() => loadRecentAudits(), 500);
+                  }}
+                  className="px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-800 text-xs rounded border border-blue-300 transition-colors"
+                >
+                  Retry Connection
+                </button>
               )}
             </div>
           </div>
