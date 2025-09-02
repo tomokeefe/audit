@@ -1381,6 +1381,8 @@ Respond in this exact JSON format with ALL 10 sections:
 Be thorough, professional, and provide actionable insights based on the available data.
 `;
 
+  const startTime = Date.now();
+
   try {
     const result = await model.generateContent(prompt);
     const response = await result.response;
