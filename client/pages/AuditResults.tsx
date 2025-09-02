@@ -280,7 +280,7 @@ function CompetitiveMetrics({ auditData }: { auditData: any }) {
       </div>
       <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
         <p className="text-sm text-blue-800">
-          <strong>Competitive Insight:</strong> Your overall score of {overallScore}% places you{' '}
+          <strong>Competitive Insight:</strong> Your overall score of {typeof overallScore === 'number' ? overallScore.toFixed(1) : overallScore}% places you{' '}
           {overallScore >= 75 ? 'in the top tier' : overallScore >= 65 ? 'in the competitive range' : 'below average'} compared to industry benchmarks.
         </p>
       </div>
