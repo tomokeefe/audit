@@ -1481,7 +1481,7 @@ Best regards`);
                           .map((s, index) => (
                             <div key={index} className="flex justify-between">
                               <span>{s.name}</span>
-                              <Badge variant="default" className="text-xs bg-green-600">{s.score}%</Badge>
+                              <Badge variant="default" className="text-xs bg-green-600">{typeof s.score === 'number' ? s.score.toFixed(1) : s.score}%</Badge>
                             </div>
                           )) || <span>Focus on improving other areas</span>}
                       </div>
