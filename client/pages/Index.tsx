@@ -637,6 +637,12 @@ export default function Index() {
         // Continue anyway as we have localStorage backup
       }
 
+      // Complete final progress step
+      updateProgress('finalizing', true);
+
+      // Wait for progress animation to complete
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
       // Navigate to audit results page
       navigate(`/audit/${auditResult.id}`);
     } catch (error) {
