@@ -10,6 +10,124 @@ const genAI = GEMINI_API_KEY ? new GoogleGenerativeAI(GEMINI_API_KEY) : null;
 // In-memory storage for audit results
 const auditStorage = new Map<string, any>();
 
+// Function to generate demo audit when API key is not available
+function generateDemoAudit(url: string) {
+  const domain = new URL(url).hostname.replace("www.", "");
+  const companyName = domain.split(".")[0].charAt(0).toUpperCase() + domain.split(".")[0].slice(1);
+  const auditId = Math.random().toString(36).substring(2, 15);
+
+  return {
+    id: auditId,
+    url,
+    title: `Brand Audit for ${companyName}`,
+    date: new Date().toISOString().split('T')[0],
+    overallScore: 73,
+    status: "completed",
+    isDemoMode: true,
+    sections: [
+      {
+        name: "Branding",
+        score: 85,
+        issues: 2,
+        recommendations: 3,
+        details: "Strong brand consistency with minor improvements needed. Logo appears on 8/10 pages analyzed (80% consistency). Brand colors are used consistently across the site. Recommend adding brand guidelines documentation and ensuring logo consistency on all pages.",
+        priorityLevel: "medium",
+        implementationDifficulty: "easy"
+      },
+      {
+        name: "Design",
+        score: 78,
+        issues: 3,
+        recommendations: 4,
+        details: "Modern design with good visual hierarchy. Mobile responsive design detected. Some typography inconsistencies found across 3 pages. Color contrast meets WCAG standards on most elements. Recommend standardizing typography and improving visual consistency.",
+        priorityLevel: "medium",
+        implementationDifficulty: "medium"
+      },
+      {
+        name: "Messaging",
+        score: 82,
+        issues: 2,
+        recommendations: 3,
+        details: "Clear value proposition on homepage. Messaging tone is consistent across pages. Call-to-action buttons are clear but could be more prominent. Recommend strengthening secondary messaging and improving CTA visibility.",
+        priorityLevel: "high",
+        implementationDifficulty: "easy"
+      },
+      {
+        name: "Usability",
+        score: 75,
+        issues: 4,
+        recommendations: 5,
+        details: "Navigation is intuitive with 7 main menu items. Search functionality detected. Some forms lack proper validation. Page load time averages 2.8 seconds. Recommend optimizing forms and improving page speed.",
+        priorityLevel: "high",
+        implementationDifficulty: "medium"
+      },
+      {
+        name: "Content Strategy",
+        score: 68,
+        issues: 5,
+        recommendations: 6,
+        details: "Content structure needs improvement. Blog section found with 12 articles. Some pages have thin content (under 300 words). SEO meta descriptions missing on 40% of pages. Recommend content audit and SEO optimization.",
+        priorityLevel: "high",
+        implementationDifficulty: "medium"
+      },
+      {
+        name: "Digital Presence",
+        score: 70,
+        issues: 4,
+        recommendations: 5,
+        details: "Social media links found for 3 platforms. Limited social proof elements. No customer testimonials visible. Email signup form detected. Recommend adding testimonials and expanding social proof.",
+        priorityLevel: "medium",
+        implementationDifficulty: "easy"
+      },
+      {
+        name: "Customer Experience",
+        score: 72,
+        issues: 3,
+        recommendations: 4,
+        details: "Contact information easily accessible. Live chat widget not detected. FAQ section found. Customer support could be more prominent. Recommend adding live chat and improving support visibility.",
+        priorityLevel: "medium",
+        implementationDifficulty: "medium"
+      },
+      {
+        name: "Competitor Analysis",
+        score: 65,
+        issues: 5,
+        recommendations: 7,
+        details: "Market positioning could be stronger. Value proposition needs differentiation from competitors. Pricing transparency limited compared to industry standards. Recommend competitive analysis and positioning strategy.",
+        priorityLevel: "low",
+        implementationDifficulty: "hard"
+      },
+      {
+        name: "Conversion Optimization",
+        score: 69,
+        issues: 4,
+        recommendations: 6,
+        details: "Contact forms found on 3 pages. Lead magnets limited. Trust signals need improvement. Conversion funnel has potential drop-off points. Recommend A/B testing CTAs and adding trust elements.",
+        priorityLevel: "high",
+        implementationDifficulty: "medium"
+      },
+      {
+        name: "Consistency & Compliance",
+        score: 80,
+        issues: 2,
+        recommendations: 3,
+        details: "Privacy policy and terms of service present. GDPR compliance indicators found. Brand guidelines followed consistently. Minor accessibility improvements needed. Recommend full accessibility audit.",
+        priorityLevel: "low",
+        implementationDifficulty: "easy"
+      }
+    ],
+    metadata: {
+      analysisConfidence: 0.95,
+      industryDetected: "general",
+      businessType: "b2c",
+      evidenceQuality: "high",
+      qualityScore: 88,
+      demoMode: true,
+      note: "This is a demo audit generated without AI analysis. For full AI-powered insights, please configure the GEMINI_API_KEY environment variable."
+    }
+  };
+}
+
 // Function to create fallback website data when scraping fails
 function createFallbackData(url: string) {
   const domain = new URL(url).hostname.replace("www.", "");
