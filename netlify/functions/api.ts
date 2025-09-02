@@ -2698,19 +2698,29 @@ export const handler: Handler = async (event, context) => {
         };
       }
 
-      // Validate URL format
-      try {
-        new URL(url);
-      } catch {
-        return {
-          statusCode: 400,
-          headers,
-          body: JSON.stringify({
-            error:
-              "Invalid URL format. Please enter a valid URL starting with http:// or https://",
-          }),
-        };
-      }
+      // Validate and normalize URL format
+  let normalizedUrl = url.trim();
+
+  // Add https:// if no protocol is provided
+  if (!normalizedUrl.match(/^https?:\/\//)) {
+    normalizedUrl = `https://${normalizedUrl}`;
+  }
+
+  try {
+    new URL(normalizedUrl);
+  } catch {
+    return {
+      statusCode: 400,
+      headers,
+      body: JSON.stringify({
+        error:
+          "Invalid URL format. Please enter a valid URL (e.g., example.com, www.example.com, or https://example.com)",
+      }),
+    };
+  }
+
+  // Use the normalized URL for the rest of the function
+  url = normalizedUrl;
 
       // Check if Gemini API key is configured, if not use demo mode
       if (!GEMINI_API_KEY) {
