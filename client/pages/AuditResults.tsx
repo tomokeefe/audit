@@ -1464,7 +1464,7 @@ Best regards`);
                           .map((s, index) => (
                             <div key={index} className="flex justify-between">
                               <span>{s.name}</span>
-                              <Badge variant="secondary" className="text-xs">{s.score}%</Badge>
+                              <Badge variant="secondary" className="text-xs">{typeof s.score === 'number' ? s.score.toFixed(1) : s.score}%</Badge>
                             </div>
                           )) || <span>No high priority items</span>}
                       </div>
