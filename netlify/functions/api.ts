@@ -1255,32 +1255,15 @@ Be thorough, professional, and provide actionable insights based on the availabl
       throw new Error("Failed to parse AI response - invalid JSON format");
     }
 
-    // Validate required fields
-    if (!auditData || typeof auditData !== 'object') {
-      console.error("Invalid audit data type:", typeof auditData);
-      throw new Error("Invalid audit response structure - not an object");
+    // Quality Assurance Validation
+    const validationResults = validateAuditOutput(auditData, businessContext);
+    if (!validationResults.isValid) {
+      console.error("Audit validation failed:", validationResults.errors);
+      throw new Error(`Audit quality validation failed: ${validationResults.errors.join(', ')}`);
     }
 
-    if (!auditData.title || typeof auditData.title !== 'string') {
-      console.error("Missing or invalid title:", auditData.title);
-      throw new Error("Invalid audit response structure - missing title");
-    }
-
-    if (!auditData.sections || !Array.isArray(auditData.sections)) {
-      console.error("Missing or invalid sections:", auditData.sections);
-      throw new Error("Invalid audit response structure - missing sections array");
-    }
-
-    if (auditData.sections.length === 0) {
-      console.error("Empty sections array");
-      throw new Error("Invalid audit response structure - empty sections");
-    }
-
-    // Validate overallScore
-    if (typeof auditData.overallScore !== 'number' || auditData.overallScore < 0 || auditData.overallScore > 100) {
-      console.warn("Invalid overall score, using default:", auditData.overallScore);
-      auditData.overallScore = 75; // Default fallback score
-    }
+    // Apply quality improvements based on validation
+    auditData = enhanceAuditQuality(auditData, validationResults, businessContext);
 
     console.log("Audit data validated successfully");
 
