@@ -1520,6 +1520,34 @@ For each section, provide:
 - Number of recommendations (estimate based on issues)
 - Detailed explanation of findings and specific recommendations
 
+CRITICAL: Format the "details" field for each section using this EXACT structure:
+
+Overview: [Brief overview of the section analysis]
+
+Issues:
+- [Specific issue 1 with evidence]
+- [Specific issue 2 with evidence]
+- [Additional issues as needed]
+
+Recommendations:
+- [Actionable recommendation 1 with implementation details]
+- [Actionable recommendation 2 with implementation details]
+- [Additional recommendations as needed]
+
+Example details field:
+Overview: The website demonstrates strong brand consistency with logo placement on all 8 analyzed pages and systematic color usage. However, messaging tone varies between pages, reducing brand voice coherence.
+
+Issues:
+- Messaging tone inconsistency detected across 3 different page types
+- Logo size varies between desktop (120px) and mobile (80px) versions
+- Color scheme lacks secondary brand colors for visual hierarchy
+
+Recommendations:
+- Develop comprehensive brand voice guidelines document specifying tone for each page type
+- Standardize logo dimensions to 120px desktop, 100px mobile across all pages
+- Implement secondary color palette (#F8F9FA for backgrounds, #E5E7EB for borders)
+- Conduct brand consistency audit quarterly to maintain standards
+
 CRITICAL - Use ALL Multi-Page Data: This analysis includes comprehensive crawling of multiple pages. Use the cross-page consistency scores, individual page analysis, and multi-page metrics to provide:
 
 - Specific recommendations based on actual page-by-page findings
