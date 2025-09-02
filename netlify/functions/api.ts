@@ -16,18 +16,42 @@ function generateDemoAudit(url: string) {
   const companyName = domain.split(".")[0].charAt(0).toUpperCase() + domain.split(".")[0].slice(1);
   const auditId = Math.random().toString(36).substring(2, 15);
 
+  // Calculate scores with decimal precision and weighted overall score
+  const sectionScores = [
+    { name: "Branding", score: 85.0, weight: 0.20 },
+    { name: "Design", score: 70.0, weight: 0.15 },
+    { name: "Messaging", score: 82.0, weight: 0.15 },
+    { name: "Usability", score: 75.0, weight: 0.15 },
+    { name: "Content Strategy", score: 80.0, weight: 0.10 },
+    { name: "Digital Presence", score: 65.0, weight: 0.10 },
+    { name: "Customer Experience", score: 72.0, weight: 0.05 },
+    { name: "Competitor Analysis", score: 78.0, weight: 0.10 }, // Averaged from sub-scores: (40+38)/50*100 + (15+15)/20*100 = 78.0
+    { name: "Conversion Optimization", score: 90.0, weight: 0.05 },
+    { name: "Consistency & Compliance", score: 85.0, weight: 0.05 }
+  ];
+
+  // Calculate weighted overall score using the provided formula
+  const overallScore = sectionScores.reduce((sum, section) =>
+    sum + (section.weight * section.score), 0
+  );
+
   return {
     id: auditId,
     url,
     title: `Brand Audit for ${companyName}`,
     date: new Date().toISOString().split('T')[0],
-    overallScore: 73,
+    overallScore: parseFloat(overallScore.toFixed(1)),
     status: "completed",
     isDemoMode: true,
     sections: [
       {
         name: "Branding",
-        score: 85,
+        score: 85.0,
+        subScores: [
+          { name: "Logo Consistency", score: 88.0, maxScore: 100 },
+          { name: "Color Palette", score: 85.0, maxScore: 100 },
+          { name: "Typography", score: 82.0, maxScore: 100 }
+        ],
         issues: 2,
         recommendations: 3,
         details: "Strong brand consistency with minor improvements needed. Logo appears on 8/10 pages analyzed (80% consistency). Brand colors are used consistently across the site. Recommend adding brand guidelines documentation and ensuring logo consistency on all pages.",
@@ -36,7 +60,12 @@ function generateDemoAudit(url: string) {
       },
       {
         name: "Design",
-        score: 78,
+        score: 70.0,
+        subScores: [
+          { name: "Visual Hierarchy", score: 75.0, maxScore: 100 },
+          { name: "Layout Consistency", score: 68.0, maxScore: 100 },
+          { name: "Mobile Responsiveness", score: 67.0, maxScore: 100 }
+        ],
         issues: 3,
         recommendations: 4,
         details: "Modern design with good visual hierarchy. Mobile responsive design detected. Some typography inconsistencies found across 3 pages. Color contrast meets WCAG standards on most elements. Recommend standardizing typography and improving visual consistency.",
@@ -45,7 +74,12 @@ function generateDemoAudit(url: string) {
       },
       {
         name: "Messaging",
-        score: 82,
+        score: 82.0,
+        subScores: [
+          { name: "Value Proposition", score: 85.0, maxScore: 100 },
+          { name: "Tone Consistency", score: 80.0, maxScore: 100 },
+          { name: "Call-to-Action Clarity", score: 81.0, maxScore: 100 }
+        ],
         issues: 2,
         recommendations: 3,
         details: "Clear value proposition on homepage. Messaging tone is consistent across pages. Call-to-action buttons are clear but could be more prominent. Recommend strengthening secondary messaging and improving CTA visibility.",
@@ -54,7 +88,12 @@ function generateDemoAudit(url: string) {
       },
       {
         name: "Usability",
-        score: 75,
+        score: 75.0,
+        subScores: [
+          { name: "Navigation Structure", score: 78.0, maxScore: 100 },
+          { name: "Search Functionality", score: 72.0, maxScore: 100 },
+          { name: "Form Usability", score: 75.0, maxScore: 100 }
+        ],
         issues: 4,
         recommendations: 5,
         details: "Navigation is intuitive with 7 main menu items. Search functionality detected. Some forms lack proper validation. Page load time averages 2.8 seconds. Recommend optimizing forms and improving page speed.",
@@ -63,7 +102,12 @@ function generateDemoAudit(url: string) {
       },
       {
         name: "Content Strategy",
-        score: 68,
+        score: 80.0,
+        subScores: [
+          { name: "Content Quality", score: 82.0, maxScore: 100 },
+          { name: "SEO Optimization", score: 75.0, maxScore: 100 },
+          { name: "Content Structure", score: 83.0, maxScore: 100 }
+        ],
         issues: 5,
         recommendations: 6,
         details: "Content structure needs improvement. Blog section found with 12 articles. Some pages have thin content (under 300 words). SEO meta descriptions missing on 40% of pages. Recommend content audit and SEO optimization.",
@@ -72,7 +116,12 @@ function generateDemoAudit(url: string) {
       },
       {
         name: "Digital Presence",
-        score: 70,
+        score: 65.0,
+        subScores: [
+          { name: "Social Media Integration", score: 60.0, maxScore: 100 },
+          { name: "Online Reviews", score: 68.0, maxScore: 100 },
+          { name: "Digital Marketing", score: 67.0, maxScore: 100 }
+        ],
         issues: 4,
         recommendations: 5,
         details: "Social media links found for 3 platforms. Limited social proof elements. No customer testimonials visible. Email signup form detected. Recommend adding testimonials and expanding social proof.",
@@ -81,7 +130,12 @@ function generateDemoAudit(url: string) {
       },
       {
         name: "Customer Experience",
-        score: 72,
+        score: 72.0,
+        subScores: [
+          { name: "Support Accessibility", score: 70.0, maxScore: 100 },
+          { name: "Contact Options", score: 75.0, maxScore: 100 },
+          { name: "User Journey", score: 71.0, maxScore: 100 }
+        ],
         issues: 3,
         recommendations: 4,
         details: "Contact information easily accessible. Live chat widget not detected. FAQ section found. Customer support could be more prominent. Recommend adding live chat and improving support visibility.",
@@ -90,16 +144,27 @@ function generateDemoAudit(url: string) {
       },
       {
         name: "Competitor Analysis",
-        score: 65,
+        score: 78.0,
+        subScores: [
+          { name: "Strengths Comparison", score: 40.0, maxScore: 50 },
+          { name: "Weaknesses Assessment", score: 38.0, maxScore: 50 },
+          { name: "Market Positioning", score: 15.0, maxScore: 20 },
+          { name: "Competitive Advantage", score: 15.0, maxScore: 20 }
+        ],
         issues: 5,
         recommendations: 7,
-        details: "Market positioning could be stronger. Value proposition needs differentiation from competitors. Pricing transparency limited compared to industry standards. Recommend competitive analysis and positioning strategy.",
+        details: "Market positioning could be stronger. Value proposition needs differentiation from competitors. Pricing transparency limited compared to industry standards. Sub-scores average: (40/50 + 38/50 + 15/20 + 15/20) * 100 / 4 = 78.0. Recommend competitive analysis and positioning strategy.",
         priorityLevel: "low",
         implementationDifficulty: "hard"
       },
       {
         name: "Conversion Optimization",
-        score: 69,
+        score: 90.0,
+        subScores: [
+          { name: "Conversion Funnel", score: 88.0, maxScore: 100 },
+          { name: "Trust Signals", score: 92.0, maxScore: 100 },
+          { name: "Lead Generation", score: 90.0, maxScore: 100 }
+        ],
         issues: 4,
         recommendations: 6,
         details: "Contact forms found on 3 pages. Lead magnets limited. Trust signals need improvement. Conversion funnel has potential drop-off points. Recommend A/B testing CTAs and adding trust elements.",
@@ -108,7 +173,12 @@ function generateDemoAudit(url: string) {
       },
       {
         name: "Consistency & Compliance",
-        score: 80,
+        score: 85.0,
+        subScores: [
+          { name: "Legal Compliance", score: 90.0, maxScore: 100 },
+          { name: "Accessibility Standards", score: 80.0, maxScore: 100 },
+          { name: "Brand Guidelines", score: 85.0, maxScore: 100 }
+        ],
         issues: 2,
         recommendations: 3,
         details: "Privacy policy and terms of service present. GDPR compliance indicators found. Brand guidelines followed consistently. Minor accessibility improvements needed. Recommend full accessibility audit.",
