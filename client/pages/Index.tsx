@@ -589,18 +589,39 @@ export default function Index() {
                   )}
                 </div>
               </div>
-              {apiStatus.error && (
+              <div className="flex gap-2">
+                {apiStatus.error && (
+                  <button
+                    onClick={() => {
+                      console.log("Retrying API connection...");
+                      setApiStatus({ ping: false, audits: false, error: undefined });
+                      testAPIConnection();
+                      setTimeout(() => loadRecentAudits(), 500);
+                    }}
+                    className="px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-800 text-xs rounded border border-blue-300 transition-colors"
+                  >
+                    Retry Connection
+                  </button>
+                )}
                 <button
                   onClick={() => {
-                    console.log("Retrying API connection...");
+                    console.log("Manual API test triggered...");
                     testAPIConnection();
-                    setTimeout(() => loadRecentAudits(), 500);
                   }}
-                  className="px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-800 text-xs rounded border border-blue-300 transition-colors"
+                  className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs rounded border border-gray-300 transition-colors"
                 >
-                  Retry Connection
+                  Test API
                 </button>
-              )}
+                <button
+                  onClick={() => {
+                    console.log("Manual audit loading triggered...");
+                    loadRecentAudits();
+                  }}
+                  className="px-3 py-1 bg-green-100 hover:bg-green-200 text-green-800 text-xs rounded border border-green-300 transition-colors"
+                >
+                  Load Audits
+                </button>
+              </div>
             </div>
           </div>
         </div>
