@@ -691,6 +691,118 @@ async function scrapeWebsite(url: string) {
   return createFallbackData(url);
 }
 
+// Function to detect business type and industry
+function detectBusinessContext(websiteData: any) {
+  const { title, description, headings, paragraphs, navigation, url } = websiteData;
+  const allText = [title, description, ...headings, ...paragraphs, navigation].join(' ').toLowerCase();
+
+  // Industry detection patterns
+  const industries = {
+    ecommerce: /shop|store|buy|cart|product|ecommerce|marketplace|retail|purchase|checkout/,
+    saas: /software|saas|platform|dashboard|api|subscription|trial|demo|app|cloud/,
+    healthcare: /health|medical|doctor|clinic|hospital|patient|therapy|wellness|medicine/,
+    finance: /finance|bank|investment|loan|insurance|mortgage|credit|financial|wealth/,
+    education: /education|school|university|course|learning|student|teacher|academic|training/,
+    realestate: /real estate|property|homes|rent|lease|mortgage|realtor|listing|mls/,
+    restaurant: /restaurant|food|menu|dining|chef|cuisine|delivery|catering|takeout/,
+    legal: /law|lawyer|attorney|legal|court|litigation|counsel|firm|practice/,
+    consulting: /consulting|consultant|advisory|strategy|expert|professional services/,
+    agency: /agency|marketing|design|advertising|creative|digital|branding|media/,
+    nonprofit: /nonprofit|charity|donation|volunteer|foundation|cause|mission|impact/,
+    portfolio: /portfolio|designer|photographer|artist|creative|freelance|personal|work/
+  };
+
+  let detectedIndustry = 'general';
+  let confidence = 0;
+
+  for (const [industry, pattern] of Object.entries(industries)) {
+    const matches = allText.match(pattern);
+    if (matches && matches.length > confidence) {
+      detectedIndustry = industry;
+      confidence = matches.length;
+    }
+  }
+
+  // Business type detection
+  const businessTypes = {
+    b2b: /enterprise|business|corporate|professional|solution|industry|commercial/,
+    b2c: /customer|consumer|personal|individual|family|home|lifestyle/,
+    marketplace: /marketplace|platform|connect|network|community|seller|buyer/
+  };
+
+  let businessType = 'b2c';
+  for (const [type, pattern] of Object.entries(businessTypes)) {
+    if (pattern.test(allText)) {
+      businessType = type;
+      break;
+    }
+  }
+
+  // Extract key business indicators
+  const hasEcommerce = /shop|store|cart|buy|product|price/i.test(allText);
+  const hasBooking = /book|appointment|schedule|reserve|calendar/i.test(allText);
+  const hasLogin = websiteData.uxFeatures?.forms?.count > 0 || /login|sign in|account|dashboard/i.test(allText);
+  const hasBlog = websiteData.siteStructure?.contentStructure?.hasBlog || /blog|news|article/i.test(allText);
+
+  return {
+    industry: detectedIndustry,
+    businessType,
+    confidence: Math.min(confidence / 3, 1), // Normalize confidence
+    features: {
+      hasEcommerce,
+      hasBooking,
+      hasLogin,
+      hasBlog,
+      isServiceBased: businessType === 'b2b' || detectedIndustry === 'consulting',
+      isContentFocused: hasBlog || detectedIndustry === 'education'
+    },
+    industryBenchmarks: getIndustryBenchmarks(detectedIndustry)
+  };
+}
+
+// Function to get industry-specific benchmarks
+function getIndustryBenchmarks(industry: string) {
+  const benchmarks = {
+    ecommerce: {
+      conversionRate: 2.5,
+      loadTime: 2.0,
+      mobileScore: 85,
+      trustSignals: 'high',
+      priorities: ['conversion_optimization', 'product_presentation', 'checkout_flow', 'trust_signals']
+    },
+    saas: {
+      conversionRate: 3.0,
+      loadTime: 1.5,
+      mobileScore: 90,
+      trustSignals: 'medium',
+      priorities: ['user_onboarding', 'feature_clarity', 'trial_conversion', 'support_accessibility']
+    },
+    healthcare: {
+      conversionRate: 4.0,
+      loadTime: 2.5,
+      mobileScore: 80,
+      trustSignals: 'critical',
+      priorities: ['credibility', 'accessibility', 'privacy_compliance', 'appointment_booking']
+    },
+    finance: {
+      conversionRate: 2.0,
+      loadTime: 2.0,
+      mobileScore: 85,
+      trustSignals: 'critical',
+      priorities: ['security', 'compliance', 'trust_building', 'clear_communication']
+    },
+    general: {
+      conversionRate: 2.8,
+      loadTime: 2.5,
+      mobileScore: 80,
+      trustSignals: 'medium',
+      priorities: ['user_experience', 'content_quality', 'mobile_optimization', 'performance']
+    }
+  };
+
+  return benchmarks[industry] || benchmarks.general;
+}
+
 // Function to generate audit using Gemini
 async function generateAudit(websiteData: any): Promise<AuditResponse> {
   const model = genAI.getGenerativeModel({
