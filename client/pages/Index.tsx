@@ -510,6 +510,13 @@ export default function Index() {
 
     setIsLoading(true);
     setError("");
+    setShowProgress(true);
+
+    // Initialize progress tracking
+    const steps = initializeProgressSteps();
+
+    // Start progress simulation
+    const progressPromise = simulateProgressSteps(steps);
 
     try {
       // Test API connectivity first
