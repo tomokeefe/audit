@@ -3,8 +3,9 @@ import axios from "axios";
 import * as cheerio from "cheerio";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Initialize Gemini AI
-const genAI = new GoogleGenerativeAI(Netlify.env.get("GEMINI_API_KEY") || "");
+// Initialize Gemini AI with proper error handling
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
+const genAI = GEMINI_API_KEY ? new GoogleGenerativeAI(GEMINI_API_KEY) : null;
 
 // In-memory storage for audit results
 const auditStorage = new Map<string, any>();
