@@ -1111,6 +1111,27 @@ Respond in this exact JSON format with ALL 10 sections:
   "title": "Professional audit title",
   "description": "Brief description of the audit scope",
   "overallScore": 75,
+  "metadata": {
+    "analysisConfidence": 0.92,
+    "industryDetected": "${businessContext.industry}",
+    "businessType": "${businessContext.businessType}",
+    "evidenceQuality": "high",
+    "analysisDepth": "${websiteData.analysisDepth}",
+    "pagesAnalyzed": ${websiteData.multiPageAnalysis?.pagesAnalyzed || 1},
+    "benchmarkComparison": "above_average"
+  },
+  "reasoningChain": [
+    "Industry identification: Detected ${businessContext.industry} business based on content analysis",
+    "Competitive benchmarking: Compared against ${businessContext.industry} industry standards",
+    "Multi-page analysis: Evaluated consistency across ${websiteData.multiPageAnalysis?.pagesAnalyzed || 1} pages",
+    "Evidence-based scoring: Each score supported by quantifiable metrics",
+    "Actionable recommendations: Prioritized by business impact and implementation difficulty"
+  ],
+  "improvementImpact": {
+    "highPriority": ["conversion_optimization", "mobile_performance", "trust_signals"],
+    "estimatedROI": "15-25% improvement in key business metrics",
+    "implementationTimeframe": "2-6 months for core improvements"
+  },
   "sections": [
     {
       "name": "Branding",
