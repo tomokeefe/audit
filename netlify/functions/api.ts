@@ -787,6 +787,155 @@ function getIndustryBenchmarks(industry: string) {
   return benchmarks[industry] || benchmarks.general;
 }
 
+// Quality Assurance Functions
+function validateAuditOutput(auditData: any, businessContext: any) {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  let qualityScore = 0;
+
+  // Basic structure validation
+  if (!auditData || typeof auditData !== 'object') {
+    errors.push("Invalid audit data structure");
+    return { isValid: false, errors, warnings, qualityScore: 0 };
+  }
+
+  // Required fields validation
+  const requiredFields = ['title', 'sections', 'overallScore'];
+  for (const field of requiredFields) {
+    if (!auditData[field]) {
+      errors.push(`Missing required field: ${field}`);
+    }
+  }
+
+  // Sections validation
+  if (auditData.sections && Array.isArray(auditData.sections)) {
+    if (auditData.sections.length !== 10) {
+      errors.push(`Expected 10 sections, found ${auditData.sections.length}`);
+    }
+
+    auditData.sections.forEach((section: any, index: number) => {
+      // Validate section structure
+      const requiredSectionFields = ['name', 'score', 'issues', 'recommendations', 'details'];
+      for (const field of requiredSectionFields) {
+        if (section[field] === undefined) {
+          errors.push(`Section ${index}: missing ${field}`);
+        }
+      }
+
+      // Validate score ranges
+      if (typeof section.score === 'number') {
+        if (section.score < 0 || section.score > 100) {
+          errors.push(`Section ${section.name}: invalid score ${section.score}`);
+        } else {
+          qualityScore += 10; // Each valid score adds to quality
+        }
+      }
+
+      // Validate recommendation quality
+      if (section.details && typeof section.details === 'string') {
+        const detailLength = section.details.length;
+        if (detailLength < 100) {
+          warnings.push(`Section ${section.name}: details too brief (${detailLength} chars)`);
+        } else if (detailLength > 50) {
+          qualityScore += 5; // Detailed analysis adds quality
+        }
+
+        // Check for specific evidence
+        const hasSpecificEvidence = /\d+/.test(section.details); // Contains numbers
+        const hasMetrics = /(score|percent|%|pages?|images?|forms?)/.test(section.details.toLowerCase());
+        if (hasSpecificEvidence && hasMetrics) {
+          qualityScore += 10;
+        } else {
+          warnings.push(`Section ${section.name}: lacks specific evidence or metrics`);
+        }
+      }
+    });
+  }
+
+  // Overall score validation
+  if (typeof auditData.overallScore === 'number') {
+    if (auditData.overallScore < 0 || auditData.overallScore > 100) {
+      errors.push(`Invalid overall score: ${auditData.overallScore}`);
+    } else {
+      qualityScore += 10;
+    }
+  }
+
+  // Industry-specific validation
+  if (businessContext.industry) {
+    const industrySpecificTerms = {
+      ecommerce: ['product', 'cart', 'checkout', 'conversion'],
+      saas: ['onboarding', 'trial', 'features', 'dashboard'],
+      healthcare: ['credibility', 'accessibility', 'privacy', 'compliance'],
+      finance: ['security', 'trust', 'compliance', 'transparency']
+    };
+
+    const terms = industrySpecificTerms[businessContext.industry as keyof typeof industrySpecificTerms];
+    if (terms) {
+      const auditText = JSON.stringify(auditData).toLowerCase();
+      const foundTerms = terms.filter(term => auditText.includes(term));
+      if (foundTerms.length >= 2) {
+        qualityScore += 15; // Industry-relevant analysis
+      } else {
+        warnings.push(`Analysis lacks industry-specific focus for ${businessContext.industry}`);
+      }
+    }
+  }
+
+  const isValid = errors.length === 0;
+  const finalQualityScore = Math.min(qualityScore, 100);
+
+  return {
+    isValid,
+    errors,
+    warnings,
+    qualityScore: finalQualityScore,
+    hasEvidence: qualityScore >= 60,
+    isIndustryRelevant: qualityScore >= 70
+  };
+}
+
+function enhanceAuditQuality(auditData: any, validationResults: any, businessContext: any) {
+  // Apply automatic improvements based on validation
+  const enhanced = { ...auditData };
+
+  // Ensure metadata is present
+  if (!enhanced.metadata) {
+    enhanced.metadata = {
+      analysisConfidence: validationResults.qualityScore / 100,
+      industryDetected: businessContext.industry,
+      businessType: businessContext.businessType,
+      evidenceQuality: validationResults.qualityScore >= 70 ? 'high' : validationResults.qualityScore >= 50 ? 'medium' : 'low',
+      qualityScore: validationResults.qualityScore,
+      validationWarnings: validationResults.warnings.length
+    };
+  }
+
+  // Fix score ranges
+  enhanced.sections = enhanced.sections?.map((section: any) => {
+    const fixed = { ...section };
+    if (typeof fixed.score === 'number') {
+      fixed.score = Math.max(0, Math.min(100, Math.round(fixed.score)));
+    }
+    return fixed;
+  });
+
+  // Validate overall score calculation
+  if (enhanced.sections && enhanced.sections.length > 0) {
+    const weights = [0.18, 0.13, 0.13, 0.13, 0.09, 0.09, 0.05, 0.05, 0.10, 0.05];
+    const calculatedScore = enhanced.sections.reduce((sum: number, section: any, index: number) => {
+      return sum + (section.score * (weights[index] || 0.1));
+    }, 0);
+
+    // Only update if significantly different
+    if (Math.abs(enhanced.overallScore - calculatedScore) > 5) {
+      enhanced.overallScore = Math.round(calculatedScore);
+    }
+  }
+
+  return enhanced;
+}
+
 // Function to generate audit using Gemini
 async function generateAudit(websiteData: any) {
   const model = genAI.getGenerativeModel({
