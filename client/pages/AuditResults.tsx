@@ -852,6 +852,11 @@ Best regards`);
                                       <h5 className="font-semibold text-gray-900">
                                         {hasRecommendationsContent ? 'Recommendations' : 'Analysis & Insights'}
                                       </h5>
+                                      {process.env.NODE_ENV === 'development' && (
+                                        <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
+                                          {hasRecommendationsContent ? `${recommendationsContent.content.length} parsed` : 'fallback mode'}
+                                        </span>
+                                      )}
                                     </div>
                                     <div className="space-y-2">
                                       {hasRecommendationsContent ? (
