@@ -45,6 +45,15 @@ interface AuditSummary {
   overallScore: number;
 }
 
+interface ProgressStep {
+  id: string;
+  label: string;
+  description: string;
+  completed: boolean;
+  current: boolean;
+  duration?: number;
+}
+
 export default function Index() {
   const [url, setUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
