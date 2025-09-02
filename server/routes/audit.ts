@@ -1253,15 +1253,15 @@ Be thorough, professional, and provide actionable insights based on the availabl
       throw new Error("Failed to parse AI response");
     }
 
-    // Validate required fields
-    if (
-      !auditData.title ||
-      !auditData.sections ||
-      !Array.isArray(auditData.sections)
-    ) {
-      console.error("Invalid audit data structure:", auditData);
-      throw new Error("Invalid audit response structure");
+    // Quality Assurance Validation
+    const validationResults = validateAuditOutput(auditData, businessContext);
+    if (!validationResults.isValid) {
+      console.error("Audit validation failed:", validationResults.errors);
+      throw new Error(`Audit quality validation failed: ${validationResults.errors.join(', ')}`);
     }
+
+    // Apply quality improvements based on validation
+    auditData = enhanceAuditQuality(auditData, validationResults, businessContext);
 
     // Generate a unique ID and add metadata
     const auditId = Date.now().toString();
