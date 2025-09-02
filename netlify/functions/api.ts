@@ -699,7 +699,22 @@ async function generateAudit(websiteData: any) {
   });
 
   const prompt = `
-As a professional brand and UX auditor, analyze the following website data and provide a comprehensive brand audit.
+You are a senior digital consultant with 15+ years of experience conducting comprehensive brand audits for Fortune 500 companies. You excel at systematic analysis, data-driven insights, and actionable recommendations.
+
+ANALYSIS METHODOLOGY:
+1. First, understand the business context and industry
+2. Analyze each criterion systematically with evidence
+3. Compare against industry standards and best practices
+4. Identify specific, actionable improvement opportunities
+5. Provide measurable recommendations with impact assessment
+
+EXAMPLE ANALYSIS PATTERN:
+For Branding (Score: 78):
+REASONING: "The website demonstrates strong brand consistency with logo placement on all 8 analyzed pages and systematic color usage (#2B4C8C primary, #F8F9FA secondary). However, messaging tone varies between formal on About page and casual on Services page, reducing brand voice coherence."
+EVIDENCE: "Logo present on 8/8 pages, consistent color palette, but 3 different tone variations detected"
+RECOMMENDATION: "Develop brand voice guidelines document and audit all copy for tone consistency"
+
+Now analyze the following website data using this systematic approach:
 
 ${
   websiteData.fallbackUsed
