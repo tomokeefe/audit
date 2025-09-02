@@ -273,47 +273,57 @@ export default function Index() {
       let retries = 0;
       const maxRetries = 3;
 
-      const attemptConnection = async (): Promise<void> => {
+      const attemptConnection = async (): Promise<boolean> => {
         console.log(`API connection attempt ${retries + 1}/${maxRetries}`);
 
         try {
-          await testAPIConnection();
+          // Test a simple fetch to see if server is responding
+          const testResponse = await fetch("/api/ping", {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' },
+            signal: AbortSignal.timeout ? AbortSignal.timeout(3000) : undefined
+          });
 
-          // Check if connection was successful
-          const currentStatus = apiStatus;
-          if (currentStatus.ping || currentStatus.audits) {
-            console.log("API connection successful, loading audits...");
+          if (testResponse.ok) {
+            console.log("API server is responding, running full connection test...");
+            await testAPIConnection();
             setTimeout(() => loadRecentAudits(), 300);
-            return;
+            return true;
           }
 
-          // If connection failed and we have retries left
+          throw new Error(`Server responded with ${testResponse.status}`);
+
+        } catch (error) {
+          console.log(`Connection attempt ${retries + 1} failed:`, error instanceof Error ? error.message : error);
+
           if (retries < maxRetries - 1) {
             retries++;
-            console.log(`API connection failed, retrying in ${1000 + (retries * 500)}ms...`);
-            await new Promise(resolve => setTimeout(resolve, 1000 + (retries * 500)));
+            const delay = 1000 + (retries * 1000); // Increasing delay: 2s, 3s, 4s
+            console.log(`Retrying in ${delay}ms...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
             return attemptConnection();
           } else {
-            console.log("All API connection attempts failed");
-            // Still try to load audits in case the status check is wrong
+            console.log("All connection attempts failed, running fallback tests...");
+            // Run the full test anyway in case it's a false negative
+            await testAPIConnection();
             setTimeout(() => loadRecentAudits(), 300);
-          }
-        } catch (error) {
-          console.error("Error during API initialization:", error);
-          if (retries < maxRetries - 1) {
-            retries++;
-            await new Promise(resolve => setTimeout(resolve, 1000 + (retries * 500)));
-            return attemptConnection();
+            return false;
           }
         }
       };
 
-      // Add initial delay to allow server to fully start
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Add initial delay to allow server to fully start after hot reload
+      console.log("Waiting for server startup...");
+      await new Promise(resolve => setTimeout(resolve, 2000));
       await attemptConnection();
     };
 
-    initializeAPI();
+    initializeAPI().catch(error => {
+      console.error("Failed to initialize API:", error);
+      // Fallback: try to run tests anyway
+      testAPIConnection();
+      setTimeout(() => loadRecentAudits(), 1000);
+    });
   }, []);
 
   // Analytics calculations
