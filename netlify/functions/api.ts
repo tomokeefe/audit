@@ -1133,16 +1133,8 @@ BUSINESS CONTEXT ANALYSIS:
 - Key Features: ${Object.entries(businessContext.features).filter(([_, value]) => value).map(([key, _]) => key).join(', ')}
 - Industry Benchmarks: ${businessContext.industryBenchmarks.priorities.join(', ')}
 
-INDUSTRY-SPECIFIC ANALYSIS FOCUS:
-${businessContext.industry === 'ecommerce' ?
-  'Focus on conversion optimization, product presentation, checkout flow, trust signals, and mobile commerce experience.' :
-  businessContext.industry === 'saas' ?
-  'Emphasize user onboarding clarity, feature communication, trial conversion elements, and support accessibility.' :
-  businessContext.industry === 'healthcare' ?
-  'Prioritize credibility indicators, accessibility compliance, privacy policies, and appointment booking functionality.' :
-  businessContext.industry === 'finance' ?
-  'Focus on security indicators, regulatory compliance, trust building elements, and clear financial communication.' :
-  'Apply general best practices with focus on user experience, content quality, and mobile optimization.'}
+INDUSTRY-SPECIFIC ANALYSIS FOCUS & SCORING ADAPTATION:
+${getDynamicPromptInstructions(businessContext, enhancedWebsiteData)}
 
 ANALYSIS METHODOLOGY:
 1. First, understand the business context and industry-specific requirements
