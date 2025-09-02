@@ -2054,10 +2054,26 @@ CRITICAL - Use ALL Multi-Page Data: This analysis includes comprehensive crawlin
 
 Reference specific pages, metrics, and cross-page issues found in your recommendations. This is a comprehensive multi-page audit, not a single-page analysis.
 
+IMPORTANT: The overall score will be automatically calculated using dynamic weighting based on the detected industry (${businessContext.industry}) and business context. You should still provide a base overall score, but the system will apply:
+- Evidence-weighted scoring adjustments
+- Industry benchmark calibration
+- Confidence-based modifications
+- Implementation impact weighting
+- Dynamic criteria weighting for ${businessContext.industry} businesses
+
 Also provide:
-- An overall score calculated using the weighted average: (0.18 × Branding) + (0.13 × Design) + (0.13 × Messaging) + (0.13 × Usability) + (0.09 × Content Strategy) + (0.09 × Digital Presence) + (0.05 × Customer Experience) + (0.05 × Competitor Analysis) + (0.10 × Conversion Optimization) + (0.05 × Consistency & Compliance)
+- A base overall score (will be enhanced by the scoring system)
 - A brief summary of the website's strengths and key areas for improvement
 - A professional title for this audit report
+
+SCORING ENHANCEMENT FEATURES APPLIED:
+✓ Evidence-Weight Scoring: Scores adjusted based on evidence quality and quantifiable data
+✓ Industry Benchmark Calibration: Compared against ${businessContext.industry} industry standards
+✓ Confidence-Adjusted Scoring: Modified based on analysis confidence levels
+✓ Implementation Impact Weighting: Prioritized by difficulty and estimated impact
+✓ Quality Assurance Integration: Cross-validated for recommendation-score alignment
+✓ Dynamic Criteria Weighting: ${businessContext.industry}-specific importance weighting
+✓ Recommendation-Score Alignment: Ensures consistency between findings and scores
 
 Respond in this exact JSON format with ALL 10 sections:
 {
