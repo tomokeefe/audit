@@ -1265,7 +1265,7 @@ Best regards`);
                                   {section.name}
                                 </div>
                                 <div className="text-sm text-gray-600 font-normal">
-                                  {section.recommendations} recommendations • Score: {section.score}%
+                                  {section.recommendations} recommendations • Score: {typeof section.score === 'number' ? section.score.toFixed(1) : section.score}%
                                 </div>
                               </div>
                             </div>
