@@ -279,6 +279,10 @@ function CompetitiveMetrics({ auditData }: { auditData: any }) {
 
 // Function to parse and style audit section content
 function parseAuditContent(content: string) {
+  if (!content || typeof content !== 'string') {
+    return [];
+  }
+
   const lines = content
     .split("\n")
     .map((line) => line.trim())
@@ -293,27 +297,75 @@ function parseAuditContent(content: string) {
   let currentContent: string[] = [];
 
   for (const line of lines) {
-    // Check for both markdown (**Issues**:) and plain text (Issues:) formats
-    if (line.match(/(\*\*)?Issues?\*?\*?:?/i)) {
+    // Enhanced pattern matching for different heading formats
+    const issuePatterns = [
+      /(\*\*)?Issues?\s*(Found)?\*?\*?:?/i,
+      /(\*\*)?Problems?\*?\*?:?/i,
+      /(\*\*)?Areas?\s*for\s*Improvement\*?\*?:?/i,
+      /^Issues?:/i,
+      /^Problems?:/i
+    ];
+
+    const recommendationPatterns = [
+      /(\*\*)?Recommendations?\*?\*?:?/i,
+      /(\*\*)?Suggested?\s*Actions?\*?\*?:?/i,
+      /(\*\*)?Action\s*Items?\*?\*?:?/i,
+      /(\*\*)?Improvements?\*?\*?:?/i,
+      /^Recommendations?:/i,
+      /^Actions?:/i,
+      /^Improvements?:/i
+    ];
+
+    const overviewPatterns = [
+      /(\*\*)?Overview\*?\*?:?/i,
+      /(\*\*)?Analysis\*?\*?:?/i,
+      /(\*\*)?Summary\*?\*?:?/i,
+      /^Overview:/i,
+      /^Analysis:/i
+    ];
+
+    let sectionFound = false;
+
+    // Check for issues section
+    if (issuePatterns.some(pattern => pattern.test(line))) {
       if (currentContent.length > 0) {
         sections.push({ type: currentSection, content: [...currentContent] });
         currentContent = [];
       }
       currentSection = "issues";
-    } else if (line.match(/(\*\*)?Recommendations?\*?\*?:?/i)) {
+      sectionFound = true;
+    }
+    // Check for recommendations section
+    else if (recommendationPatterns.some(pattern => pattern.test(line))) {
       if (currentContent.length > 0) {
         sections.push({ type: currentSection, content: [...currentContent] });
         currentContent = [];
       }
       currentSection = "recommendations";
-    } else if (!line.match(/(\*\*)?(Issues?|Recommendations?)\*?\*?:?/i)) {
+      sectionFound = true;
+    }
+    // Check for overview section
+    else if (overviewPatterns.some(pattern => pattern.test(line))) {
+      if (currentContent.length > 0) {
+        sections.push({ type: currentSection, content: [...currentContent] });
+        currentContent = [];
+      }
+      currentSection = "overview";
+      sectionFound = true;
+    }
+
+    // If it's not a section header, add to current content
+    if (!sectionFound) {
       // Clean up markdown formatting and numbered lists
-      const cleanLine = line
+      let cleanLine = line
         .replace(/^\*\*|\*\*$/g, "") // Remove bold markdown
         .replace(/^\d+\.\s*/, "") // Remove numbered list formatting
+        .replace(/^[-*]\s*/, "") // Remove bullet points
+        .replace(/^>\s*/, "") // Remove quote markers
         .trim();
 
-      if (cleanLine) {
+      // Skip empty lines and section headers we might have missed
+      if (cleanLine && !cleanLine.match(/^(issues?|recommendations?|overview|analysis|summary):\s*$/i)) {
         currentContent.push(cleanLine);
       }
     }
@@ -322,6 +374,14 @@ function parseAuditContent(content: string) {
   // Add the final section
   if (currentContent.length > 0) {
     sections.push({ type: currentSection, content: currentContent });
+  }
+
+  // If no specific sections were found, treat entire content as overview
+  if (sections.length === 0 && content.trim()) {
+    sections.push({
+      type: "overview",
+      content: content.split('\n\n').filter(p => p.trim()).map(p => p.trim())
+    });
   }
 
   return sections;
