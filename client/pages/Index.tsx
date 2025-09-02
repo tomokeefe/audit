@@ -178,10 +178,14 @@ export default function Index() {
     try {
       // Test ping endpoint with timeout
       console.log("Testing /api/ping...");
+      console.log("Current location:", window.location.href);
+      console.log("Ping URL will be:", new URL("/api/ping", window.location.origin).href);
+
       try {
         const pingResponse = await fetchWithTimeout("/api/ping", 5000);
         console.log("Ping response status:", pingResponse.status);
         console.log("Ping response ok:", pingResponse.ok);
+        console.log("Ping response headers:", Object.fromEntries(pingResponse.headers.entries()));
 
         pingOk = pingResponse.ok;
         if (pingResponse.ok) {
