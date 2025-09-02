@@ -1819,6 +1819,10 @@ ${featureAdaptations.map(adaptation => `- ${adaptation}`).join('\n')}
 
 // Function to generate audit using Gemini
 async function generateAudit(websiteData: any) {
+  if (!genAI) {
+    throw new Error("Gemini AI not initialized - API key required");
+  }
+
   const model = genAI.getGenerativeModel({
     model: "gemini-1.5-flash",
     generationConfig: {
