@@ -778,7 +778,7 @@ export default function Index() {
                 <div className="flex-1 relative">
                   <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                   <Input
-                    type="url"
+                    type="text"
                     placeholder="Enter website URL to audit (e.g., example.com)"
                     value={url}
                     onChange={(e) => setUrl(e.target.value)}
