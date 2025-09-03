@@ -508,6 +508,12 @@ export default function Index() {
     e.preventDefault();
     if (!url.trim()) return;
 
+    // Normalize URL to support flexible formats (example.com, www.example.com, https://example.com)
+    let normalizedUrl = url.trim();
+    if (!normalizedUrl.match(/^https?:\/\//)) {
+      normalizedUrl = `https://${normalizedUrl}`;
+    }
+
     setIsLoading(true);
     setError("");
     setShowProgress(true);
@@ -525,7 +531,7 @@ export default function Index() {
         throw new Error("Unable to connect to server. Please try again.");
       }
 
-      const auditRequest: AuditRequest = { url };
+      const auditRequest: AuditRequest = { url: normalizedUrl };
 
       console.log("Starting audit request for:", url);
 
