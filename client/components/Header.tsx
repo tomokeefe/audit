@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 
+import { Link } from "react-router-dom";
+
 export default function Header() {
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
