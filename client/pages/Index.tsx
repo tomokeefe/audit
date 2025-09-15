@@ -1186,7 +1186,11 @@ export default function Index() {
 
           {/* URL Input Form */}
           <div className="mt-12 max-w-3xl mx-auto">
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-4"
+              style={{ pointerEvents: isLoading ? 'none' : 'auto' }}
+            >
               <div className="flex gap-4">
                 <div className="flex-1 relative">
                   <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
