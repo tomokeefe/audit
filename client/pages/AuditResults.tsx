@@ -1102,25 +1102,30 @@ Best regards`);
                   {auditData.description}
                 </p>
 
-                {/* Copy Link Button */}
-                <Button
-                  onClick={copyToClipboard}
-                  variant="outline"
-                  size="sm"
-                  className="border-orange-300 text-orange-700 hover:bg-orange-50"
-                >
-                  {copied ? (
-                    <>
-                      <Check className="h-4 w-4 mr-2" />
-                      Copied!
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-4 w-4 mr-2" />
-                      Copy Link
-                    </>
-                  )}
-                </Button>
+                {/* Sharing and Export Options */}
+                <div className="flex flex-wrap gap-3">
+                  <Button
+                    onClick={copyToClipboard}
+                    variant="outline"
+                    size="sm"
+                    className="border-orange-300 text-orange-700 hover:bg-orange-50"
+                  >
+                    {copied ? (
+                      <>
+                        <Check className="h-4 w-4 mr-2" />
+                        Copied!
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-4 w-4 mr-2" />
+                        Copy Link
+                      </>
+                    )}
+                  </Button>
+
+                  {/* PDF Export Component */}
+                  <PDFExport auditData={auditData} />
+                </div>
               </div>
 
               {/* Right Column - Large Score Panel */}
