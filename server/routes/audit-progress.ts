@@ -12,40 +12,40 @@ interface ProgressUpdate {
 
 // Progress tracking with Server-Sent Events
 export const handleAuditProgress = async (req: Request, res: Response) => {
-  console.log('=== EventSource Request Started ===');
-  console.log('Method:', req.method);
-  console.log('URL:', req.url);
-  console.log('Query params:', req.query);
-  console.log('Headers:', {
-    'user-agent': req.headers['user-agent'],
-    'accept': req.headers['accept'],
-    'cache-control': req.headers['cache-control']
+  console.log("=== EventSource Request Started ===");
+  console.log("Method:", req.method);
+  console.log("URL:", req.url);
+  console.log("Query params:", req.query);
+  console.log("Headers:", {
+    "user-agent": req.headers["user-agent"],
+    accept: req.headers["accept"],
+    "cache-control": req.headers["cache-control"],
   });
 
   // Set up SSE headers
   res.writeHead(200, {
-    'Content-Type': 'text/event-stream',
-    'Cache-Control': 'no-cache',
-    'Connection': 'keep-alive',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Cache-Control',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+    Connection: "keep-alive",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Cache-Control",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   });
 
-  console.log('SSE headers sent successfully');
+  console.log("SSE headers sent successfully");
 
   const sendProgress = (update: ProgressUpdate) => {
     try {
       if (!res.destroyed && res.writable) {
         const message = `data: ${JSON.stringify(update)}\n\n`;
-        console.log('Sending SSE message:', update.message);
+        console.log("Sending SSE message:", update.message);
         res.write(message);
         // Note: Express Response doesn't have flush method, but write should send immediately for SSE
       } else {
-        console.log('Cannot send SSE message - connection not writable');
+        console.log("Cannot send SSE message - connection not writable");
       }
     } catch (error) {
-      console.error('Error sending SSE message:', error);
+      console.error("Error sending SSE message:", error);
     }
   };
 
@@ -54,31 +54,31 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
   const cleanup = () => {
     if (!isCleanedUp && !res.destroyed) {
       isCleanedUp = true;
-      console.log('Cleaning up EventSource connection');
+      console.log("Cleaning up EventSource connection");
       res.end();
     }
   };
 
   // Send immediate connection test
   sendProgress({
-    step: 'connection',
+    step: "connection",
     progress: 0,
-    message: 'EventSource connection established'
+    message: "EventSource connection established",
   });
 
   // Set up connection close handlers (but don't cleanup too aggressively)
-  req.on('close', () => {
-    console.log('EventSource request closed by client');
+  req.on("close", () => {
+    console.log("EventSource request closed by client");
     cleanup();
   });
-  req.on('aborted', () => {
-    console.log('EventSource request aborted');
+  req.on("aborted", () => {
+    console.log("EventSource request aborted");
     cleanup();
   });
 
   // Don't cleanup on response close - let the audit complete
-  res.on('error', (error) => {
-    console.log('EventSource response error:', error);
+  res.on("error", (error) => {
+    console.log("EventSource response error:", error);
     cleanup();
   });
 
@@ -87,14 +87,16 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
     const url = req.query.url as string;
     const sessionId = req.query.session as string;
 
-    console.log(`Starting progress audit for session ${sessionId} with URL: ${url}`);
+    console.log(
+      `Starting progress audit for session ${sessionId} with URL: ${url}`,
+    );
 
     if (!url) {
       sendProgress({
-        step: 'validation',
+        step: "validation",
         progress: 0,
-        message: 'URL is required',
-        error: 'URL is required'
+        message: "URL is required",
+        error: "URL is required",
       });
       cleanup();
       return;
@@ -103,10 +105,10 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
     // Check API key
     if (!process.env.GEMINI_API_KEY) {
       sendProgress({
-        step: 'validation',
+        step: "validation",
         progress: 0,
-        message: 'Server configuration error',
-        error: 'Server configuration error. Please contact support.'
+        message: "Server configuration error",
+        error: "Server configuration error. Please contact support.",
       });
       res.end();
       return;
@@ -114,153 +116,215 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
 
     // Validate URL
     sendProgress({
-      step: 'validation',
+      step: "validation",
       progress: 5,
-      message: 'Validating URL format...'
+      message: "Validating URL format...",
     });
 
     try {
       new URL(url);
     } catch {
       sendProgress({
-        step: 'validation',
+        step: "validation",
         progress: 5,
-        message: 'Invalid URL format',
-        error: 'Invalid URL format. Please enter a valid URL starting with http:// or https://'
+        message: "Invalid URL format",
+        error:
+          "Invalid URL format. Please enter a valid URL starting with http:// or https://",
       });
       res.end();
       return;
     }
 
     sendProgress({
-      step: 'validation',
+      step: "validation",
       progress: 10,
-      message: 'URL validated successfully'
+      message: "URL validated successfully",
     });
 
     // Step 1: Website Discovery and Crawling
     sendProgress({
-      step: 'crawling',
+      step: "crawling",
       progress: 15,
-      message: 'Starting website discovery and content extraction...'
+      message: "Starting website discovery and content extraction...",
     });
 
     // Simulate realistic crawling progress
     const crawlingSteps = [
-      { progress: 20, message: 'Connecting to website...', delay: 1000 },
-      { progress: 25, message: 'Downloading main page content...', delay: 2000 },
-      { progress: 30, message: 'Analyzing page structure...', delay: 1500 },
-      { progress: 35, message: 'Extracting navigation and links...', delay: 1000 },
-      { progress: 40, message: 'Discovering additional pages...', delay: 2000 },
-      { progress: 45, message: 'Analyzing multi-page content...', delay: 1500 }
+      { progress: 20, message: "Connecting to website...", delay: 1000 },
+      {
+        progress: 25,
+        message: "Downloading main page content...",
+        delay: 2000,
+      },
+      { progress: 30, message: "Analyzing page structure...", delay: 1500 },
+      {
+        progress: 35,
+        message: "Extracting navigation and links...",
+        delay: 1000,
+      },
+      { progress: 40, message: "Discovering additional pages...", delay: 2000 },
+      { progress: 45, message: "Analyzing multi-page content...", delay: 1500 },
     ];
 
     for (const step of crawlingSteps) {
-      await new Promise(resolve => setTimeout(resolve, step.delay));
+      await new Promise((resolve) => setTimeout(resolve, step.delay));
       sendProgress({
-        step: 'crawling',
+        step: "crawling",
         progress: step.progress,
-        message: step.message
+        message: step.message,
       });
     }
 
     // Step 2: AI Analysis with detailed progress
     const analysisSteps = [
-      { progress: 50, message: 'Initializing AI-powered brand analysis...', delay: 1000 },
-      { progress: 55, message: 'Analyzing brand consistency and messaging...', delay: 2000 },
-      { progress: 60, message: 'Evaluating design and visual elements...', delay: 1500 },
-      { progress: 65, message: 'Assessing user experience and usability...', delay: 1500 },
-      { progress: 70, message: 'Reviewing content strategy and effectiveness...', delay: 1500 },
-      { progress: 75, message: 'Analyzing digital presence and SEO factors...', delay: 1500 },
-      { progress: 80, message: 'Evaluating customer experience touchpoints...', delay: 1000 },
-      { progress: 85, message: 'Conducting competitive analysis and benchmarking...', delay: 2000 },
-      { progress: 90, message: 'Calculating evidence-weighted scores...', delay: 1000 },
-      { progress: 95, message: 'Generating actionable recommendations...', delay: 1500 }
+      {
+        progress: 50,
+        message: "Initializing AI-powered brand analysis...",
+        delay: 1000,
+      },
+      {
+        progress: 55,
+        message: "Analyzing brand consistency and messaging...",
+        delay: 2000,
+      },
+      {
+        progress: 60,
+        message: "Evaluating design and visual elements...",
+        delay: 1500,
+      },
+      {
+        progress: 65,
+        message: "Assessing user experience and usability...",
+        delay: 1500,
+      },
+      {
+        progress: 70,
+        message: "Reviewing content strategy and effectiveness...",
+        delay: 1500,
+      },
+      {
+        progress: 75,
+        message: "Analyzing digital presence and SEO factors...",
+        delay: 1500,
+      },
+      {
+        progress: 80,
+        message: "Evaluating customer experience touchpoints...",
+        delay: 1000,
+      },
+      {
+        progress: 85,
+        message: "Conducting competitive analysis and benchmarking...",
+        delay: 2000,
+      },
+      {
+        progress: 90,
+        message: "Calculating evidence-weighted scores...",
+        delay: 1000,
+      },
+      {
+        progress: 95,
+        message: "Generating actionable recommendations...",
+        delay: 1500,
+      },
     ];
 
     for (const step of analysisSteps) {
-      await new Promise(resolve => setTimeout(resolve, step.delay));
+      await new Promise((resolve) => setTimeout(resolve, step.delay));
       sendProgress({
-        step: 'analysis',
+        step: "analysis",
         progress: step.progress,
-        message: step.message
+        message: step.message,
       });
     }
 
     // Step 3: Perform actual audit analysis
     sendProgress({
-      step: 'finalizing',
+      step: "finalizing",
       progress: 96,
-      message: 'Performing comprehensive analysis...'
+      message: "Performing comprehensive analysis...",
     });
 
     // Call the actual audit functions to get real results
-    const { scrapeWebsite, generateAudit, storeAuditResult } = await import('./audit');
+    const { scrapeWebsite, generateAudit, storeAuditResult } = await import(
+      "./audit"
+    );
 
     // Perform the actual audit
     const websiteData = await scrapeWebsite(url);
 
     sendProgress({
-      step: 'finalizing',
+      step: "finalizing",
       progress: 97,
-      message: 'Processing analysis results...'
+      message: "Processing analysis results...",
     });
 
     const auditResult = await generateAudit(websiteData);
 
     sendProgress({
-      step: 'finalizing',
+      step: "finalizing",
       progress: 98,
-      message: 'Storing audit results...'
+      message: "Storing audit results...",
     });
 
     // Store the result
     await storeAuditResult(auditResult);
 
     sendProgress({
-      step: 'completed',
+      step: "completed",
       progress: 100,
-      message: 'Audit completed successfully!',
+      message: "Audit completed successfully!",
       data: auditResult,
-      completed: true
+      completed: true,
     });
 
     // Give time for the final message to be sent before cleanup
     setTimeout(() => {
       cleanup();
     }, 1000);
-
   } catch (error) {
     console.error("Audit progress error:", error);
 
     let errorMessage = "Internal server error";
     if (error instanceof Error) {
-      if (error.message.includes("overloaded") || error.message.includes("503")) {
-        errorMessage = "AI service is temporarily overloaded. Using fallback analysis mode...";
+      if (
+        error.message.includes("overloaded") ||
+        error.message.includes("503")
+      ) {
+        errorMessage =
+          "AI service is temporarily overloaded. Using fallback analysis mode...";
 
         // Try to provide a fallback audit
         try {
-          const { generateFallbackAudit } = await import('./audit');
+          const { generateFallbackAudit } = await import("./audit");
           const auditUrl = req.query.url as string;
-          const fallbackData = { url: auditUrl ? decodeURIComponent(auditUrl) : 'unknown', fallbackUsed: true };
+          const fallbackData = {
+            url: auditUrl ? decodeURIComponent(auditUrl) : "unknown",
+            fallbackUsed: true,
+          };
           const auditResult = generateFallbackAudit(fallbackData);
 
           sendProgress({
-            step: 'completed',
+            step: "completed",
             progress: 100,
-            message: 'Audit completed with fallback analysis!',
+            message: "Audit completed with fallback analysis!",
             data: auditResult,
-            completed: true
+            completed: true,
           });
 
           setTimeout(() => cleanup(), 1000);
           return;
         } catch (fallbackError) {
           console.error("Fallback audit failed:", fallbackError);
-          errorMessage = "Service temporarily unavailable. Please try again in a few minutes.";
+          errorMessage =
+            "Service temporarily unavailable. Please try again in a few minutes.";
         }
-      } else if (error.message.includes("fetch") || error.message.includes("timeout")) {
-        errorMessage = "Unable to access the website. Please check the URL and try again.";
+      } else if (
+        error.message.includes("fetch") ||
+        error.message.includes("timeout")
+      ) {
+        errorMessage =
+          "Unable to access the website. Please check the URL and try again.";
       } else if (error.message.includes("Invalid response format")) {
         errorMessage = "AI service error. Please try again in a moment.";
       } else {
@@ -269,22 +333,23 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
     }
 
     sendProgress({
-      step: 'error',
+      step: "error",
       progress: 0,
-      message: 'Audit failed',
-      error: errorMessage
+      message: "Audit failed",
+      error: errorMessage,
     });
 
     cleanup();
   }
 };
 
-
 // Standard audit endpoint (non-SSE) for backwards compatibility
 export const handleAuditStandard = async (req: Request, res: Response) => {
   try {
     // Import necessary functions from audit module
-    const { scrapeWebsite, generateAudit, storeAuditResult } = await import('./audit');
+    const { scrapeWebsite, generateAudit, storeAuditResult } = await import(
+      "./audit"
+    );
 
     const { url } = req.body as AuditRequest;
 
@@ -294,7 +359,9 @@ export const handleAuditStandard = async (req: Request, res: Response) => {
 
     // Check API key
     if (!process.env.GEMINI_API_KEY) {
-      return res.status(500).json({ error: "Server configuration error. Please contact support." });
+      return res
+        .status(500)
+        .json({ error: "Server configuration error. Please contact support." });
     }
 
     // Validate URL format
@@ -302,7 +369,8 @@ export const handleAuditStandard = async (req: Request, res: Response) => {
       new URL(url);
     } catch {
       return res.status(400).json({
-        error: "Invalid URL format. Please enter a valid URL starting with http:// or https://",
+        error:
+          "Invalid URL format. Please enter a valid URL starting with http:// or https://",
       });
     }
 

@@ -1,7 +1,13 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { AlertTriangle, RefreshCw, Home, Bug } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { Component, ErrorInfo, ReactNode } from "react";
+import { AlertTriangle, RefreshCw, Home, Bug } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 interface Props {
   children: ReactNode;
@@ -21,7 +27,7 @@ class ErrorBoundary extends Component<Props, State> {
     hasError: false,
     error: null,
     errorInfo: null,
-    errorId: '',
+    errorId: "",
   };
 
   public static getDerivedStateFromError(error: Error): State {
@@ -35,8 +41,8 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
-    
+    console.error("ErrorBoundary caught an error:", error, errorInfo);
+
     this.setState({
       error,
       errorInfo,
@@ -59,20 +65,22 @@ class ErrorBoundary extends Component<Props, State> {
         timestamp: new Date().toISOString(),
         userAgent: navigator.userAgent,
         url: window.location.href,
-        userId: 'anonymous', // Replace with actual user ID if available
+        userId: "anonymous", // Replace with actual user ID if available
       };
 
       // Store in localStorage for now (in production, send to monitoring service)
-      const existingErrors = JSON.parse(localStorage.getItem('app_errors') || '[]');
+      const existingErrors = JSON.parse(
+        localStorage.getItem("app_errors") || "[]",
+      );
       existingErrors.push(errorReport);
-      
+
       // Keep only last 10 errors to prevent storage bloat
       const recentErrors = existingErrors.slice(-10);
-      localStorage.setItem('app_errors', JSON.stringify(recentErrors));
+      localStorage.setItem("app_errors", JSON.stringify(recentErrors));
 
-      console.log('Error logged:', errorReport);
+      console.log("Error logged:", errorReport);
     } catch (loggingError) {
-      console.error('Failed to log error:', loggingError);
+      console.error("Failed to log error:", loggingError);
     }
   };
 
@@ -81,22 +89,22 @@ class ErrorBoundary extends Component<Props, State> {
       hasError: false,
       error: null,
       errorInfo: null,
-      errorId: '',
+      errorId: "",
     });
   };
 
   private handleReportError = () => {
     const { error, errorInfo } = this.state;
-    
+
     const errorDetails = {
-      message: error?.message || 'Unknown error',
-      stack: error?.stack || 'No stack trace',
-      componentStack: errorInfo?.componentStack || 'No component stack',
+      message: error?.message || "Unknown error",
+      stack: error?.stack || "No stack trace",
+      componentStack: errorInfo?.componentStack || "No component stack",
       timestamp: new Date().toISOString(),
       url: window.location.href,
     };
 
-    const subject = encodeURIComponent('Brand Audit App Error Report');
+    const subject = encodeURIComponent("Brand Audit App Error Report");
     const body = encodeURIComponent(`Error Report:
 
 Message: ${errorDetails.message}
@@ -137,12 +145,13 @@ Please include any additional context about what you were doing when this error 
                 Something went wrong
               </CardTitle>
               <CardDescription>
-                An unexpected error occurred while loading this page. We've been notified and are working to fix it.
+                An unexpected error occurred while loading this page. We've been
+                notified and are working to fix it.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Error Details (only show in development) */}
-              {process.env.NODE_ENV === 'development' && this.state.error && (
+              {process.env.NODE_ENV === "development" && this.state.error && (
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                   <h4 className="text-sm font-medium text-red-800 mb-2">
                     Error Details (Development Only)
@@ -171,7 +180,7 @@ Please include any additional context about what you were doing when this error 
                   Try Again
                 </Button>
                 <Button
-                  onClick={() => window.location.href = '/'}
+                  onClick={() => (window.location.href = "/")}
                   variant="outline"
                   className="flex-1 flex items-center justify-center gap-2"
                 >
@@ -212,7 +221,7 @@ export default ErrorBoundary;
 export const withErrorBoundary = <P extends object>(
   Component: React.ComponentType<P>,
   fallback?: ReactNode,
-  onError?: (error: Error, errorInfo: ErrorInfo) => void
+  onError?: (error: Error, errorInfo: ErrorInfo) => void,
 ) => {
   const WrappedComponent = (props: P) => (
     <ErrorBoundary fallback={fallback} onError={onError}>
@@ -221,7 +230,7 @@ export const withErrorBoundary = <P extends object>(
   );
 
   WrappedComponent.displayName = `withErrorBoundary(${Component.displayName || Component.name})`;
-  
+
   return WrappedComponent;
 };
 
@@ -238,16 +247,18 @@ export const reportError = (error: Error, context?: Record<string, any>) => {
 
   try {
     // Store in localStorage for now (in production, send to monitoring service)
-    const existingErrors = JSON.parse(localStorage.getItem('app_errors') || '[]');
+    const existingErrors = JSON.parse(
+      localStorage.getItem("app_errors") || "[]",
+    );
     existingErrors.push(errorReport);
-    
+
     // Keep only last 10 errors to prevent storage bloat
     const recentErrors = existingErrors.slice(-10);
-    localStorage.setItem('app_errors', JSON.stringify(recentErrors));
+    localStorage.setItem("app_errors", JSON.stringify(recentErrors));
 
-    console.error('Error reported:', errorReport);
+    console.error("Error reported:", errorReport);
   } catch (loggingError) {
-    console.error('Failed to report error:', loggingError);
+    console.error("Failed to report error:", loggingError);
   }
 };
 
@@ -258,10 +269,12 @@ export const useErrorMonitoring = () => {
   React.useEffect(() => {
     const loadErrors = () => {
       try {
-        const storedErrors = JSON.parse(localStorage.getItem('app_errors') || '[]');
+        const storedErrors = JSON.parse(
+          localStorage.getItem("app_errors") || "[]",
+        );
         setErrors(storedErrors);
       } catch (error) {
-        console.error('Failed to load error history:', error);
+        console.error("Failed to load error history:", error);
       }
     };
 
@@ -269,31 +282,36 @@ export const useErrorMonitoring = () => {
 
     // Set up global error handlers
     const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-      const error = new Error(event.reason?.message || 'Unhandled Promise Rejection');
-      reportError(error, { type: 'unhandledRejection', reason: event.reason });
+      const error = new Error(
+        event.reason?.message || "Unhandled Promise Rejection",
+      );
+      reportError(error, { type: "unhandledRejection", reason: event.reason });
     };
 
     const handleError = (event: ErrorEvent) => {
       const error = new Error(event.message);
-      reportError(error, { 
-        type: 'javascriptError', 
+      reportError(error, {
+        type: "javascriptError",
         filename: event.filename,
         lineno: event.lineno,
-        colno: event.colno 
+        colno: event.colno,
       });
     };
 
-    window.addEventListener('unhandledrejection', handleUnhandledRejection);
-    window.addEventListener('error', handleError);
+    window.addEventListener("unhandledrejection", handleUnhandledRejection);
+    window.addEventListener("error", handleError);
 
     return () => {
-      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
-      window.removeEventListener('error', handleError);
+      window.removeEventListener(
+        "unhandledrejection",
+        handleUnhandledRejection,
+      );
+      window.removeEventListener("error", handleError);
     };
   }, []);
 
   const clearErrors = () => {
-    localStorage.removeItem('app_errors');
+    localStorage.removeItem("app_errors");
     setErrors([]);
   };
 

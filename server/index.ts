@@ -3,7 +3,10 @@ import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import { handleAudit, handleDemoAudit } from "./routes/audit";
-import { handleAuditProgress, handleAuditStandard } from "./routes/audit-progress";
+import {
+  handleAuditProgress,
+  handleAuditStandard,
+} from "./routes/audit-progress";
 import {
   storeAudit,
   getAudit,

@@ -1,29 +1,32 @@
-import React from 'react';
-import { AuditResponse } from '@shared/api';
-import { Button } from '@/components/ui/button';
-import { Download, FileText, Mail, Share2 } from 'lucide-react';
+import React from "react";
+import { AuditResponse } from "@shared/api";
+import { Button } from "@/components/ui/button";
+import { Download, FileText, Mail, Share2 } from "lucide-react";
 
 interface PDFExportProps {
   auditData: AuditResponse;
   className?: string;
 }
 
-export const PDFExport: React.FC<PDFExportProps> = ({ auditData, className = '' }) => {
+export const PDFExport: React.FC<PDFExportProps> = ({
+  auditData,
+  className = "",
+}) => {
   // Generate PDF using browser's print functionality
   const generatePDF = () => {
     // Create a new window with the audit data formatted for printing
-    const printWindow = window.open('', '_blank', 'width=800,height=1000');
-    
+    const printWindow = window.open("", "_blank", "width=800,height=1000");
+
     if (!printWindow) {
-      alert('Please allow popups to generate PDF');
+      alert("Please allow popups to generate PDF");
       return;
     }
 
     const printContent = generatePrintContent(auditData);
-    
+
     printWindow.document.write(printContent);
     printWindow.document.close();
-    
+
     // Wait for content to load, then trigger print
     printWindow.onload = () => {
       setTimeout(() => {
@@ -38,28 +41,30 @@ export const PDFExport: React.FC<PDFExportProps> = ({ auditData, className = '' 
     try {
       // Create a formatted HTML report
       const reportContent = generateDetailedReport(auditData);
-      
+
       // Create a blob and download it
-      const blob = new Blob([reportContent], { type: 'text/html' });
+      const blob = new Blob([reportContent], { type: "text/html" });
       const url = URL.createObjectURL(blob);
-      
-      const link = document.createElement('a');
+
+      const link = document.createElement("a");
       link.href = url;
-      link.download = `${auditData.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_audit_report.html`;
+      link.download = `${auditData.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}_audit_report.html`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
+
       URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Error generating report:', error);
-      alert('Error generating report. Please try again.');
+      console.error("Error generating report:", error);
+      alert("Error generating report. Please try again.");
     }
   };
 
   // Email the report
   const emailReport = () => {
-    const subject = encodeURIComponent(`Brand Audit Report: ${auditData.title}`);
+    const subject = encodeURIComponent(
+      `Brand Audit Report: ${auditData.title}`,
+    );
     const body = encodeURIComponent(`Hi,
 
 I'm sharing the brand audit report for ${auditData.title}:
@@ -68,9 +73,13 @@ Overall Score: ${auditData.overallScore}%
 Audit Date: ${auditData.date}
 
 Key Findings:
-${auditData.sections.slice(0, 3).map(section => 
-  `• ${section.name}: ${section.score}% (${section.recommendations} recommendations)`
-).join('\n')}
+${auditData.sections
+  .slice(0, 3)
+  .map(
+    (section) =>
+      `• ${section.name}: ${section.score}% (${section.recommendations} recommendations)`,
+  )
+  .join("\n")}
 
 You can view the full interactive report here: ${window.location.href}
 
@@ -90,7 +99,7 @@ Best regards`);
         <FileText className="h-4 w-4" />
         Print Report
       </Button>
-      
+
       <Button
         onClick={generateShareableReport}
         variant="outline"
@@ -100,7 +109,7 @@ Best regards`);
         <Download className="h-4 w-4" />
         Download HTML
       </Button>
-      
+
       <Button
         onClick={emailReport}
         variant="outline"
@@ -117,7 +126,7 @@ Best regards`);
 // Generate print-optimized content
 function generatePrintContent(auditData: AuditResponse): string {
   const getScoreBadge = (score: number) => {
-    const color = score >= 80 ? '#22c55e' : score >= 60 ? '#eab308' : '#ef4444';
+    const color = score >= 80 ? "#22c55e" : score >= 60 ? "#eab308" : "#ef4444";
     return `<span style="background-color: ${color}; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 14px;">${score}%</span>`;
   };
 
@@ -258,12 +267,14 @@ function generatePrintContent(auditData: AuditResponse): string {
     
     <div class="summary-section">
         <h2>Executive Summary</h2>
-        <p>${auditData.summary || 'This comprehensive brand audit evaluates key aspects of digital presence and provides actionable recommendations for improvement.'}</p>
+        <p>${auditData.summary || "This comprehensive brand audit evaluates key aspects of digital presence and provides actionable recommendations for improvement."}</p>
     </div>
     
     <h2>Section Scores Overview</h2>
     <div class="sections-grid">
-        ${auditData.sections.map(section => `
+        ${auditData.sections
+          .map(
+            (section) => `
             <div class="section-card">
                 <div class="section-header">
                     <div class="section-title">${section.name}</div>
@@ -273,7 +284,9 @@ function generatePrintContent(auditData: AuditResponse): string {
                     ${section.issues} issues found • ${section.recommendations} recommendations
                 </div>
             </div>
-        `).join('')}
+        `,
+          )
+          .join("")}
     </div>
     
     <div class="page-break"></div>
@@ -281,7 +294,9 @@ function generatePrintContent(auditData: AuditResponse): string {
     <div class="details-section">
         <h1>Detailed Analysis & Recommendations</h1>
         
-        ${auditData.sections.map(section => `
+        ${auditData.sections
+          .map(
+            (section) => `
             <div class="section-details">
                 <h2>${section.name} ${getScoreBadge(section.score)}</h2>
                 <div style="margin-bottom: 10px;">
@@ -289,10 +304,12 @@ function generatePrintContent(auditData: AuditResponse): string {
                     <strong>Recommendations:</strong> ${section.recommendations}
                 </div>
                 <div style="white-space: pre-wrap; text-align: justify;">
-                    ${section.details || 'Detailed analysis and recommendations for this section.'}
+                    ${section.details || "Detailed analysis and recommendations for this section."}
                 </div>
             </div>
-        `).join('')}
+        `,
+          )
+          .join("")}
     </div>
     
     <div class="footer">
@@ -473,15 +490,20 @@ function generateDetailedReport(auditData: AuditResponse): string {
         
         <div class="summary">
             <h2 style="color: #0EA5E9; margin-top: 0;">Executive Summary</h2>
-            <p>${auditData.summary || 'This comprehensive brand audit provides detailed analysis and actionable recommendations to enhance your digital presence and brand effectiveness.'}</p>
+            <p>${auditData.summary || "This comprehensive brand audit provides detailed analysis and actionable recommendations to enhance your digital presence and brand effectiveness."}</p>
         </div>
         
         <h2>Section Performance Overview</h2>
         <div class="sections-overview">
-            ${auditData.sections.map(section => {
-              const scoreClass = section.score >= 80 ? 'score-excellent' : 
-                                section.score >= 60 ? 'score-good' : 'score-needs-improvement';
-              return `
+            ${auditData.sections
+              .map((section) => {
+                const scoreClass =
+                  section.score >= 80
+                    ? "score-excellent"
+                    : section.score >= 60
+                      ? "score-good"
+                      : "score-needs-improvement";
+                return `
                 <div class="section-card">
                     <div class="section-header">
                         <div class="section-title">${section.name}</div>
@@ -493,7 +515,8 @@ function generateDetailedReport(auditData: AuditResponse): string {
                     </div>
                 </div>
               `;
-            }).join('')}
+              })
+              .join("")}
         </div>
         
         <div class="detailed-analysis">
@@ -501,10 +524,15 @@ function generateDetailedReport(auditData: AuditResponse): string {
                 Detailed Analysis & Recommendations
             </h1>
             
-            ${auditData.sections.map(section => {
-              const scoreClass = section.score >= 80 ? 'score-excellent' : 
-                                section.score >= 60 ? 'score-good' : 'score-needs-improvement';
-              return `
+            ${auditData.sections
+              .map((section) => {
+                const scoreClass =
+                  section.score >= 80
+                    ? "score-excellent"
+                    : section.score >= 60
+                      ? "score-good"
+                      : "score-needs-improvement";
+                return `
                 <div class="section-detail">
                     <h2>${section.name} 
                         <span class="score-badge ${scoreClass}" style="float: right;">${section.score}%</span>
@@ -513,11 +541,12 @@ function generateDetailedReport(auditData: AuditResponse): string {
                         <strong>Analysis Summary:</strong> ${section.issues} issues found, ${section.recommendations} recommendations provided
                     </div>
                     <div class="analysis-content">
-                        ${section.details || 'Detailed analysis and strategic recommendations for this section will help improve your brand performance and digital presence.'}
+                        ${section.details || "Detailed analysis and strategic recommendations for this section will help improve your brand performance and digital presence."}
                     </div>
                 </div>
               `;
-            }).join('')}
+              })
+              .join("")}
         </div>
         
         <div class="footer">

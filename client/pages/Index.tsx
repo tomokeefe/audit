@@ -23,7 +23,10 @@ import {
   Activity,
 } from "lucide-react";
 import ErrorState, { useErrorHandler } from "@/components/ErrorState";
-import { debugEventSource, isEventSourceSupported } from "@/utils/eventSourceTest";
+import {
+  debugEventSource,
+  isEventSourceSupported,
+} from "@/utils/eventSourceTest";
 import {
   BarChart,
   Bar,
@@ -74,31 +77,37 @@ export default function Index() {
   const navigate = useNavigate();
 
   // Enhanced error handling
-  const { error: globalError, isRetrying, handleError, clearError, retry } = useErrorHandler();
+  const {
+    error: globalError,
+    isRetrying,
+    handleError,
+    clearError,
+    retry,
+  } = useErrorHandler();
 
   // Debug function for testing
   const debugFormSubmission = () => {
-    console.log('🐛 DEBUG: Testing form submission');
-    console.log('URL state:', url);
-    console.log('isLoading state:', isLoading);
-    console.log('Current EventSource ref:', currentEventSourceRef.current);
+    console.log("🐛 DEBUG: Testing form submission");
+    console.log("URL state:", url);
+    console.log("isLoading state:", isLoading);
+    console.log("Current EventSource ref:", currentEventSourceRef.current);
 
     // Test EventSource support
-    console.log('EventSource supported:', typeof EventSource !== 'undefined');
+    console.log("EventSource supported:", typeof EventSource !== "undefined");
 
     // Test URL normalization
     let testUrl = url.trim();
     if (!testUrl.match(/^https?:\/\//)) {
       testUrl = `https://${testUrl}`;
     }
-    console.log('Normalized URL would be:', testUrl);
+    console.log("Normalized URL would be:", testUrl);
 
     // Test if we can manually trigger handleSubmit
-    console.log('🧪 Testing manual form submission...');
-    const fakeEvent = new Event('submit');
-    Object.defineProperty(fakeEvent, 'preventDefault', {
-      value: () => console.log('preventDefault called'),
-      writable: false
+    console.log("🧪 Testing manual form submission...");
+    const fakeEvent = new Event("submit");
+    Object.defineProperty(fakeEvent, "preventDefault", {
+      value: () => console.log("preventDefault called"),
+      writable: false,
     });
     handleSubmit(fakeEvent as any);
   };
@@ -106,8 +115,11 @@ export default function Index() {
   // Cleanup EventSource on component unmount
   useEffect(() => {
     return () => {
-      if (currentEventSourceRef.current && currentEventSourceRef.current.readyState !== EventSource.CLOSED) {
-        console.log('Cleaning up EventSource on component unmount');
+      if (
+        currentEventSourceRef.current &&
+        currentEventSourceRef.current.readyState !== EventSource.CLOSED
+      ) {
+        console.log("Cleaning up EventSource on component unmount");
         currentEventSourceRef.current.close();
         currentEventSourceRef.current = null;
       }
@@ -126,8 +138,8 @@ export default function Index() {
         const response = await fetch("/api/audits", {
           signal: controller.signal,
           headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
+            Accept: "application/json",
+            "Content-Type": "application/json",
           },
         });
 
@@ -136,7 +148,7 @@ export default function Index() {
         if (!response.ok) {
           const errorMsg = `API returned ${response.status}: ${response.statusText}`;
           console.warn(errorMsg);
-          setApiStatus(prev => ({ ...prev, audits: false, error: errorMsg }));
+          setApiStatus((prev) => ({ ...prev, audits: false, error: errorMsg }));
           // Handle non-200 responses gracefully
           setRecentAudits([]);
           setAllAudits([]);
@@ -148,7 +160,11 @@ export default function Index() {
           data = await response.json();
         } catch (jsonError) {
           console.error("Failed to parse audits response as JSON:", jsonError);
-          setApiStatus(prev => ({ ...prev, audits: false, error: "Invalid response format" }));
+          setApiStatus((prev) => ({
+            ...prev,
+            audits: false,
+            error: "Invalid response format",
+          }));
           setRecentAudits([]);
           setAllAudits([]);
           return;
@@ -157,7 +173,7 @@ export default function Index() {
         const audits = data.audits || [];
 
         // Update API status to reflect success
-        setApiStatus(prev => ({ ...prev, audits: true, error: undefined }));
+        setApiStatus((prev) => ({ ...prev, audits: true, error: undefined }));
 
         // Store all audits for analytics
         setAllAudits(audits);
@@ -171,13 +187,13 @@ export default function Index() {
           .slice(0, 3);
         setRecentAudits(recent);
 
-        console.log(`Loaded ${audits.length} audits, showing ${recent.length} recent`);
-
+        console.log(
+          `Loaded ${audits.length} audits, showing ${recent.length} recent`,
+        );
       } catch (fetchError) {
         clearTimeout(timeoutId);
         throw fetchError; // Re-throw to be handled by outer catch
       }
-
     } catch (error) {
       console.error("Failed to load recent audits:", error);
 
@@ -187,9 +203,12 @@ export default function Index() {
         // Use enhanced error handling for critical API failures
         handleError(error);
 
-        if (error.name === 'AbortError') {
+        if (error.name === "AbortError") {
           errorMsg = "Request timed out while loading audits";
-        } else if (error.message.includes("fetch") || error.message.includes("network")) {
+        } else if (
+          error.message.includes("fetch") ||
+          error.message.includes("network")
+        ) {
           errorMsg = "Network error: Unable to connect to the API server";
         } else {
           errorMsg = error.message;
@@ -198,7 +217,7 @@ export default function Index() {
         handleError(errorMsg);
       }
 
-      setApiStatus(prev => ({ ...prev, audits: false, error: errorMsg }));
+      setApiStatus((prev) => ({ ...prev, audits: false, error: errorMsg }));
       // Fallback to empty array on error
       setRecentAudits([]);
       setAllAudits([]);
@@ -223,8 +242,8 @@ export default function Index() {
         const response = await fetch(url, {
           signal: controller.signal,
           headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
+            Accept: "application/json",
+            "Content-Type": "application/json",
           },
         });
         clearTimeout(timeoutId);
@@ -239,13 +258,19 @@ export default function Index() {
       // Test ping endpoint with timeout
       console.log("Testing /api/ping...");
       console.log("Current location:", window.location.href);
-      console.log("Ping URL will be:", new URL("/api/ping", window.location.origin).href);
+      console.log(
+        "Ping URL will be:",
+        new URL("/api/ping", window.location.origin).href,
+      );
 
       try {
         const pingResponse = await fetchWithTimeout("/api/ping", 5000);
         console.log("Ping response status:", pingResponse.status);
         console.log("Ping response ok:", pingResponse.ok);
-        console.log("Ping response headers:", Object.fromEntries(pingResponse.headers.entries()));
+        console.log(
+          "Ping response headers:",
+          Object.fromEntries(pingResponse.headers.entries()),
+        );
 
         pingOk = pingResponse.ok;
         if (pingResponse.ok) {
@@ -262,9 +287,9 @@ export default function Index() {
       } catch (pingError) {
         console.error("Ping request failed:", pingError);
         if (pingError instanceof Error) {
-          if (pingError.name === 'AbortError') {
+          if (pingError.name === "AbortError") {
             errorMsg = "Ping request timed out";
-          } else if (pingError.message.includes('fetch')) {
+          } else if (pingError.message.includes("fetch")) {
             errorMsg = "Network error: Cannot reach API server";
           } else {
             errorMsg = `Ping error: ${pingError.message}`;
@@ -274,14 +299,20 @@ export default function Index() {
 
       // Test audits endpoint only if ping succeeded or with retry
       console.log("Testing /api/audits...");
-      console.log("Audits URL will be:", new URL("/api/audits", window.location.origin).href);
+      console.log(
+        "Audits URL will be:",
+        new URL("/api/audits", window.location.origin).href,
+      );
 
       try {
         const auditsResponse = await fetchWithTimeout("/api/audits", 5000);
         console.log("Audits response status:", auditsResponse.status);
         console.log("Audits response ok:", auditsResponse.ok);
         console.log("Audits response url:", auditsResponse.url);
-        console.log("Audits response headers:", Object.fromEntries(auditsResponse.headers.entries()));
+        console.log(
+          "Audits response headers:",
+          Object.fromEntries(auditsResponse.headers.entries()),
+        );
 
         auditsOk = auditsResponse.ok;
         if (auditsResponse.ok) {
@@ -293,19 +324,23 @@ export default function Index() {
             // Still consider it successful if status is ok
           }
         } else {
-          const errorText = await auditsResponse.text().catch(() => 'Unable to read error response');
+          const errorText = await auditsResponse
+            .text()
+            .catch(() => "Unable to read error response");
           console.log("Audits error response:", errorText);
-          if (!errorMsg) { // Only set if ping didn't already fail
+          if (!errorMsg) {
+            // Only set if ping didn't already fail
             errorMsg = `Audits API error: ${auditsResponse.status} ${auditsResponse.statusText}`;
           }
         }
       } catch (auditsError) {
         console.error("Audits request failed:", auditsError);
-        if (!errorMsg) { // Only set if ping didn't already fail
+        if (!errorMsg) {
+          // Only set if ping didn't already fail
           if (auditsError instanceof Error) {
-            if (auditsError.name === 'AbortError') {
+            if (auditsError.name === "AbortError") {
               errorMsg = "Audits request timed out";
-            } else if (auditsError.message.includes('fetch')) {
+            } else if (auditsError.message.includes("fetch")) {
               errorMsg = "Network error: Cannot reach audits API";
             } else {
               errorMsg = `Audits error: ${auditsError.message}`;
@@ -320,15 +355,21 @@ export default function Index() {
       if (!pingOk && !auditsOk && !errorMsg) {
         errorMsg = "API server appears to be offline or unreachable";
       }
-
     } catch (generalError) {
       console.error("General API test failed:", generalError);
-      errorMsg = generalError instanceof Error ? generalError.message : "Unexpected API test failure";
+      errorMsg =
+        generalError instanceof Error
+          ? generalError.message
+          : "Unexpected API test failure";
     }
 
     // Update API status
     setApiStatus({ ping: pingOk, audits: auditsOk, error: errorMsg });
-    console.log("API test completed:", { ping: pingOk, audits: auditsOk, error: errorMsg });
+    console.log("API test completed:", {
+      ping: pingOk,
+      audits: auditsOk,
+      error: errorMsg,
+    });
   };
 
   useEffect(() => {
@@ -349,33 +390,39 @@ export default function Index() {
           const timeoutId = setTimeout(() => controller.abort(), 3000);
 
           const testResponse = await fetch("/api/ping", {
-            method: 'GET',
-            headers: { 'Accept': 'application/json' },
-            signal: controller.signal
+            method: "GET",
+            headers: { Accept: "application/json" },
+            signal: controller.signal,
           });
 
           clearTimeout(timeoutId);
 
           if (testResponse.ok) {
-            console.log("API server is responding, running full connection test...");
+            console.log(
+              "API server is responding, running full connection test...",
+            );
             await testAPIConnection();
             setTimeout(() => loadRecentAudits(), 300);
             return true;
           }
 
           throw new Error(`Server responded with ${testResponse.status}`);
-
         } catch (error) {
-          console.log(`Connection attempt ${retries + 1} failed:`, error instanceof Error ? error.message : error);
+          console.log(
+            `Connection attempt ${retries + 1} failed:`,
+            error instanceof Error ? error.message : error,
+          );
 
           if (retries < maxRetries - 1) {
             retries++;
-            const delay = 1000 + (retries * 1000); // Increasing delay: 2s, 3s, 4s
+            const delay = 1000 + retries * 1000; // Increasing delay: 2s, 3s, 4s
             console.log(`Retrying in ${delay}ms...`);
-            await new Promise(resolve => setTimeout(resolve, delay));
+            await new Promise((resolve) => setTimeout(resolve, delay));
             return attemptConnection();
           } else {
-            console.log("All connection attempts failed, running fallback tests...");
+            console.log(
+              "All connection attempts failed, running fallback tests...",
+            );
             // Run the full test anyway in case it's a false negative
             await testAPIConnection();
             setTimeout(() => loadRecentAudits(), 300);
@@ -386,11 +433,11 @@ export default function Index() {
 
       // Add initial delay to allow server to fully start after hot reload
       console.log("Waiting for server startup...");
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       await attemptConnection();
     };
 
-    initializeAPI().catch(error => {
+    initializeAPI().catch((error) => {
       console.error("Failed to initialize API:", error);
       // Fallback: try to run tests anyway
       testAPIConnection();
@@ -452,66 +499,66 @@ export default function Index() {
   const initializeProgressSteps = () => {
     const steps: ProgressStep[] = [
       {
-        id: 'validation',
-        label: 'Validating URL',
-        description: 'Checking website accessibility and structure',
+        id: "validation",
+        label: "Validating URL",
+        description: "Checking website accessibility and structure",
         completed: false,
         current: true,
-        duration: 2000
+        duration: 2000,
       },
       {
-        id: 'crawling',
-        label: 'Crawling Website',
-        description: 'Analyzing multiple pages and extracting content',
+        id: "crawling",
+        label: "Crawling Website",
+        description: "Analyzing multiple pages and extracting content",
         completed: false,
         current: false,
-        duration: 8000
+        duration: 8000,
       },
       {
-        id: 'analysis',
-        label: 'AI Analysis',
-        description: 'Generating insights with industry benchmarks',
+        id: "analysis",
+        label: "AI Analysis",
+        description: "Generating insights with industry benchmarks",
         completed: false,
         current: false,
-        duration: 15000
+        duration: 15000,
       },
       {
-        id: 'scoring',
-        label: 'Calculating Scores',
-        description: 'Applying evidence-weighted scoring system',
+        id: "scoring",
+        label: "Calculating Scores",
+        description: "Applying evidence-weighted scoring system",
         completed: false,
         current: false,
-        duration: 5000
+        duration: 5000,
       },
       {
-        id: 'recommendations',
-        label: 'Creating Recommendations',
-        description: 'Building strategic implementation plan',
+        id: "recommendations",
+        label: "Creating Recommendations",
+        description: "Building strategic implementation plan",
         completed: false,
         current: false,
-        duration: 5000
+        duration: 5000,
       },
       {
-        id: 'finalizing',
-        label: 'Finalizing Report',
-        description: 'Preparing comprehensive audit results',
+        id: "finalizing",
+        label: "Finalizing Report",
+        description: "Preparing comprehensive audit results",
         completed: false,
         current: false,
-        duration: 3000
-      }
+        duration: 3000,
+      },
     ];
     setProgressSteps(steps);
     return steps;
   };
 
   const updateProgress = (stepId: string, completed: boolean = false) => {
-    setProgressSteps(prev => {
+    setProgressSteps((prev) => {
       const updated = prev.map((step, index) => {
         if (step.id === stepId) {
           return { ...step, completed, current: !completed };
         }
         // Set next step as current if this one is completed
-        if (completed && prev.findIndex(s => s.id === stepId) === index - 1) {
+        if (completed && prev.findIndex((s) => s.id === stepId) === index - 1) {
           return { ...step, current: true };
         }
         // Remove current from other steps
@@ -522,7 +569,7 @@ export default function Index() {
       });
 
       // Calculate progress percentage
-      const completedCount = updated.filter(s => s.completed).length;
+      const completedCount = updated.filter((s) => s.completed).length;
       setCurrentProgress((completedCount / updated.length) * 100);
 
       return updated;
@@ -535,7 +582,7 @@ export default function Index() {
       // Simulate step duration with some randomness
       const duration = (step.duration || 3000) + Math.random() * 2000;
 
-      await new Promise(resolve => setTimeout(resolve, duration));
+      await new Promise((resolve) => setTimeout(resolve, duration));
       updateProgress(step.id, true);
     }
   };
@@ -558,22 +605,25 @@ export default function Index() {
   // New real-time progress audit function using Server-Sent Events
   const handleAuditWithProgress = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('🟢 handleAuditWithProgress called with URL:', url.trim());
+    console.log("🟢 handleAuditWithProgress called with URL:", url.trim());
 
     if (!url.trim()) {
-      console.log('❌ Empty URL in handleAuditWithProgress');
+      console.log("❌ Empty URL in handleAuditWithProgress");
       return;
     }
 
     // Prevent multiple simultaneous submissions
     if (isLoading) {
-      console.log('❌ Already loading in handleAuditWithProgress, aborting');
+      console.log("❌ Already loading in handleAuditWithProgress, aborting");
       return;
     }
 
     // Clean up any existing EventSource connection
-    if (currentEventSourceRef.current && currentEventSourceRef.current.readyState !== EventSource.CLOSED) {
-      console.log('🔄 Closing existing EventSource connection');
+    if (
+      currentEventSourceRef.current &&
+      currentEventSourceRef.current.readyState !== EventSource.CLOSED
+    ) {
+      console.log("🔄 Closing existing EventSource connection");
       currentEventSourceRef.current.close();
       currentEventSourceRef.current = null;
     }
@@ -584,8 +634,8 @@ export default function Index() {
       normalizedUrl = `https://${normalizedUrl}`;
     }
 
-    console.log('📝 Normalized URL:', normalizedUrl);
-    console.log('⚡ Setting loading state to true...');
+    console.log("📝 Normalized URL:", normalizedUrl);
+    console.log("⚡ Setting loading state to true...");
 
     setIsLoading(true);
     setError("");
@@ -598,7 +648,9 @@ export default function Index() {
     try {
       // Check EventSource support first
       if (!isEventSourceSupported()) {
-        console.log("EventSource not supported, falling back to standard audit");
+        console.log(
+          "EventSource not supported, falling back to standard audit",
+        );
         throw new Error("EventSource not supported");
       }
 
@@ -619,7 +671,7 @@ export default function Index() {
       console.log("Creating EventSource connection to:", eventSourceUrl);
 
       // Debug EventSource setup
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === "development") {
         debugEventSource(eventSourceUrl);
       }
 
@@ -629,47 +681,56 @@ export default function Index() {
 
       return new Promise((resolve, reject) => {
         eventSource.onopen = () => {
-          console.log('✅ EventSource connection opened successfully');
+          console.log("✅ EventSource connection opened successfully");
         };
 
         eventSource.onmessage = (event) => {
           try {
             const progressData = JSON.parse(event.data);
-            console.log('EventSource message received:', progressData);
+            console.log("EventSource message received:", progressData);
 
             // Update progress based on server events
-            if (typeof progressData.progress === 'number') {
+            if (typeof progressData.progress === "number") {
               setCurrentProgress(progressData.progress);
             }
 
             // Update step status
-            if (progressData.step && progressData.step !== 'error') {
-              updateProgress(progressData.step, progressData.completed || false);
+            if (progressData.step && progressData.step !== "error") {
+              updateProgress(
+                progressData.step,
+                progressData.completed || false,
+              );
             }
 
             // Handle completion
             if (progressData.completed && progressData.data) {
-              console.log('🎉 AUDIT COMPLETED! Processing completion...', progressData.data);
+              console.log(
+                "🎉 AUDIT COMPLETED! Processing completion...",
+                progressData.data,
+              );
               const auditResult = progressData.data;
-              console.log('📊 Audit result ID:', auditResult.id);
+              console.log("📊 Audit result ID:", auditResult.id);
 
               // Store audit result in localStorage
-              console.log('💾 Storing audit in localStorage...');
+              console.log("💾 Storing audit in localStorage...");
               localStorage.setItem(
                 `audit_${auditResult.id}`,
                 JSON.stringify(auditResult),
               );
-              console.log('✅ Audit stored in localStorage');
+              console.log("✅ Audit stored in localStorage");
 
               // Reload recent audits
-              console.log('🔄 Reloading recent audits...');
+              console.log("🔄 Reloading recent audits...");
               loadRecentAudits();
 
               // Navigate to results immediately
-              console.log('🔄 Navigating to audit results:', `/audit/${auditResult.id}`);
+              console.log(
+                "🔄 Navigating to audit results:",
+                `/audit/${auditResult.id}`,
+              );
               navigate(`/audit/${auditResult.id}`);
 
-              console.log('🔌 Closing EventSource connection...');
+              console.log("🔌 Closing EventSource connection...");
               eventSource.close();
               resolve(auditResult);
               return; // Exit early to prevent further processing
@@ -677,38 +738,48 @@ export default function Index() {
 
             // Handle errors
             if (progressData.error) {
-              console.error('❌ Audit error received:', progressData.error);
+              console.error("❌ Audit error received:", progressData.error);
               setError(progressData.error);
               eventSource.close();
               reject(new Error(progressData.error));
             }
-
           } catch (parseError) {
-            console.error('Error parsing progress data:', parseError, 'Raw data:', event.data);
-            setError('Error processing server response. Please try again.');
+            console.error(
+              "Error parsing progress data:",
+              parseError,
+              "Raw data:",
+              event.data,
+            );
+            setError("Error processing server response. Please try again.");
           }
         };
 
         eventSource.onerror = (error) => {
-          console.error('❌ EventSource error occurred:', error);
-          console.log('EventSource readyState:', eventSource.readyState);
-          console.log('EventSource url:', eventSource.url);
+          console.error("❌ EventSource error occurred:", error);
+          console.log("EventSource readyState:", eventSource.readyState);
+          console.log("EventSource url:", eventSource.url);
 
           // More specific error handling based on readyState
           if (eventSource.readyState === EventSource.CLOSED) {
-            console.log('EventSource connection closed, falling back to standard audit');
+            console.log(
+              "EventSource connection closed, falling back to standard audit",
+            );
             // Don't show error - just fall back silently
             eventSource.close();
-            reject(new Error('EventSource closed - fallback'));
+            reject(new Error("EventSource closed - fallback"));
           } else if (eventSource.readyState === EventSource.CONNECTING) {
-            console.log('EventSource still connecting, waiting...');
+            console.log("EventSource still connecting, waiting...");
             // Give it more time to connect
             return;
           } else {
-            console.log('EventSource connection failed, falling back to standard audit');
-            setError('Connection issue detected. Switching to standard audit mode...');
+            console.log(
+              "EventSource connection failed, falling back to standard audit",
+            );
+            setError(
+              "Connection issue detected. Switching to standard audit mode...",
+            );
             eventSource.close();
-            reject(new Error('EventSource connection failed'));
+            reject(new Error("EventSource connection failed"));
           }
         };
 
@@ -723,7 +794,7 @@ export default function Index() {
         // Timeout fallback
         const timeoutId = setTimeout(() => {
           cleanup();
-          reject(new Error('Request timed out'));
+          reject(new Error("Request timed out"));
         }, 120000); // 2 minute timeout
 
         // Clear timeout if request completes normally
@@ -742,7 +813,6 @@ export default function Index() {
           originalReject(error);
         };
       });
-
     } catch (error) {
       console.error("Real-time audit error:", error);
 
@@ -764,41 +834,50 @@ export default function Index() {
   const handleSubmit = async (e: React.FormEvent) => {
     try {
       e.preventDefault();
-      console.log('🔵 Form submitted with URL:', url.trim());
+      console.log("🔵 Form submitted with URL:", url.trim());
 
       if (!url.trim()) {
-        console.log('❌ Empty URL, aborting submission');
+        console.log("❌ Empty URL, aborting submission");
         return;
       }
 
       // Prevent multiple simultaneous submissions
       if (isLoading) {
-        console.log('❌ Audit already in progress, ignoring duplicate submission');
+        console.log(
+          "❌ Audit already in progress, ignoring duplicate submission",
+        );
         return;
       }
 
-      console.log('✅ Starting new audit process...');
+      console.log("✅ Starting new audit process...");
 
       // Use real-time progress tracking by default, with fallback
       try {
         await handleAuditWithProgress(e);
       } catch (error) {
-        console.log("Progress tracking failed, falling back to standard audit method:", error);
+        console.log(
+          "Progress tracking failed, falling back to standard audit method:",
+          error,
+        );
 
         // Clear any existing error state
         setError("");
 
         // Show user we're falling back
-        if (error instanceof Error && error.message.includes('EventSource')) {
-          console.log("EventSource not supported or failed, using standard method");
+        if (error instanceof Error && error.message.includes("EventSource")) {
+          console.log(
+            "EventSource not supported or failed, using standard method",
+          );
         }
 
         // Fallback to standard audit
         await handleSubmitStandard(e);
       }
     } catch (topLevelError) {
-      console.error('💥 CRITICAL ERROR in handleSubmit:', topLevelError);
-      setError('A critical error occurred. Please refresh the page and try again.');
+      console.error("💥 CRITICAL ERROR in handleSubmit:", topLevelError);
+      setError(
+        "A critical error occurred. Please refresh the page and try again.",
+      );
       setIsLoading(false);
       setShowProgress(false);
     }
@@ -811,7 +890,9 @@ export default function Index() {
 
     // Prevent multiple simultaneous submissions
     if (isLoading) {
-      console.log('Standard audit already in progress, ignoring duplicate submission');
+      console.log(
+        "Standard audit already in progress, ignoring duplicate submission",
+      );
       return;
     }
 
@@ -951,10 +1032,10 @@ export default function Index() {
       }
 
       // Complete final progress step
-      updateProgress('finalizing', true);
+      updateProgress("finalizing", true);
 
       // Wait for progress animation to complete
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // Navigate to audit results page
       navigate(`/audit/${auditResult.id}`);
@@ -971,20 +1052,24 @@ export default function Index() {
           error.name === "AbortError" ||
           error.message.toLowerCase().includes("aborted")
         ) {
-          errorMessage = "Request timed out while analyzing the site. Please try again or use a different URL.";
+          errorMessage =
+            "Request timed out while analyzing the site. Please try again or use a different URL.";
         } else if (
           error.message.includes("fetch") ||
           error.message.includes("network") ||
           error.message.includes("Failed to fetch")
         ) {
-          errorMessage = "Network error. Unable to connect to the server. Please check your connection and try again.";
+          errorMessage =
+            "Network error. Unable to connect to the server. Please check your connection and try again.";
         } else if (error.message.includes("timeout")) {
-          errorMessage = "Request timed out. Please try with a different website or try again later.";
+          errorMessage =
+            "Request timed out. Please try with a different website or try again later.";
         } else {
           errorMessage = error.message;
         }
       } else {
-        errorMessage = "An unexpected error occurred. Please check the URL and try again.";
+        errorMessage =
+          "An unexpected error occurred. Please check the URL and try again.";
         handleError(errorMessage);
       }
 
@@ -1114,10 +1199,10 @@ export default function Index() {
       }
 
       // Complete final progress step
-      updateProgress('finalizing', true);
+      updateProgress("finalizing", true);
 
       // Wait for progress animation to complete
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // Navigate to audit results page
       navigate(`/audit/${auditResult.id}`);
@@ -1168,23 +1253,38 @@ export default function Index() {
       <Header />
 
       {/* Debug Panel - Remove this in production */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className={`border-b p-3 ${apiStatus.error ? 'bg-red-50 border-red-200' : 'bg-yellow-50 border-yellow-200'}`}>
+      {process.env.NODE_ENV === "development" && (
+        <div
+          className={`border-b p-3 ${apiStatus.error ? "bg-red-50 border-red-200" : "bg-yellow-50 border-yellow-200"}`}
+        >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center">
               <div>
-                <h3 className={`text-sm font-medium mb-2 ${apiStatus.error ? 'text-red-800' : 'text-yellow-800'}`}>
-                  Debug: API Status {!apiStatus.ping && !apiStatus.audits ? '(Connection Issues)' : ''}
+                <h3
+                  className={`text-sm font-medium mb-2 ${apiStatus.error ? "text-red-800" : "text-yellow-800"}`}
+                >
+                  Debug: API Status{" "}
+                  {!apiStatus.ping && !apiStatus.audits
+                    ? "(Connection Issues)"
+                    : ""}
                 </h3>
                 <div className="flex gap-4 text-xs">
-                  <span className={`flex items-center gap-1 ${apiStatus.ping ? 'text-green-700' : 'text-red-700'}`}>
-                    {apiStatus.ping ? '✓' : '✗'} Ping API {apiStatus.ping ? '(Connected)' : '(Failed)'}
+                  <span
+                    className={`flex items-center gap-1 ${apiStatus.ping ? "text-green-700" : "text-red-700"}`}
+                  >
+                    {apiStatus.ping ? "✓" : "✗"} Ping API{" "}
+                    {apiStatus.ping ? "(Connected)" : "(Failed)"}
                   </span>
-                  <span className={`flex items-center gap-1 ${apiStatus.audits ? 'text-green-700' : 'text-red-700'}`}>
-                    {apiStatus.audits ? '✓' : '✗'} Audits API {apiStatus.audits ? '(Connected)' : '(Failed)'}
+                  <span
+                    className={`flex items-center gap-1 ${apiStatus.audits ? "text-green-700" : "text-red-700"}`}
+                  >
+                    {apiStatus.audits ? "✓" : "✗"} Audits API{" "}
+                    {apiStatus.audits ? "(Connected)" : "(Failed)"}
                   </span>
                   {apiStatus.error && (
-                    <span className="text-red-700 font-medium">Error: {apiStatus.error}</span>
+                    <span className="text-red-700 font-medium">
+                      Error: {apiStatus.error}
+                    </span>
                   )}
                 </div>
               </div>
@@ -1193,7 +1293,11 @@ export default function Index() {
                   <button
                     onClick={() => {
                       console.log("Retrying API connection...");
-                      setApiStatus({ ping: false, audits: false, error: undefined });
+                      setApiStatus({
+                        ping: false,
+                        audits: false,
+                        error: undefined,
+                      });
                       testAPIConnection();
                       setTimeout(() => loadRecentAudits(), 500);
                     }}
@@ -1251,11 +1355,11 @@ export default function Index() {
           <div className="mt-12 max-w-3xl mx-auto">
             <form
               onSubmit={(e) => {
-                console.log('🟡 FORM onSubmit triggered!');
+                console.log("🟡 FORM onSubmit triggered!");
                 handleSubmit(e);
               }}
               className="space-y-4"
-              style={{ pointerEvents: isLoading ? 'none' : 'auto' }}
+              style={{ pointerEvents: isLoading ? "none" : "auto" }}
             >
               <div className="flex gap-4">
                 <div className="flex-1 relative">
@@ -1265,7 +1369,7 @@ export default function Index() {
                     placeholder="Enter website URL to audit (e.g., example.com)"
                     value={url}
                     onChange={(e) => {
-                      console.log('📝 URL input changed:', e.target.value);
+                      console.log("📝 URL input changed:", e.target.value);
                       setUrl(e.target.value);
                     }}
                     className="pl-10 h-12 text-lg"
@@ -1275,7 +1379,7 @@ export default function Index() {
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  onClick={() => console.log('🖱️ Start Audit button clicked!')}
+                  onClick={() => console.log("🖱️ Start Audit button clicked!")}
                   className="h-12 px-8 bg-brand-500 hover:bg-brand-600 text-white font-semibold"
                 >
                   {isLoading ? (
@@ -1307,7 +1411,9 @@ export default function Index() {
                         Dismiss
                       </button>
                       {isRetrying ? (
-                        <span className="text-xs text-red-600">Retrying...</span>
+                        <span className="text-xs text-red-600">
+                          Retrying...
+                        </span>
                       ) : (
                         <button
                           onClick={() => retry()}

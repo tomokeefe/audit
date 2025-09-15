@@ -55,14 +55,36 @@ import {
 import PDFExport from "@/components/PDFExport";
 
 // SWOT Matrix Component for Competitor Analysis
-function SWOTMatrix({ sectionName, auditData }: { sectionName: string; auditData?: any }) {
+function SWOTMatrix({
+  sectionName,
+  auditData,
+}: {
+  sectionName: string;
+  auditData?: any;
+}) {
   // Parse SWOT data from audit content if available
   const parseSWOTFromContent = (content: string) => {
     const defaultData = {
-      strengths: ["Strong brand positioning", "User-friendly interface", "Quality content"],
-      weaknesses: ["Limited competitive analysis", "Missing industry benchmarks", "Unclear market position"],
-      opportunities: ["Market differentiation", "Enhanced digital presence", "Strategic partnerships"],
-      threats: ["Increased competition", "Market saturation", "Technology changes"],
+      strengths: [
+        "Strong brand positioning",
+        "User-friendly interface",
+        "Quality content",
+      ],
+      weaknesses: [
+        "Limited competitive analysis",
+        "Missing industry benchmarks",
+        "Unclear market position",
+      ],
+      opportunities: [
+        "Market differentiation",
+        "Enhanced digital presence",
+        "Strategic partnerships",
+      ],
+      threats: [
+        "Increased competition",
+        "Market saturation",
+        "Technology changes",
+      ],
     };
 
     if (!content) return defaultData;
@@ -75,28 +97,36 @@ function SWOTMatrix({ sectionName, auditData }: { sectionName: string; auditData
     };
 
     // Extract SWOT items from content using regex patterns
-    const strengthsMatch = content.match(/Strengths?[:\s]*([\s\S]*?)(?=\n\s*Weaknesses?|$)/i);
-    const weaknessesMatch = content.match(/Weaknesses?[:\s]*([\s\S]*?)(?=\n\s*Opportunities?|$)/i);
-    const opportunitiesMatch = content.match(/Opportunities?[:\s]*([\s\S]*?)(?=\n\s*Threats?|$)/i);
+    const strengthsMatch = content.match(
+      /Strengths?[:\s]*([\s\S]*?)(?=\n\s*Weaknesses?|$)/i,
+    );
+    const weaknessesMatch = content.match(
+      /Weaknesses?[:\s]*([\s\S]*?)(?=\n\s*Opportunities?|$)/i,
+    );
+    const opportunitiesMatch = content.match(
+      /Opportunities?[:\s]*([\s\S]*?)(?=\n\s*Threats?|$)/i,
+    );
     const threatsMatch = content.match(/Threats?[:\s]*([\s\S]*?)(?=\n|$)/i);
 
     const extractItems = (text: string): string[] => {
       return text
         .split(/[-•*]\s*/)
-        .map(item => item.trim())
-        .filter(item => item.length > 10 && item.length < 100)
+        .map((item) => item.trim())
+        .filter((item) => item.length > 10 && item.length < 100)
         .slice(0, 4);
     };
 
     if (strengthsMatch) sections.strengths = extractItems(strengthsMatch[1]);
     if (weaknessesMatch) sections.weaknesses = extractItems(weaknessesMatch[1]);
-    if (opportunitiesMatch) sections.opportunities = extractItems(opportunitiesMatch[1]);
+    if (opportunitiesMatch)
+      sections.opportunities = extractItems(opportunitiesMatch[1]);
     if (threatsMatch) sections.threats = extractItems(threatsMatch[1]);
 
     // Use defaults for empty sections
-    Object.keys(sections).forEach(key => {
+    Object.keys(sections).forEach((key) => {
       if (sections[key as keyof typeof sections].length === 0) {
-        sections[key as keyof typeof sections] = defaultData[key as keyof typeof defaultData];
+        sections[key as keyof typeof sections] =
+          defaultData[key as keyof typeof defaultData];
       }
     });
 
@@ -104,7 +134,7 @@ function SWOTMatrix({ sectionName, auditData }: { sectionName: string; auditData
   };
 
   const competitorSection = auditData?.sections?.find((s: any) =>
-    s.name.toLowerCase().includes('competitor')
+    s.name.toLowerCase().includes("competitor"),
   );
 
   const swotData = parseSWOTFromContent(competitorSection?.details || "");
@@ -113,7 +143,9 @@ function SWOTMatrix({ sectionName, auditData }: { sectionName: string; auditData
     <div className="mt-6 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border">
       <div className="flex items-center gap-2 mb-4">
         <Target className="h-5 w-5 text-blue-600" />
-        <h4 className="text-lg font-semibold text-gray-900">SWOT Analysis Matrix</h4>
+        <h4 className="text-lg font-semibold text-gray-900">
+          SWOT Analysis Matrix
+        </h4>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Strengths */}
@@ -194,28 +226,36 @@ function CompetitiveMetrics({ auditData }: { auditData: any }) {
   const metrics = [
     {
       name: "Website Performance",
-      yourScore: sections.find((s: any) => s.name.toLowerCase().includes('usability'))?.score || 0,
+      yourScore:
+        sections.find((s: any) => s.name.toLowerCase().includes("usability"))
+          ?.score || 0,
       industryAverage: 72,
       icon: Activity,
       color: "blue",
     },
     {
       name: "Brand Strength",
-      yourScore: sections.find((s: any) => s.name.toLowerCase().includes('branding'))?.score || 0,
+      yourScore:
+        sections.find((s: any) => s.name.toLowerCase().includes("branding"))
+          ?.score || 0,
       industryAverage: 75,
       icon: Target,
       color: "purple",
     },
     {
       name: "User Experience",
-      yourScore: sections.find((s: any) => s.name.toLowerCase().includes('customer'))?.score || 0,
+      yourScore:
+        sections.find((s: any) => s.name.toLowerCase().includes("customer"))
+          ?.score || 0,
       industryAverage: 68,
       icon: Users,
       color: "green",
     },
     {
       name: "Digital Presence",
-      yourScore: sections.find((s: any) => s.name.toLowerCase().includes('digital'))?.score || 0,
+      yourScore:
+        sections.find((s: any) => s.name.toLowerCase().includes("digital"))
+          ?.score || 0,
       industryAverage: 70,
       icon: Globe,
       color: "orange",
@@ -223,12 +263,17 @@ function CompetitiveMetrics({ auditData }: { auditData: any }) {
   ];
 
   const getMetricColor = (yourScore: number, industryAverage: number) => {
-    if (yourScore >= industryAverage + 10) return "text-green-600 bg-green-50 border-green-200";
-    if (yourScore >= industryAverage - 5) return "text-yellow-600 bg-yellow-50 border-yellow-200";
+    if (yourScore >= industryAverage + 10)
+      return "text-green-600 bg-green-50 border-green-200";
+    if (yourScore >= industryAverage - 5)
+      return "text-yellow-600 bg-yellow-50 border-yellow-200";
     return "text-red-600 bg-red-50 border-red-200";
   };
 
-  const getCompetitivePosition = (yourScore: number, industryAverage: number) => {
+  const getCompetitivePosition = (
+    yourScore: number,
+    industryAverage: number,
+  ) => {
     if (yourScore >= industryAverage + 10) return "Leading";
     if (yourScore >= industryAverage - 5) return "Competitive";
     return "Behind";
@@ -238,13 +283,21 @@ function CompetitiveMetrics({ auditData }: { auditData: any }) {
     <div className="mt-6 p-6 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border">
       <div className="flex items-center gap-2 mb-4">
         <BarChart3 className="h-5 w-5 text-gray-600" />
-        <h4 className="text-lg font-semibold text-gray-900">Competitive Positioning</h4>
+        <h4 className="text-lg font-semibold text-gray-900">
+          Competitive Positioning
+        </h4>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {metrics.map((metric, index) => {
           const Icon = metric.icon;
-          const colorClasses = getMetricColor(metric.yourScore, metric.industryAverage);
-          const position = getCompetitivePosition(metric.yourScore, metric.industryAverage);
+          const colorClasses = getMetricColor(
+            metric.yourScore,
+            metric.industryAverage,
+          );
+          const position = getCompetitivePosition(
+            metric.yourScore,
+            metric.industryAverage,
+          );
 
           return (
             <div key={index} className="bg-white border rounded-lg p-4">
@@ -253,14 +306,21 @@ function CompetitiveMetrics({ auditData }: { auditData: any }) {
                   <Icon className={`h-4 w-4 text-${metric.color}-600`} />
                   <h5 className="font-medium text-gray-900">{metric.name}</h5>
                 </div>
-                <span className={`px-2 py-1 rounded-full text-xs font-medium border ${colorClasses}`}>
+                <span
+                  className={`px-2 py-1 rounded-full text-xs font-medium border ${colorClasses}`}
+                >
                   {position}
                 </span>
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Your Score</span>
-                  <span className="font-semibold text-gray-900">{typeof metric.yourScore === 'number' ? metric.yourScore.toFixed(1) : metric.yourScore}%</span>
+                  <span className="font-semibold text-gray-900">
+                    {typeof metric.yourScore === "number"
+                      ? metric.yourScore.toFixed(1)
+                      : metric.yourScore}
+                    %
+                  </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
@@ -269,9 +329,22 @@ function CompetitiveMetrics({ auditData }: { auditData: any }) {
                   ></div>
                 </div>
                 <div className="flex justify-between items-center text-xs">
-                  <span className="text-gray-500">Industry Avg: {typeof metric.industryAverage === 'number' ? metric.industryAverage.toFixed(1) : metric.industryAverage}%</span>
-                  <span className={metric.yourScore >= metric.industryAverage ? 'text-green-600' : 'text-red-600'}>
-                    {metric.yourScore >= metric.industryAverage ? '+' : ''}{(metric.yourScore - metric.industryAverage).toFixed(1)}
+                  <span className="text-gray-500">
+                    Industry Avg:{" "}
+                    {typeof metric.industryAverage === "number"
+                      ? metric.industryAverage.toFixed(1)
+                      : metric.industryAverage}
+                    %
+                  </span>
+                  <span
+                    className={
+                      metric.yourScore >= metric.industryAverage
+                        ? "text-green-600"
+                        : "text-red-600"
+                    }
+                  >
+                    {metric.yourScore >= metric.industryAverage ? "+" : ""}
+                    {(metric.yourScore - metric.industryAverage).toFixed(1)}
                   </span>
                 </div>
               </div>
@@ -281,8 +354,17 @@ function CompetitiveMetrics({ auditData }: { auditData: any }) {
       </div>
       <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
         <p className="text-sm text-blue-800">
-          <strong>Competitive Insight:</strong> Your overall score of {typeof overallScore === 'number' ? overallScore.toFixed(1) : overallScore}% places you{' '}
-          {overallScore >= 75 ? 'in the top tier' : overallScore >= 65 ? 'in the competitive range' : 'below average'} compared to industry benchmarks.
+          <strong>Competitive Insight:</strong> Your overall score of{" "}
+          {typeof overallScore === "number"
+            ? overallScore.toFixed(1)
+            : overallScore}
+          % places you{" "}
+          {overallScore >= 75
+            ? "in the top tier"
+            : overallScore >= 65
+              ? "in the competitive range"
+              : "below average"}{" "}
+          compared to industry benchmarks.
         </p>
       </div>
     </div>
@@ -295,18 +377,22 @@ function ImplementationRoadmap({ auditData }: { auditData: any }) {
   const improvementImpact = auditData?.improvementImpact;
 
   // Extract implementation phases based on enhanced scoring system
-  const quickWins = sections.filter((s: any) => 
-    s.implementationDifficulty === 'easy' && 
-    (s.priorityLevel === 'critical' || s.priorityLevel === 'high')
+  const quickWins = sections.filter(
+    (s: any) =>
+      s.implementationDifficulty === "easy" &&
+      (s.priorityLevel === "critical" || s.priorityLevel === "high"),
   );
 
-  const shortTerm = sections.filter((s: any) => 
-    s.implementationDifficulty === 'medium' && 
-    (s.priorityLevel === 'critical' || s.priorityLevel === 'high')
+  const shortTerm = sections.filter(
+    (s: any) =>
+      s.implementationDifficulty === "medium" &&
+      (s.priorityLevel === "critical" || s.priorityLevel === "high"),
   );
 
-  const longTerm = sections.filter((s: any) => 
-    s.implementationDifficulty === 'hard' || s.implementationDifficulty === 'very_hard'
+  const longTerm = sections.filter(
+    (s: any) =>
+      s.implementationDifficulty === "hard" ||
+      s.implementationDifficulty === "very_hard",
   );
 
   const phases = [
@@ -319,7 +405,7 @@ function ImplementationRoadmap({ auditData }: { auditData: any }) {
       color: "green",
       bgColor: "bg-green-50",
       borderColor: "border-green-200",
-      textColor: "text-green-800"
+      textColor: "text-green-800",
     },
     {
       title: "Phase 2: Short-term Goals",
@@ -330,7 +416,7 @@ function ImplementationRoadmap({ auditData }: { auditData: any }) {
       color: "blue",
       bgColor: "bg-blue-50",
       borderColor: "border-blue-200",
-      textColor: "text-blue-800"
+      textColor: "text-blue-800",
     },
     {
       title: "Phase 3: Long-term Strategy",
@@ -341,48 +427,68 @@ function ImplementationRoadmap({ auditData }: { auditData: any }) {
       color: "purple",
       bgColor: "bg-purple-50",
       borderColor: "border-purple-200",
-      textColor: "text-purple-800"
-    }
+      textColor: "text-purple-800",
+    },
   ];
 
   return (
     <div className="mt-8 space-y-6">
       <div className="flex items-center gap-2 mb-4">
         <Calendar className="h-5 w-5 text-gray-600" />
-        <h4 className="text-lg font-semibold text-gray-900">Implementation Roadmap</h4>
+        <h4 className="text-lg font-semibold text-gray-900">
+          Implementation Roadmap
+        </h4>
       </div>
 
       {phases.map((phase, index) => {
         const Icon = phase.icon;
         return (
-          <div key={index} className={`${phase.bgColor} border ${phase.borderColor} rounded-lg p-6`}>
+          <div
+            key={index}
+            className={`${phase.bgColor} border ${phase.borderColor} rounded-lg p-6`}
+          >
             <div className="flex items-center gap-3 mb-4">
-              <div className={`p-2 rounded-lg bg-white border ${phase.borderColor}`}>
+              <div
+                className={`p-2 rounded-lg bg-white border ${phase.borderColor}`}
+              >
                 <Icon className={`h-5 w-5 text-${phase.color}-600`} />
               </div>
               <div>
-                <h5 className={`font-semibold ${phase.textColor}`}>{phase.title}</h5>
+                <h5 className={`font-semibold ${phase.textColor}`}>
+                  {phase.title}
+                </h5>
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <Clock className="h-3 w-3" />
                   {phase.timeframe}
                 </div>
               </div>
             </div>
-            
-            <p className={`text-sm ${phase.textColor} mb-4`}>{phase.description}</p>
+
+            <p className={`text-sm ${phase.textColor} mb-4`}>
+              {phase.description}
+            </p>
 
             {phase.items.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {phase.items.map((item: any, itemIndex: number) => (
-                  <div key={itemIndex} className="bg-white border rounded-lg p-3">
+                  <div
+                    key={itemIndex}
+                    className="bg-white border rounded-lg p-3"
+                  >
                     <div className="flex items-start justify-between mb-2">
-                      <h6 className="font-medium text-gray-900 text-sm">{item.name}</h6>
+                      <h6 className="font-medium text-gray-900 text-sm">
+                        {item.name}
+                      </h6>
                       <Badge variant="outline" className="text-xs">
-                        {typeof item.score === 'number' ? item.score.toFixed(1) : item.score}%
+                        {typeof item.score === "number"
+                          ? item.score.toFixed(1)
+                          : item.score}
+                        %
                       </Badge>
                     </div>
                     <div className="text-xs text-gray-600">
-                      {item.recommendations} recommendations • {item.estimatedImpact || 'Impact: Medium'}
+                      {item.recommendations} recommendations •{" "}
+                      {item.estimatedImpact || "Impact: Medium"}
                     </div>
                   </div>
                 ))}
@@ -408,7 +514,9 @@ function ROICalculator({ auditData }: { auditData: any }) {
     <div className="mt-8 p-6 bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg border border-green-200">
       <div className="flex items-center gap-2 mb-4">
         <DollarSign className="h-5 w-5 text-green-600" />
-        <h4 className="text-lg font-semibold text-gray-900">Expected ROI & Impact</h4>
+        <h4 className="text-lg font-semibold text-gray-900">
+          Expected ROI & Impact
+        </h4>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -418,14 +526,14 @@ function ROICalculator({ auditData }: { auditData: any }) {
           </div>
           <div className="text-sm text-gray-600">Expected Improvement</div>
         </div>
-        
+
         <div className="bg-white border border-green-200 rounded-lg p-4 text-center">
           <div className="text-2xl font-bold text-green-600 mb-1">
             {improvementImpact?.implementationTimeframe || "2-6 months"}
           </div>
           <div className="text-sm text-gray-600">Implementation Timeline</div>
         </div>
-        
+
         <div className="bg-white border border-green-200 rounded-lg p-4 text-center">
           <div className="text-2xl font-bold text-green-600 mb-1">
             {improvementImpact?.highPriority?.length || 0}
@@ -435,9 +543,10 @@ function ROICalculator({ auditData }: { auditData: any }) {
       </div>
 
       <div className="text-sm text-green-800">
-        <strong>Business Impact:</strong> Based on industry benchmarks and your current performance, 
-        implementing these recommendations could result in significant improvements to user engagement, 
-        conversion rates, and overall digital performance.
+        <strong>Business Impact:</strong> Based on industry benchmarks and your
+        current performance, implementing these recommendations could result in
+        significant improvements to user engagement, conversion rates, and
+        overall digital performance.
       </div>
     </div>
   );
@@ -445,35 +554,39 @@ function ROICalculator({ auditData }: { auditData: any }) {
 
 // Success Metrics Component
 function SuccessMetrics({ auditData }: { auditData: any }) {
-  const businessType = auditData?.metadata?.businessType || 'general';
-  const industry = auditData?.metadata?.industryDetected || 'general';
+  const businessType = auditData?.metadata?.businessType || "general";
+  const industry = auditData?.metadata?.industryDetected || "general";
 
   const getMetricsForIndustry = () => {
     const baseMetrics = [
-      { name: "Overall Audit Score", target: "85.0%+", current: `${typeof auditData.overallScore === 'number' ? auditData.overallScore.toFixed(1) : auditData.overallScore}%` },
+      {
+        name: "Overall Audit Score",
+        target: "85.0%+",
+        current: `${typeof auditData.overallScore === "number" ? auditData.overallScore.toFixed(1) : auditData.overallScore}%`,
+      },
       { name: "Page Load Speed", target: "< 2.5s", current: "Monitor" },
       { name: "Mobile Usability Score", target: "90%+", current: "Monitor" },
-      { name: "User Engagement", target: "+25%", current: "Baseline" }
+      { name: "User Engagement", target: "+25%", current: "Baseline" },
     ];
 
     const industrySpecific = {
       ecommerce: [
         { name: "Conversion Rate", target: "+20%", current: "Baseline" },
-        { name: "Cart Abandonment", target: "-15%", current: "Monitor" }
+        { name: "Cart Abandonment", target: "-15%", current: "Monitor" },
       ],
       saas: [
         { name: "Trial Conversion", target: "+30%", current: "Baseline" },
-        { name: "User Activation", target: "+25%", current: "Monitor" }
+        { name: "User Activation", target: "+25%", current: "Monitor" },
       ],
       healthcare: [
         { name: "Appointment Bookings", target: "+20%", current: "Baseline" },
-        { name: "Patient Trust Score", target: "90%+", current: "Monitor" }
-      ]
+        { name: "Patient Trust Score", target: "90%+", current: "Monitor" },
+      ],
     };
 
     return [
       ...baseMetrics,
-      ...(industrySpecific[industry as keyof typeof industrySpecific] || [])
+      ...(industrySpecific[industry as keyof typeof industrySpecific] || []),
     ];
   };
 
@@ -481,7 +594,9 @@ function SuccessMetrics({ auditData }: { auditData: any }) {
     <div className="mt-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
       <div className="flex items-center gap-2 mb-4">
         <BarChart3 className="h-5 w-5 text-blue-600" />
-        <h4 className="text-lg font-semibold text-gray-900">Success Metrics to Track</h4>
+        <h4 className="text-lg font-semibold text-gray-900">
+          Success Metrics to Track
+        </h4>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -502,8 +617,9 @@ function SuccessMetrics({ auditData }: { auditData: any }) {
 
       <div className="mt-4 p-3 bg-blue-100 border border-blue-300 rounded-lg">
         <p className="text-sm text-blue-800">
-          <strong>Recommendation:</strong> Set up Google Analytics 4 and other tracking tools to monitor 
-          these metrics before and after implementation to measure success.
+          <strong>Recommendation:</strong> Set up Google Analytics 4 and other
+          tracking tools to monitor these metrics before and after
+          implementation to measure success.
         </p>
       </div>
     </div>
@@ -518,36 +634,48 @@ function InteractiveTaskChecklist({ auditData }: { auditData: any }) {
   // Generate actionable tasks from audit sections
   const generateTasks = () => {
     const quickWins = auditData.sections
-      .filter((s: any) => s.implementationDifficulty === 'easy' && (s.priorityLevel === 'critical' || s.priorityLevel === 'high'))
+      .filter(
+        (s: any) =>
+          s.implementationDifficulty === "easy" &&
+          (s.priorityLevel === "critical" || s.priorityLevel === "high"),
+      )
       .map((s: any) => ({
-        id: `quick-${s.name.toLowerCase().replace(/\s+/g, '-')}`,
+        id: `quick-${s.name.toLowerCase().replace(/\s+/g, "-")}`,
         phase: 0,
         title: `Optimize ${s.name}`,
         description: `Address ${s.issues} critical issues in ${s.name}`,
-        impact: s.estimatedImpact || 'Medium impact',
-        timeframe: '1-2 weeks'
+        impact: s.estimatedImpact || "Medium impact",
+        timeframe: "1-2 weeks",
       }));
 
     const shortTerm = auditData.sections
-      .filter((s: any) => s.implementationDifficulty === 'medium' && (s.priorityLevel === 'critical' || s.priorityLevel === 'high'))
+      .filter(
+        (s: any) =>
+          s.implementationDifficulty === "medium" &&
+          (s.priorityLevel === "critical" || s.priorityLevel === "high"),
+      )
       .map((s: any) => ({
-        id: `short-${s.name.toLowerCase().replace(/\s+/g, '-')}`,
+        id: `short-${s.name.toLowerCase().replace(/\s+/g, "-")}`,
         phase: 1,
         title: `Enhance ${s.name}`,
         description: `Implement ${s.recommendations} key improvements`,
-        impact: s.estimatedImpact || 'High impact',
-        timeframe: '1-3 months'
+        impact: s.estimatedImpact || "High impact",
+        timeframe: "1-3 months",
       }));
 
     const longTerm = auditData.sections
-      .filter((s: any) => s.implementationDifficulty === 'hard' || s.implementationDifficulty === 'very_hard')
+      .filter(
+        (s: any) =>
+          s.implementationDifficulty === "hard" ||
+          s.implementationDifficulty === "very_hard",
+      )
       .map((s: any) => ({
-        id: `long-${s.name.toLowerCase().replace(/\s+/g, '-')}`,
+        id: `long-${s.name.toLowerCase().replace(/\s+/g, "-")}`,
         phase: 2,
         title: `Transform ${s.name}`,
         description: `Complete overhaul and optimization`,
-        impact: s.estimatedImpact || 'Transformational impact',
-        timeframe: '3-6 months'
+        impact: s.estimatedImpact || "Transformational impact",
+        timeframe: "3-6 months",
       }));
 
     return [...quickWins, ...shortTerm, ...longTerm];
@@ -555,9 +683,21 @@ function InteractiveTaskChecklist({ auditData }: { auditData: any }) {
 
   const tasks = generateTasks();
   const phases = [
-    { name: 'Quick Wins', color: 'green', tasks: tasks.filter(t => t.phase === 0) },
-    { name: 'Short-term Goals', color: 'blue', tasks: tasks.filter(t => t.phase === 1) },
-    { name: 'Long-term Strategy', color: 'purple', tasks: tasks.filter(t => t.phase === 2) }
+    {
+      name: "Quick Wins",
+      color: "green",
+      tasks: tasks.filter((t) => t.phase === 0),
+    },
+    {
+      name: "Short-term Goals",
+      color: "blue",
+      tasks: tasks.filter((t) => t.phase === 1),
+    },
+    {
+      name: "Long-term Strategy",
+      color: "purple",
+      tasks: tasks.filter((t) => t.phase === 2),
+    },
   ];
 
   const toggleTask = (taskId: string) => {
@@ -573,7 +713,9 @@ function InteractiveTaskChecklist({ auditData }: { auditData: any }) {
   const getProgress = (phaseIndex: number) => {
     const phaseTasks = phases[phaseIndex]?.tasks || [];
     if (phaseTasks.length === 0) return 0;
-    const completed = phaseTasks.filter(task => checkedTasks.has(task.id)).length;
+    const completed = phaseTasks.filter((task) =>
+      checkedTasks.has(task.id),
+    ).length;
     return Math.round((completed / phaseTasks.length) * 100);
   };
 
@@ -582,7 +724,9 @@ function InteractiveTaskChecklist({ auditData }: { auditData: any }) {
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <CheckSquare className="h-5 w-5 text-indigo-600" />
-          <h4 className="text-lg font-semibold text-gray-900">Interactive Task Checklist</h4>
+          <h4 className="text-lg font-semibold text-gray-900">
+            Interactive Task Checklist
+          </h4>
         </div>
         <div className="text-sm text-gray-600">
           {checkedTasks.size} of {tasks.length} tasks completed
@@ -598,7 +742,7 @@ function InteractiveTaskChecklist({ auditData }: { auditData: any }) {
             className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
               activePhase === index
                 ? `bg-${phase.color}-100 text-${phase.color}-700 border border-${phase.color}-200`
-                : 'text-gray-600 hover:text-gray-900'
+                : "text-gray-600 hover:text-gray-900"
             }`}
           >
             <div className="flex items-center justify-center gap-2">
@@ -631,8 +775,8 @@ function InteractiveTaskChecklist({ auditData }: { auditData: any }) {
             key={task.id}
             className={`p-4 border rounded-lg transition-all ${
               checkedTasks.has(task.id)
-                ? 'bg-green-50 border-green-200'
-                : 'bg-white border-gray-200 hover:border-gray-300'
+                ? "bg-green-50 border-green-200"
+                : "bg-white border-gray-200 hover:border-gray-300"
             }`}
           >
             <div className="flex items-start gap-3">
@@ -640,21 +784,29 @@ function InteractiveTaskChecklist({ auditData }: { auditData: any }) {
                 onClick={() => toggleTask(task.id)}
                 className={`mt-1 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
                   checkedTasks.has(task.id)
-                    ? 'bg-green-500 border-green-500 text-white'
-                    : 'border-gray-300 hover:border-gray-400'
+                    ? "bg-green-500 border-green-500 text-white"
+                    : "border-gray-300 hover:border-gray-400"
                 }`}
               >
                 {checkedTasks.has(task.id) && <Check className="h-3 w-3" />}
               </button>
               <div className="flex-1">
-                <h6 className={`font-medium ${
-                  checkedTasks.has(task.id) ? 'text-green-800 line-through' : 'text-gray-900'
-                }`}>
+                <h6
+                  className={`font-medium ${
+                    checkedTasks.has(task.id)
+                      ? "text-green-800 line-through"
+                      : "text-gray-900"
+                  }`}
+                >
                   {task.title}
                 </h6>
-                <p className={`text-sm mt-1 ${
-                  checkedTasks.has(task.id) ? 'text-green-600' : 'text-gray-600'
-                }`}>
+                <p
+                  className={`text-sm mt-1 ${
+                    checkedTasks.has(task.id)
+                      ? "text-green-600"
+                      : "text-gray-600"
+                  }`}
+                >
                   {task.description}
                 </p>
                 <div className="flex gap-4 mt-2">
@@ -675,12 +827,17 @@ function InteractiveTaskChecklist({ auditData }: { auditData: any }) {
       {/* Overall Progress Summary */}
       <div className="mt-6 p-4 bg-white border border-indigo-200 rounded-lg">
         <div className="flex justify-between items-center mb-2">
-          <span className="font-medium text-gray-900">Overall Implementation Progress</span>
+          <span className="font-medium text-gray-900">
+            Overall Implementation Progress
+          </span>
           <span className="text-sm text-gray-600">
             {Math.round((checkedTasks.size / tasks.length) * 100)}% Complete
           </span>
         </div>
-        <Progress value={(checkedTasks.size / tasks.length) * 100} className="h-3" />
+        <Progress
+          value={(checkedTasks.size / tasks.length) * 100}
+          className="h-3"
+        />
         <p className="text-xs text-gray-600 mt-2">
           Keep track of your progress and celebrate each milestone!
         </p>
@@ -695,46 +852,97 @@ function ResourceCenter() {
     {
       category: "Tools & Platforms",
       items: [
-        { name: "Google PageSpeed Insights", description: "Test page speed and performance", url: "https://pagespeed.web.dev/" },
-        { name: "Google Analytics 4", description: "Track website performance metrics", url: "https://analytics.google.com/" },
-        { name: "Google Search Console", description: "Monitor search performance", url: "https://search.google.com/search-console" },
-        { name: "GTmetrix", description: "Comprehensive performance analysis", url: "https://gtmetrix.com/" }
-      ]
+        {
+          name: "Google PageSpeed Insights",
+          description: "Test page speed and performance",
+          url: "https://pagespeed.web.dev/",
+        },
+        {
+          name: "Google Analytics 4",
+          description: "Track website performance metrics",
+          url: "https://analytics.google.com/",
+        },
+        {
+          name: "Google Search Console",
+          description: "Monitor search performance",
+          url: "https://search.google.com/search-console",
+        },
+        {
+          name: "GTmetrix",
+          description: "Comprehensive performance analysis",
+          url: "https://gtmetrix.com/",
+        },
+      ],
     },
     {
       category: "Best Practices",
       items: [
-        { name: "Web Content Accessibility Guidelines", description: "WCAG 2.1 compliance standards", url: "https://www.w3.org/WAI/WCAG21/quickref/" },
-        { name: "Core Web Vitals", description: "Google's page experience metrics", url: "https://web.dev/vitals/" },
-        { name: "SEO Starter Guide", description: "Google's official SEO guidelines", url: "https://developers.google.com/search/docs/fundamentals/seo-starter-guide" }
-      ]
+        {
+          name: "Web Content Accessibility Guidelines",
+          description: "WCAG 2.1 compliance standards",
+          url: "https://www.w3.org/WAI/WCAG21/quickref/",
+        },
+        {
+          name: "Core Web Vitals",
+          description: "Google's page experience metrics",
+          url: "https://web.dev/vitals/",
+        },
+        {
+          name: "SEO Starter Guide",
+          description: "Google's official SEO guidelines",
+          url: "https://developers.google.com/search/docs/fundamentals/seo-starter-guide",
+        },
+      ],
     },
     {
       category: "Design & UX",
       items: [
-        { name: "Material Design", description: "Google's design system guidelines", url: "https://material.io/design" },
-        { name: "Human Interface Guidelines", description: "Apple's UX design principles", url: "https://developer.apple.com/design/human-interface-guidelines/" },
-        { name: "Nielsen Norman Group", description: "UX research and usability insights", url: "https://www.nngroup.com/" }
-      ]
-    }
+        {
+          name: "Material Design",
+          description: "Google's design system guidelines",
+          url: "https://material.io/design",
+        },
+        {
+          name: "Human Interface Guidelines",
+          description: "Apple's UX design principles",
+          url: "https://developer.apple.com/design/human-interface-guidelines/",
+        },
+        {
+          name: "Nielsen Norman Group",
+          description: "UX research and usability insights",
+          url: "https://www.nngroup.com/",
+        },
+      ],
+    },
   ];
 
   return (
     <div className="mt-8 p-6 bg-gray-50 border border-gray-200 rounded-lg">
       <div className="flex items-center gap-2 mb-4">
         <Briefcase className="h-5 w-5 text-gray-600" />
-        <h4 className="text-lg font-semibold text-gray-900">Helpful Resources</h4>
+        <h4 className="text-lg font-semibold text-gray-900">
+          Helpful Resources
+        </h4>
       </div>
 
       <div className="space-y-6">
         {resources.map((category, index) => (
           <div key={index}>
-            <h5 className="font-semibold text-gray-900 mb-3">{category.category}</h5>
+            <h5 className="font-semibold text-gray-900 mb-3">
+              {category.category}
+            </h5>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {category.items.map((resource, resourceIndex) => (
-                <div key={resourceIndex} className="bg-white border rounded-lg p-3 hover:shadow-sm transition-shadow">
-                  <h6 className="font-medium text-gray-900 text-sm mb-1">{resource.name}</h6>
-                  <p className="text-xs text-gray-600 mb-2">{resource.description}</p>
+                <div
+                  key={resourceIndex}
+                  className="bg-white border rounded-lg p-3 hover:shadow-sm transition-shadow"
+                >
+                  <h6 className="font-medium text-gray-900 text-sm mb-1">
+                    {resource.name}
+                  </h6>
+                  <p className="text-xs text-gray-600 mb-2">
+                    {resource.description}
+                  </p>
                   <a
                     href={resource.url}
                     target="_blank"
@@ -756,7 +964,7 @@ function ResourceCenter() {
 
 // Function to parse and style audit section content
 function parseAuditContent(content: string) {
-  if (!content || typeof content !== 'string') {
+  if (!content || typeof content !== "string") {
     return [];
   }
 
@@ -780,7 +988,7 @@ function parseAuditContent(content: string) {
       /(\*\*)?Problems?\*?\*?:?/i,
       /(\*\*)?Areas?\s*for\s*Improvement\*?\*?:?/i,
       /^Issues?:/i,
-      /^Problems?:/i
+      /^Problems?:/i,
     ];
 
     const recommendationPatterns = [
@@ -790,7 +998,7 @@ function parseAuditContent(content: string) {
       /(\*\*)?Improvements?\*?\*?:?/i,
       /^Recommendations?:/i,
       /^Actions?:/i,
-      /^Improvements?:/i
+      /^Improvements?:/i,
     ];
 
     const overviewPatterns = [
@@ -798,13 +1006,13 @@ function parseAuditContent(content: string) {
       /(\*\*)?Analysis\*?\*?:?/i,
       /(\*\*)?Summary\*?\*?:?/i,
       /^Overview:/i,
-      /^Analysis:/i
+      /^Analysis:/i,
     ];
 
     let sectionFound = false;
 
     // Check for issues section
-    if (issuePatterns.some(pattern => pattern.test(line))) {
+    if (issuePatterns.some((pattern) => pattern.test(line))) {
       if (currentContent.length > 0) {
         sections.push({ type: currentSection, content: [...currentContent] });
         currentContent = [];
@@ -813,7 +1021,7 @@ function parseAuditContent(content: string) {
       sectionFound = true;
     }
     // Check for recommendations section
-    else if (recommendationPatterns.some(pattern => pattern.test(line))) {
+    else if (recommendationPatterns.some((pattern) => pattern.test(line))) {
       if (currentContent.length > 0) {
         sections.push({ type: currentSection, content: [...currentContent] });
         currentContent = [];
@@ -822,7 +1030,7 @@ function parseAuditContent(content: string) {
       sectionFound = true;
     }
     // Check for overview section
-    else if (overviewPatterns.some(pattern => pattern.test(line))) {
+    else if (overviewPatterns.some((pattern) => pattern.test(line))) {
       if (currentContent.length > 0) {
         sections.push({ type: currentSection, content: [...currentContent] });
         currentContent = [];
@@ -842,7 +1050,12 @@ function parseAuditContent(content: string) {
         .trim();
 
       // Skip empty lines and section headers we might have missed
-      if (cleanLine && !cleanLine.match(/^(issues?|recommendations?|overview|analysis|summary):\s*$/i)) {
+      if (
+        cleanLine &&
+        !cleanLine.match(
+          /^(issues?|recommendations?|overview|analysis|summary):\s*$/i,
+        )
+      ) {
         currentContent.push(cleanLine);
       }
     }
@@ -857,7 +1070,10 @@ function parseAuditContent(content: string) {
   if (sections.length === 0 && content.trim()) {
     sections.push({
       type: "overview",
-      content: content.split('\n\n').filter(p => p.trim()).map(p => p.trim())
+      content: content
+        .split("\n\n")
+        .filter((p) => p.trim())
+        .map((p) => p.trim()),
     });
   }
 
@@ -1133,7 +1349,10 @@ Best regards`);
                 <Card className="w-80 h-52 bg-yellow-50 border-yellow-200 border-2 shadow-lg">
                   <CardContent className="pt-8 text-center h-full flex flex-col justify-center">
                     <div className="text-6xl font-bold mb-2 text-orange-600">
-                      {typeof auditData.overallScore === 'number' ? auditData.overallScore.toFixed(1) : auditData.overallScore}%
+                      {typeof auditData.overallScore === "number"
+                        ? auditData.overallScore.toFixed(1)
+                        : auditData.overallScore}
+                      %
                     </div>
                     <div className="text-gray-700 font-semibold text-lg mb-4">
                       Overall Score
@@ -1188,7 +1407,10 @@ Best regards`);
                       <div
                         className={`text-2xl font-bold ${getScoreColor(section.score)}`}
                       >
-                        {typeof section.score === 'number' ? section.score.toFixed(1) : section.score}%
+                        {typeof section.score === "number"
+                          ? section.score.toFixed(1)
+                          : section.score}
+                        %
                       </div>
                     </div>
                     <Progress value={section.score} className="h-2" />
@@ -1218,7 +1440,8 @@ Best regards`);
                   Detailed Recommendations by Category
                 </CardTitle>
                 <CardDescription>
-                  Expand each section below to view specific recommendations and action items.
+                  Expand each section below to view specific recommendations and
+                  action items.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -1226,31 +1449,45 @@ Best regards`);
                   {auditData.sections.map((section, index) => {
                     const parsedContent = parseAuditContent(section.details);
                     const recommendationsContent = parsedContent.find(
-                      (content) => content.type === "recommendations"
+                      (content) => content.type === "recommendations",
                     );
 
                     // Log debug info for troubleshooting
                     console.log(`\n=== SECTION: ${section.name} ===`);
-                    console.log('Raw details:', section.details?.substring(0, 200) + '...');
-                    console.log('Details structure:', {
+                    console.log(
+                      "Raw details:",
+                      section.details?.substring(0, 200) + "...",
+                    );
+                    console.log("Details structure:", {
                       hasDetails: !!section.details,
                       detailsLength: section.details?.length || 0,
-                      firstFewLines: section.details?.split('\n').slice(0, 3),
-                      containsRecommendations: section.details?.toLowerCase().includes('recommendation'),
-                      containsIssues: section.details?.toLowerCase().includes('issue'),
+                      firstFewLines: section.details?.split("\n").slice(0, 3),
+                      containsRecommendations: section.details
+                        ?.toLowerCase()
+                        .includes("recommendation"),
+                      containsIssues: section.details
+                        ?.toLowerCase()
+                        .includes("issue"),
                     });
-                    console.log('Parsed sections:', parsedContent.map(p => ({
-                      type: p.type,
-                      contentLength: p.content.length,
-                      firstItem: p.content[0]?.substring(0, 50) + '...'
-                    })));
-                    console.log('=== END SECTION ===\n');
+                    console.log(
+                      "Parsed sections:",
+                      parsedContent.map((p) => ({
+                        type: p.type,
+                        contentLength: p.content.length,
+                        firstItem: p.content[0]?.substring(0, 50) + "...",
+                      })),
+                    );
+                    console.log("=== END SECTION ===\n");
 
                     // Show section if it has recommendations count or any content
                     // Don't filter out sections - show them even if parsing fails
-                    const hasRecommendations = recommendationsContent && recommendationsContent.content.length > 0;
-                    const hasContent = section.details && section.details.length > 0;
-                    const hasRecommendationCount = (section.recommendations || 0) > 0;
+                    const hasRecommendations =
+                      recommendationsContent &&
+                      recommendationsContent.content.length > 0;
+                    const hasContent =
+                      section.details && section.details.length > 0;
+                    const hasRecommendationCount =
+                      (section.recommendations || 0) > 0;
 
                     if (!hasContent && !hasRecommendationCount) {
                       return null;
@@ -1271,14 +1508,22 @@ Best regards`);
                                   {section.name}
                                 </div>
                                 <div className="text-sm text-gray-600 font-normal">
-                                  {section.recommendations} recommendations • Score: {typeof section.score === 'number' ? section.score.toFixed(1) : section.score}%
+                                  {section.recommendations} recommendations •
+                                  Score:{" "}
+                                  {typeof section.score === "number"
+                                    ? section.score.toFixed(1)
+                                    : section.score}
+                                  %
                                 </div>
                               </div>
                             </div>
                             <div
                               className={`px-3 py-1 rounded-full text-sm font-bold ${getScoreColor(section.score)} ${getScoreBg(section.score)} border mr-2`}
                             >
-                              {typeof section.score === 'number' ? section.score.toFixed(1) : section.score}%
+                              {typeof section.score === "number"
+                                ? section.score.toFixed(1)
+                                : section.score}
+                              %
                             </div>
                           </div>
                         </AccordionTrigger>
@@ -1286,94 +1531,128 @@ Best regards`);
                           <div className="pt-4 space-y-4">
                             {(() => {
                               // Re-calculate these inside the render scope
-                              const hasRecommendationsContent = recommendationsContent && recommendationsContent.content.length > 0;
-                              const overviewContent = parsedContent.find((content) => content.type === "overview");
-                              const issuesContent = parsedContent.find((content) => content.type === "issues");
+                              const hasRecommendationsContent =
+                                recommendationsContent &&
+                                recommendationsContent.content.length > 0;
+                              const overviewContent = parsedContent.find(
+                                (content) => content.type === "overview",
+                              );
+                              const issuesContent = parsedContent.find(
+                                (content) => content.type === "issues",
+                              );
 
                               return (
                                 <>
                                   {/* Show Overview if available */}
-                                  {overviewContent && overviewContent.content.length > 0 && (
-                                    <div className="space-y-3">
-                                      <div className="flex items-center gap-2 mb-3">
-                                        <Info className="h-4 w-4 text-blue-600" />
-                                        <h5 className="font-semibold text-gray-900">Overview</h5>
+                                  {overviewContent &&
+                                    overviewContent.content.length > 0 && (
+                                      <div className="space-y-3">
+                                        <div className="flex items-center gap-2 mb-3">
+                                          <Info className="h-4 w-4 text-blue-600" />
+                                          <h5 className="font-semibold text-gray-900">
+                                            Overview
+                                          </h5>
+                                        </div>
+                                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                          {overviewContent.content.map(
+                                            (item, itemIndex) => (
+                                              <div
+                                                key={itemIndex}
+                                                className="flex gap-3 items-start mb-2 last:mb-0"
+                                              >
+                                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                                                <p className="text-blue-800 text-sm leading-relaxed">
+                                                  {item}
+                                                </p>
+                                              </div>
+                                            ),
+                                          )}
+                                        </div>
                                       </div>
-                                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                                        {overviewContent.content.map((item, itemIndex) => (
-                                          <div key={itemIndex} className="flex gap-3 items-start mb-2 last:mb-0">
-                                            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                                            <p className="text-blue-800 text-sm leading-relaxed">
-                                              {item}
-                                            </p>
-                                          </div>
-                                        ))}
-                                      </div>
-                                    </div>
-                                  )}
+                                    )}
 
                                   {/* Show Issues if available */}
-                                  {issuesContent && issuesContent.content.length > 0 && (
-                                    <div className="space-y-3">
-                                      <div className="flex items-center gap-2 mb-3">
-                                        <XCircle className="h-4 w-4 text-red-600" />
-                                        <h5 className="font-semibold text-gray-900">Issues Found</h5>
+                                  {issuesContent &&
+                                    issuesContent.content.length > 0 && (
+                                      <div className="space-y-3">
+                                        <div className="flex items-center gap-2 mb-3">
+                                          <XCircle className="h-4 w-4 text-red-600" />
+                                          <h5 className="font-semibold text-gray-900">
+                                            Issues Found
+                                          </h5>
+                                        </div>
+                                        <div className="space-y-2">
+                                          {issuesContent.content.map(
+                                            (issue, itemIndex) => (
+                                              <div
+                                                key={itemIndex}
+                                                className="flex gap-3 p-3 bg-red-50 border border-red-200 rounded-lg"
+                                              >
+                                                <div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
+                                                <p className="text-red-800 text-sm leading-relaxed">
+                                                  {issue}
+                                                </p>
+                                              </div>
+                                            ),
+                                          )}
+                                        </div>
                                       </div>
-                                      <div className="space-y-2">
-                                        {issuesContent.content.map((issue, itemIndex) => (
-                                          <div
-                                            key={itemIndex}
-                                            className="flex gap-3 p-3 bg-red-50 border border-red-200 rounded-lg"
-                                          >
-                                            <div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
-                                            <p className="text-red-800 text-sm leading-relaxed">
-                                              {issue}
-                                            </p>
-                                          </div>
-                                        ))}
-                                      </div>
-                                    </div>
-                                  )}
+                                    )}
 
                                   {/* Show Recommendations/Analysis - Always show this section */}
                                   <div className="space-y-3">
                                     <div className="flex items-center gap-2 mb-3">
                                       <Lightbulb className="h-4 w-4 text-green-600" />
                                       <h5 className="font-semibold text-gray-900">
-                                        {hasRecommendationsContent ? 'Recommendations' : 'Analysis & Insights'}
+                                        {hasRecommendationsContent
+                                          ? "Recommendations"
+                                          : "Analysis & Insights"}
                                       </h5>
-                                      {process.env.NODE_ENV === 'development' && (
+                                      {process.env.NODE_ENV ===
+                                        "development" && (
                                         <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
-                                          {hasRecommendationsContent ? `${recommendationsContent.content.length} parsed` : 'fallback mode'}
+                                          {hasRecommendationsContent
+                                            ? `${recommendationsContent.content.length} parsed`
+                                            : "fallback mode"}
                                         </span>
                                       )}
                                     </div>
                                     <div className="space-y-2">
                                       {hasRecommendationsContent ? (
                                         // Show parsed recommendations if available
-                                        recommendationsContent.content.map((recommendation, itemIndex) => (
-                                          <div
-                                            key={itemIndex}
-                                            className="flex gap-3 p-3 bg-green-50 border border-green-200 rounded-lg"
-                                          >
-                                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                                            <p className="text-green-800 text-sm leading-relaxed">
-                                              {recommendation}
-                                            </p>
-                                          </div>
-                                        ))
+                                        recommendationsContent.content.map(
+                                          (recommendation, itemIndex) => (
+                                            <div
+                                              key={itemIndex}
+                                              className="flex gap-3 p-3 bg-green-50 border border-green-200 rounded-lg"
+                                            >
+                                              <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                                              <p className="text-green-800 text-sm leading-relaxed">
+                                                {recommendation}
+                                              </p>
+                                            </div>
+                                          ),
+                                        )
                                       ) : (
                                         // Fallback: show full content with better formatting
                                         <div className="space-y-3">
-                                          {section.details.split('\n\n').filter(paragraph => paragraph.trim()).map((paragraph, pIndex) => (
-                                            <div key={pIndex} className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                                              <div className="prose prose-sm max-w-none">
-                                                <p className="text-gray-800 text-sm leading-relaxed whitespace-pre-wrap">
-                                                  {paragraph.trim()}
-                                                </p>
+                                          {section.details
+                                            .split("\n\n")
+                                            .filter((paragraph) =>
+                                              paragraph.trim(),
+                                            )
+                                            .map((paragraph, pIndex) => (
+                                              <div
+                                                key={pIndex}
+                                                className="p-4 bg-gray-50 border border-gray-200 rounded-lg"
+                                              >
+                                                <div className="prose prose-sm max-w-none">
+                                                  <p className="text-gray-800 text-sm leading-relaxed whitespace-pre-wrap">
+                                                    {paragraph.trim()}
+                                                  </p>
+                                                </div>
                                               </div>
-                                            </div>
-                                          ))}
+                                            ))}
                                         </div>
                                       )}
                                     </div>
@@ -1383,10 +1662,15 @@ Best regards`);
                             })()}
 
                             {/* Show SWOT Matrix and Competitive Metrics for Competitor Analysis */}
-                            {section.name.toLowerCase().includes("competitor") && (
+                            {section.name
+                              .toLowerCase()
+                              .includes("competitor") && (
                               <>
                                 <CompetitiveMetrics auditData={auditData} />
-                                <SWOTMatrix sectionName={section.name} auditData={auditData} />
+                                <SWOTMatrix
+                                  sectionName={section.name}
+                                  auditData={auditData}
+                                />
                               </>
                             )}
                           </div>
@@ -1407,7 +1691,8 @@ Best regards`);
                   Strategic Implementation Plan
                 </CardTitle>
                 <CardDescription>
-                  Comprehensive action plan with prioritized recommendations, timelines, and success metrics for {auditData.title}
+                  Comprehensive action plan with prioritized recommendations,
+                  timelines, and success metrics for {auditData.title}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -1449,16 +1734,24 @@ Best regards`);
                       </h5>
                       <div className="text-sm text-red-700 space-y-1">
                         {auditData.sections
-                          .filter((s) => s.priorityLevel === 'critical' || s.score < 50)
+                          .filter(
+                            (s) =>
+                              s.priorityLevel === "critical" || s.score < 50,
+                          )
                           .map((s, index) => (
                             <div key={index} className="flex justify-between">
                               <span>{s.name}</span>
-                              <Badge variant="destructive" className="text-xs">{typeof s.score === 'number' ? s.score.toFixed(1) : s.score}%</Badge>
+                              <Badge variant="destructive" className="text-xs">
+                                {typeof s.score === "number"
+                                  ? s.score.toFixed(1)
+                                  : s.score}
+                                %
+                              </Badge>
                             </div>
                           )) || <span>No critical issues found</span>}
                       </div>
                     </div>
-                    
+
                     <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                       <h5 className="font-medium text-yellow-800 mb-2 flex items-center gap-2">
                         <Clock className="h-4 w-4" />
@@ -1466,16 +1759,25 @@ Best regards`);
                       </h5>
                       <div className="text-sm text-yellow-700 space-y-1">
                         {auditData.sections
-                          .filter((s) => s.priorityLevel === 'high' || (s.score >= 50 && s.score < 70))
+                          .filter(
+                            (s) =>
+                              s.priorityLevel === "high" ||
+                              (s.score >= 50 && s.score < 70),
+                          )
                           .map((s, index) => (
                             <div key={index} className="flex justify-between">
                               <span>{s.name}</span>
-                              <Badge variant="secondary" className="text-xs">{typeof s.score === 'number' ? s.score.toFixed(1) : s.score}%</Badge>
+                              <Badge variant="secondary" className="text-xs">
+                                {typeof s.score === "number"
+                                  ? s.score.toFixed(1)
+                                  : s.score}
+                                %
+                              </Badge>
                             </div>
                           )) || <span>No high priority items</span>}
                       </div>
                     </div>
-                    
+
                     <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                       <h5 className="font-medium text-green-800 mb-2 flex items-center gap-2">
                         <Star className="h-4 w-4" />
@@ -1487,7 +1789,15 @@ Best regards`);
                           .map((s, index) => (
                             <div key={index} className="flex justify-between">
                               <span>{s.name}</span>
-                              <Badge variant="default" className="text-xs bg-green-600">{typeof s.score === 'number' ? s.score.toFixed(1) : s.score}%</Badge>
+                              <Badge
+                                variant="default"
+                                className="text-xs bg-green-600"
+                              >
+                                {typeof s.score === "number"
+                                  ? s.score.toFixed(1)
+                                  : s.score}
+                                %
+                              </Badge>
                             </div>
                           )) || <span>Focus on improving other areas</span>}
                       </div>
@@ -1502,17 +1812,20 @@ Best regards`);
                 <div className="mt-8 p-6 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg text-white">
                   <div className="flex items-center gap-3 mb-4">
                     <PlayCircle className="h-6 w-6" />
-                    <h4 className="text-lg font-semibold">Ready to Get Started?</h4>
+                    <h4 className="text-lg font-semibold">
+                      Ready to Get Started?
+                    </h4>
                   </div>
                   <p className="mb-4 text-blue-100">
-                    Your audit analysis is complete. The next step is implementation. Consider scheduling a follow-up meeting 
-                    to discuss priorities and create a detailed execution timeline.
+                    Your audit analysis is complete. The next step is
+                    implementation. Consider scheduling a follow-up meeting to
+                    discuss priorities and create a detailed execution timeline.
                   </p>
                   <div className="flex flex-wrap gap-3">
                     <Button
                       variant="secondary"
                       size="sm"
-                      onClick={() => navigate('/')}
+                      onClick={() => navigate("/")}
                       className="flex items-center gap-2"
                     >
                       <ArrowRight className="h-4 w-4" />
@@ -1557,8 +1870,12 @@ Best regards`);
                         onClick={copyToClipboard}
                         className="flex items-center gap-2 text-white border-white hover:bg-white hover:text-blue-600"
                       >
-                        {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                        {copied ? 'Copied!' : 'Copy'}
+                        {copied ? (
+                          <Check className="h-4 w-4" />
+                        ) : (
+                          <Copy className="h-4 w-4" />
+                        )}
+                        {copied ? "Copied!" : "Copy"}
                       </Button>
                     </div>
                   </div>

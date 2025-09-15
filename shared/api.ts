@@ -25,11 +25,11 @@ export interface AuditSection {
   issues: number;
   recommendations: number;
   details: string;
-  priorityLevel?: 'critical' | 'high' | 'medium' | 'low';
-  implementationDifficulty?: 'easy' | 'medium' | 'hard' | 'very_hard';
+  priorityLevel?: "critical" | "high" | "medium" | "low";
+  implementationDifficulty?: "easy" | "medium" | "hard" | "very_hard";
   estimatedImpact?: string;
   confidence?: number;
-  evidenceLevel?: 'high' | 'medium' | 'low';
+  evidenceLevel?: "high" | "medium" | "low";
   industryComparison?: string;
   industryPercentile?: number;
 }
