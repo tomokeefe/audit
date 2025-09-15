@@ -2128,6 +2128,19 @@ Be thorough, professional, and provide actionable insights based on the availabl
     };
   } catch (error) {
     console.error("Error generating audit:", error);
+
+    // Check if it's a Gemini API overload error
+    if (error instanceof Error && error.message.includes('overloaded')) {
+      console.log("Gemini API is overloaded, providing fallback audit");
+      return generateFallbackAudit(websiteData);
+    }
+
+    // Check for other service errors
+    if (error instanceof Error && (error.message.includes('503') || error.message.includes('Service Unavailable'))) {
+      console.log("AI service unavailable, providing fallback audit");
+      return generateFallbackAudit(websiteData);
+    }
+
     throw new Error("Failed to generate audit analysis. Please try again.");
   }
 }
