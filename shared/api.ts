@@ -44,4 +44,32 @@ export interface AuditResponse {
   status: string;
   sections: AuditSection[];
   summary: string;
+  metadata?: {
+    analysisConfidence?: number;
+    industryDetected?: string;
+    businessType?: string;
+    evidenceQuality?: string;
+    qualityScore?: number;
+    validationWarnings?: number;
+    industryRelevanceScore?: number;
+    recommendationAlignment?: number;
+    scoreConsistency?: number;
+    dynamicWeightsApplied?: boolean;
+    scoringEnhancementsApplied?: string[];
+  };
+  reasoningChain?: string[];
+  improvementImpact?: {
+    highPriority?: string[];
+    estimatedROI?: string;
+    implementationTimeframe?: string;
+    quickWins?: string[];
+  };
+  performanceMetrics?: {
+    responseTime?: number;
+    tokensUsed?: number;
+    qualityScore?: number;
+    industryAccuracy?: number;
+    evidenceLevel?: boolean;
+    completenessScore?: number;
+  };
 }
