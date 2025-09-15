@@ -35,8 +35,16 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
   console.log('SSE headers sent successfully');
 
   const sendProgress = (update: ProgressUpdate) => {
-    if (!res.headersSent && !res.destroyed) {
-      res.write(`data: ${JSON.stringify(update)}\n\n`);
+    try {
+      if (!res.headersSent && !res.destroyed) {
+        const message = `data: ${JSON.stringify(update)}\n\n`;
+        console.log('Sending SSE message:', update.message);
+        res.write(message);
+      } else {
+        console.log('Cannot send SSE message - connection closed');
+      }
+    } catch (error) {
+      console.error('Error sending SSE message:', error);
     }
   };
 
