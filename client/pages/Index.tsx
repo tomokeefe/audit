@@ -620,15 +620,22 @@ export default function Index() {
         eventSource.onerror = (error) => {
           console.error('EventSource error:', error);
 
-          // More specific error handling
+          // More specific error handling based on readyState
           if (eventSource.readyState === EventSource.CLOSED) {
-            setError('Connection closed by server. Please try again.');
+            console.log('EventSource connection closed, falling back to standard audit');
+            // Don't show error - just fall back silently
+            eventSource.close();
+            reject(new Error('EventSource closed - fallback'));
+          } else if (eventSource.readyState === EventSource.CONNECTING) {
+            console.log('EventSource still connecting, waiting...');
+            // Give it more time to connect
+            return;
           } else {
-            setError('Connection to server lost. Falling back to standard mode.');
+            console.log('EventSource connection failed, falling back to standard audit');
+            setError('Connection issue detected. Switching to standard audit mode...');
+            eventSource.close();
+            reject(new Error('EventSource connection failed'));
           }
-
-          eventSource.close();
-          reject(new Error('EventSource connection failed'));
         };
 
         // Cleanup function
