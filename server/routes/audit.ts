@@ -28,6 +28,7 @@ export { auditStorage };
 export { storeAuditResult };
 export { scrapeWebsite };
 export { generateAudit };
+export { generateFallbackAudit };
 
 // Function to create fallback website data when scraping fails
 export function createFallbackData(url: string) {
