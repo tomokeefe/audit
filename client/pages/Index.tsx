@@ -277,33 +277,33 @@ export default function Index() {
     let errorMsg = "";
 
     // Helper function to create fetch with timeout
-  const fetchWithTimeout = async (url: string, timeout = 5000) => {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => {
-      console.log(`Request timeout after ${timeout}ms for ${url}`);
-      controller.abort();
-    }, timeout);
+      const fetchWithTimeout = async (url: string, timeout = 5000) => {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        console.log(`Request timeout after ${timeout}ms for ${url}`);
+        controller.abort();
+      }, timeout);
 
-    try {
-      const response = await fetch(url, {
-        signal: controller.signal,
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      });
-      clearTimeout(timeoutId);
-      return response;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      // Improve error handling for AbortError
-      if (error instanceof Error && error.name === 'AbortError') {
-        console.log(`Request aborted for ${url}`);
-        throw new Error(`Request timeout after ${timeout}ms`);
+      try {
+        const response = await fetch(url, {
+          signal: controller.signal,
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        });
+        clearTimeout(timeoutId);
+        return response;
+      } catch (error) {
+        clearTimeout(timeoutId);
+        // Improve error handling for AbortError
+        if (error instanceof Error && error.name === 'AbortError') {
+          console.log(`Request aborted for ${url}`);
+          throw new Error(`Request timeout after ${timeout}ms`);
+        }
+        throw error;
       }
-      throw error;
-    }
-  };
+    };
 
     try {
       // Test ping endpoint with timeout
