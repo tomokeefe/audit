@@ -1509,8 +1509,8 @@ Best regards`);
                     to discuss priorities and create a detailed execution timeline.
                   </p>
                   <div className="flex flex-wrap gap-3">
-                    <Button 
-                      variant="secondary" 
+                    <Button
+                      variant="secondary"
                       size="sm"
                       onClick={() => navigate('/')}
                       className="flex items-center gap-2"
@@ -1518,15 +1518,49 @@ Best regards`);
                       <ArrowRight className="h-4 w-4" />
                       Run Another Audit
                     </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={shareViaEmail}
-                      className="flex items-center gap-2 text-white border-white hover:bg-white hover:text-blue-600"
-                    >
-                      <Mail className="h-4 w-4" />
-                      Share Report
-                    </Button>
+
+                    {/* Enhanced Social Sharing Options */}
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={shareViaEmail}
+                        className="flex items-center gap-2 text-white border-white hover:bg-white hover:text-blue-600"
+                      >
+                        <Mail className="h-4 w-4" />
+                        Email
+                      </Button>
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={shareViaLinkedIn}
+                        className="flex items-center gap-2 text-white border-white hover:bg-white hover:text-blue-600"
+                      >
+                        <Share2 className="h-4 w-4" />
+                        LinkedIn
+                      </Button>
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={shareViaTwitter}
+                        className="flex items-center gap-2 text-white border-white hover:bg-white hover:text-blue-600"
+                      >
+                        <MessageCircle className="h-4 w-4" />
+                        Twitter
+                      </Button>
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={copyToClipboard}
+                        className="flex items-center gap-2 text-white border-white hover:bg-white hover:text-blue-600"
+                      >
+                        {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                        {copied ? 'Copied!' : 'Copy'}
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </CardContent>
