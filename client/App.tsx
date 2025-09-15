@@ -14,6 +14,7 @@ import Audits from "./pages/Audits";
 import AuditComparison from "./pages/AuditComparison";
 import Reports from "./pages/Reports";
 import NotFound from "./pages/NotFound";
+import DebugTest from "./pages/DebugTest";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
               <Route path="/audits" element={<Audits />} />
               <Route path="/compare" element={<AuditComparison />} />
               <Route path="/reports" element={<Reports />} />
+              <Route path="/debug-test" element={<DebugTest />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
