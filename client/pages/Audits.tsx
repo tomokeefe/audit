@@ -128,12 +128,20 @@ export default function Audits() {
               Manage and review all your brand audits
             </p>
           </div>
-          <Button asChild className="mt-4 md:mt-0">
-            <Link to="/" className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              New Audit
-            </Link>
-          </Button>
+          <div className="flex gap-3 mt-4 md:mt-0">
+            <Button asChild variant="outline">
+              <Link to="/compare" className="flex items-center gap-2">
+                <BarChart3 className="h-4 w-4" />
+                Compare Audits
+              </Link>
+            </Button>
+            <Button asChild>
+              <Link to="/" className="flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                New Audit
+              </Link>
+            </Button>
+          </div>
         </div>
 
         {/* Filters and Search */}
