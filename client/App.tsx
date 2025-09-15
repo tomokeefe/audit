@@ -27,6 +27,7 @@ const App = () => (
           <Route path="/audit/:id" element={<AuditResults />} />
           <Route path="/share/audit/:id" element={<SharedAudit />} />
           <Route path="/audits" element={<Audits />} />
+          <Route path="/compare" element={<AuditComparison />} />
           <Route path="/reports" element={<Reports />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
