@@ -130,6 +130,17 @@ export default function Index() {
     try {
       setLoadingAudits(true);
 
+      // Check if we're in development environment
+      const isDevelopment = window.location.hostname.includes('projects.builder.codes');
+
+      if (isDevelopment) {
+        console.log("Development environment - using mock data");
+        setApiStatus((prev) => ({ ...prev, audits: true, error: undefined }));
+        setRecentAudits([]);
+        setAllAudits([]);
+        return;
+      }
+
       // Use same timeout mechanism as testAPIConnection
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 8000); // Longer timeout for data loading
@@ -229,6 +240,20 @@ export default function Index() {
   // Improved API connectivity test with timeout and retry
   const testAPIConnection = async () => {
     console.log("Testing API connection...");
+
+    // Check if we're in development environment
+    const isDevelopment = window.location.hostname.includes('projects.builder.codes');
+
+    if (isDevelopment) {
+      console.log("Development environment detected - skipping API connectivity tests");
+      setApiStatus({
+        ping: false,
+        audits: false,
+        error: "Development environment - API endpoints not available"
+      });
+      return { ping: false, audits: false };
+    }
+
     let pingOk = false;
     let auditsOk = false;
     let errorMsg = "";
@@ -289,8 +314,8 @@ export default function Index() {
         if (pingError instanceof Error) {
           if (pingError.name === "AbortError") {
             errorMsg = "Ping request timed out";
-          } else if (pingError.message.includes("fetch")) {
-            errorMsg = "Network error: Cannot reach API server";
+          } else if (pingError.message.includes("fetch") || pingError.message.includes("Failed to fetch")) {
+            errorMsg = "Development environment - API endpoints not available";
           } else {
             errorMsg = `Ping error: ${pingError.message}`;
           }
@@ -837,7 +862,7 @@ export default function Index() {
       console.log("🔵 Form submitted with URL:", url.trim());
 
       if (!url.trim()) {
-        console.log("❌ Empty URL, aborting submission");
+        console.log("��� Empty URL, aborting submission");
         return;
       }
 
