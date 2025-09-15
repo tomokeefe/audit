@@ -12,6 +12,16 @@ interface ProgressUpdate {
 
 // Progress tracking with Server-Sent Events
 export const handleAuditProgress = async (req: Request, res: Response) => {
+  console.log('=== EventSource Request Started ===');
+  console.log('Method:', req.method);
+  console.log('URL:', req.url);
+  console.log('Query params:', req.query);
+  console.log('Headers:', {
+    'user-agent': req.headers['user-agent'],
+    'accept': req.headers['accept'],
+    'cache-control': req.headers['cache-control']
+  });
+
   // Set up SSE headers
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
@@ -21,6 +31,8 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
     'Access-Control-Allow-Headers': 'Cache-Control',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
   });
+
+  console.log('SSE headers sent successfully');
 
   const sendProgress = (update: ProgressUpdate) => {
     if (!res.headersSent && !res.destroyed) {
