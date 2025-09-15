@@ -53,8 +53,11 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
   };
 
   // Handle connection cleanup
+  let isCleanedUp = false;
   const cleanup = () => {
-    if (!res.destroyed) {
+    if (!isCleanedUp && !res.destroyed) {
+      isCleanedUp = true;
+      console.log('Cleaning up EventSource connection');
       res.end();
     }
   };
@@ -66,17 +69,19 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
     message: 'EventSource connection established'
   });
 
-  // Set up connection close handlers
+  // Set up connection close handlers (but don't cleanup too aggressively)
   req.on('close', () => {
-    console.log('EventSource connection closed by client');
+    console.log('EventSource request closed by client');
     cleanup();
   });
   req.on('aborted', () => {
-    console.log('EventSource connection aborted');
+    console.log('EventSource request aborted');
     cleanup();
   });
-  res.on('close', () => {
-    console.log('EventSource response closed');
+
+  // Don't cleanup on response close - let the audit complete
+  res.on('error', (error) => {
+    console.log('EventSource response error:', error);
     cleanup();
   });
 
