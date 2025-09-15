@@ -504,7 +504,133 @@ export default function Index() {
     }
   };
 
+  // New real-time progress audit function using Server-Sent Events
+  const handleAuditWithProgress = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!url.trim()) return;
+
+    // Normalize URL to support flexible formats
+    let normalizedUrl = url.trim();
+    if (!normalizedUrl.match(/^https?:\/\//)) {
+      normalizedUrl = `https://${normalizedUrl}`;
+    }
+
+    setIsLoading(true);
+    setError("");
+    setShowProgress(true);
+
+    // Initialize progress tracking with real-time updates
+    const steps = initializeProgressSteps();
+    setCurrentProgress(0);
+
+    try {
+      // Use Server-Sent Events for real-time progress
+      const auditRequest = { url: normalizedUrl };
+
+      // Create EventSource for progress updates
+      const eventSource = new EventSource('/api/audit/progress');
+
+      // Send the audit request
+      fetch('/api/audit/progress', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(auditRequest),
+      });
+
+      return new Promise((resolve, reject) => {
+        eventSource.onmessage = (event) => {
+          try {
+            const progressData = JSON.parse(event.data);
+            console.log('Progress update:', progressData);
+
+            // Update progress based on server events
+            setCurrentProgress(progressData.progress);
+
+            // Update step status
+            if (progressData.step && progressData.step !== 'error') {
+              updateProgress(progressData.step, progressData.completed || false);
+            }
+
+            // Handle completion
+            if (progressData.completed && progressData.data) {
+              const auditResult = progressData.data;
+
+              // Store audit result in localStorage
+              localStorage.setItem(
+                `audit_${auditResult.id}`,
+                JSON.stringify(auditResult),
+              );
+
+              // Reload recent audits
+              loadRecentAudits();
+
+              // Navigate to results
+              setTimeout(() => {
+                navigate(`/audit/${auditResult.id}`);
+              }, 1000);
+
+              eventSource.close();
+              resolve(auditResult);
+            }
+
+            // Handle errors
+            if (progressData.error) {
+              setError(progressData.error);
+              eventSource.close();
+              reject(new Error(progressData.error));
+            }
+
+          } catch (parseError) {
+            console.error('Error parsing progress data:', parseError);
+          }
+        };
+
+        eventSource.onerror = (error) => {
+          console.error('EventSource error:', error);
+          setError('Connection to server lost. Please try again.');
+          eventSource.close();
+          reject(new Error('Connection failed'));
+        };
+
+        // Timeout fallback
+        setTimeout(() => {
+          eventSource.close();
+          reject(new Error('Request timed out'));
+        }, 120000); // 2 minute timeout
+      });
+
+    } catch (error) {
+      console.error("Real-time audit error:", error);
+
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("An unexpected error occurred. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
+      setShowProgress(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!url.trim()) return;
+
+    // Use real-time progress tracking by default
+    try {
+      await handleAuditWithProgress(e);
+    } catch (error) {
+      // Fallback to standard audit if progress tracking fails
+      console.log("Falling back to standard audit method");
+      await handleSubmitStandard(e);
+    }
+  };
+
+  // Standard audit submission (fallback)
+  const handleSubmitStandard = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!url.trim()) return;
 
