@@ -600,10 +600,12 @@ export default function Index() {
         eventSource.onmessage = (event) => {
           try {
             const progressData = JSON.parse(event.data);
-            console.log('Progress update:', progressData);
+            console.log('EventSource message received:', progressData);
 
             // Update progress based on server events
-            setCurrentProgress(progressData.progress);
+            if (typeof progressData.progress === 'number') {
+              setCurrentProgress(progressData.progress);
+            }
 
             // Update step status
             if (progressData.step && progressData.step !== 'error') {
@@ -612,6 +614,7 @@ export default function Index() {
 
             // Handle completion
             if (progressData.completed && progressData.data) {
+              console.log('✅ Audit completed! Navigating to results...', progressData.data);
               const auditResult = progressData.data;
 
               // Store audit result in localStorage
@@ -623,24 +626,24 @@ export default function Index() {
               // Reload recent audits
               loadRecentAudits();
 
-              // Navigate to results
-              setTimeout(() => {
-                navigate(`/audit/${auditResult.id}`);
-              }, 1000);
+              // Navigate to results immediately
+              navigate(`/audit/${auditResult.id}`);
 
               eventSource.close();
               resolve(auditResult);
+              return; // Exit early to prevent further processing
             }
 
             // Handle errors
             if (progressData.error) {
+              console.error('❌ Audit error received:', progressData.error);
               setError(progressData.error);
               eventSource.close();
               reject(new Error(progressData.error));
             }
 
           } catch (parseError) {
-            console.error('Error parsing progress data:', parseError);
+            console.error('Error parsing progress data:', parseError, 'Raw data:', event.data);
             setError('Error processing server response. Please try again.');
           }
         };
