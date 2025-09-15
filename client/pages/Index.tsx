@@ -1109,7 +1109,30 @@ export default function Index() {
 
               {error && (
                 <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-                  <p className="text-sm">{error}</p>
+                  <div className="flex justify-between items-start">
+                    <p className="text-sm flex-1">{error}</p>
+                    <div className="flex gap-2 ml-3">
+                      <button
+                        onClick={() => {
+                          clearError();
+                          setError("");
+                        }}
+                        className="text-xs text-red-600 hover:text-red-800 underline"
+                      >
+                        Dismiss
+                      </button>
+                      {isRetrying ? (
+                        <span className="text-xs text-red-600">Retrying...</span>
+                      ) : (
+                        <button
+                          onClick={() => retry()}
+                          className="text-xs text-red-600 hover:text-red-800 underline"
+                        >
+                          Retry
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </div>
               )}
 
