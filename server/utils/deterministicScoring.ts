@@ -3,8 +3,11 @@
  * Ensures consistent scoring for identical content while allowing for legitimate changes
  */
 
-import crypto from 'crypto';
-import { SECTION_WEIGHTS_ARRAY, CONSISTENCY_THRESHOLDS } from '../constants/scoring';
+import crypto from "crypto";
+import {
+  SECTION_WEIGHTS_ARRAY,
+  CONSISTENCY_THRESHOLDS,
+} from "../constants/scoring";
 
 export interface WebsiteSignature {
   contentHash: string;
@@ -31,57 +34,66 @@ const scoringCache = new Map<string, ScoringCache>();
 export function generateWebsiteSignature(websiteData: any): WebsiteSignature {
   // Extract key content elements that affect scoring
   const contentElements = {
-    title: websiteData.title || '',
-    mainContent: websiteData.content || '',
+    title: websiteData.title || "",
+    mainContent: websiteData.content || "",
     navigationStructure: websiteData.navigation || [],
     pageCount: websiteData.multiPageAnalysis?.pagesAnalyzed || 1,
     keyMetrics: {
       hasImages: websiteData.hasImages || false,
       hasForms: websiteData.hasForms || false,
       hasSSL: websiteData.hasSSL || false,
-      loadTime: Math.round((websiteData.performanceMetrics?.loadTime || 0) * 10) / 10
-    }
+      loadTime:
+        Math.round((websiteData.performanceMetrics?.loadTime || 0) * 10) / 10,
+    },
   };
 
   // Create hashes for different aspects
   const contentHash = crypto
-    .createHash('sha256')
-    .update(JSON.stringify({
-      title: contentElements.title,
-      content: contentElements.mainContent.substring(0, 5000) // First 5k chars for consistency
-    }))
-    .digest('hex');
+    .createHash("sha256")
+    .update(
+      JSON.stringify({
+        title: contentElements.title,
+        content: contentElements.mainContent.substring(0, 5000), // First 5k chars for consistency
+      }),
+    )
+    .digest("hex");
 
   const structureHash = crypto
-    .createHash('sha256')
-    .update(JSON.stringify({
-      navigation: contentElements.navigationStructure,
-      pageCount: contentElements.pageCount,
-      hasImages: contentElements.keyMetrics.hasImages,
-      hasForms: contentElements.keyMetrics.hasForms
-    }))
-    .digest('hex');
+    .createHash("sha256")
+    .update(
+      JSON.stringify({
+        navigation: contentElements.navigationStructure,
+        pageCount: contentElements.pageCount,
+        hasImages: contentElements.keyMetrics.hasImages,
+        hasForms: contentElements.keyMetrics.hasForms,
+      }),
+    )
+    .digest("hex");
 
   const metadataHash = crypto
-    .createHash('sha256')
-    .update(JSON.stringify({
-      hasSSL: contentElements.keyMetrics.hasSSL,
-      loadTime: contentElements.keyMetrics.loadTime
-    }))
-    .digest('hex');
+    .createHash("sha256")
+    .update(
+      JSON.stringify({
+        hasSSL: contentElements.keyMetrics.hasSSL,
+        loadTime: contentElements.keyMetrics.loadTime,
+      }),
+    )
+    .digest("hex");
 
   return {
     contentHash,
     structureHash,
     metadataHash,
-    timestamp: new Date()
+    timestamp: new Date(),
   };
 }
 
 /**
  * Check if cached score is still valid
  */
-export function getCachedScore(websiteSignature: WebsiteSignature): ScoringCache | null {
+export function getCachedScore(
+  websiteSignature: WebsiteSignature,
+): ScoringCache | null {
   const cacheKey = `${websiteSignature.contentHash}-${websiteSignature.structureHash}`;
   const cached = scoringCache.get(cacheKey);
 
@@ -96,8 +108,10 @@ export function getCachedScore(websiteSignature: WebsiteSignature): ScoringCache
   }
 
   // Verify signature matches (content hasn't changed)
-  if (cached.websiteSignature.contentHash !== websiteSignature.contentHash ||
-      cached.websiteSignature.structureHash !== websiteSignature.structureHash) {
+  if (
+    cached.websiteSignature.contentHash !== websiteSignature.contentHash ||
+    cached.websiteSignature.structureHash !== websiteSignature.structureHash
+  ) {
     return null;
   }
 
@@ -112,11 +126,13 @@ export function cacheScore(
   baseScores: number[],
   overallScore: number,
   evidenceData: any,
-  methodology: string
+  methodology: string,
 ): void {
   const cacheKey = `${websiteSignature.contentHash}-${websiteSignature.structureHash}`;
   const expiresAt = new Date();
-  expiresAt.setDate(expiresAt.getDate() + CONSISTENCY_THRESHOLDS.cacheExpirationDays);
+  expiresAt.setDate(
+    expiresAt.getDate() + CONSISTENCY_THRESHOLDS.cacheExpirationDays,
+  );
 
   const cacheEntry: ScoringCache = {
     websiteSignature,
@@ -124,7 +140,7 @@ export function cacheScore(
     overallScore,
     evidenceData,
     methodology,
-    expiresAt
+    expiresAt,
   };
 
   scoringCache.set(cacheKey, cacheEntry);
@@ -134,14 +150,21 @@ export function cacheScore(
  * Calculate deterministic score variation based on URL
  * This provides consistent but slightly varied scores for demo purposes
  */
-export function getDeterministicVariation(url: string, sectionIndex: number, baseVariance: number = 5): number {
+export function getDeterministicVariation(
+  url: string,
+  sectionIndex: number,
+  baseVariance: number = 5,
+): number {
   // Create deterministic seed from URL and section
-  const urlHash = crypto.createHash('sha256').update(url).digest('hex');
-  const seed = parseInt(urlHash.substring(sectionIndex * 2, sectionIndex * 2 + 8), 16);
-  
+  const urlHash = crypto.createHash("sha256").update(url).digest("hex");
+  const seed = parseInt(
+    urlHash.substring(sectionIndex * 2, sectionIndex * 2 + 8),
+    16,
+  );
+
   // Convert to pseudo-random number between -1 and 1
   const normalizedSeed = ((seed % 10000) - 5000) / 5000;
-  
+
   // Apply variation within specified range
   return normalizedSeed * baseVariance;
 }
@@ -152,7 +175,7 @@ export function getDeterministicVariation(url: string, sectionIndex: number, bas
 export function validateScoreConsistency(
   newScore: number,
   historicalScores: number[],
-  websiteChanged: boolean = false
+  websiteChanged: boolean = false,
 ): {
   isConsistent: boolean;
   variance: number;
@@ -164,45 +187,58 @@ export function validateScoreConsistency(
       isConsistent: true,
       variance: 0,
       expectedRange: { min: newScore - 5, max: newScore + 5 },
-      flaggedAsOutlier: false
+      flaggedAsOutlier: false,
     };
   }
 
-  const mean = historicalScores.reduce((sum, score) => sum + score, 0) / historicalScores.length;
-  const variance = historicalScores.reduce((sum, score) => sum + Math.pow(score - mean, 2), 0) / historicalScores.length;
+  const mean =
+    historicalScores.reduce((sum, score) => sum + score, 0) /
+    historicalScores.length;
+  const variance =
+    historicalScores.reduce(
+      (sum, score) => sum + Math.pow(score - mean, 2),
+      0,
+    ) / historicalScores.length;
   const standardDeviation = Math.sqrt(variance);
 
   // Allow more variation if website has changed
-  const allowedVariation = websiteChanged ? 
-    CONSISTENCY_THRESHOLDS.maxVariationPercent * 2 : 
-    CONSISTENCY_THRESHOLDS.maxVariationPercent;
+  const allowedVariation = websiteChanged
+    ? CONSISTENCY_THRESHOLDS.maxVariationPercent * 2
+    : CONSISTENCY_THRESHOLDS.maxVariationPercent;
 
   const expectedRange = {
     min: Math.max(0, mean - allowedVariation),
-    max: Math.min(100, mean + allowedVariation)
+    max: Math.min(100, mean + allowedVariation),
   };
 
-  const isConsistent = newScore >= expectedRange.min && newScore <= expectedRange.max;
-  const flaggedAsOutlier = Math.abs(newScore - mean) > (standardDeviation * CONSISTENCY_THRESHOLDS.outlierThreshold);
+  const isConsistent =
+    newScore >= expectedRange.min && newScore <= expectedRange.max;
+  const flaggedAsOutlier =
+    Math.abs(newScore - mean) >
+    standardDeviation * CONSISTENCY_THRESHOLDS.outlierThreshold;
 
   return {
     isConsistent,
     variance: variance,
     expectedRange,
-    flaggedAsOutlier
+    flaggedAsOutlier,
   };
 }
 
 /**
  * Calculate weighted overall score using standardized weights
  */
-export function calculateStandardizedOverallScore(sectionScores: number[]): number {
+export function calculateStandardizedOverallScore(
+  sectionScores: number[],
+): number {
   if (sectionScores.length !== SECTION_WEIGHTS_ARRAY.length) {
-    throw new Error(`Expected ${SECTION_WEIGHTS_ARRAY.length} section scores, got ${sectionScores.length}`);
+    throw new Error(
+      `Expected ${SECTION_WEIGHTS_ARRAY.length} section scores, got ${sectionScores.length}`,
+    );
   }
 
   const weightedSum = sectionScores.reduce((sum, score, index) => {
-    return sum + (score * SECTION_WEIGHTS_ARRAY[index]);
+    return sum + score * SECTION_WEIGHTS_ARRAY[index];
   }, 0);
 
   return Math.round(weightedSum * 10) / 10; // Round to 1 decimal place
@@ -244,7 +280,7 @@ export function getCacheStats(): {
 } {
   const now = new Date();
   let totalAge = 0;
-  
+
   for (const entry of scoringCache.values()) {
     totalAge += now.getTime() - entry.websiteSignature.timestamp.getTime();
   }
@@ -252,6 +288,9 @@ export function getCacheStats(): {
   return {
     totalEntries: scoringCache.size,
     hitRate: 0, // Would need to track hits/misses
-    avgAge: scoringCache.size > 0 ? totalAge / scoringCache.size / (1000 * 60 * 60 * 24) : 0 // days
+    avgAge:
+      scoringCache.size > 0
+        ? totalAge / scoringCache.size / (1000 * 60 * 60 * 24)
+        : 0, // days
   };
 }

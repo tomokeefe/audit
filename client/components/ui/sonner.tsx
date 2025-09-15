@@ -4,8 +4,13 @@ type ToasterProps = React.ComponentProps<typeof Sonner>;
 
 const Toaster = ({ ...props }: ToasterProps) => {
   // Get theme from document attribute or default to system
-  const themeAttr = typeof document !== "undefined" ? document.documentElement.getAttribute("data-theme") : null;
-  const theme = (themeAttr === "dark" || themeAttr === "light" ? themeAttr : "system") as ToasterProps["theme"];
+  const themeAttr =
+    typeof document !== "undefined"
+      ? document.documentElement.getAttribute("data-theme")
+      : null;
+  const theme = (
+    themeAttr === "dark" || themeAttr === "light" ? themeAttr : "system"
+  ) as ToasterProps["theme"];
 
   return (
     <Sonner
