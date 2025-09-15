@@ -24,6 +24,11 @@ async function storeAuditResult(auditData: AuditResponse): Promise<void> {
 // Export the storage for use in audit-storage.ts
 export { auditStorage };
 
+// Export functions for audit-progress.ts
+export { storeAuditResult };
+export { scrapeWebsite };
+export { generateAudit };
+
 // Function to create fallback website data when scraping fails
 function createFallbackData(url: string) {
   const domain = new URL(url).hostname.replace("www.", "");
