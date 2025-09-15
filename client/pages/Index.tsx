@@ -475,10 +475,14 @@ export default function Index() {
 
           throw new Error(`Server responded with ${testResponse.status}`);
         } catch (error) {
-          console.log(
-            `Connection attempt ${retries + 1} failed:`,
-            error instanceof Error ? error.message : error,
-          );
+          if (error instanceof Error && error.name === 'AbortError') {
+            console.log(`Connection attempt ${retries + 1} timed out after 3s`);
+          } else {
+            console.log(
+              `Connection attempt ${retries + 1} failed:`,
+              error instanceof Error ? error.message : error,
+            );
+          }
 
           if (retries < maxRetries - 1) {
             retries++;
