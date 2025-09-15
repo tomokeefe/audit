@@ -451,7 +451,10 @@ export default function Index() {
         try {
           // Test a simple fetch to see if server is responding
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 3000);
+          const timeoutId = setTimeout(() => {
+            console.log("API ping timeout after 3s");
+            controller.abort();
+          }, 3000);
 
           const testResponse = await fetch("/api/ping", {
             method: "GET",
