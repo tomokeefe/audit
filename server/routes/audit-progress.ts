@@ -313,9 +313,38 @@ The overall score of ${Math.floor(Math.random() * 25) + 65}% indicates a solid f
 // Standard audit endpoint (non-SSE) for backwards compatibility
 export const handleAuditStandard = async (req: Request, res: Response) => {
   try {
-    // Import and use the original audit handler
-    const { handleAudit } = await import('./audit');
-    return handleAudit(req, res);
+    // Import necessary functions from audit module
+    const { scrapeWebsite, generateAudit, storeAuditResult } = await import('./audit');
+
+    const { url } = req.body as AuditRequest;
+
+    if (!url) {
+      return res.status(400).json({ error: "URL is required" });
+    }
+
+    // Check API key
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(500).json({ error: "Server configuration error. Please contact support." });
+    }
+
+    // Validate URL format
+    try {
+      new URL(url);
+    } catch {
+      return res.status(400).json({
+        error: "Invalid URL format. Please enter a valid URL starting with http:// or https://",
+      });
+    }
+
+    console.log("Starting standard audit for URL:", url);
+
+    // Perform audit
+    const websiteData = await scrapeWebsite(url);
+    const auditResult = await generateAudit(websiteData);
+    await storeAuditResult(auditResult);
+
+    res.setHeader("Content-Type", "application/json");
+    res.status(200).json(auditResult);
   } catch (error) {
     console.error("Standard audit error:", error);
     res.status(500).json({ error: "Internal server error" });
