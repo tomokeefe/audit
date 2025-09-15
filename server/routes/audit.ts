@@ -30,7 +30,7 @@ export { scrapeWebsite };
 export { generateAudit };
 
 // Function to create fallback website data when scraping fails
-function createFallbackData(url: string) {
+export function createFallbackData(url: string) {
   const domain = new URL(url).hostname.replace("www.", "");
   const companyName =
     domain.split(".")[0].charAt(0).toUpperCase() +
