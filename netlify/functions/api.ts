@@ -42,17 +42,17 @@ function generateDemoAudit(url: string) {
   const conversionScore = generateVariableScore(76, 8, 18);
   const complianceScore = generateVariableScore(82, 9, 8);
 
-  // Calculate scores with decimal precision and weighted overall score
+  // Calculate scores with standardized weights for consistency
   const sectionScores = [
-    { name: "Branding", score: brandingScore, weight: 0.20 },
-    { name: "Design", score: designScore, weight: 0.15 },
-    { name: "Messaging", score: messagingScore, weight: 0.15 },
-    { name: "Usability", score: usabilityScore, weight: 0.15 },
-    { name: "Content Strategy", score: contentScore, weight: 0.10 },
-    { name: "Digital Presence", score: digitalScore, weight: 0.10 },
+    { name: "Branding", score: brandingScore, weight: 0.18 },
+    { name: "Design", score: designScore, weight: 0.13 },
+    { name: "Messaging", score: messagingScore, weight: 0.13 },
+    { name: "Usability", score: usabilityScore, weight: 0.13 },
+    { name: "Content Strategy", score: contentScore, weight: 0.09 },
+    { name: "Digital Presence", score: digitalScore, weight: 0.09 },
     { name: "Customer Experience", score: customerScore, weight: 0.05 },
-    { name: "Competitor Analysis", score: competitorScore, weight: 0.10 },
-    { name: "Conversion Optimization", score: conversionScore, weight: 0.05 },
+    { name: "Competitor Analysis", score: competitorScore, weight: 0.05 },
+    { name: "Conversion Optimization", score: conversionScore, weight: 0.10 },
     { name: "Consistency & Compliance", score: complianceScore, weight: 0.05 }
   ];
 

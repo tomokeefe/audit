@@ -1363,16 +1363,12 @@ function enhanceAuditQuality(auditData: any, validationResults: any, businessCon
     return enhanced_section;
   });
 
-  // Recalculate overall score with dynamic weights
+  // Recalculate overall score using standardized weights for consistency
   if (enhanced.sections && enhanced.sections.length > 0) {
-    const weightedScore = enhanced.sections.reduce((sum: number, section: any, index: number) => {
-      const weight = dynamicWeights[index] || (1 / enhanced.sections.length);
-      return sum + (section.score * weight);
-    }, 0);
-
-    enhanced.overallScore = Math.round(weightedScore);
-    enhanced.weightingMethod = 'dynamic_context_based';
-    enhanced.appliedWeights = dynamicWeights;
+    const sectionScores = enhanced.sections.map((section: any) => section.score);
+    enhanced.overallScore = calculateStandardizedOverallScore(sectionScores);
+    enhanced.weightingMethod = 'standardized_research_based';
+    enhanced.appliedWeights = SECTION_WEIGHTS_ARRAY;
   }
 
   // Add improvement impact analysis
@@ -2293,7 +2289,7 @@ Be thorough, professional, and provide actionable insights based on the availabl
       day: "numeric",
     });
 
-    return {
+    const auditResult = {
       id: auditId,
       url: websiteData.url,
       title: auditData.title,
@@ -2308,6 +2304,19 @@ Be thorough, professional, and provide actionable insights based on the availabl
       improvementImpact: auditData.improvementImpact || {},
       performanceMetrics,
     };
+
+    // Cache the results for consistency
+    const websiteSignature = generateWebsiteSignature(websiteData);
+    const sectionScores = auditData.sections.map((section: any) => section.score);
+    cacheScore(
+      websiteSignature,
+      sectionScores,
+      auditData.overallScore,
+      { evidenceQuality: auditData.metadata?.qualityScore || 70 },
+      SCORING_METHODOLOGY
+    );
+
+    return auditResult;
   } catch (error) {
     console.error("Error generating audit:", error);
 
