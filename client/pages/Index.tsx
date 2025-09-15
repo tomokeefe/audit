@@ -76,6 +76,17 @@ export default function Index() {
   // Enhanced error handling
   const { error: globalError, isRetrying, handleError, clearError, retry } = useErrorHandler();
 
+  // Cleanup EventSource on component unmount
+  useEffect(() => {
+    return () => {
+      if (currentEventSourceRef.current && currentEventSourceRef.current.readyState !== EventSource.CLOSED) {
+        console.log('Cleaning up EventSource on component unmount');
+        currentEventSourceRef.current.close();
+        currentEventSourceRef.current = null;
+      }
+    };
+  }, []);
+
   const loadRecentAudits = async () => {
     try {
       setLoadingAudits(true);
