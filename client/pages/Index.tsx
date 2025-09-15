@@ -22,6 +22,7 @@ import {
   Award,
   Activity,
 } from "lucide-react";
+import ErrorState, { useErrorHandler } from "@/components/ErrorState";
 import {
   BarChart,
   Bar,
