@@ -52,6 +52,7 @@ import {
   Briefcase,
   Wrench,
 } from "lucide-react";
+import PDFExport from "@/components/PDFExport";
 
 // SWOT Matrix Component for Competitor Analysis
 function SWOTMatrix({ sectionName, auditData }: { sectionName: string; auditData?: any }) {
