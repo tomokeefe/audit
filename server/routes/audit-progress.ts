@@ -152,8 +152,19 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
       message: 'Performing comprehensive analysis...'
     });
 
-    // Call the original audit function to get real results
-    const auditResult = await performActualAudit(url);
+    // Call the actual audit functions to get real results
+    const { scrapeWebsite, generateAudit, storeAuditResult } = await import('./audit');
+
+    // Perform the actual audit
+    const websiteData = await scrapeWebsite(url);
+
+    sendProgress({
+      step: 'finalizing',
+      progress: 97,
+      message: 'Processing analysis results...'
+    });
+
+    const auditResult = await generateAudit(websiteData);
 
     sendProgress({
       step: 'finalizing',
@@ -162,7 +173,6 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
     });
 
     // Store the result
-    const { storeAuditResult } = await import('./audit');
     await storeAuditResult(auditResult);
 
     sendProgress({
@@ -173,7 +183,7 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
       completed: true
     });
 
-    res.end();
+    cleanup();
 
   } catch (error) {
     console.error("Audit progress error:", error);
