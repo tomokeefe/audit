@@ -17,6 +17,17 @@ const App = () => (
   </div>
 );
 
-const container = document.getElementById("root")!;
-const root = createRoot(container);
-root.render(<App />);
+console.log("=== MOUNTING APP ===", new Date().toISOString());
+
+// Check if app is already mounted
+if (window.__app_mounted) {
+  console.log("=== APP ALREADY MOUNTED, SKIPPING ===");
+} else {
+  window.__app_mounted = true;
+  const container = document.getElementById("root")!;
+  console.log("=== CONTAINER FOUND ===", container);
+  const root = createRoot(container);
+  console.log("=== RENDERING APP ===");
+  root.render(<App />);
+  console.log("=== APP RENDERED ===");
+}
