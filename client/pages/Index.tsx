@@ -76,6 +76,24 @@ export default function Index() {
   // Enhanced error handling
   const { error: globalError, isRetrying, handleError, clearError, retry } = useErrorHandler();
 
+  // Debug function for testing
+  const debugFormSubmission = () => {
+    console.log('🐛 DEBUG: Testing form submission');
+    console.log('URL state:', url);
+    console.log('isLoading state:', isLoading);
+    console.log('Current EventSource ref:', currentEventSourceRef.current);
+
+    // Test EventSource support
+    console.log('EventSource supported:', typeof EventSource !== 'undefined');
+
+    // Test URL normalization
+    let testUrl = url.trim();
+    if (!testUrl.match(/^https?:\/\//)) {
+      testUrl = `https://${testUrl}`;
+    }
+    console.log('Normalized URL would be:', testUrl);
+  };
+
   // Cleanup EventSource on component unmount
   useEffect(() => {
     return () => {
@@ -735,38 +753,45 @@ export default function Index() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('🔵 Form submitted with URL:', url.trim());
-
-    if (!url.trim()) {
-      console.log('❌ Empty URL, aborting submission');
-      return;
-    }
-
-    // Prevent multiple simultaneous submissions
-    if (isLoading) {
-      console.log('❌ Audit already in progress, ignoring duplicate submission');
-      return;
-    }
-
-    console.log('✅ Starting new audit process...');
-
-    // Use real-time progress tracking by default, with fallback
     try {
-      await handleAuditWithProgress(e);
-    } catch (error) {
-      console.log("Progress tracking failed, falling back to standard audit method:", error);
+      e.preventDefault();
+      console.log('🔵 Form submitted with URL:', url.trim());
 
-      // Clear any existing error state
-      setError("");
-
-      // Show user we're falling back
-      if (error instanceof Error && error.message.includes('EventSource')) {
-        console.log("EventSource not supported or failed, using standard method");
+      if (!url.trim()) {
+        console.log('❌ Empty URL, aborting submission');
+        return;
       }
 
-      // Fallback to standard audit
-      await handleSubmitStandard(e);
+      // Prevent multiple simultaneous submissions
+      if (isLoading) {
+        console.log('❌ Audit already in progress, ignoring duplicate submission');
+        return;
+      }
+
+      console.log('✅ Starting new audit process...');
+
+      // Use real-time progress tracking by default, with fallback
+      try {
+        await handleAuditWithProgress(e);
+      } catch (error) {
+        console.log("Progress tracking failed, falling back to standard audit method:", error);
+
+        // Clear any existing error state
+        setError("");
+
+        // Show user we're falling back
+        if (error instanceof Error && error.message.includes('EventSource')) {
+          console.log("EventSource not supported or failed, using standard method");
+        }
+
+        // Fallback to standard audit
+        await handleSubmitStandard(e);
+      }
+    } catch (topLevelError) {
+      console.error('💥 CRITICAL ERROR in handleSubmit:', topLevelError);
+      setError('A critical error occurred. Please refresh the page and try again.');
+      setIsLoading(false);
+      setShowProgress(false);
     }
   };
 
@@ -1185,6 +1210,12 @@ export default function Index() {
                   className="px-3 py-1 bg-green-100 hover:bg-green-200 text-green-800 text-xs rounded border border-green-300 transition-colors"
                 >
                   Load Audits
+                </button>
+                <button
+                  onClick={debugFormSubmission}
+                  className="px-3 py-1 bg-purple-100 hover:bg-purple-200 text-purple-800 text-xs rounded border border-purple-300 transition-colors"
+                >
+                  Debug Form
                 </button>
               </div>
             </div>
