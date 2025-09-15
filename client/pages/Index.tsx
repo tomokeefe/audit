@@ -608,10 +608,14 @@ export default function Index() {
     } catch (error) {
       console.error("Real-time audit error:", error);
 
+      // Use enhanced error handling
       if (error instanceof Error) {
+        handleError(error);
         setError(error.message);
       } else {
-        setError("An unexpected error occurred. Please try again.");
+        const errorMsg = "An unexpected error occurred. Please try again.";
+        handleError(errorMsg);
+        setError(errorMsg);
       }
     } finally {
       setIsLoading(false);
