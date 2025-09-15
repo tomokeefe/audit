@@ -29,6 +29,12 @@ export default function Header() {
               Audits
             </Link>
             <Link
+              to="/compare"
+              className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+            >
+              Compare
+            </Link>
+            <Link
               to="/reports"
               className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
             >
