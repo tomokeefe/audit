@@ -23,6 +23,7 @@ import {
   Activity,
 } from "lucide-react";
 import ErrorState, { useErrorHandler } from "@/components/ErrorState";
+import { debugEventSource, isEventSourceSupported } from "@/utils/eventSourceTest";
 import {
   BarChart,
   Bar,
