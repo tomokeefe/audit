@@ -514,10 +514,26 @@ export default function Index() {
     }
   };
 
+  // Track current EventSource to prevent duplicates
+  const currentEventSourceRef = useRef<EventSource | null>(null);
+
   // New real-time progress audit function using Server-Sent Events
   const handleAuditWithProgress = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!url.trim()) return;
+
+    // Prevent multiple simultaneous submissions
+    if (isLoading) {
+      console.log('Audit already in progress, ignoring duplicate submission');
+      return;
+    }
+
+    // Clean up any existing EventSource connection
+    if (currentEventSourceRef.current && currentEventSourceRef.current.readyState !== EventSource.CLOSED) {
+      console.log('Closing existing EventSource connection');
+      currentEventSourceRef.current.close();
+      currentEventSourceRef.current = null;
+    }
 
     // Normalize URL to support flexible formats
     let normalizedUrl = url.trim();
@@ -563,6 +579,7 @@ export default function Index() {
 
       // Create EventSource with audit parameters
       const eventSource = new EventSource(eventSourceUrl);
+      currentEventSourceRef.current = eventSource;
 
       return new Promise((resolve, reject) => {
         eventSource.onopen = () => {
@@ -643,6 +660,7 @@ export default function Index() {
           if (eventSource.readyState !== EventSource.CLOSED) {
             eventSource.close();
           }
+          currentEventSourceRef.current = null;
         };
 
         // Timeout fallback
@@ -690,6 +708,12 @@ export default function Index() {
     e.preventDefault();
     if (!url.trim()) return;
 
+    // Prevent multiple simultaneous submissions
+    if (isLoading) {
+      console.log('Audit already in progress, ignoring duplicate submission');
+      return;
+    }
+
     // Use real-time progress tracking by default, with fallback
     try {
       await handleAuditWithProgress(e);
@@ -713,6 +737,12 @@ export default function Index() {
   const handleSubmitStandard = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!url.trim()) return;
+
+    // Prevent multiple simultaneous submissions
+    if (isLoading) {
+      console.log('Standard audit already in progress, ignoring duplicate submission');
+      return;
+    }
 
     // Normalize URL to support flexible formats (example.com, www.example.com, https://example.com)
     let normalizedUrl = url.trim();
