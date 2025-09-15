@@ -72,6 +72,9 @@ export default function Index() {
   const [showProgress, setShowProgress] = useState(false);
   const navigate = useNavigate();
 
+  // Enhanced error handling
+  const { error: globalError, isRetrying, handleError, clearError, retry } = useErrorHandler();
+
   const loadRecentAudits = async () => {
     try {
       setLoadingAudits(true);
