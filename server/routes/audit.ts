@@ -873,7 +873,7 @@ function calibrateScoreToIndustryBenchmarks(score: number, sectionName: string, 
   };
 
   const benchmarks = industryBenchmarks[industry as keyof typeof industryBenchmarks] || industryBenchmarks.general;
-  const sectionBenchmark = benchmarks[sectionName as keyof typeof benchmarks] || benchmarks['Branding'];
+  const sectionBenchmark = (benchmarks as any)[sectionName] || (benchmarks as any)['Branding'] || { average: 70, top10: 85, top25: 80 };
 
   // Calculate percentile position
   let percentile = 50; // Default to median
