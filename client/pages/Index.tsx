@@ -659,6 +659,169 @@ export default function Index() {
 
       const auditRequest: AuditRequest = { url: normalizedUrl };
 
+      console.log("Starting standard audit request for:", url);
+
+      // Add timeout with proper AbortSignal reason (prevents "aborted without reason")
+      const createTimeoutSignal = (ms: number): AbortSignal => {
+        const anyAbortSignal: any = AbortSignal as any;
+        if (anyAbortSignal && typeof anyAbortSignal.timeout === "function") {
+          return anyAbortSignal.timeout(ms);
+        }
+        const controller = new AbortController();
+        const timeout = setTimeout(() => {
+          try {
+            // Provide a reason when aborting to avoid generic AbortError messages
+            (controller as any).abort(
+              new DOMException("Timeout", "TimeoutError"),
+            );
+          } catch {
+            controller.abort();
+          }
+        }, ms);
+        // If fetch completes, the caller won't use this timeout anymore
+        // Return the signal; caller does not need the timer reference
+        return controller.signal;
+      };
+
+      const response = await fetch("/api/audit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(auditRequest),
+        signal: createTimeoutSignal(120000), // 120s timeout for multi-page crawl
+      });
+
+      console.log("API response status:", response.status);
+
+      // Check if response is valid
+      if (!response.ok) {
+        let errorMessage = `Server error: ${response.status}`;
+
+        // Try to extract a meaningful error message safely
+        const contentType = response.headers.get("content-type") || "";
+        let responseText: string | null = null;
+
+        try {
+          if (!response.bodyUsed) {
+            // Prefer text to avoid JSON stream issues
+            responseText = await response.text();
+          }
+        } catch (readError) {
+          // If body was already consumed or unreadable, fall back to status text
+          console.warn("Unable to read error body:", readError);
+        }
+
+        if (responseText && responseText.trim()) {
+          if (contentType.includes("application/json")) {
+            try {
+              const errorData = JSON.parse(responseText);
+              errorMessage = errorData.error || errorMessage;
+              console.error("API error details:", errorData);
+            } catch {
+              errorMessage = `Server error: ${response.status} - ${responseText.substring(0, 120)}`;
+            }
+          } else {
+            errorMessage = `Server error: ${response.status} - ${responseText.substring(0, 120)}`;
+          }
+        } else {
+          errorMessage = `Server error: ${response.status} ${response.statusText}`;
+        }
+
+        throw new Error(errorMessage);
+      }
+
+      // Parse successful response
+      let responseData;
+      try {
+        responseData = await response.json();
+      } catch (parseError) {
+        throw new Error("Invalid response from server. Please try again.");
+      }
+
+      // Validate response structure
+      if (!responseData.id || !responseData.sections) {
+        throw new Error("Invalid audit response format. Please try again.");
+      }
+
+      const auditResult: AuditResponse = responseData;
+
+      // Store audit result in localStorage for the results page
+      localStorage.setItem(
+        `audit_${auditResult.id}`,
+        JSON.stringify(auditResult),
+      );
+
+      // Store audit server-side for sharing and persistence
+      try {
+        await fetch("/api/audits", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(auditResult),
+        });
+        console.log("Audit stored server-side successfully");
+        // Reload recent audits to show the new one
+        loadRecentAudits();
+      } catch (storeError) {
+        console.warn("Failed to store audit server-side:", storeError);
+        // Continue anyway as we have localStorage backup
+      }
+
+      // Complete final progress step
+      updateProgress('finalizing', true);
+
+      // Wait for progress animation to complete
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Navigate to audit results page
+      navigate(`/audit/${auditResult.id}`);
+    } catch (error) {
+      console.error("Standard audit error:", error);
+
+      if (error instanceof Error) {
+        if (
+          error.name === "AbortError" ||
+          error.message.toLowerCase().includes("aborted")
+        ) {
+          setError(
+            "Request timed out while analyzing the site. Please try again or use a different URL.",
+          );
+        } else if (
+          error.message.includes("fetch") ||
+          error.message.includes("network") ||
+          error.message.includes("Failed to fetch")
+        ) {
+          setError(
+            "Network error. Unable to connect to the server. Please check your connection and try again.",
+          );
+        } else if (error.message.includes("timeout")) {
+          setError(
+            "Request timed out. Please try with a different website or try again later.",
+          );
+        } else {
+          setError(error.message);
+        }
+      } else {
+        setError(
+          "An unexpected error occurred. Please check the URL and try again.",
+        );
+      }
+    } finally {
+      setIsLoading(false);
+      setShowProgress(false);
+    }
+
+    try {
+      // Test API connectivity first
+      const isConnected = await testApiConnectivity();
+      if (!isConnected) {
+        throw new Error("Unable to connect to server. Please try again.");
+      }
+
+      const auditRequest: AuditRequest = { url: normalizedUrl };
+
       console.log("Starting audit request for:", url);
 
       // Add timeout with proper AbortSignal reason (prevents "aborted without reason")
