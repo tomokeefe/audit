@@ -228,7 +228,10 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
       completed: true
     });
 
-    cleanup();
+    // Give time for the final message to be sent before cleanup
+    setTimeout(() => {
+      cleanup();
+    }, 1000);
 
   } catch (error) {
     console.error("Audit progress error:", error);
