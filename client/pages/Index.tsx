@@ -238,11 +238,28 @@ export default function Index() {
     }
   };
 
+  // Safe wrapper that checks environment before running API tests
+  const safeTestAPIConnection = async () => {
+    const isDevelopment = window.location.hostname.includes('projects.builder.codes');
+
+    if (isDevelopment) {
+      console.log("Development environment - skipping API connectivity tests");
+      setApiStatus({
+        ping: false,
+        audits: false,
+        error: "Development environment - API endpoints not available"
+      });
+      return { ping: false, audits: false };
+    }
+
+    return await testAPIConnection();
+  };
+
   // Improved API connectivity test with timeout and retry
   const testAPIConnection = async () => {
     console.log("Testing API connection...");
 
-    // Check if we're in development environment
+    // Double-check development environment to prevent any calls
     const isDevelopment = window.location.hostname.includes('projects.builder.codes');
 
     if (isDevelopment) {
@@ -260,25 +277,33 @@ export default function Index() {
     let errorMsg = "";
 
     // Helper function to create fetch with timeout
-    const fetchWithTimeout = async (url: string, timeout = 5000) => {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), timeout);
+  const fetchWithTimeout = async (url: string, timeout = 5000) => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => {
+      console.log(`Request timeout after ${timeout}ms for ${url}`);
+      controller.abort();
+    }, timeout);
 
-      try {
-        const response = await fetch(url, {
-          signal: controller.signal,
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        });
-        clearTimeout(timeoutId);
-        return response;
-      } catch (error) {
-        clearTimeout(timeoutId);
-        throw error;
+    try {
+      const response = await fetch(url, {
+        signal: controller.signal,
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      });
+      clearTimeout(timeoutId);
+      return response;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      // Improve error handling for AbortError
+      if (error instanceof Error && error.name === 'AbortError') {
+        console.log(`Request aborted for ${url}`);
+        throw new Error(`Request timeout after ${timeout}ms`);
       }
-    };
+      throw error;
+    }
+  };
 
     try {
       // Test ping endpoint with timeout
