@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import AuditResults from "./pages/AuditResults";
 import SharedAudit from "./pages/SharedAudit";
 import Audits from "./pages/Audits";
+import AuditComparison from "./pages/AuditComparison";
 import Reports from "./pages/Reports";
 import NotFound from "./pages/NotFound";
 
