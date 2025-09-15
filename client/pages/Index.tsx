@@ -534,6 +534,12 @@ export default function Index() {
     setCurrentProgress(0);
 
     try {
+      // Check EventSource support first
+      if (!isEventSourceSupported()) {
+        console.log("EventSource not supported, falling back to standard audit");
+        throw new Error("EventSource not supported");
+      }
+
       // Test API connectivity first
       const isConnected = await testApiConnectivity();
       if (!isConnected) {
@@ -546,8 +552,17 @@ export default function Index() {
       // Encode URL for query parameter
       const encodedUrl = encodeURIComponent(normalizedUrl);
 
+      // Create EventSource URL
+      const eventSourceUrl = `/api/audit/progress?url=${encodedUrl}&session=${sessionId}`;
+      console.log("Creating EventSource connection to:", eventSourceUrl);
+
+      // Debug EventSource setup
+      if (process.env.NODE_ENV === 'development') {
+        debugEventSource(eventSourceUrl);
+      }
+
       // Create EventSource with audit parameters
-      const eventSource = new EventSource(`/api/audit/progress?url=${encodedUrl}&session=${sessionId}`);
+      const eventSource = new EventSource(eventSourceUrl);
 
       return new Promise((resolve, reject) => {
         eventSource.onopen = () => {
