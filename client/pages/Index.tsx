@@ -788,34 +788,34 @@ export default function Index() {
     } catch (error) {
       console.error("Standard audit error:", error);
 
+      let errorMessage = "";
+
       if (error instanceof Error) {
+        // Use enhanced error handling
+        handleError(error);
+
         if (
           error.name === "AbortError" ||
           error.message.toLowerCase().includes("aborted")
         ) {
-          setError(
-            "Request timed out while analyzing the site. Please try again or use a different URL.",
-          );
+          errorMessage = "Request timed out while analyzing the site. Please try again or use a different URL.";
         } else if (
           error.message.includes("fetch") ||
           error.message.includes("network") ||
           error.message.includes("Failed to fetch")
         ) {
-          setError(
-            "Network error. Unable to connect to the server. Please check your connection and try again.",
-          );
+          errorMessage = "Network error. Unable to connect to the server. Please check your connection and try again.";
         } else if (error.message.includes("timeout")) {
-          setError(
-            "Request timed out. Please try with a different website or try again later.",
-          );
+          errorMessage = "Request timed out. Please try with a different website or try again later.";
         } else {
-          setError(error.message);
+          errorMessage = error.message;
         }
       } else {
-        setError(
-          "An unexpected error occurred. Please check the URL and try again.",
-        );
+        errorMessage = "An unexpected error occurred. Please check the URL and try again.";
+        handleError(errorMessage);
       }
+
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
       setShowProgress(false);
