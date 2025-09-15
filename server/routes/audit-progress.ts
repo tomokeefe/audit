@@ -36,12 +36,16 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
 
   const sendProgress = (update: ProgressUpdate) => {
     try {
-      if (!res.headersSent && !res.destroyed) {
+      if (!res.destroyed && res.writable) {
         const message = `data: ${JSON.stringify(update)}\n\n`;
         console.log('Sending SSE message:', update.message);
         res.write(message);
+        // Ensure the message is sent immediately
+        if (res.flush && typeof res.flush === 'function') {
+          res.flush();
+        }
       } else {
-        console.log('Cannot send SSE message - connection closed');
+        console.log('Cannot send SSE message - connection not writable');
       }
     } catch (error) {
       console.error('Error sending SSE message:', error);
