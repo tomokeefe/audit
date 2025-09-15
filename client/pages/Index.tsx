@@ -427,6 +427,19 @@ export default function Index() {
     // Add debug logging
     console.log("Component mounted, initializing API connection...");
 
+    // Check if we're in development environment first
+    const isDevelopment = window.location.hostname.includes('projects.builder.codes');
+
+    if (isDevelopment) {
+      console.log("Development environment - skipping API initialization");
+      setApiStatus({
+        ping: false,
+        audits: false,
+        error: "Development environment - API endpoints not available"
+      });
+      return;
+    }
+
     // Test API connection with retry logic for server startup
     const initializeAPI = async () => {
       let retries = 0;
@@ -475,7 +488,7 @@ export default function Index() {
               "All connection attempts failed, running fallback tests...",
             );
             // Run the full test anyway in case it's a false negative
-            await testAPIConnection();
+            await safeTestAPIConnection();
             setTimeout(() => loadRecentAudits(), 300);
             return false;
           }
@@ -491,7 +504,7 @@ export default function Index() {
     initializeAPI().catch((error) => {
       console.error("Failed to initialize API:", error);
       // Fallback: try to run tests anyway
-      testAPIConnection();
+      safeTestAPIConnection();
       setTimeout(() => loadRecentAudits(), 1000);
     });
   }, []);
@@ -1352,7 +1365,7 @@ export default function Index() {
                         audits: false,
                         error: undefined,
                       });
-                      testAPIConnection();
+                      safeTestAPIConnection();
                       setTimeout(() => loadRecentAudits(), 500);
                     }}
                     className="px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-800 text-xs rounded border border-blue-300 transition-colors"
@@ -1363,7 +1376,7 @@ export default function Index() {
                 <button
                   onClick={() => {
                     console.log("Manual API test triggered...");
-                    testAPIConnection();
+                    safeTestAPIConnection();
                   }}
                   className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs rounded border border-gray-300 transition-colors"
                 >
