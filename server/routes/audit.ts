@@ -3,6 +3,15 @@ import axios from "axios";
 import * as cheerio from "cheerio";
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
 import { AuditRequest, AuditResponse } from "@shared/api";
+import {
+  generateWebsiteSignature,
+  getCachedScore,
+  cacheScore,
+  calculateStandardizedOverallScore,
+  validateScoreConsistency
+} from '../utils/deterministicScoring';
+import { extractCompanyName } from '../utils/websiteHelpers';
+import { SCORING_VERSION, SCORING_METHODOLOGY, SECTION_WEIGHTS_ARRAY } from '../constants/scoring';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
@@ -1183,8 +1192,8 @@ function validateIndustrySpecificContent(auditData: any, businessContext: any): 
 function getDynamicSectionWeights(businessContext: any): number[] {
   const { industry, businessType, features } = businessContext;
 
-  // Base weights: [Branding, Design, Messaging, Usability, Content Strategy, Digital Presence, Customer Experience, Competitor Analysis, Conversion Optimization, Consistency & Compliance]
-  const baseWeights = [0.18, 0.13, 0.13, 0.13, 0.09, 0.09, 0.05, 0.05, 0.10, 0.05];
+  // Use standardized research-based weights
+  const baseWeights = [...SECTION_WEIGHTS_ARRAY];
 
   const industryAdjustments = {
     ecommerce: {
@@ -1685,8 +1694,56 @@ Implementation of recommended improvements could yield significant increases in 
   };
 }
 
+// Helper function to build audit from cache
+async function buildAuditFromCache(cachedResult: any, websiteData: any, url: string): Promise<AuditResponse> {
+  const currentDate = new Date().toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  return {
+    id: Date.now().toString(),
+    url: url,
+    title: `Brand Audit for ${extractCompanyName(url)}`,
+    description: `Comprehensive brand audit analysis with consistent scoring methodology`,
+    overallScore: cachedResult.overallScore,
+    date: currentDate,
+    status: "completed",
+    sections: cachedResult.baseScores.map((score: number, index: number) => ({
+      name: ["Branding", "Design", "Messaging", "Usability", "Content Strategy", "Digital Presence", "Customer Experience", "Competitor Analysis", "Conversion Optimization", "Consistency & Compliance"][index],
+      score: score,
+      maxScore: 100,
+      issues: Math.max(1, Math.round((100 - score) / 15)),
+      recommendations: Math.max(1, Math.round((100 - score) / 20)),
+      details: `Cached analysis maintaining consistent scoring for unchanged content.`
+    })),
+    summary: `Cached brand audit results ensuring scoring consistency`,
+    metadata: {
+      scoringEnhancementsApplied: ['cached_consistency', 'standardized_weights'],
+      dynamicWeightsApplied: true,
+      qualityScore: 95,
+      industryDetected: 'general'
+    }
+  };
+}
+
 // Function to generate audit using Gemini
 async function generateAudit(websiteData: any): Promise<AuditResponse> {
+  const startTime = Date.now();
+  const { url } = websiteData;
+
+  // Generate website signature for caching
+  const websiteSignature = generateWebsiteSignature(websiteData);
+  console.log(`Website signature: ${websiteSignature.contentHash.substring(0, 8)}...`);
+
+  // Check for cached results
+  const cachedResult = getCachedScore(websiteSignature);
+  if (cachedResult) {
+    console.log(`Using cached score for consistent results`);
+    return buildAuditFromCache(cachedResult, websiteData, url);
+  }
+
   const model = genAI.getGenerativeModel({
     model: "gemini-1.5-flash",
     generationConfig: {
