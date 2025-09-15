@@ -602,7 +602,7 @@ export default function Index() {
 
       return new Promise((resolve, reject) => {
         eventSource.onopen = () => {
-          console.log('EventSource connection opened');
+          console.log('✅ EventSource connection opened successfully');
         };
 
         eventSource.onmessage = (event) => {
@@ -622,21 +622,27 @@ export default function Index() {
 
             // Handle completion
             if (progressData.completed && progressData.data) {
-              console.log('✅ Audit completed! Navigating to results...', progressData.data);
+              console.log('🎉 AUDIT COMPLETED! Processing completion...', progressData.data);
               const auditResult = progressData.data;
+              console.log('📊 Audit result ID:', auditResult.id);
 
               // Store audit result in localStorage
+              console.log('💾 Storing audit in localStorage...');
               localStorage.setItem(
                 `audit_${auditResult.id}`,
                 JSON.stringify(auditResult),
               );
+              console.log('✅ Audit stored in localStorage');
 
               // Reload recent audits
+              console.log('🔄 Reloading recent audits...');
               loadRecentAudits();
 
               // Navigate to results immediately
+              console.log('🔄 Navigating to audit results:', `/audit/${auditResult.id}`);
               navigate(`/audit/${auditResult.id}`);
 
+              console.log('🔌 Closing EventSource connection...');
               eventSource.close();
               resolve(auditResult);
               return; // Exit early to prevent further processing
@@ -657,7 +663,9 @@ export default function Index() {
         };
 
         eventSource.onerror = (error) => {
-          console.error('EventSource error:', error);
+          console.error('❌ EventSource error occurred:', error);
+          console.log('EventSource readyState:', eventSource.readyState);
+          console.log('EventSource url:', eventSource.url);
 
           // More specific error handling based on readyState
           if (eventSource.readyState === EventSource.CLOSED) {
@@ -1221,6 +1229,7 @@ export default function Index() {
                 <Button
                   type="submit"
                   disabled={isLoading}
+                  onClick={() => console.log('🖱️ Start Audit button clicked!')}
                   className="h-12 px-8 bg-brand-500 hover:bg-brand-600 text-white font-semibold"
                 >
                   {isLoading ? (
