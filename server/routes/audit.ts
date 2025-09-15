@@ -1726,7 +1726,7 @@ async function buildAuditFromCache(cachedResult: any, websiteData: any, url: str
 
 // Function to generate audit using Gemini
 async function generateAudit(websiteData: any): Promise<AuditResponse> {
-  const startTime = Date.now();
+  const auditStartTime = Date.now();
   const { url } = websiteData;
 
   // Generate website signature for caching
@@ -2265,7 +2265,7 @@ Be thorough, professional, and provide actionable insights based on the availabl
 
     // Performance monitoring
     const performanceMetrics = {
-      responseTime: Date.now() - startTime,
+      responseTime: Date.now() - auditStartTime,
       tokensUsed: text.length / 4, // Approximate token count
       qualityScore: validationResults.qualityScore,
       industryAccuracy: businessContext.confidence,
