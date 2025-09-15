@@ -16,6 +16,17 @@ const MinimalApp = () => {
 };
 
 // Simple mounting without complex providers
-const container = document.getElementById("root")!;
+console.log("=== DEBUGGING: Starting to mount React app ===");
+const container = document.getElementById("root");
+console.log("=== DEBUGGING: Container found:", container);
+
+if (!container) {
+  console.error("=== ERROR: Root container not found! ===");
+  throw new Error("Root container not found");
+}
+
+console.log("=== DEBUGGING: Creating React root ===");
 const root = createRoot(container);
+console.log("=== DEBUGGING: Rendering app ===");
 root.render(<MinimalApp />);
+console.log("=== DEBUGGING: App rendered successfully ===");
