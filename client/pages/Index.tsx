@@ -667,12 +667,21 @@ export default function Index() {
     e.preventDefault();
     if (!url.trim()) return;
 
-    // Use real-time progress tracking by default
+    // Use real-time progress tracking by default, with fallback
     try {
       await handleAuditWithProgress(e);
     } catch (error) {
-      // Fallback to standard audit if progress tracking fails
-      console.log("Falling back to standard audit method");
+      console.log("Progress tracking failed, falling back to standard audit method:", error);
+
+      // Clear any existing error state
+      setError("");
+
+      // Show user we're falling back
+      if (error instanceof Error && error.message.includes('EventSource')) {
+        console.log("EventSource not supported or failed, using standard method");
+      }
+
+      // Fallback to standard audit
       await handleSubmitStandard(e);
     }
   };
