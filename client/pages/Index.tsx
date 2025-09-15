@@ -465,7 +465,7 @@ export default function Index() {
             console.log(
               "API server is responding, running full connection test...",
             );
-            await testAPIConnection();
+            await safeTestAPIConnection();
             setTimeout(() => loadRecentAudits(), 300);
             return true;
           }
