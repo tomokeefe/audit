@@ -55,10 +55,26 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
     }
   };
 
+  // Send immediate connection test
+  sendProgress({
+    step: 'connection',
+    progress: 0,
+    message: 'EventSource connection established'
+  });
+
   // Set up connection close handlers
-  req.on('close', cleanup);
-  req.on('aborted', cleanup);
-  res.on('close', cleanup);
+  req.on('close', () => {
+    console.log('EventSource connection closed by client');
+    cleanup();
+  });
+  req.on('aborted', () => {
+    console.log('EventSource connection aborted');
+    cleanup();
+  });
+  res.on('close', () => {
+    console.log('EventSource response closed');
+    cleanup();
+  });
 
   try {
     // Get URL from query parameters (EventSource uses GET)
