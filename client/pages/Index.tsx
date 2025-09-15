@@ -531,17 +531,22 @@ export default function Index() {
   // New real-time progress audit function using Server-Sent Events
   const handleAuditWithProgress = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!url.trim()) return;
+    console.log('🟢 handleAuditWithProgress called with URL:', url.trim());
+
+    if (!url.trim()) {
+      console.log('❌ Empty URL in handleAuditWithProgress');
+      return;
+    }
 
     // Prevent multiple simultaneous submissions
     if (isLoading) {
-      console.log('Audit already in progress, ignoring duplicate submission');
+      console.log('❌ Already loading in handleAuditWithProgress, aborting');
       return;
     }
 
     // Clean up any existing EventSource connection
     if (currentEventSourceRef.current && currentEventSourceRef.current.readyState !== EventSource.CLOSED) {
-      console.log('Closing existing EventSource connection');
+      console.log('🔄 Closing existing EventSource connection');
       currentEventSourceRef.current.close();
       currentEventSourceRef.current = null;
     }
@@ -551,6 +556,9 @@ export default function Index() {
     if (!normalizedUrl.match(/^https?:\/\//)) {
       normalizedUrl = `https://${normalizedUrl}`;
     }
+
+    console.log('📝 Normalized URL:', normalizedUrl);
+    console.log('⚡ Setting loading state to true...');
 
     setIsLoading(true);
     setError("");
