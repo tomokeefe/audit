@@ -238,7 +238,30 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
 
     let errorMessage = "Internal server error";
     if (error instanceof Error) {
-      if (error.message.includes("fetch") || error.message.includes("timeout")) {
+      if (error.message.includes("overloaded") || error.message.includes("503")) {
+        errorMessage = "AI service is temporarily overloaded. Using fallback analysis mode...";
+
+        // Try to provide a fallback audit
+        try {
+          const { generateFallbackAudit } = await import('./audit');
+          const fallbackData = { url: decodeURIComponent(url), fallbackUsed: true };
+          const auditResult = generateFallbackAudit(fallbackData);
+
+          sendProgress({
+            step: 'completed',
+            progress: 100,
+            message: 'Audit completed with fallback analysis!',
+            data: auditResult,
+            completed: true
+          });
+
+          setTimeout(() => cleanup(), 1000);
+          return;
+        } catch (fallbackError) {
+          console.error("Fallback audit failed:", fallbackError);
+          errorMessage = "Service temporarily unavailable. Please try again in a few minutes.";
+        }
+      } else if (error.message.includes("fetch") || error.message.includes("timeout")) {
         errorMessage = "Unable to access the website. Please check the URL and try again.";
       } else if (error.message.includes("Invalid response format")) {
         errorMessage = "AI service error. Please try again in a moment.";
