@@ -92,6 +92,15 @@ export default function Index() {
       testUrl = `https://${testUrl}`;
     }
     console.log('Normalized URL would be:', testUrl);
+
+    // Test if we can manually trigger handleSubmit
+    console.log('🧪 Testing manual form submission...');
+    const fakeEvent = new Event('submit');
+    Object.defineProperty(fakeEvent, 'preventDefault', {
+      value: () => console.log('preventDefault called'),
+      writable: false
+    });
+    handleSubmit(fakeEvent as any);
   };
 
   // Cleanup EventSource on component unmount
@@ -1241,7 +1250,10 @@ export default function Index() {
           {/* URL Input Form */}
           <div className="mt-12 max-w-3xl mx-auto">
             <form
-              onSubmit={handleSubmit}
+              onSubmit={(e) => {
+                console.log('🟡 FORM onSubmit triggered!');
+                handleSubmit(e);
+              }}
               className="space-y-4"
               style={{ pointerEvents: isLoading ? 'none' : 'auto' }}
             >
@@ -1252,7 +1264,10 @@ export default function Index() {
                     type="text"
                     placeholder="Enter website URL to audit (e.g., example.com)"
                     value={url}
-                    onChange={(e) => setUrl(e.target.value)}
+                    onChange={(e) => {
+                      console.log('📝 URL input changed:', e.target.value);
+                      setUrl(e.target.value);
+                    }}
                     className="pl-10 h-12 text-lg"
                     required
                   />
