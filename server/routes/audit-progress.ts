@@ -40,10 +40,7 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
         const message = `data: ${JSON.stringify(update)}\n\n`;
         console.log('Sending SSE message:', update.message);
         res.write(message);
-        // Ensure the message is sent immediately
-        if (res.flush && typeof res.flush === 'function') {
-          res.flush();
-        }
+        // Note: Express Response doesn't have flush method, but write should send immediately for SSE
       } else {
         console.log('Cannot send SSE message - connection not writable');
       }
