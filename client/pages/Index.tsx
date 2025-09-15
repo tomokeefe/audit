@@ -720,13 +720,20 @@ export default function Index() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!url.trim()) return;
+    console.log('🔵 Form submitted with URL:', url.trim());
+
+    if (!url.trim()) {
+      console.log('❌ Empty URL, aborting submission');
+      return;
+    }
 
     // Prevent multiple simultaneous submissions
     if (isLoading) {
-      console.log('Audit already in progress, ignoring duplicate submission');
+      console.log('❌ Audit already in progress, ignoring duplicate submission');
       return;
     }
+
+    console.log('✅ Starting new audit process...');
 
     // Use real-time progress tracking by default, with fallback
     try {
