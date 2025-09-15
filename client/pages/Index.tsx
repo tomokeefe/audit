@@ -533,22 +533,26 @@ export default function Index() {
     setCurrentProgress(0);
 
     try {
-      // Use Server-Sent Events for real-time progress
-      const auditRequest = { url: normalizedUrl };
+      // Test API connectivity first
+      const isConnected = await testApiConnectivity();
+      if (!isConnected) {
+        throw new Error("Unable to connect to server. Please try again.");
+      }
 
-      // Create EventSource for progress updates
-      const eventSource = new EventSource('/api/audit/progress');
+      // Create unique session ID for this audit
+      const sessionId = Date.now().toString();
 
-      // Send the audit request
-      fetch('/api/audit/progress', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(auditRequest),
-      });
+      // Encode URL for query parameter
+      const encodedUrl = encodeURIComponent(normalizedUrl);
+
+      // Create EventSource with audit parameters
+      const eventSource = new EventSource(`/api/audit/progress?url=${encodedUrl}&session=${sessionId}`);
 
       return new Promise((resolve, reject) => {
+        eventSource.onopen = () => {
+          console.log('EventSource connection opened');
+        };
+
         eventSource.onmessage = (event) => {
           try {
             const progressData = JSON.parse(event.data);
@@ -593,21 +597,52 @@ export default function Index() {
 
           } catch (parseError) {
             console.error('Error parsing progress data:', parseError);
+            setError('Error processing server response. Please try again.');
           }
         };
 
         eventSource.onerror = (error) => {
           console.error('EventSource error:', error);
-          setError('Connection to server lost. Please try again.');
+
+          // More specific error handling
+          if (eventSource.readyState === EventSource.CLOSED) {
+            setError('Connection closed by server. Please try again.');
+          } else {
+            setError('Connection to server lost. Falling back to standard mode.');
+          }
+
           eventSource.close();
-          reject(new Error('Connection failed'));
+          reject(new Error('EventSource connection failed'));
+        };
+
+        // Cleanup function
+        const cleanup = () => {
+          if (eventSource.readyState !== EventSource.CLOSED) {
+            eventSource.close();
+          }
         };
 
         // Timeout fallback
-        setTimeout(() => {
-          eventSource.close();
+        const timeoutId = setTimeout(() => {
+          cleanup();
           reject(new Error('Request timed out'));
         }, 120000); // 2 minute timeout
+
+        // Clear timeout if request completes normally
+        const originalResolve = resolve;
+        const originalReject = reject;
+
+        resolve = (value: any) => {
+          clearTimeout(timeoutId);
+          cleanup();
+          originalResolve(value);
+        };
+
+        reject = (error: any) => {
+          clearTimeout(timeoutId);
+          cleanup();
+          originalReject(error);
+        };
       });
 
     } catch (error) {
