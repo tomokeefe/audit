@@ -241,7 +241,8 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
         // Try to provide a fallback audit
         try {
           const { generateFallbackAudit } = await import('./audit');
-          const fallbackData = { url: decodeURIComponent(url), fallbackUsed: true };
+          const auditUrl = req.query.url as string;
+          const fallbackData = { url: auditUrl ? decodeURIComponent(auditUrl) : 'unknown', fallbackUsed: true };
           const auditResult = generateFallbackAudit(fallbackData);
 
           sendProgress({
