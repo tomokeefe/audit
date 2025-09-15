@@ -145,6 +145,9 @@ export default function Index() {
       // Provide more detailed error information
       let errorMsg = "Unknown error";
       if (error instanceof Error) {
+        // Use enhanced error handling for critical API failures
+        handleError(error);
+
         if (error.name === 'AbortError') {
           errorMsg = "Request timed out while loading audits";
         } else if (error.message.includes("fetch") || error.message.includes("network")) {
@@ -152,6 +155,8 @@ export default function Index() {
         } else {
           errorMsg = error.message;
         }
+      } else {
+        handleError(errorMsg);
       }
 
       setApiStatus(prev => ({ ...prev, audits: false, error: errorMsg }));
