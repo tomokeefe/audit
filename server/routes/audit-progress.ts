@@ -187,7 +187,7 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
 
   } catch (error) {
     console.error("Audit progress error:", error);
-    
+
     let errorMessage = "Internal server error";
     if (error instanceof Error) {
       if (error.message.includes("fetch") || error.message.includes("timeout")) {
@@ -206,7 +206,7 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
       error: errorMessage
     });
 
-    res.end();
+    cleanup();
   }
 };
 
