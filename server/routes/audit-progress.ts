@@ -18,15 +18,34 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
     'Cache-Control': 'no-cache',
     'Connection': 'keep-alive',
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Cache-Control'
+    'Access-Control-Allow-Headers': 'Cache-Control',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
   });
 
   const sendProgress = (update: ProgressUpdate) => {
-    res.write(`data: ${JSON.stringify(update)}\n\n`);
+    if (!res.headersSent && !res.destroyed) {
+      res.write(`data: ${JSON.stringify(update)}\n\n`);
+    }
   };
 
+  // Handle connection cleanup
+  const cleanup = () => {
+    if (!res.destroyed) {
+      res.end();
+    }
+  };
+
+  // Set up connection close handlers
+  req.on('close', cleanup);
+  req.on('aborted', cleanup);
+  res.on('close', cleanup);
+
   try {
-    const { url } = req.body as AuditRequest;
+    // Get URL from query parameters (EventSource uses GET)
+    const url = req.query.url as string;
+    const sessionId = req.query.session as string;
+
+    console.log(`Starting progress audit for session ${sessionId} with URL: ${url}`);
 
     if (!url) {
       sendProgress({
@@ -35,7 +54,7 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
         message: 'URL is required',
         error: 'URL is required'
       });
-      res.end();
+      cleanup();
       return;
     }
 
