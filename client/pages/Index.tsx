@@ -248,18 +248,6 @@ export default function Index() {
   const testAPIConnection = async () => {
     console.log("Testing API connection...");
 
-    // Double-check development environment to prevent any calls
-    const isDevelopment = window.location.hostname.includes('projects.builder.codes');
-
-    if (isDevelopment) {
-      console.log("Development environment detected - skipping API connectivity tests");
-      setApiStatus({
-        ping: false,
-        audits: false,
-        error: "Development environment - API endpoints not available"
-      });
-      return { ping: false, audits: false };
-    }
 
     let pingOk = false;
     let auditsOk = false;
