@@ -7,6 +7,9 @@ import {
   HarmBlockThreshold,
 } from "@google/generative-ai";
 
+// In-memory storage for audits (for this deployment/cold start)
+const auditStore = new Map<string, any>();
+
 // Demo audit generator fallback when API key is not available
 function generateDemoAudit(url: string) {
   const domain = new URL(url).hostname.replace("www.", "");
@@ -402,7 +405,7 @@ function generateDemoAudit(url: string) {
       evidenceQuality: "high",
       qualityScore: 88,
       demoMode: true,
-      note: "This is a demo audit. For AI-powered audits, ensure GEMINI_API_KEY is configured.",
+      note: "Demo audit - configure GEMINI_API_KEY for AI-powered audits.",
     },
   };
 }
@@ -421,7 +424,6 @@ async function scrapeWebsite(url: string) {
 
     const $ = cheerio.load(response.data);
 
-    // Extract content
     const title = $("title").text();
     const description = $('meta[name="description"]').attr("content") || "";
     const headings = $("h1, h2, h3")
@@ -490,7 +492,6 @@ Calculate overallScore as weighted average. Return valid JSON only, no markdown.
     const result = await model.generateContent(auditPrompt);
     const responseText = result.response.text();
 
-    // Extract JSON from response
     const jsonMatch = responseText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
       throw new Error("No valid JSON in response");
@@ -538,68 +539,107 @@ export const handler: Handler = async (event, context) => {
     };
   }
 
-  // Handle GET request for audit
-  if (event.httpMethod === "GET") {
+  const path = event.path || "";
+
+  // Handle /api/ping
+  if (path.includes("/api/ping")) {
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({ message: "ping pong" }),
+    };
+  }
+
+  // Handle /api/audits (list audits)
+  if (path.includes("/api/audits") && event.httpMethod === "GET") {
     try {
-      const url = event.queryStringParameters?.url;
-
-      if (!url) {
-        return {
-          statusCode: 400,
-          headers,
-          body: JSON.stringify({ error: "URL parameter is required" }),
-        };
-      }
-
-      console.log(`Processing audit request for: ${url}`);
-
-      // Check if GEMINI_API_KEY is available
-      if (!process.env.GEMINI_API_KEY) {
-        console.log("GEMINI_API_KEY not configured, using demo audit");
-        const demoAudit = generateDemoAudit(url);
-        return {
-          statusCode: 200,
-          headers,
-          body: JSON.stringify(demoAudit),
-        };
-      }
-
-      // Try to generate real audit
-      try {
-        const websiteData = await scrapeWebsite(url);
-        const realAudit = await generateRealAudit(url, websiteData);
-        return {
-          statusCode: 200,
-          headers,
-          body: JSON.stringify(realAudit),
-        };
-      } catch (error) {
-        console.error(
-          "Failed to generate real audit, falling back to demo:",
-          error,
-        );
-        const demoAudit = generateDemoAudit(url);
-        return {
-          statusCode: 200,
-          headers,
-          body: JSON.stringify(demoAudit),
-        };
-      }
+      const audits = Array.from(auditStore.values());
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({ audits }),
+      };
     } catch (error) {
-      console.error("Error processing request:", error);
       return {
         statusCode: 500,
         headers,
         body: JSON.stringify({
-          error: "Failed to process audit request",
+          error: "Failed to retrieve audits",
           message: error instanceof Error ? error.message : "Unknown error",
         }),
       };
     }
   }
 
-  // Handle POST request
-  if (event.httpMethod === "POST") {
+  // Handle POST /api/audits (store audit)
+  if (path.includes("/api/audits") && event.httpMethod === "POST") {
+    try {
+      const audit = JSON.parse(event.body || "{}");
+      if (!audit.id) {
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ error: "Audit ID is required" }),
+        };
+      }
+      auditStore.set(audit.id, audit);
+      console.log(`Stored audit ${audit.id}`);
+      return {
+        statusCode: 201,
+        headers,
+        body: JSON.stringify({ success: true, id: audit.id }),
+      };
+    } catch (error) {
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({
+          error: "Failed to store audit",
+          message: error instanceof Error ? error.message : "Unknown error",
+        }),
+      };
+    }
+  }
+
+  // Handle GET /api/audits/:id
+  if (path.includes("/api/audits/") && event.httpMethod === "GET") {
+    try {
+      const idMatch = path.match(/\/api\/audits\/([^/?]+)/);
+      const id = idMatch ? idMatch[1] : null;
+      if (!id) {
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ error: "Audit ID is required" }),
+        };
+      }
+      const audit = auditStore.get(id);
+      if (!audit) {
+        return {
+          statusCode: 404,
+          headers,
+          body: JSON.stringify({ error: "Audit not found" }),
+        };
+      }
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify(audit),
+      };
+    } catch (error) {
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({
+          error: "Failed to retrieve audit",
+          message: error instanceof Error ? error.message : "Unknown error",
+        }),
+      };
+    }
+  }
+
+  // Handle POST /api/audit (create audit)
+  if (path.includes("/api/audit") && event.httpMethod === "POST") {
     try {
       const { url } = JSON.parse(event.body || "{}");
 
@@ -617,6 +657,7 @@ export const handler: Handler = async (event, context) => {
       if (!process.env.GEMINI_API_KEY) {
         console.log("GEMINI_API_KEY not configured, using demo audit");
         const demoAudit = generateDemoAudit(url);
+        auditStore.set(demoAudit.id, demoAudit);
         return {
           statusCode: 200,
           headers,
@@ -628,6 +669,7 @@ export const handler: Handler = async (event, context) => {
       try {
         const websiteData = await scrapeWebsite(url);
         const realAudit = await generateRealAudit(url, websiteData);
+        auditStore.set(realAudit.id, realAudit);
         return {
           statusCode: 200,
           headers,
@@ -639,6 +681,7 @@ export const handler: Handler = async (event, context) => {
           error,
         );
         const demoAudit = generateDemoAudit(url);
+        auditStore.set(demoAudit.id, demoAudit);
         return {
           statusCode: 200,
           headers,
@@ -647,6 +690,67 @@ export const handler: Handler = async (event, context) => {
       }
     } catch (error) {
       console.error("Error processing POST request:", error);
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({
+          error: "Failed to process audit request",
+          message: error instanceof Error ? error.message : "Unknown error",
+        }),
+      };
+    }
+  }
+
+  // Handle GET /api/audit (demo audit for URL param)
+  if (path.includes("/api/audit") && event.httpMethod === "GET") {
+    try {
+      const url = event.queryStringParameters?.url;
+
+      if (!url) {
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ error: "URL parameter is required" }),
+        };
+      }
+
+      console.log(`Processing audit GET request for: ${url}`);
+
+      if (!process.env.GEMINI_API_KEY) {
+        console.log("GEMINI_API_KEY not configured, using demo audit");
+        const demoAudit = generateDemoAudit(url);
+        auditStore.set(demoAudit.id, demoAudit);
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify(demoAudit),
+        };
+      }
+
+      try {
+        const websiteData = await scrapeWebsite(url);
+        const realAudit = await generateRealAudit(url, websiteData);
+        auditStore.set(realAudit.id, realAudit);
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify(realAudit),
+        };
+      } catch (error) {
+        console.error(
+          "Failed to generate real audit, falling back to demo:",
+          error,
+        );
+        const demoAudit = generateDemoAudit(url);
+        auditStore.set(demoAudit.id, demoAudit);
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify(demoAudit),
+        };
+      }
+    } catch (error) {
+      console.error("Error processing GET request:", error);
       return {
         statusCode: 500,
         headers,
