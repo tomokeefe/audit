@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuditRequest, AuditResponse } from "@shared/api";
 import Header from "@/components/Header";
-import DevEnvironmentNotice from "@/components/DevEnvironmentNotice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
