@@ -404,18 +404,6 @@ export default function Index() {
     // Add debug logging
     console.log("Component mounted, initializing API connection...");
 
-    // Check if we're in development environment first
-    const isDevelopment = window.location.hostname.includes('projects.builder.codes');
-
-    if (isDevelopment) {
-      console.log("Development environment - skipping API initialization");
-      setApiStatus({
-        ping: false,
-        audits: false,
-        error: "Development environment - API endpoints not available"
-      });
-      return;
-    }
 
     // Test API connection with retry logic for server startup
     const initializeAPI = async () => {
