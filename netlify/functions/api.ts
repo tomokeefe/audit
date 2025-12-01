@@ -574,7 +574,10 @@ export const handler: Handler = async (event, context) => {
           body: JSON.stringify(realAudit),
         };
       } catch (error) {
-        console.error("Failed to generate real audit, falling back to demo:", error);
+        console.error(
+          "Failed to generate real audit, falling back to demo:",
+          error,
+        );
         const demoAudit = generateDemoAudit(url);
         return {
           statusCode: 200,
@@ -631,7 +634,10 @@ export const handler: Handler = async (event, context) => {
           body: JSON.stringify(realAudit),
         };
       } catch (error) {
-        console.error("Failed to generate real audit, falling back to demo:", error);
+        console.error(
+          "Failed to generate real audit, falling back to demo:",
+          error,
+        );
         const demoAudit = generateDemoAudit(url);
         return {
           statusCode: 200,
