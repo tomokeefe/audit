@@ -235,13 +235,12 @@ export default function Index() {
   const testAPIConnection = async () => {
     console.log("Testing API connection...");
 
-
     let pingOk = false;
     let auditsOk = false;
     let errorMsg = "";
 
     // Helper function to create fetch with timeout
-      const fetchWithTimeout = async (url: string, timeout = 5000) => {
+    const fetchWithTimeout = async (url: string, timeout = 5000) => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => {
         console.log(`Request timeout after ${timeout}ms for ${url}`);
@@ -261,7 +260,7 @@ export default function Index() {
       } catch (error) {
         clearTimeout(timeoutId);
         // Improve error handling for AbortError
-        if (error instanceof Error && error.name === 'AbortError') {
+        if (error instanceof Error && error.name === "AbortError") {
           console.log(`Request aborted for ${url}`);
           throw new Error(`Request timeout after ${timeout}ms`);
         }
@@ -304,7 +303,10 @@ export default function Index() {
         if (pingError instanceof Error) {
           if (pingError.name === "AbortError") {
             errorMsg = "Ping request timed out";
-          } else if (pingError.message.includes("fetch") || pingError.message.includes("Failed to fetch")) {
+          } else if (
+            pingError.message.includes("fetch") ||
+            pingError.message.includes("Failed to fetch")
+          ) {
             errorMsg = "Development environment - API endpoints not available";
           } else {
             errorMsg = `Ping error: ${pingError.message}`;
@@ -391,7 +393,6 @@ export default function Index() {
     // Add debug logging
     console.log("Component mounted, initializing API connection...");
 
-
     // Test API connection with retry logic for server startup
     const initializeAPI = async () => {
       let retries = 0;
@@ -427,7 +428,7 @@ export default function Index() {
 
           throw new Error(`Server responded with ${testResponse.status}`);
         } catch (error) {
-          if (error instanceof Error && error.name === 'AbortError') {
+          if (error instanceof Error && error.name === "AbortError") {
             console.log(`Connection attempt ${retries + 1} timed out after 3s`);
           } else {
             console.log(
