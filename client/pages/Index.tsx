@@ -131,17 +131,6 @@ export default function Index() {
     try {
       setLoadingAudits(true);
 
-      // Check if we're in development environment
-      const isDevelopment = window.location.hostname.includes('projects.builder.codes');
-
-      if (isDevelopment) {
-        console.log("Development environment - using mock data");
-        setApiStatus((prev) => ({ ...prev, audits: true, error: undefined }));
-        setRecentAudits([]);
-        setAllAudits([]);
-        return;
-      }
-
       // Use same timeout mechanism as testAPIConnection
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 8000); // Longer timeout for data loading
