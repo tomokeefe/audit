@@ -229,18 +229,6 @@ export default function Index() {
 
   // Safe wrapper that checks environment before running API tests
   const safeTestAPIConnection = async () => {
-    const isDevelopment = window.location.hostname.includes('projects.builder.codes');
-
-    if (isDevelopment) {
-      console.log("Development environment - skipping API connectivity tests");
-      setApiStatus({
-        ping: false,
-        audits: false,
-        error: "Development environment - API endpoints not available"
-      });
-      return { ping: false, audits: false };
-    }
-
     return await testAPIConnection();
   };
 
