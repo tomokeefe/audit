@@ -2664,14 +2664,6 @@ Be thorough, professional, and provide actionable insights based on the availabl
 
 export const handleAudit: RequestHandler = async (req, res) => {
   try {
-    // Check if Gemini API key is configured
-    if (!process.env.GEMINI_API_KEY) {
-      console.error("GEMINI_API_KEY environment variable is not set");
-      return res
-        .status(500)
-        .json({ error: "Server configuration error. Please contact support." });
-    }
-
     const { url } = req.body as AuditRequest;
 
     if (!url) {
@@ -2689,6 +2681,17 @@ export const handleAudit: RequestHandler = async (req, res) => {
     }
 
     console.log("Starting audit for URL:", url);
+
+    // If Gemini API key is not configured, use fallback demo audit
+    if (!process.env.GEMINI_API_KEY) {
+      console.log("GEMINI_API_KEY not configured, returning demo audit");
+      const demoAudit = generateFallbackAudit({
+        url,
+        title: new URL(url).hostname,
+        fallbackUsed: true,
+      });
+      return res.status(200).json(demoAudit);
+    }
 
     // Step 1: Scrape website content
     const websiteData = await scrapeWebsite(url);
