@@ -102,13 +102,25 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
       return;
     }
 
-    // Check API key
+    // If API key not configured, fallback to demo audit
     if (!process.env.GEMINI_API_KEY) {
+      console.log("GEMINI_API_KEY not configured, sending demo audit via SSE");
+
+      // Import and generate demo audit
+      const { generateFallbackAudit } = await import("./audit");
+      const demoAudit = generateFallbackAudit({
+        url,
+        title: new URL(url).hostname,
+        fallbackUsed: true,
+      });
+
+      // Send progress completion with demo audit
       sendProgress({
-        step: "validation",
-        progress: 0,
-        message: "Server configuration error",
-        error: "Server configuration error. Please contact support.",
+        step: "complete",
+        progress: 100,
+        message: "Audit complete (demo mode)",
+        completed: true,
+        data: demoAudit,
       });
       res.end();
       return;
