@@ -502,10 +502,11 @@ Calculate overallScore as weighted average. Return valid JSON only, no markdown.
     }
 
     const auditData = JSON.parse(jsonMatch[0]);
+    const urlWithProtocol = url.startsWith("http") ? url : `https://${url}`;
     return {
       id: Date.now().toString(),
-      url,
-      title: `Brand Audit for ${new URL(url).hostname}`,
+      url: urlWithProtocol,
+      title: `Brand Audit for ${new URL(urlWithProtocol).hostname}`,
       date: new Date().toISOString().split("T")[0],
       overallScore: auditData.overallScore || 75,
       status: "completed",
