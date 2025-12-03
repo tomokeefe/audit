@@ -365,6 +365,9 @@ function generateDemoAudit(url: string) {
         details: `Competitive analysis for ${domain}. ${competitorScore >= 75 ? "Strong market positioning relative to competitors" : competitorScore >= 55 ? "Moderate competitive standing" : "Competitive disadvantages identified"}.`,
         priorityLevel: competitorScore < 60 ? "medium" : "low",
         implementationDifficulty: competitorScore < 50 ? "hard" : "medium",
+        confidence: 0.72,
+        estimatedImpact: "Strategic positioning adjustments can capture 5-15% market share increase",
+        evidenceLevel: "medium",
       },
       {
         name: "Conversion Optimization",
