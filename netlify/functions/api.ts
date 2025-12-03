@@ -437,6 +437,9 @@ function generateDemoAudit(url: string) {
         details: `Compliance and consistency evaluation for ${domain}. ${complianceScore >= 85 ? "Excellent legal and accessibility compliance" : complianceScore >= 65 ? "Good compliance with minor gaps" : "Compliance issues need attention"}.`,
         priorityLevel: complianceScore < 70 ? "medium" : "low",
         implementationDifficulty: complianceScore < 60 ? "medium" : "easy",
+        confidence: 0.91,
+        estimatedImpact: "Full compliance reduces legal risk and increases user trust by 15-25%",
+        evidenceLevel: "high",
       },
     ],
     metadata: {
