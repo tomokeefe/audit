@@ -129,7 +129,7 @@ export function createFallbackData(url: string) {
   };
 }
 
-// Function to analyze website performance and UX metrics
+// Function to analyze website performance and UX metrics (Phase 1 Enhanced)
 async function analyzeWebsitePerformance(url: string) {
   try {
     const performanceData = {
@@ -139,6 +139,13 @@ async function analyzeWebsitePerformance(url: string) {
       responseTime: 0,
       mobileViewport: false,
       hasServiceWorker: false,
+      pagespeedScore: 0,
+      performanceScore: 0,
+      accessibilityScore: 0,
+      bestPracticesScore: 0,
+      seoScore: 0,
+      hasRobotsTxt: false,
+      hasSitemap: false,
     };
 
     const startTime = Date.now();
@@ -161,6 +168,23 @@ async function analyzeWebsitePerformance(url: string) {
       response.data.includes("serviceWorker") ||
       response.data.includes("sw.js");
 
+    // Phase 1: Get PageSpeed Insights metrics
+    console.log("Fetching PageSpeed Insights metrics...");
+    const pagespeedMetrics = await getPerformanceMetrics(url);
+    if (pagespeedMetrics) {
+      performanceData.pagespeedScore = pagespeedMetrics.pagespeedScore;
+      performanceData.performanceScore = pagespeedMetrics.performanceScore;
+      performanceData.accessibilityScore = pagespeedMetrics.accessibilityScore;
+      performanceData.bestPracticesScore = pagespeedMetrics.bestPracticesScore;
+      performanceData.seoScore = pagespeedMetrics.seoScore;
+    }
+
+    // Phase 1: Check SEO metrics
+    console.log("Checking SEO metrics...");
+    const seoMetrics = await getSEOMetrics(url);
+    performanceData.hasRobotsTxt = seoMetrics.hasRobotsTxt;
+    performanceData.hasSitemap = seoMetrics.hasSitemap;
+
     return performanceData;
   } catch (error) {
     console.warn("Performance analysis failed:", error);
@@ -171,6 +195,13 @@ async function analyzeWebsitePerformance(url: string) {
       responseTime: 0,
       mobileViewport: false,
       hasServiceWorker: false,
+      pagespeedScore: 0,
+      performanceScore: 0,
+      accessibilityScore: 0,
+      bestPracticesScore: 0,
+      seoScore: 0,
+      hasRobotsTxt: false,
+      hasSitemap: false,
     };
   }
 }
