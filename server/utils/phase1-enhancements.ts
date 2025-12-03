@@ -149,7 +149,9 @@ function extractInternalLinks(html: string, domain: string): string[] {
 
       // Make URL absolute
       try {
-        const url = new URL(href, $(el).closest("a").attr("href") ? href : window?.location?.href || "");
+        const baseHref = $(el).attr("href");
+        const absoluteUrl = href.startsWith("http") ? href : `https://${domain}${href.startsWith("/") ? "" : "/"}${href}`;
+        const url = new URL(absoluteUrl);
         // Only include internal links
         if (url.hostname === domain) {
           links.add(url.toString());
