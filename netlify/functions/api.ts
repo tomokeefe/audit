@@ -415,7 +415,9 @@ function generateDemoAudit(url: string) {
 // Scrape website content
 async function scrapeWebsite(url: string) {
   try {
-    const response = await axios.get(url, {
+    // Ensure URL has a protocol
+    const urlWithProtocol = url.startsWith("http") ? url : `https://${url}`;
+    const response = await axios.get(urlWithProtocol, {
       timeout: 10000,
       headers: {
         "User-Agent":
