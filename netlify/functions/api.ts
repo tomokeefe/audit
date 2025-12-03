@@ -705,8 +705,9 @@ export const handler: Handler = async (event, context) => {
 
   // Handle GET /api/audit (demo audit for URL param)
   if (path.includes("/api/audit") && event.httpMethod === "GET") {
+    let url: string | undefined;
     try {
-      const url = event.queryStringParameters?.url;
+      url = event.queryStringParameters?.url;
 
       if (!url) {
         return {
