@@ -12,7 +12,9 @@ const auditStore = new Map<string, any>();
 
 // Demo audit generator fallback when API key is not available
 function generateDemoAudit(url: string) {
-  const domain = new URL(url).hostname.replace("www.", "");
+  // Ensure URL has a protocol
+  const urlWithProtocol = url.startsWith("http") ? url : `https://${url}`;
+  const domain = new URL(urlWithProtocol).hostname.replace("www.", "");
   const companyName =
     domain.split(".")[0].charAt(0).toUpperCase() +
     domain.split(".")[0].slice(1);
