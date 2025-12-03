@@ -2242,6 +2242,15 @@ SCORING GUIDELINES: Use these exact criteria for consistency:
 - 50-59: Poor - Major problems affecting user experience
 - 0-49: Critical - Fundamental issues requiring immediate action
 
+PHASE 1 ENHANCED SCORING: Incorporate these real metrics into your analysis:
+- Use PageSpeed Insights scores to validate Performance and Accessibility sections
+- Use SEO metrics (robots.txt, sitemap) to calibrate Digital Presence and Consistency scores
+- Compare actual performance scores against Google's benchmarks and industry standards
+- When PageSpeed performance score is 50-69, include that in Usability scoring explanation
+- When accessibility score is below 80, specifically call out accessibility issues found
+- Positive SEO signals (robots.txt, sitemap present) should boost Digital Presence score
+- Missing robots.txt or sitemap should lower Digital Presence score by 10-15 points
+
 SCORING RATIONALE TEMPLATE: Always justify scores using this format:
 "Score: [X] because [2-3 specific positive findings] but [1-2 specific areas for improvement]"
 
