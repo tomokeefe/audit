@@ -779,32 +779,13 @@ export default function Index() {
         };
 
         eventSource.onerror = (error) => {
-          console.error("❌ EventSource error occurred:", error);
-          console.log("EventSource readyState:", eventSource.readyState);
-          console.log("EventSource url:", eventSource.url);
+          // EventSource errors are expected on serverless platforms like Netlify
+          // Just fall back silently to standard audit mode
+          console.log("EventSource connection failed, falling back to standard audit mode (expected on serverless)");
 
-          // More specific error handling based on readyState
-          if (eventSource.readyState === EventSource.CLOSED) {
-            console.log(
-              "EventSource connection closed, falling back to standard audit",
-            );
-            // Don't show error - just fall back silently
-            eventSource.close();
-            reject(new Error("EventSource closed - fallback"));
-          } else if (eventSource.readyState === EventSource.CONNECTING) {
-            console.log("EventSource still connecting, waiting...");
-            // Give it more time to connect
-            return;
-          } else {
-            console.log(
-              "EventSource connection failed, falling back to standard audit",
-            );
-            setError(
-              "Connection issue detected. Switching to standard audit mode...",
-            );
-            eventSource.close();
-            reject(new Error("EventSource connection failed"));
-          }
+          // Close the EventSource connection and fall back
+          eventSource.close();
+          reject(new Error("EventSource failed - using standard audit fallback"));
         };
 
         // Cleanup function
