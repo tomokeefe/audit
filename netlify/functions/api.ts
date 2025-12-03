@@ -115,6 +115,9 @@ function generateDemoAudit(url: string) {
           brandingScore < 60 ? "high" : brandingScore < 80 ? "medium" : "low",
         implementationDifficulty:
           brandingScore < 50 ? "hard" : brandingScore < 75 ? "medium" : "easy",
+        confidence: 0.85,
+        estimatedImpact: "Implementing brand consistency guidelines can increase brand recognition by 15-25%",
+        evidenceLevel: "high",
       },
       {
         name: "Design",
