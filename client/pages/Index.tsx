@@ -781,11 +781,15 @@ export default function Index() {
         eventSource.onerror = (error) => {
           // EventSource errors are expected on serverless platforms like Netlify
           // Just fall back silently to standard audit mode
-          console.log("EventSource connection failed, falling back to standard audit mode (expected on serverless)");
+          console.log(
+            "EventSource connection failed, falling back to standard audit mode (expected on serverless)",
+          );
 
           // Close the EventSource connection and fall back
           eventSource.close();
-          reject(new Error("EventSource failed - using standard audit fallback"));
+          reject(
+            new Error("EventSource failed - using standard audit fallback"),
+          );
         };
 
         // Cleanup function
