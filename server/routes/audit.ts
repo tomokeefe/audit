@@ -20,6 +20,12 @@ import {
   SCORING_METHODOLOGY,
   SECTION_WEIGHTS_ARRAY,
 } from "../constants/scoring";
+import {
+  crawlMultiplePages,
+  getPerformanceMetrics,
+  getSEOMetrics,
+  calculateAveragePerformance,
+} from "../utils/phase1-enhancements";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
