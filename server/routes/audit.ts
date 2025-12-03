@@ -2163,12 +2163,23 @@ Website Data:
 - Brand Elements: ${websiteData.brandElements}
 - Data Source: ${websiteData.fallbackUsed ? "Fallback Analysis" : "Live Website Scraping"}
 
-Performance Analysis:
+Performance Analysis (Phase 1 Enhanced):
 - Page Size: ${websiteData.performance?.pageSizeKB || 0}KB
 - Response Time: ${websiteData.performance?.responseTime || 0}ms
 - SSL/HTTPS: ${websiteData.performance?.hasSSL ? "Yes" : "No"}
 - Mobile Viewport: ${websiteData.performance?.mobileViewport ? "Yes" : "No"}
 - Service Worker: ${websiteData.performance?.hasServiceWorker ? "Yes" : "No"}
+
+PageSpeed Insights Metrics (Real Performance Data):
+- PageSpeed Score: ${websiteData.performance?.pagespeedScore || 0}/100
+- Performance Score: ${websiteData.performance?.performanceScore || 0}/100
+- Accessibility Score: ${websiteData.performance?.accessibilityScore || 0}/100
+- Best Practices Score: ${websiteData.performance?.bestPracticesScore || 0}/100
+- SEO Score: ${websiteData.performance?.seoScore || 0}/100
+
+SEO Metrics (Phase 1 Enhanced):
+- Has robots.txt: ${websiteData.performance?.hasRobotsTxt ? "Yes" : "No"}
+- Has sitemap.xml: ${websiteData.performance?.hasSitemap ? "Yes" : "No"}
 
 Site Structure:
 - Discovered Pages: ${websiteData.siteStructure?.pageCount || 0} pages
