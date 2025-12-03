@@ -116,7 +116,8 @@ function generateDemoAudit(url: string) {
         implementationDifficulty:
           brandingScore < 50 ? "hard" : brandingScore < 75 ? "medium" : "easy",
         confidence: 0.85,
-        estimatedImpact: "Implementing brand consistency guidelines can increase brand recognition by 15-25%",
+        estimatedImpact:
+          "Implementing brand consistency guidelines can increase brand recognition by 15-25%",
         evidenceLevel: "high",
       },
       {
@@ -151,7 +152,8 @@ function generateDemoAudit(url: string) {
         implementationDifficulty:
           designScore < 45 ? "hard" : designScore < 70 ? "medium" : "easy",
         confidence: 0.82,
-        estimatedImpact: "Improved design can increase time-on-site by 20-30% and bounce rate reduction",
+        estimatedImpact:
+          "Improved design can increase time-on-site by 20-30% and bounce rate reduction",
         evidenceLevel: "high",
       },
       {
@@ -187,7 +189,8 @@ function generateDemoAudit(url: string) {
         priorityLevel: messagingScore < 60 ? "high" : "medium",
         implementationDifficulty: messagingScore < 50 ? "medium" : "easy",
         confidence: 0.88,
-        estimatedImpact: "Clear messaging can improve conversion rates by 10-15%",
+        estimatedImpact:
+          "Clear messaging can improve conversion rates by 10-15%",
         evidenceLevel: "high",
       },
       {
@@ -255,8 +258,9 @@ function generateDemoAudit(url: string) {
         details: `Content strategy evaluation for ${domain}. ${contentScore >= 75 ? "Well-structured content with good organization" : contentScore >= 55 ? "Content structure needs improvement" : "Significant content strategy overhaul required"}.`,
         priorityLevel: contentScore < 65 ? "high" : "medium",
         implementationDifficulty: contentScore < 50 ? "hard" : "medium",
-        confidence: 0.80,
-        estimatedImpact: "Better content strategy improves SEO rankings and organic traffic by 20-40%",
+        confidence: 0.8,
+        estimatedImpact:
+          "Better content strategy improves SEO rankings and organic traffic by 20-40%",
         evidenceLevel: "medium",
       },
       {
@@ -289,7 +293,8 @@ function generateDemoAudit(url: string) {
         priorityLevel: digitalScore < 55 ? "high" : "medium",
         implementationDifficulty: "easy",
         confidence: 0.75,
-        estimatedImpact: "Expanded digital presence increases brand awareness by 30-50%",
+        estimatedImpact:
+          "Expanded digital presence increases brand awareness by 30-50%",
         evidenceLevel: "medium",
       },
       {
@@ -325,7 +330,8 @@ function generateDemoAudit(url: string) {
         priorityLevel: customerScore < 65 ? "medium" : "low",
         implementationDifficulty: "medium",
         confidence: 0.83,
-        estimatedImpact: "Better CX increases customer lifetime value by 25-35%",
+        estimatedImpact:
+          "Better CX increases customer lifetime value by 25-35%",
         evidenceLevel: "high",
       },
       {
@@ -366,7 +372,8 @@ function generateDemoAudit(url: string) {
         priorityLevel: competitorScore < 60 ? "medium" : "low",
         implementationDifficulty: competitorScore < 50 ? "hard" : "medium",
         confidence: 0.72,
-        estimatedImpact: "Strategic positioning adjustments can capture 5-15% market share increase",
+        estimatedImpact:
+          "Strategic positioning adjustments can capture 5-15% market share increase",
         evidenceLevel: "medium",
       },
       {
@@ -438,7 +445,8 @@ function generateDemoAudit(url: string) {
         priorityLevel: complianceScore < 70 ? "medium" : "low",
         implementationDifficulty: complianceScore < 60 ? "medium" : "easy",
         confidence: 0.91,
-        estimatedImpact: "Full compliance reduces legal risk and increases user trust by 15-25%",
+        estimatedImpact:
+          "Full compliance reduces legal risk and increases user trust by 15-25%",
         evidenceLevel: "high",
       },
     ],
