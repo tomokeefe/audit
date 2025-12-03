@@ -255,6 +255,9 @@ function generateDemoAudit(url: string) {
         details: `Content strategy evaluation for ${domain}. ${contentScore >= 75 ? "Well-structured content with good organization" : contentScore >= 55 ? "Content structure needs improvement" : "Significant content strategy overhaul required"}.`,
         priorityLevel: contentScore < 65 ? "high" : "medium",
         implementationDifficulty: contentScore < 50 ? "hard" : "medium",
+        confidence: 0.80,
+        estimatedImpact: "Better content strategy improves SEO rankings and organic traffic by 20-40%",
+        evidenceLevel: "medium",
       },
       {
         name: "Digital Presence",
