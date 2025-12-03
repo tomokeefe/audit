@@ -74,10 +74,12 @@ function generateDemoAudit(url: string) {
     id: auditId,
     url: urlWithProtocol,
     title: `Brand Audit for ${companyName}`,
+    description: `Comprehensive brand audit for ${domain}. Analysis includes branding consistency, design quality, messaging effectiveness, usability, content strategy, digital presence, customer experience, competitor analysis, conversion optimization, and compliance.`,
     date: new Date().toISOString().split("T")[0],
     overallScore: parseFloat(overallScore.toFixed(1)),
     status: "completed",
     isDemoMode: true,
+    summary: `Overall score: ${parseFloat(overallScore.toFixed(1))}/100. Your brand shows ${overallScore >= 80 ? "strong" : overallScore >= 60 ? "solid" : "developing"} performance across key metrics.`,
     sections: [
       {
         name: "Branding",
