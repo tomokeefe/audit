@@ -640,8 +640,10 @@ export const handler: Handler = async (event, context) => {
 
   // Handle POST /api/audit (create audit)
   if (path.includes("/api/audit") && event.httpMethod === "POST") {
+    let url: string | undefined;
     try {
-      const { url } = JSON.parse(event.body || "{}");
+      const parsed = JSON.parse(event.body || "{}");
+      url = parsed.url;
 
       if (!url) {
         return {
