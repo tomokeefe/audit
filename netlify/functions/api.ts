@@ -693,7 +693,8 @@ export const handler: Handler = async (event, context) => {
     } catch (error) {
       console.error("Error processing POST request:", error);
       // Always return a demo audit on error instead of 500
-      const demoAudit = generateDemoAudit(url || "example.com");
+      const auditUrl = typeof url === "string" ? url : "example.com";
+      const demoAudit = generateDemoAudit(auditUrl);
       auditStore.set(demoAudit.id, demoAudit);
       return {
         statusCode: 200,
@@ -755,7 +756,8 @@ export const handler: Handler = async (event, context) => {
     } catch (error) {
       console.error("Error processing GET request:", error);
       // Always return a demo audit on error instead of 500
-      const demoAudit = generateDemoAudit(url || "example.com");
+      const auditUrl = typeof url === "string" ? url : "example.com";
+      const demoAudit = generateDemoAudit(auditUrl);
       auditStore.set(demoAudit.id, demoAudit);
       return {
         statusCode: 200,
