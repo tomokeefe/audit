@@ -85,7 +85,9 @@ export async function crawlMultiplePages(baseUrl: string): Promise<PageData[]> {
   }
 
   // Return at least the homepage
-  return pages.length > 0 ? pages : [{ url: baseUrl, title: "Homepage", description: "", isHomepage: true }];
+  return pages.length > 0
+    ? pages
+    : [{ url: baseUrl, title: "Homepage", description: "", isHomepage: true }];
 }
 
 /**
@@ -104,7 +106,10 @@ async function fetchPage(url: string): Promise<string | null> {
 
     return response.data;
   } catch (error) {
-    console.warn(`Failed to fetch ${url}:`, error instanceof Error ? error.message : "Unknown error");
+    console.warn(
+      `Failed to fetch ${url}:`,
+      error instanceof Error ? error.message : "Unknown error",
+    );
     return null;
   }
 }
@@ -112,11 +117,18 @@ async function fetchPage(url: string): Promise<string | null> {
 /**
  * Extract page data from HTML
  */
-function extractPageData(url: string, html: string, isHomepage: boolean): PageData | null {
+function extractPageData(
+  url: string,
+  html: string,
+  isHomepage: boolean,
+): PageData | null {
   try {
     const $ = cheerio.load(html);
-    const title = $("title").text() || $('h1:first').text() || "Page";
-    const description = $('meta[name="description"]').attr("content") || $('meta[property="og:description"]').attr("content") || "";
+    const title = $("title").text() || $("h1:first").text() || "Page";
+    const description =
+      $('meta[name="description"]').attr("content") ||
+      $('meta[property="og:description"]').attr("content") ||
+      "";
 
     return {
       url,
@@ -143,14 +155,20 @@ function extractInternalLinks(html: string, domain: string): string[] {
       if (!href) return;
 
       // Skip certain link types
-      if (href.startsWith("#") || href.startsWith("tel:") || href.startsWith("mailto:")) {
+      if (
+        href.startsWith("#") ||
+        href.startsWith("tel:") ||
+        href.startsWith("mailto:")
+      ) {
         return;
       }
 
       // Make URL absolute
       try {
         const baseHref = $(el).attr("href");
-        const absoluteUrl = href.startsWith("http") ? href : `https://${domain}${href.startsWith("/") ? "" : "/"}${href}`;
+        const absoluteUrl = href.startsWith("http")
+          ? href
+          : `https://${domain}${href.startsWith("/") ? "" : "/"}${href}`;
         const url = new URL(absoluteUrl);
         // Only include internal links
         if (url.hostname === domain) {
@@ -171,7 +189,9 @@ function extractInternalLinks(html: string, domain: string): string[] {
 /**
  * Get performance metrics from Google PageSpeed Insights (free, no API key needed)
  */
-export async function getPerformanceMetrics(url: string): Promise<PerformanceMetrics | null> {
+export async function getPerformanceMetrics(
+  url: string,
+): Promise<PerformanceMetrics | null> {
   try {
     const encodedUrl = encodeURIComponent(url);
     const response = await axios.get(
@@ -190,8 +210,12 @@ export async function getPerformanceMetrics(url: string): Promise<PerformanceMet
     return {
       pagespeedScore: Math.round((categories.performance?.score || 0) * 100),
       performanceScore: Math.round((categories.performance?.score || 0) * 100),
-      accessibilityScore: Math.round((categories.accessibility?.score || 0) * 100),
-      bestPracticesScore: Math.round((categories["best-practices"]?.score || 0) * 100),
+      accessibilityScore: Math.round(
+        (categories.accessibility?.score || 0) * 100,
+      ),
+      bestPracticesScore: Math.round(
+        (categories["best-practices"]?.score || 0) * 100,
+      ),
       seoScore: Math.round((categories.seo?.score || 0) * 100),
       coreWebVitals: {
         lcp: metrics.largestContentfulPaint || 0,
@@ -200,7 +224,10 @@ export async function getPerformanceMetrics(url: string): Promise<PerformanceMet
       },
     };
   } catch (error) {
-    console.warn("Failed to get PageSpeed metrics:", error instanceof Error ? error.message : "Unknown error");
+    console.warn(
+      "Failed to get PageSpeed metrics:",
+      error instanceof Error ? error.message : "Unknown error",
+    );
     return null;
   }
 }
@@ -246,9 +273,11 @@ export async function getSEOMetrics(url: string): Promise<SEOMetrics> {
       if (homepageHtml) {
         const $ = cheerio.load(homepageHtml);
         const viewportMeta = $('meta[name="viewport"]').attr("content");
-        seoMetrics.mobileOptimized = !!viewportMeta && viewportMeta.includes("width=device-width");
+        seoMetrics.mobileOptimized =
+          !!viewportMeta && viewportMeta.includes("width=device-width");
 
-        seoMetrics.canonicalUrl = $('link[rel="canonical"]').attr("href") || null;
+        seoMetrics.canonicalUrl =
+          $('link[rel="canonical"]').attr("href") || null;
       }
     } catch {
       // Continue with other checks
@@ -310,7 +339,9 @@ function normalizeUrl(url: string): string {
 /**
  * Calculate average performance across all pages
  */
-export function calculateAveragePerformance(metrics: PerformanceMetrics[]): PerformanceMetrics {
+export function calculateAveragePerformance(
+  metrics: PerformanceMetrics[],
+): PerformanceMetrics {
   if (metrics.length === 0) {
     return {
       pagespeedScore: 50,
@@ -323,15 +354,36 @@ export function calculateAveragePerformance(metrics: PerformanceMetrics[]): Perf
   }
 
   const avg = {
-    pagespeedScore: Math.round(metrics.reduce((sum, m) => sum + m.pagespeedScore, 0) / metrics.length),
-    performanceScore: Math.round(metrics.reduce((sum, m) => sum + m.performanceScore, 0) / metrics.length),
-    accessibilityScore: Math.round(metrics.reduce((sum, m) => sum + m.accessibilityScore, 0) / metrics.length),
-    bestPracticesScore: Math.round(metrics.reduce((sum, m) => sum + m.bestPracticesScore, 0) / metrics.length),
-    seoScore: Math.round(metrics.reduce((sum, m) => sum + m.seoScore, 0) / metrics.length),
+    pagespeedScore: Math.round(
+      metrics.reduce((sum, m) => sum + m.pagespeedScore, 0) / metrics.length,
+    ),
+    performanceScore: Math.round(
+      metrics.reduce((sum, m) => sum + m.performanceScore, 0) / metrics.length,
+    ),
+    accessibilityScore: Math.round(
+      metrics.reduce((sum, m) => sum + m.accessibilityScore, 0) /
+        metrics.length,
+    ),
+    bestPracticesScore: Math.round(
+      metrics.reduce((sum, m) => sum + m.bestPracticesScore, 0) /
+        metrics.length,
+    ),
+    seoScore: Math.round(
+      metrics.reduce((sum, m) => sum + m.seoScore, 0) / metrics.length,
+    ),
     coreWebVitals: {
-      lcp: Math.round(metrics.reduce((sum, m) => sum + m.coreWebVitals.lcp, 0) / metrics.length),
-      fid: Math.round(metrics.reduce((sum, m) => sum + m.coreWebVitals.fid, 0) / metrics.length),
-      cls: Math.round(metrics.reduce((sum, m) => sum + m.coreWebVitals.cls, 0) / metrics.length),
+      lcp: Math.round(
+        metrics.reduce((sum, m) => sum + m.coreWebVitals.lcp, 0) /
+          metrics.length,
+      ),
+      fid: Math.round(
+        metrics.reduce((sum, m) => sum + m.coreWebVitals.fid, 0) /
+          metrics.length,
+      ),
+      cls: Math.round(
+        metrics.reduce((sum, m) => sum + m.coreWebVitals.cls, 0) /
+          metrics.length,
+      ),
     },
   };
 
