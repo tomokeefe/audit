@@ -72,7 +72,7 @@ function generateDemoAudit(url: string) {
 
   return {
     id: auditId,
-    url,
+    url: urlWithProtocol,
     title: `Brand Audit for ${companyName}`,
     date: new Date().toISOString().split("T")[0],
     overallScore: parseFloat(overallScore.toFixed(1)),
