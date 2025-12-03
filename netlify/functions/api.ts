@@ -324,6 +324,9 @@ function generateDemoAudit(url: string) {
         details: `Customer experience evaluation for ${domain}. ${customerScore >= 80 ? "Excellent customer support accessibility" : customerScore >= 60 ? "Adequate support options" : "Limited customer support visibility"}.`,
         priorityLevel: customerScore < 65 ? "medium" : "low",
         implementationDifficulty: "medium",
+        confidence: 0.83,
+        estimatedImpact: "Better CX increases customer lifetime value by 25-35%",
+        evidenceLevel: "high",
       },
       {
         name: "Competitor Analysis",
