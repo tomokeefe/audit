@@ -186,6 +186,9 @@ function generateDemoAudit(url: string) {
         details: `Messaging analysis for ${domain}. ${messagingScore >= 80 ? "Clear and compelling" : messagingScore >= 60 ? "Adequate" : "Unclear"} value proposition.`,
         priorityLevel: messagingScore < 60 ? "high" : "medium",
         implementationDifficulty: messagingScore < 50 ? "medium" : "easy",
+        confidence: 0.88,
+        estimatedImpact: "Clear messaging can improve conversion rates by 10-15%",
+        evidenceLevel: "high",
       },
       {
         name: "Usability",
