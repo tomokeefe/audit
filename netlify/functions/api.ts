@@ -454,7 +454,7 @@ async function scrapeWebsite(url: string) {
       paragraphs,
       images,
       links,
-      url,
+      url: urlWithProtocol,
       fallbackUsed: false,
     };
   } catch (error) {
