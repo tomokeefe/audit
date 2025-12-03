@@ -401,6 +401,9 @@ function generateDemoAudit(url: string) {
         details: `Conversion optimization analysis for ${domain}. ${conversionScore >= 80 ? "Strong conversion elements in place" : conversionScore >= 60 ? "Basic conversion optimization present" : "Significant conversion improvements needed"}.`,
         priorityLevel: conversionScore < 65 ? "high" : "medium",
         implementationDifficulty: conversionScore < 50 ? "hard" : "medium",
+        confidence: 0.89,
+        estimatedImpact: "Conversion optimization increases revenue by 20-50%",
+        evidenceLevel: "high",
       },
       {
         name: "Consistency & Compliance",
