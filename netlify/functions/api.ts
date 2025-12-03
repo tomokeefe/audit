@@ -84,6 +84,7 @@ function generateDemoAudit(url: string) {
       {
         name: "Branding",
         score: brandingScore,
+        maxScore: 100,
         subScores: [
           {
             name: "Logo Consistency",
@@ -118,6 +119,7 @@ function generateDemoAudit(url: string) {
       {
         name: "Design",
         score: designScore,
+        maxScore: 100,
         subScores: [
           {
             name: "Visual Hierarchy",
@@ -149,6 +151,7 @@ function generateDemoAudit(url: string) {
       {
         name: "Messaging",
         score: messagingScore,
+        maxScore: 100,
         subScores: [
           {
             name: "Value Proposition",
@@ -181,6 +184,7 @@ function generateDemoAudit(url: string) {
       {
         name: "Usability",
         score: usabilityScore,
+        maxScore: 100,
         subScores: [
           {
             name: "Navigation Structure",
@@ -213,6 +217,7 @@ function generateDemoAudit(url: string) {
       {
         name: "Content Strategy",
         score: contentScore,
+        maxScore: 100,
         subScores: [
           {
             name: "Content Quality",
@@ -242,6 +247,7 @@ function generateDemoAudit(url: string) {
       {
         name: "Digital Presence",
         score: digitalScore,
+        maxScore: 100,
         subScores: [
           {
             name: "Social Media Integration",
@@ -271,6 +277,7 @@ function generateDemoAudit(url: string) {
       {
         name: "Customer Experience",
         score: customerScore,
+        maxScore: 100,
         subScores: [
           {
             name: "Support Accessibility",
@@ -303,6 +310,7 @@ function generateDemoAudit(url: string) {
       {
         name: "Competitor Analysis",
         score: competitorScore,
+        maxScore: 100,
         subScores: [
           {
             name: "Strengths Comparison",
@@ -340,6 +348,7 @@ function generateDemoAudit(url: string) {
       {
         name: "Conversion Optimization",
         score: conversionScore,
+        maxScore: 100,
         subScores: [
           {
             name: "Conversion Funnel",
@@ -372,6 +381,7 @@ function generateDemoAudit(url: string) {
       {
         name: "Consistency & Compliance",
         score: complianceScore,
+        maxScore: 100,
         subScores: [
           {
             name: "Legal Compliance",
