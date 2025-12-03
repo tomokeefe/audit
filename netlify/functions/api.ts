@@ -150,6 +150,9 @@ function generateDemoAudit(url: string) {
           designScore < 55 ? "high" : designScore < 75 ? "medium" : "low",
         implementationDifficulty:
           designScore < 45 ? "hard" : designScore < 70 ? "medium" : "easy",
+        confidence: 0.82,
+        estimatedImpact: "Improved design can increase time-on-site by 20-30% and bounce rate reduction",
+        evidenceLevel: "high",
       },
       {
         name: "Messaging",
