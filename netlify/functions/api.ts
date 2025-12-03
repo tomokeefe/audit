@@ -288,6 +288,9 @@ function generateDemoAudit(url: string) {
         details: `Digital presence analysis for ${domain}. ${digitalScore >= 70 ? "Solid social media integration" : digitalScore >= 50 ? "Limited social media presence" : "Minimal digital footprint"}.`,
         priorityLevel: digitalScore < 55 ? "high" : "medium",
         implementationDifficulty: "easy",
+        confidence: 0.75,
+        estimatedImpact: "Expanded digital presence increases brand awareness by 30-50%",
+        evidenceLevel: "medium",
       },
       {
         name: "Customer Experience",
