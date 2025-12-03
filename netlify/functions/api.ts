@@ -222,6 +222,9 @@ function generateDemoAudit(url: string) {
         details: `Usability assessment for ${domain}. Navigation ${usabilityScore >= 75 ? "is intuitive and well-structured" : usabilityScore >= 55 ? "needs minor improvements" : "requires significant restructuring"}.`,
         priorityLevel: usabilityScore < 60 ? "high" : "medium",
         implementationDifficulty: usabilityScore < 50 ? "hard" : "medium",
+        confidence: 0.84,
+        estimatedImpact: "Improved usability reduces bounce rate by 15-25%",
+        evidenceLevel: "high",
       },
       {
         name: "Content Strategy",
