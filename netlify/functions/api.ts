@@ -8,6 +8,7 @@ import {
 } from "@google/generative-ai";
 
 // In-memory storage for audits (for this deployment/cold start)
+// Force rebuild
 const auditStore = new Map<string, any>();
 
 // Demo audit generator fallback when API key is not available
