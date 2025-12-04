@@ -36,10 +36,19 @@ const auditStorage = new Map<string, AuditResponse>();
 // Utility function to store audit
 async function storeAuditResult(auditData: AuditResponse): Promise<void> {
   try {
-    // Always use in-memory storage for immediate access
-    // Database persistence is handled separately
+    // Always use in-memory storage for immediate access within same session
     auditStorage.set(auditData.id, auditData);
     console.log(`Stored audit ${auditData.id} in memory storage for sharing`);
+
+    // Also save to database for persistent sharing across browsers/devices
+    try {
+      const { auditService } = await import("../db/audit-service");
+      await auditService.saveAudit(auditData);
+      console.log(`Stored audit ${auditData.id} in database for persistent sharing`);
+    } catch (dbError) {
+      console.warn("Database storage not available:", dbError);
+      // Don't fail - in-memory storage is still available
+    }
   } catch (error) {
     console.warn("Error storing audit:", error);
     // Don't throw - storage failure shouldn't break audit creation
