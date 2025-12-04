@@ -1,5 +1,6 @@
-import pkg from "pg";
-const { Pool } = pkg;
+// Dynamic import to avoid issues with Vite client bundling
+let Pool: any;
+let pool: any;
 
 // Initialize database connection from environment variable
 const pool = new Pool({
