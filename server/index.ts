@@ -63,7 +63,8 @@ export function createServer() {
         response.database.status = `Connection failed: ${error instanceof Error ? error.message : String(error)}`;
       }
     } else {
-      response.database.status = "NOT CONFIGURED - Audits will NOT persist to database";
+      response.database.status =
+        "NOT CONFIGURED - Audits will NOT persist to database";
     }
 
     res.json(response);

@@ -49,11 +49,16 @@ async function storeAuditResult(auditData: AuditResponse): Promise<void> {
           `✓ Stored audit ${auditData.id} in database for persistent sharing`,
         );
       } catch (dbError) {
-        console.error(`✗ ERROR saving audit ${auditData.id} to database:`, dbError);
+        console.error(
+          `✗ ERROR saving audit ${auditData.id} to database:`,
+          dbError,
+        );
         // Don't fail - in-memory storage is still available
       }
     } else {
-      console.warn(`⚠ DATABASE_URL not configured - audit ${auditData.id} will only be available in current session`);
+      console.warn(
+        `⚠ DATABASE_URL not configured - audit ${auditData.id} will only be available in current session`,
+      );
     }
   } catch (error) {
     console.warn("Error storing audit:", error);
