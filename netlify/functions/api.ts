@@ -69,7 +69,45 @@ const handler: Handler = async (event, context) => {
     }
   }
 
-  // Proxy audits endpoints (list, get, delete) to backend
+  // Handle /api/audits/:id (retrieve single audit from Neon database)
+  if (path.match(/^\/api\/audits\/[^/]+$/)) {
+    try {
+      const id = path.split("/").pop();
+      console.log(`Retrieving audit ${id} from Neon database`);
+
+      // Use the dedicated get-audit function instead of proxying to Fly.io
+      const response = await fetch(`${event.headers.host || "localhost"}/.netlify/functions/get-audit/${id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        return {
+          statusCode: response.status,
+          headers,
+          body: JSON.stringify({ error: "Audit not found" }),
+        };
+      }
+
+      const data = await response.json();
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify(data),
+      };
+    } catch (error) {
+      console.error("Audit retrieval error:", error);
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({ error: "Failed to retrieve audit" }),
+      };
+    }
+  }
+
+  // Proxy other audits endpoints (list, delete) to backend
   if (path.includes("/api/audits")) {
     try {
       const method = event.httpMethod || "GET";
