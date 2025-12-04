@@ -1178,18 +1178,6 @@ Best regards`);
     const shareLink = `${window.location.origin}/share/audit/${id}`;
     setShareUrl(shareLink);
 
-    // Save audit to localStorage for sharing
-    const auditToSave = {
-      ...auditResult,
-      savedAt: new Date().toISOString(),
-    };
-    try {
-      localStorage.setItem(`audit_${id}`, JSON.stringify(auditToSave));
-      console.log(`Saved audit ${id} to localStorage`);
-    } catch (e) {
-      console.warn("Failed to save to localStorage:", e);
-    }
-
     const loadAuditData = async () => {
       try {
         // First, try to load from server
