@@ -44,7 +44,9 @@ async function storeAuditResult(auditData: AuditResponse): Promise<void> {
     try {
       const { auditService } = await import("../db/audit-service");
       await auditService.saveAudit(auditData);
-      console.log(`Stored audit ${auditData.id} in database for persistent sharing`);
+      console.log(
+        `Stored audit ${auditData.id} in database for persistent sharing`,
+      );
     } catch (dbError) {
       console.warn("Database storage not available:", dbError);
       // Don't fail - in-memory storage is still available
