@@ -1180,17 +1180,17 @@ Best regards`);
 
     const loadAuditData = async () => {
       try {
-        // First, try to load from server
+        // First, try to load from server database (works across browsers/devices)
         const response = await fetch(`/api/audits/${id}`);
 
         if (response.ok) {
           const serverAudit: AuditResponse = await response.json();
           setAuditData(serverAudit);
-          console.log("Loaded audit from server");
+          console.log("Loaded audit from server database");
           return;
         }
 
-        // If server load fails, try localStorage as fallback
+        // If server load fails, try localStorage as fallback (same browser session)
         console.log("Server load failed, trying localStorage...");
         const storedData = localStorage.getItem(`audit_${id}`);
         if (storedData) {
