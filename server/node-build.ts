@@ -1,18 +1,9 @@
 import path from "path";
 import { createServer } from "./index";
 import * as express from "express";
-import { initializeDatabase } from "./db/init";
 
 const app = createServer();
 const port = process.env.PORT || 3000;
-
-// Initialize database if configured
-if (process.env.DATABASE_URL) {
-  initializeDatabase().catch((error) => {
-    console.warn("Database initialization failed:", error);
-    // Continue anyway - database is optional
-  });
-}
 
 // In production, serve the built SPA files
 const __dirname = import.meta.dirname;
