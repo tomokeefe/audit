@@ -46,14 +46,36 @@ import {
 } from "lucide-react";
 
 // SWOT Matrix Component for Competitor Analysis
-function SWOTMatrix({ sectionName, auditData }: { sectionName: string; auditData?: any }) {
+function SWOTMatrix({
+  sectionName,
+  auditData,
+}: {
+  sectionName: string;
+  auditData?: any;
+}) {
   // Parse SWOT data from audit content if available
   const parseSWOTFromContent = (content: string) => {
     const defaultData = {
-      strengths: ["Strong brand positioning", "User-friendly interface", "Quality content"],
-      weaknesses: ["Limited competitive analysis", "Missing industry benchmarks", "Unclear market position"],
-      opportunities: ["Market differentiation", "Enhanced digital presence", "Strategic partnerships"],
-      threats: ["Increased competition", "Market saturation", "Technology changes"],
+      strengths: [
+        "Strong brand positioning",
+        "User-friendly interface",
+        "Quality content",
+      ],
+      weaknesses: [
+        "Limited competitive analysis",
+        "Missing industry benchmarks",
+        "Unclear market position",
+      ],
+      opportunities: [
+        "Market differentiation",
+        "Enhanced digital presence",
+        "Strategic partnerships",
+      ],
+      threats: [
+        "Increased competition",
+        "Market saturation",
+        "Technology changes",
+      ],
     };
 
     if (!content) return defaultData;
@@ -66,28 +88,36 @@ function SWOTMatrix({ sectionName, auditData }: { sectionName: string; auditData
     };
 
     // Extract SWOT items from content using regex patterns
-    const strengthsMatch = content.match(/Strengths?[:\s]*([\s\S]*?)(?=\n\s*Weaknesses?|$)/i);
-    const weaknessesMatch = content.match(/Weaknesses?[:\s]*([\s\S]*?)(?=\n\s*Opportunities?|$)/i);
-    const opportunitiesMatch = content.match(/Opportunities?[:\s]*([\s\S]*?)(?=\n\s*Threats?|$)/i);
+    const strengthsMatch = content.match(
+      /Strengths?[:\s]*([\s\S]*?)(?=\n\s*Weaknesses?|$)/i,
+    );
+    const weaknessesMatch = content.match(
+      /Weaknesses?[:\s]*([\s\S]*?)(?=\n\s*Opportunities?|$)/i,
+    );
+    const opportunitiesMatch = content.match(
+      /Opportunities?[:\s]*([\s\S]*?)(?=\n\s*Threats?|$)/i,
+    );
     const threatsMatch = content.match(/Threats?[:\s]*([\s\S]*?)(?=\n|$)/i);
 
     const extractItems = (text: string): string[] => {
       return text
         .split(/[-•*]\s*/)
-        .map(item => item.trim())
-        .filter(item => item.length > 10 && item.length < 100)
+        .map((item) => item.trim())
+        .filter((item) => item.length > 10 && item.length < 100)
         .slice(0, 4);
     };
 
     if (strengthsMatch) sections.strengths = extractItems(strengthsMatch[1]);
     if (weaknessesMatch) sections.weaknesses = extractItems(weaknessesMatch[1]);
-    if (opportunitiesMatch) sections.opportunities = extractItems(opportunitiesMatch[1]);
+    if (opportunitiesMatch)
+      sections.opportunities = extractItems(opportunitiesMatch[1]);
     if (threatsMatch) sections.threats = extractItems(threatsMatch[1]);
 
     // Use defaults for empty sections
-    Object.keys(sections).forEach(key => {
+    Object.keys(sections).forEach((key) => {
       if (sections[key as keyof typeof sections].length === 0) {
-        sections[key as keyof typeof sections] = defaultData[key as keyof typeof defaultData];
+        sections[key as keyof typeof sections] =
+          defaultData[key as keyof typeof defaultData];
       }
     });
 
@@ -95,7 +125,7 @@ function SWOTMatrix({ sectionName, auditData }: { sectionName: string; auditData
   };
 
   const competitorSection = auditData?.sections?.find((s: any) =>
-    s.name.toLowerCase().includes('competitor')
+    s.name.toLowerCase().includes("competitor"),
   );
 
   const swotData = parseSWOTFromContent(competitorSection?.details || "");
@@ -104,7 +134,9 @@ function SWOTMatrix({ sectionName, auditData }: { sectionName: string; auditData
     <div className="mt-6 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border">
       <div className="flex items-center gap-2 mb-4">
         <Target className="h-5 w-5 text-blue-600" />
-        <h4 className="text-lg font-semibold text-gray-900">SWOT Analysis Matrix</h4>
+        <h4 className="text-lg font-semibold text-gray-900">
+          SWOT Analysis Matrix
+        </h4>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Strengths */}
@@ -185,28 +217,36 @@ function CompetitiveMetrics({ auditData }: { auditData: any }) {
   const metrics = [
     {
       name: "Website Performance",
-      yourScore: sections.find((s: any) => s.name.toLowerCase().includes('usability'))?.score || 0,
+      yourScore:
+        sections.find((s: any) => s.name.toLowerCase().includes("usability"))
+          ?.score || 0,
       industryAverage: 72,
       icon: Activity,
       color: "blue",
     },
     {
       name: "Brand Strength",
-      yourScore: sections.find((s: any) => s.name.toLowerCase().includes('branding'))?.score || 0,
+      yourScore:
+        sections.find((s: any) => s.name.toLowerCase().includes("branding"))
+          ?.score || 0,
       industryAverage: 75,
       icon: Target,
       color: "purple",
     },
     {
       name: "User Experience",
-      yourScore: sections.find((s: any) => s.name.toLowerCase().includes('customer'))?.score || 0,
+      yourScore:
+        sections.find((s: any) => s.name.toLowerCase().includes("customer"))
+          ?.score || 0,
       industryAverage: 68,
       icon: Users,
       color: "green",
     },
     {
       name: "Digital Presence",
-      yourScore: sections.find((s: any) => s.name.toLowerCase().includes('digital'))?.score || 0,
+      yourScore:
+        sections.find((s: any) => s.name.toLowerCase().includes("digital"))
+          ?.score || 0,
       industryAverage: 70,
       icon: Globe,
       color: "orange",
@@ -214,12 +254,17 @@ function CompetitiveMetrics({ auditData }: { auditData: any }) {
   ];
 
   const getMetricColor = (yourScore: number, industryAverage: number) => {
-    if (yourScore >= industryAverage + 10) return "text-green-600 bg-green-50 border-green-200";
-    if (yourScore >= industryAverage - 5) return "text-yellow-600 bg-yellow-50 border-yellow-200";
+    if (yourScore >= industryAverage + 10)
+      return "text-green-600 bg-green-50 border-green-200";
+    if (yourScore >= industryAverage - 5)
+      return "text-yellow-600 bg-yellow-50 border-yellow-200";
     return "text-red-600 bg-red-50 border-red-200";
   };
 
-  const getCompetitivePosition = (yourScore: number, industryAverage: number) => {
+  const getCompetitivePosition = (
+    yourScore: number,
+    industryAverage: number,
+  ) => {
     if (yourScore >= industryAverage + 10) return "Leading";
     if (yourScore >= industryAverage - 5) return "Competitive";
     return "Behind";
@@ -229,13 +274,21 @@ function CompetitiveMetrics({ auditData }: { auditData: any }) {
     <div className="mt-6 p-6 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border">
       <div className="flex items-center gap-2 mb-4">
         <BarChart3 className="h-5 w-5 text-gray-600" />
-        <h4 className="text-lg font-semibold text-gray-900">Competitive Positioning</h4>
+        <h4 className="text-lg font-semibold text-gray-900">
+          Competitive Positioning
+        </h4>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {metrics.map((metric, index) => {
           const Icon = metric.icon;
-          const colorClasses = getMetricColor(metric.yourScore, metric.industryAverage);
-          const position = getCompetitivePosition(metric.yourScore, metric.industryAverage);
+          const colorClasses = getMetricColor(
+            metric.yourScore,
+            metric.industryAverage,
+          );
+          const position = getCompetitivePosition(
+            metric.yourScore,
+            metric.industryAverage,
+          );
 
           return (
             <div key={index} className="bg-white border rounded-lg p-4">
@@ -244,14 +297,18 @@ function CompetitiveMetrics({ auditData }: { auditData: any }) {
                   <Icon className={`h-4 w-4 text-${metric.color}-600`} />
                   <h5 className="font-medium text-gray-900">{metric.name}</h5>
                 </div>
-                <span className={`px-2 py-1 rounded-full text-xs font-medium border ${colorClasses}`}>
+                <span
+                  className={`px-2 py-1 rounded-full text-xs font-medium border ${colorClasses}`}
+                >
                   {position}
                 </span>
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Your Score</span>
-                  <span className="font-semibold text-gray-900">{metric.yourScore}%</span>
+                  <span className="font-semibold text-gray-900">
+                    {metric.yourScore}%
+                  </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
@@ -260,9 +317,18 @@ function CompetitiveMetrics({ auditData }: { auditData: any }) {
                   ></div>
                 </div>
                 <div className="flex justify-between items-center text-xs">
-                  <span className="text-gray-500">Industry Avg: {metric.industryAverage}%</span>
-                  <span className={metric.yourScore >= metric.industryAverage ? 'text-green-600' : 'text-red-600'}>
-                    {metric.yourScore >= metric.industryAverage ? '+' : ''}{metric.yourScore - metric.industryAverage}
+                  <span className="text-gray-500">
+                    Industry Avg: {metric.industryAverage}%
+                  </span>
+                  <span
+                    className={
+                      metric.yourScore >= metric.industryAverage
+                        ? "text-green-600"
+                        : "text-red-600"
+                    }
+                  >
+                    {metric.yourScore >= metric.industryAverage ? "+" : ""}
+                    {metric.yourScore - metric.industryAverage}
                   </span>
                 </div>
               </div>
@@ -272,8 +338,14 @@ function CompetitiveMetrics({ auditData }: { auditData: any }) {
       </div>
       <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
         <p className="text-sm text-blue-800">
-          <strong>Competitive Insight:</strong> Your overall score of {overallScore}% places you{' '}
-          {overallScore >= 75 ? 'in the top tier' : overallScore >= 65 ? 'in the competitive range' : 'below average'} compared to industry benchmarks.
+          <strong>Competitive Insight:</strong> Your overall score of{" "}
+          {overallScore}% places you{" "}
+          {overallScore >= 75
+            ? "in the top tier"
+            : overallScore >= 65
+              ? "in the competitive range"
+              : "below average"}{" "}
+          compared to industry benchmarks.
         </p>
       </div>
     </div>
@@ -286,18 +358,22 @@ function ImplementationRoadmap({ auditData }: { auditData: any }) {
   const improvementImpact = auditData?.improvementImpact;
 
   // Extract implementation phases based on enhanced scoring system
-  const quickWins = sections.filter((s: any) => 
-    s.implementationDifficulty === 'easy' && 
-    (s.priorityLevel === 'critical' || s.priorityLevel === 'high')
+  const quickWins = sections.filter(
+    (s: any) =>
+      s.implementationDifficulty === "easy" &&
+      (s.priorityLevel === "critical" || s.priorityLevel === "high"),
   );
 
-  const shortTerm = sections.filter((s: any) => 
-    s.implementationDifficulty === 'medium' && 
-    (s.priorityLevel === 'critical' || s.priorityLevel === 'high')
+  const shortTerm = sections.filter(
+    (s: any) =>
+      s.implementationDifficulty === "medium" &&
+      (s.priorityLevel === "critical" || s.priorityLevel === "high"),
   );
 
-  const longTerm = sections.filter((s: any) => 
-    s.implementationDifficulty === 'hard' || s.implementationDifficulty === 'very_hard'
+  const longTerm = sections.filter(
+    (s: any) =>
+      s.implementationDifficulty === "hard" ||
+      s.implementationDifficulty === "very_hard",
   );
 
   const phases = [
@@ -310,7 +386,7 @@ function ImplementationRoadmap({ auditData }: { auditData: any }) {
       color: "green",
       bgColor: "bg-green-50",
       borderColor: "border-green-200",
-      textColor: "text-green-800"
+      textColor: "text-green-800",
     },
     {
       title: "Phase 2: Short-term Goals",
@@ -321,7 +397,7 @@ function ImplementationRoadmap({ auditData }: { auditData: any }) {
       color: "blue",
       bgColor: "bg-blue-50",
       borderColor: "border-blue-200",
-      textColor: "text-blue-800"
+      textColor: "text-blue-800",
     },
     {
       title: "Phase 3: Long-term Strategy",
@@ -332,48 +408,65 @@ function ImplementationRoadmap({ auditData }: { auditData: any }) {
       color: "purple",
       bgColor: "bg-purple-50",
       borderColor: "border-purple-200",
-      textColor: "text-purple-800"
-    }
+      textColor: "text-purple-800",
+    },
   ];
 
   return (
     <div className="mt-8 space-y-6">
       <div className="flex items-center gap-2 mb-4">
         <Calendar className="h-5 w-5 text-gray-600" />
-        <h4 className="text-lg font-semibold text-gray-900">Implementation Roadmap</h4>
+        <h4 className="text-lg font-semibold text-gray-900">
+          Implementation Roadmap
+        </h4>
       </div>
 
       {phases.map((phase, index) => {
         const Icon = phase.icon;
         return (
-          <div key={index} className={`${phase.bgColor} border ${phase.borderColor} rounded-lg p-6`}>
+          <div
+            key={index}
+            className={`${phase.bgColor} border ${phase.borderColor} rounded-lg p-6`}
+          >
             <div className="flex items-center gap-3 mb-4">
-              <div className={`p-2 rounded-lg bg-white border ${phase.borderColor}`}>
+              <div
+                className={`p-2 rounded-lg bg-white border ${phase.borderColor}`}
+              >
                 <Icon className={`h-5 w-5 text-${phase.color}-600`} />
               </div>
               <div>
-                <h5 className={`font-semibold ${phase.textColor}`}>{phase.title}</h5>
+                <h5 className={`font-semibold ${phase.textColor}`}>
+                  {phase.title}
+                </h5>
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <Clock className="h-3 w-3" />
                   {phase.timeframe}
                 </div>
               </div>
             </div>
-            
-            <p className={`text-sm ${phase.textColor} mb-4`}>{phase.description}</p>
+
+            <p className={`text-sm ${phase.textColor} mb-4`}>
+              {phase.description}
+            </p>
 
             {phase.items.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {phase.items.map((item: any, itemIndex: number) => (
-                  <div key={itemIndex} className="bg-white border rounded-lg p-3">
+                  <div
+                    key={itemIndex}
+                    className="bg-white border rounded-lg p-3"
+                  >
                     <div className="flex items-start justify-between mb-2">
-                      <h6 className="font-medium text-gray-900 text-sm">{item.name}</h6>
+                      <h6 className="font-medium text-gray-900 text-sm">
+                        {item.name}
+                      </h6>
                       <Badge variant="outline" className="text-xs">
                         {item.score}%
                       </Badge>
                     </div>
                     <div className="text-xs text-gray-600">
-                      {item.recommendations} recommendations • {item.estimatedImpact || 'Impact: Medium'}
+                      {item.recommendations} recommendations •{" "}
+                      {item.estimatedImpact || "Impact: Medium"}
                     </div>
                   </div>
                 ))}
@@ -399,7 +492,9 @@ function ROICalculator({ auditData }: { auditData: any }) {
     <div className="mt-8 p-6 bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg border border-green-200">
       <div className="flex items-center gap-2 mb-4">
         <DollarSign className="h-5 w-5 text-green-600" />
-        <h4 className="text-lg font-semibold text-gray-900">Expected ROI & Impact</h4>
+        <h4 className="text-lg font-semibold text-gray-900">
+          Expected ROI & Impact
+        </h4>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -409,14 +504,14 @@ function ROICalculator({ auditData }: { auditData: any }) {
           </div>
           <div className="text-sm text-gray-600">Expected Improvement</div>
         </div>
-        
+
         <div className="bg-white border border-green-200 rounded-lg p-4 text-center">
           <div className="text-2xl font-bold text-green-600 mb-1">
             {improvementImpact?.implementationTimeframe || "2-6 months"}
           </div>
           <div className="text-sm text-gray-600">Implementation Timeline</div>
         </div>
-        
+
         <div className="bg-white border border-green-200 rounded-lg p-4 text-center">
           <div className="text-2xl font-bold text-green-600 mb-1">
             {improvementImpact?.highPriority?.length || 0}
@@ -426,9 +521,10 @@ function ROICalculator({ auditData }: { auditData: any }) {
       </div>
 
       <div className="text-sm text-green-800">
-        <strong>Business Impact:</strong> Based on industry benchmarks and your current performance, 
-        implementing these recommendations could result in significant improvements to user engagement, 
-        conversion rates, and overall digital performance.
+        <strong>Business Impact:</strong> Based on industry benchmarks and your
+        current performance, implementing these recommendations could result in
+        significant improvements to user engagement, conversion rates, and
+        overall digital performance.
       </div>
     </div>
   );
@@ -436,35 +532,39 @@ function ROICalculator({ auditData }: { auditData: any }) {
 
 // Success Metrics Component
 function SuccessMetrics({ auditData }: { auditData: any }) {
-  const businessType = auditData?.metadata?.businessType || 'general';
-  const industry = auditData?.metadata?.industryDetected || 'general';
+  const businessType = auditData?.metadata?.businessType || "general";
+  const industry = auditData?.metadata?.industryDetected || "general";
 
   const getMetricsForIndustry = () => {
     const baseMetrics = [
-      { name: "Overall Audit Score", target: "85%+", current: `${auditData.overallScore}%` },
+      {
+        name: "Overall Audit Score",
+        target: "85%+",
+        current: `${auditData.overallScore}%`,
+      },
       { name: "Page Load Speed", target: "< 2.5s", current: "Monitor" },
       { name: "Mobile Usability Score", target: "90%+", current: "Monitor" },
-      { name: "User Engagement", target: "+25%", current: "Baseline" }
+      { name: "User Engagement", target: "+25%", current: "Baseline" },
     ];
 
     const industrySpecific = {
       ecommerce: [
         { name: "Conversion Rate", target: "+20%", current: "Baseline" },
-        { name: "Cart Abandonment", target: "-15%", current: "Monitor" }
+        { name: "Cart Abandonment", target: "-15%", current: "Monitor" },
       ],
       saas: [
         { name: "Trial Conversion", target: "+30%", current: "Baseline" },
-        { name: "User Activation", target: "+25%", current: "Monitor" }
+        { name: "User Activation", target: "+25%", current: "Monitor" },
       ],
       healthcare: [
         { name: "Appointment Bookings", target: "+20%", current: "Baseline" },
-        { name: "Patient Trust Score", target: "90%+", current: "Monitor" }
-      ]
+        { name: "Patient Trust Score", target: "90%+", current: "Monitor" },
+      ],
     };
 
     return [
       ...baseMetrics,
-      ...(industrySpecific[industry as keyof typeof industrySpecific] || [])
+      ...(industrySpecific[industry as keyof typeof industrySpecific] || []),
     ];
   };
 
@@ -472,7 +572,9 @@ function SuccessMetrics({ auditData }: { auditData: any }) {
     <div className="mt-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
       <div className="flex items-center gap-2 mb-4">
         <BarChart3 className="h-5 w-5 text-blue-600" />
-        <h4 className="text-lg font-semibold text-gray-900">Success Metrics to Track</h4>
+        <h4 className="text-lg font-semibold text-gray-900">
+          Success Metrics to Track
+        </h4>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -493,8 +595,9 @@ function SuccessMetrics({ auditData }: { auditData: any }) {
 
       <div className="mt-4 p-3 bg-blue-100 border border-blue-300 rounded-lg">
         <p className="text-sm text-blue-800">
-          <strong>Recommendation:</strong> Set up Google Analytics 4 and other tracking tools to monitor 
-          these metrics before and after implementation to measure success.
+          <strong>Recommendation:</strong> Set up Google Analytics 4 and other
+          tracking tools to monitor these metrics before and after
+          implementation to measure success.
         </p>
       </div>
     </div>
@@ -507,49 +610,100 @@ function ResourceCenter() {
     {
       category: "Tools & Platforms",
       items: [
-        { name: "Google PageSpeed Insights", description: "Test page speed and performance", url: "https://pagespeed.web.dev/" },
-        { name: "Google Analytics 4", description: "Track website performance metrics", url: "https://analytics.google.com/" },
-        { name: "Google Search Console", description: "Monitor search performance", url: "https://search.google.com/search-console" },
-        { name: "GTmetrix", description: "Comprehensive performance analysis", url: "https://gtmetrix.com/" }
-      ]
+        {
+          name: "Google PageSpeed Insights",
+          description: "Test page speed and performance",
+          url: "https://pagespeed.web.dev/",
+        },
+        {
+          name: "Google Analytics 4",
+          description: "Track website performance metrics",
+          url: "https://analytics.google.com/",
+        },
+        {
+          name: "Google Search Console",
+          description: "Monitor search performance",
+          url: "https://search.google.com/search-console",
+        },
+        {
+          name: "GTmetrix",
+          description: "Comprehensive performance analysis",
+          url: "https://gtmetrix.com/",
+        },
+      ],
     },
     {
       category: "Best Practices",
       items: [
-        { name: "Web Content Accessibility Guidelines", description: "WCAG 2.1 compliance standards", url: "https://www.w3.org/WAI/WCAG21/quickref/" },
-        { name: "Core Web Vitals", description: "Google's page experience metrics", url: "https://web.dev/vitals/" },
-        { name: "SEO Starter Guide", description: "Google's official SEO guidelines", url: "https://developers.google.com/search/docs/fundamentals/seo-starter-guide" }
-      ]
+        {
+          name: "Web Content Accessibility Guidelines",
+          description: "WCAG 2.1 compliance standards",
+          url: "https://www.w3.org/WAI/WCAG21/quickref/",
+        },
+        {
+          name: "Core Web Vitals",
+          description: "Google's page experience metrics",
+          url: "https://web.dev/vitals/",
+        },
+        {
+          name: "SEO Starter Guide",
+          description: "Google's official SEO guidelines",
+          url: "https://developers.google.com/search/docs/fundamentals/seo-starter-guide",
+        },
+      ],
     },
     {
       category: "Design & UX",
       items: [
-        { name: "Material Design", description: "Google's design system guidelines", url: "https://material.io/design" },
-        { name: "Human Interface Guidelines", description: "Apple's UX design principles", url: "https://developer.apple.com/design/human-interface-guidelines/" },
-        { name: "Nielsen Norman Group", description: "UX research and usability insights", url: "https://www.nngroup.com/" }
-      ]
-    }
+        {
+          name: "Material Design",
+          description: "Google's design system guidelines",
+          url: "https://material.io/design",
+        },
+        {
+          name: "Human Interface Guidelines",
+          description: "Apple's UX design principles",
+          url: "https://developer.apple.com/design/human-interface-guidelines/",
+        },
+        {
+          name: "Nielsen Norman Group",
+          description: "UX research and usability insights",
+          url: "https://www.nngroup.com/",
+        },
+      ],
+    },
   ];
 
   return (
     <div className="mt-8 p-6 bg-gray-50 border border-gray-200 rounded-lg">
       <div className="flex items-center gap-2 mb-4">
         <Briefcase className="h-5 w-5 text-gray-600" />
-        <h4 className="text-lg font-semibold text-gray-900">Helpful Resources</h4>
+        <h4 className="text-lg font-semibold text-gray-900">
+          Helpful Resources
+        </h4>
       </div>
 
       <div className="space-y-6">
         {resources.map((category, index) => (
           <div key={index}>
-            <h5 className="font-semibold text-gray-900 mb-3">{category.category}</h5>
+            <h5 className="font-semibold text-gray-900 mb-3">
+              {category.category}
+            </h5>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {category.items.map((resource, resourceIndex) => (
-                <div key={resourceIndex} className="bg-white border rounded-lg p-3 hover:shadow-sm transition-shadow">
-                  <h6 className="font-medium text-gray-900 text-sm mb-1">{resource.name}</h6>
-                  <p className="text-xs text-gray-600 mb-2">{resource.description}</p>
-                  <a 
-                    href={resource.url} 
-                    target="_blank" 
+                <div
+                  key={resourceIndex}
+                  className="bg-white border rounded-lg p-3 hover:shadow-sm transition-shadow"
+                >
+                  <h6 className="font-medium text-gray-900 text-sm mb-1">
+                    {resource.name}
+                  </h6>
+                  <p className="text-xs text-gray-600 mb-2">
+                    {resource.description}
+                  </p>
+                  <a
+                    href={resource.url}
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="text-xs text-blue-600 hover:text-blue-800 underline flex items-center gap-1"
                   >
@@ -568,7 +722,7 @@ function ResourceCenter() {
 
 // Function to parse and style audit section content
 function parseAuditContent(content: string) {
-  if (!content || typeof content !== 'string') {
+  if (!content || typeof content !== "string") {
     return [];
   }
 
@@ -592,7 +746,7 @@ function parseAuditContent(content: string) {
       /(\*\*)?Problems?\*?\*?:?/i,
       /(\*\*)?Areas?\s*for\s*Improvement\*?\*?:?/i,
       /^Issues?:/i,
-      /^Problems?:/i
+      /^Problems?:/i,
     ];
 
     const recommendationPatterns = [
@@ -602,7 +756,7 @@ function parseAuditContent(content: string) {
       /(\*\*)?Improvements?\*?\*?:?/i,
       /^Recommendations?:/i,
       /^Actions?:/i,
-      /^Improvements?:/i
+      /^Improvements?:/i,
     ];
 
     const overviewPatterns = [
@@ -610,13 +764,13 @@ function parseAuditContent(content: string) {
       /(\*\*)?Analysis\*?\*?:?/i,
       /(\*\*)?Summary\*?\*?:?/i,
       /^Overview:/i,
-      /^Analysis:/i
+      /^Analysis:/i,
     ];
 
     let sectionFound = false;
 
     // Check for issues section
-    if (issuePatterns.some(pattern => pattern.test(line))) {
+    if (issuePatterns.some((pattern) => pattern.test(line))) {
       if (currentContent.length > 0) {
         sections.push({ type: currentSection, content: [...currentContent] });
         currentContent = [];
@@ -625,7 +779,7 @@ function parseAuditContent(content: string) {
       sectionFound = true;
     }
     // Check for recommendations section
-    else if (recommendationPatterns.some(pattern => pattern.test(line))) {
+    else if (recommendationPatterns.some((pattern) => pattern.test(line))) {
       if (currentContent.length > 0) {
         sections.push({ type: currentSection, content: [...currentContent] });
         currentContent = [];
@@ -634,7 +788,7 @@ function parseAuditContent(content: string) {
       sectionFound = true;
     }
     // Check for overview section
-    else if (overviewPatterns.some(pattern => pattern.test(line))) {
+    else if (overviewPatterns.some((pattern) => pattern.test(line))) {
       if (currentContent.length > 0) {
         sections.push({ type: currentSection, content: [...currentContent] });
         currentContent = [];
@@ -654,7 +808,12 @@ function parseAuditContent(content: string) {
         .trim();
 
       // Skip empty lines and section headers we might have missed
-      if (cleanLine && !cleanLine.match(/^(issues?|recommendations?|overview|analysis|summary):\s*$/i)) {
+      if (
+        cleanLine &&
+        !cleanLine.match(
+          /^(issues?|recommendations?|overview|analysis|summary):\s*$/i,
+        )
+      ) {
         currentContent.push(cleanLine);
       }
     }
@@ -669,7 +828,10 @@ function parseAuditContent(content: string) {
   if (sections.length === 0 && content.trim()) {
     sections.push({
       type: "overview",
-      content: content.split('\n\n').filter(p => p.trim()).map(p => p.trim())
+      content: content
+        .split("\n\n")
+        .filter((p) => p.trim())
+        .map((p) => p.trim()),
     });
   }
 
@@ -910,7 +1072,8 @@ export default function SharedAudit() {
                   Detailed Recommendations by Category
                 </CardTitle>
                 <CardDescription>
-                  Expand each section below to view specific recommendations and action items.
+                  Expand each section below to view specific recommendations and
+                  action items.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -918,13 +1081,17 @@ export default function SharedAudit() {
                   {auditData.sections.map((section, index) => {
                     const parsedContent = parseAuditContent(section.details);
                     const recommendationsContent = parsedContent.find(
-                      (content) => content.type === "recommendations"
+                      (content) => content.type === "recommendations",
                     );
 
                     // Show section if it has recommendations count or any content
-                    const hasRecommendations = recommendationsContent && recommendationsContent.content.length > 0;
-                    const hasContent = section.details && section.details.length > 0;
-                    const hasRecommendationCount = (section.recommendations || 0) > 0;
+                    const hasRecommendations =
+                      recommendationsContent &&
+                      recommendationsContent.content.length > 0;
+                    const hasContent =
+                      section.details && section.details.length > 0;
+                    const hasRecommendationCount =
+                      (section.recommendations || 0) > 0;
 
                     if (!hasContent && !hasRecommendationCount) {
                       return null;
@@ -945,7 +1112,8 @@ export default function SharedAudit() {
                                   {section.name}
                                 </div>
                                 <div className="text-sm text-gray-600 font-normal">
-                                  {section.recommendations} recommendations • Score: {section.score}%
+                                  {section.recommendations} recommendations •
+                                  Score: {section.score}%
                                 </div>
                               </div>
                             </div>
@@ -959,89 +1127,120 @@ export default function SharedAudit() {
                         <AccordionContent>
                           <div className="pt-4 space-y-4">
                             {(() => {
-                              const hasRecommendationsContent = recommendationsContent && recommendationsContent.content.length > 0;
-                              const overviewContent = parsedContent.find((content) => content.type === "overview");
-                              const issuesContent = parsedContent.find((content) => content.type === "issues");
+                              const hasRecommendationsContent =
+                                recommendationsContent &&
+                                recommendationsContent.content.length > 0;
+                              const overviewContent = parsedContent.find(
+                                (content) => content.type === "overview",
+                              );
+                              const issuesContent = parsedContent.find(
+                                (content) => content.type === "issues",
+                              );
 
                               return (
                                 <>
                                   {/* Show Overview if available */}
-                                  {overviewContent && overviewContent.content.length > 0 && (
-                                    <div className="space-y-3">
-                                      <div className="flex items-center gap-2 mb-3">
-                                        <Info className="h-4 w-4 text-blue-600" />
-                                        <h5 className="font-semibold text-gray-900">Overview</h5>
+                                  {overviewContent &&
+                                    overviewContent.content.length > 0 && (
+                                      <div className="space-y-3">
+                                        <div className="flex items-center gap-2 mb-3">
+                                          <Info className="h-4 w-4 text-blue-600" />
+                                          <h5 className="font-semibold text-gray-900">
+                                            Overview
+                                          </h5>
+                                        </div>
+                                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                          {overviewContent.content.map(
+                                            (item, itemIndex) => (
+                                              <div
+                                                key={itemIndex}
+                                                className="flex gap-3 items-start mb-2 last:mb-0"
+                                              >
+                                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                                                <p className="text-blue-800 text-sm leading-relaxed">
+                                                  {item}
+                                                </p>
+                                              </div>
+                                            ),
+                                          )}
+                                        </div>
                                       </div>
-                                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                                        {overviewContent.content.map((item, itemIndex) => (
-                                          <div key={itemIndex} className="flex gap-3 items-start mb-2 last:mb-0">
-                                            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                                            <p className="text-blue-800 text-sm leading-relaxed">
-                                              {item}
-                                            </p>
-                                          </div>
-                                        ))}
-                                      </div>
-                                    </div>
-                                  )}
+                                    )}
 
                                   {/* Show Issues if available */}
-                                  {issuesContent && issuesContent.content.length > 0 && (
-                                    <div className="space-y-3">
-                                      <div className="flex items-center gap-2 mb-3">
-                                        <XCircle className="h-4 w-4 text-red-600" />
-                                        <h5 className="font-semibold text-gray-900">Issues Found</h5>
+                                  {issuesContent &&
+                                    issuesContent.content.length > 0 && (
+                                      <div className="space-y-3">
+                                        <div className="flex items-center gap-2 mb-3">
+                                          <XCircle className="h-4 w-4 text-red-600" />
+                                          <h5 className="font-semibold text-gray-900">
+                                            Issues Found
+                                          </h5>
+                                        </div>
+                                        <div className="space-y-2">
+                                          {issuesContent.content.map(
+                                            (issue, itemIndex) => (
+                                              <div
+                                                key={itemIndex}
+                                                className="flex gap-3 p-3 bg-red-50 border border-red-200 rounded-lg"
+                                              >
+                                                <div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
+                                                <p className="text-red-800 text-sm leading-relaxed">
+                                                  {issue}
+                                                </p>
+                                              </div>
+                                            ),
+                                          )}
+                                        </div>
                                       </div>
-                                      <div className="space-y-2">
-                                        {issuesContent.content.map((issue, itemIndex) => (
-                                          <div
-                                            key={itemIndex}
-                                            className="flex gap-3 p-3 bg-red-50 border border-red-200 rounded-lg"
-                                          >
-                                            <div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
-                                            <p className="text-red-800 text-sm leading-relaxed">
-                                              {issue}
-                                            </p>
-                                          </div>
-                                        ))}
-                                      </div>
-                                    </div>
-                                  )}
+                                    )}
 
                                   {/* Show Recommendations/Analysis - Always show this section */}
                                   <div className="space-y-3">
                                     <div className="flex items-center gap-2 mb-3">
                                       <Lightbulb className="h-4 w-4 text-green-600" />
                                       <h5 className="font-semibold text-gray-900">
-                                        {hasRecommendationsContent ? 'Recommendations' : 'Analysis & Insights'}
+                                        {hasRecommendationsContent
+                                          ? "Recommendations"
+                                          : "Analysis & Insights"}
                                       </h5>
                                     </div>
                                     <div className="space-y-2">
                                       {hasRecommendationsContent ? (
                                         // Show parsed recommendations if available
-                                        recommendationsContent.content.map((recommendation, itemIndex) => (
-                                          <div
-                                            key={itemIndex}
-                                            className="flex gap-3 p-3 bg-green-50 border border-green-200 rounded-lg"
-                                          >
-                                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                                            <p className="text-green-800 text-sm leading-relaxed">
-                                              {recommendation}
-                                            </p>
-                                          </div>
-                                        ))
+                                        recommendationsContent.content.map(
+                                          (recommendation, itemIndex) => (
+                                            <div
+                                              key={itemIndex}
+                                              className="flex gap-3 p-3 bg-green-50 border border-green-200 rounded-lg"
+                                            >
+                                              <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                                              <p className="text-green-800 text-sm leading-relaxed">
+                                                {recommendation}
+                                              </p>
+                                            </div>
+                                          ),
+                                        )
                                       ) : (
                                         // Fallback: show full content with better formatting
                                         <div className="space-y-3">
-                                          {section.details.split('\n\n').filter(paragraph => paragraph.trim()).map((paragraph, pIndex) => (
-                                            <div key={pIndex} className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                                              <div className="prose prose-sm max-w-none">
-                                                <p className="text-gray-800 text-sm leading-relaxed whitespace-pre-wrap">
-                                                  {paragraph.trim()}
-                                                </p>
+                                          {section.details
+                                            .split("\n\n")
+                                            .filter((paragraph) =>
+                                              paragraph.trim(),
+                                            )
+                                            .map((paragraph, pIndex) => (
+                                              <div
+                                                key={pIndex}
+                                                className="p-4 bg-gray-50 border border-gray-200 rounded-lg"
+                                              >
+                                                <div className="prose prose-sm max-w-none">
+                                                  <p className="text-gray-800 text-sm leading-relaxed whitespace-pre-wrap">
+                                                    {paragraph.trim()}
+                                                  </p>
+                                                </div>
                                               </div>
-                                            </div>
-                                          ))}
+                                            ))}
                                         </div>
                                       )}
                                     </div>
@@ -1051,10 +1250,15 @@ export default function SharedAudit() {
                             })()}
 
                             {/* Show SWOT Matrix and Competitive Metrics for Competitor Analysis */}
-                            {section.name.toLowerCase().includes("competitor") && (
+                            {section.name
+                              .toLowerCase()
+                              .includes("competitor") && (
                               <>
                                 <CompetitiveMetrics auditData={auditData} />
-                                <SWOTMatrix sectionName={section.name} auditData={auditData} />
+                                <SWOTMatrix
+                                  sectionName={section.name}
+                                  auditData={auditData}
+                                />
                               </>
                             )}
                           </div>
@@ -1075,7 +1279,8 @@ export default function SharedAudit() {
                   Strategic Implementation Plan
                 </CardTitle>
                 <CardDescription>
-                  Comprehensive action plan with prioritized recommendations, timelines, and success metrics for {auditData.title}
+                  Comprehensive action plan with prioritized recommendations,
+                  timelines, and success metrics for {auditData.title}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -1114,16 +1319,21 @@ export default function SharedAudit() {
                       </h5>
                       <div className="text-sm text-red-700 space-y-1">
                         {auditData.sections
-                          .filter((s) => s.priorityLevel === 'critical' || s.score < 50)
+                          .filter(
+                            (s) =>
+                              s.priorityLevel === "critical" || s.score < 50,
+                          )
                           .map((s, index) => (
                             <div key={index} className="flex justify-between">
                               <span>{s.name}</span>
-                              <Badge variant="destructive" className="text-xs">{s.score}%</Badge>
+                              <Badge variant="destructive" className="text-xs">
+                                {s.score}%
+                              </Badge>
                             </div>
                           )) || <span>No critical issues found</span>}
                       </div>
                     </div>
-                    
+
                     <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                       <h5 className="font-medium text-yellow-800 mb-2 flex items-center gap-2">
                         <Clock className="h-4 w-4" />
@@ -1131,16 +1341,22 @@ export default function SharedAudit() {
                       </h5>
                       <div className="text-sm text-yellow-700 space-y-1">
                         {auditData.sections
-                          .filter((s) => s.priorityLevel === 'high' || (s.score >= 50 && s.score < 70))
+                          .filter(
+                            (s) =>
+                              s.priorityLevel === "high" ||
+                              (s.score >= 50 && s.score < 70),
+                          )
                           .map((s, index) => (
                             <div key={index} className="flex justify-between">
                               <span>{s.name}</span>
-                              <Badge variant="secondary" className="text-xs">{s.score}%</Badge>
+                              <Badge variant="secondary" className="text-xs">
+                                {s.score}%
+                              </Badge>
                             </div>
                           )) || <span>No high priority items</span>}
                       </div>
                     </div>
-                    
+
                     <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                       <h5 className="font-medium text-green-800 mb-2 flex items-center gap-2">
                         <Star className="h-4 w-4" />
@@ -1152,7 +1368,12 @@ export default function SharedAudit() {
                           .map((s, index) => (
                             <div key={index} className="flex justify-between">
                               <span>{s.name}</span>
-                              <Badge variant="default" className="text-xs bg-green-600">{s.score}%</Badge>
+                              <Badge
+                                variant="default"
+                                className="text-xs bg-green-600"
+                              >
+                                {s.score}%
+                              </Badge>
                             </div>
                           )) || <span>Focus on improving other areas</span>}
                       </div>
@@ -1167,14 +1388,18 @@ export default function SharedAudit() {
                 <div className="mt-8 p-6 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg text-white">
                   <div className="flex items-center gap-3 mb-4">
                     <PlayCircle className="h-6 w-6" />
-                    <h4 className="text-lg font-semibold">Professional Implementation Support</h4>
+                    <h4 className="text-lg font-semibold">
+                      Professional Implementation Support
+                    </h4>
                   </div>
                   <p className="mb-4 text-blue-100">
-                    This comprehensive audit analysis provides a strategic roadmap for digital transformation. 
-                    Consider professional consultation to accelerate implementation and maximize ROI.
+                    This comprehensive audit analysis provides a strategic
+                    roadmap for digital transformation. Consider professional
+                    consultation to accelerate implementation and maximize ROI.
                   </p>
                   <div className="text-sm text-blue-200">
-                    Generated by Brand Whisperer - Professional Brand Audit Platform
+                    Generated by Brand Whisperer - Professional Brand Audit
+                    Platform
                   </div>
                 </div>
               </CardContent>
