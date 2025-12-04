@@ -105,7 +105,7 @@ const handler: Handler = async (event, context) => {
           details: "Content quality and structure",
           priorityLevel: "high",
           implementationDifficulty: "hard",
-          confidence: 0.80,
+          confidence: 0.8,
           estimatedImpact: "20-40% organic traffic increase",
           evidenceLevel: "medium",
         },
