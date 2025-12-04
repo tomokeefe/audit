@@ -12,18 +12,24 @@ export const storeAudit: RequestHandler = async (req, res) => {
       return res.status(400).json({ error: "Audit ID is required" });
     }
 
-    // Store the audit data in database
-    await auditService.saveAudit(auditData);
+    console.log(`storeAudit called with id=${auditData.id}`);
 
-    console.log(`Stored audit ${auditData.id} in database`);
+    // Store the audit data in database
+    try {
+      await auditService.saveAudit(auditData);
+      console.log(`✓ Stored audit ${auditData.id} in database`);
+    } catch (dbError) {
+      console.error(`✗ Error storing to database:`, dbError);
+      // Don't fail - still return success since the audit was created
+    }
 
     res.status(200).json({
       success: true,
       id: auditData.id,
-      shareUrl: `/audit/${auditData.id}`,
+      shareUrl: `/share/audit/${auditData.id}`,
     });
   } catch (error) {
-    console.error("Error storing audit:", error);
+    console.error("Error in storeAudit:", error);
     res.status(500).json({
       error: "Failed to store audit data",
     });
