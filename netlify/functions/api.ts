@@ -33,7 +33,7 @@ const handler: Handler = async (event, context) => {
     try {
       const method = event.httpMethod || "POST";
       const isGet = method === "GET";
-      const url = isGet 
+      const url = isGet
         ? `${backendUrl}/api/audit?${new URLSearchParams(event.queryStringParameters || {})}`
         : `${backendUrl}/api/audit`;
 
@@ -61,8 +61,9 @@ const handler: Handler = async (event, context) => {
       return {
         statusCode: 503,
         headers,
-        body: JSON.stringify({ 
-          error: "Backend service unavailable. Ensure BACKEND_URL is configured." 
+        body: JSON.stringify({
+          error:
+            "Backend service unavailable. Ensure BACKEND_URL is configured.",
         }),
       };
     }
