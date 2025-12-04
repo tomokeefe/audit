@@ -2779,23 +2779,18 @@ export const handleAudit: RequestHandler = async (req, res) => {
   } catch (error) {
     console.error("Audit error:", error);
 
-    // Provide more specific error messages
-    let errorMessage = "Internal server error";
-    if (error instanceof Error) {
-      if (
-        error.message.includes("fetch") ||
-        error.message.includes("timeout")
-      ) {
-        errorMessage =
-          "Unable to access the website. Please check the URL and try again.";
-      } else if (error.message.includes("Invalid response format")) {
-        errorMessage = "AI service error. Please try again in a moment.";
-      } else {
-        errorMessage = error.message;
-      }
+    // Always return a demo audit on any error
+    try {
+      const demoAudit = generateFallbackAudit({
+        url: (req.body as AuditRequest).url || "example.com",
+        title: new URL((req.body as AuditRequest).url || "https://example.com").hostname,
+        fallbackUsed: true,
+      });
+      res.status(200).json(demoAudit);
+    } catch (fallbackError) {
+      console.error("Error generating fallback audit:", fallbackError);
+      res.status(500).json({ error: "Unable to generate audit" });
     }
-
-    res.status(500).json({ error: errorMessage });
   }
 };
 
