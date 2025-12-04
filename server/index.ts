@@ -23,6 +23,11 @@ export function createServer() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
+  // Initialize database on server startup
+  initializeDatabase().catch((error) => {
+    console.error("Failed to initialize database on startup:", error);
+  });
+
   // API routes with /api prefix (needed for local development)
   app.get("/api/ping", (_req, res) => {
     const ping = process.env.PING_MESSAGE ?? "ping pong";
