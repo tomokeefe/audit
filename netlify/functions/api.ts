@@ -96,6 +96,33 @@ const handler: Handler = async (event, context) => {
     }
   }
 
+  // Health check endpoint
+  if (path.includes("/api/health")) {
+    try {
+      const response = await fetch(`${backendUrl}/api/health`);
+      const data = await response.json();
+
+      return {
+        statusCode: response.status,
+        headers,
+        body: JSON.stringify(data),
+      };
+    } catch (error) {
+      console.error("Health check error:", error);
+      return {
+        statusCode: 503,
+        headers,
+        body: JSON.stringify({
+          status: "error",
+          database: {
+            configured: false,
+            status: "Backend unreachable",
+          },
+        }),
+      };
+    }
+  }
+
   return {
     statusCode: 404,
     headers,
