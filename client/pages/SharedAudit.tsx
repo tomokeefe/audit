@@ -890,7 +890,9 @@ export default function SharedAudit() {
           return;
         }
 
-        setError("Audit not found. Share links only work within the same browser session.");
+        setError(
+          "Audit not found. Share links only work within the same browser session.",
+        );
       } catch (error) {
         console.error("Error loading shared audit:", error);
         setError("Failed to load audit data");
