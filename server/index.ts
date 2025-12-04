@@ -13,6 +13,7 @@ import {
   listAudits,
   deleteAudit,
 } from "./routes/audit-storage";
+import { initializeDatabase } from "./db/init";
 
 export function createServer() {
   const app = express();
