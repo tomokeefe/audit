@@ -2948,6 +2948,8 @@ export const handleAudit: RequestHandler = async (req, res) => {
           .hostname,
         fallbackUsed: true,
       });
+      // Store the fallback audit so it persists for sharing
+      await storeAuditResult(demoAudit);
       res.status(200).json(demoAudit);
     } catch (fallbackError) {
       console.error("Error generating fallback audit:", fallbackError);
