@@ -76,23 +76,31 @@ export const listAudits: RequestHandler = async (req, res) => {
     const limit = parseInt(req.query.limit as string) || 50;
     const offset = parseInt(req.query.offset as string) || 0;
 
-    const audits = await auditService.listAudits(limit, offset);
+    console.log(`listAudits called with limit=${limit}, offset=${offset}`);
 
-    const summaries = audits.map((audit) => ({
-      id: audit.id,
-      title: audit.title,
-      url: audit.url,
-      date: audit.date,
-      overallScore: audit.overall_score,
-      isDemoMode: audit.is_demo_mode,
-    }));
+    try {
+      const audits = await auditService.listAudits(limit, offset);
 
-    res.status(200).json({ audits: summaries });
+      const summaries = audits.map((audit) => ({
+        id: audit.id,
+        title: audit.title,
+        url: audit.url,
+        date: audit.date,
+        overallScore: audit.overall_score,
+        isDemoMode: audit.is_demo_mode,
+      }));
+
+      console.log(`Returning ${summaries.length} audits`);
+      res.status(200).json({ audits: summaries });
+    } catch (dbError) {
+      console.error("Database error when listing audits:", dbError);
+      // Return empty list if database is unavailable rather than 500
+      console.warn("Database unavailable, returning empty audit list");
+      res.status(200).json({ audits: [] });
+    }
   } catch (error) {
-    console.error("Error listing audits:", error);
-    res.status(500).json({
-      error: "Failed to list audits",
-    });
+    console.error("Error in listAudits handler:", error);
+    res.status(200).json({ audits: [] });
   }
 };
 
