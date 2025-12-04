@@ -703,11 +703,28 @@ export default function SharedAudit() {
 
     const loadAuditData = async () => {
       try {
+        // First try localStorage (for current session/browser)
+        const storedAudit = localStorage.getItem(`audit_${id}`);
+        if (storedAudit) {
+          try {
+            const parsedAudit = JSON.parse(storedAudit);
+            setAuditData(parsedAudit);
+            console.log("Loaded audit from localStorage");
+            setLoading(false);
+            return;
+          } catch (parseError) {
+            console.warn("Failed to parse stored audit:", parseError);
+          }
+        }
+
+        // Then try server API
         const response = await fetch(`/api/audits/${id}`);
 
         if (response.ok) {
           const serverAudit: AuditResponse = await response.json();
           setAuditData(serverAudit);
+          console.log("Loaded audit from server");
+          setLoading(false);
           return;
         }
 
