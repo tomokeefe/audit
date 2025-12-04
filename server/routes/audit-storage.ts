@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import { AuditResponse } from "@shared/api";
 import { auditService } from "../db/audit-service";
+import { auditStorage } from "./audit";
 
 // Store audit result in database
 export const storeAudit: RequestHandler = async (req, res) => {
