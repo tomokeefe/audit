@@ -2783,7 +2783,8 @@ export const handleAudit: RequestHandler = async (req, res) => {
     try {
       const demoAudit = generateFallbackAudit({
         url: (req.body as AuditRequest).url || "example.com",
-        title: new URL((req.body as AuditRequest).url || "https://example.com").hostname,
+        title: new URL((req.body as AuditRequest).url || "https://example.com")
+          .hostname,
         fallbackUsed: true,
       });
       res.status(200).json(demoAudit);
