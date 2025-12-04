@@ -1,5 +1,5 @@
 import { getPool } from "./init";
-import { AuditResponse } from "../shared/api";
+import { AuditResponse } from "../../shared/api";
 
 export interface StoredAudit {
   id: string;
@@ -14,9 +14,13 @@ export interface StoredAudit {
 }
 
 export class AuditService {
-  private poolPromise = getPool();
-
   async saveAudit(audit: AuditResponse): Promise<void> {
+    const pool = await getPool();
+    if (!pool) {
+      console.warn("Database not available, skipping audit save");
+      return;
+    }
+
     const query = `
       INSERT INTO audits (id, url, title, description, overall_score, status, date, audit_data, is_demo_mode)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
@@ -45,7 +49,7 @@ export class AuditService {
     ];
 
     try {
-      await this.pool.query(query, values);
+      await pool.query(query, values);
       console.log(`Saved audit ${audit.id} to database`);
     } catch (error) {
       console.error("Error saving audit:", error);
@@ -54,10 +58,16 @@ export class AuditService {
   }
 
   async getAudit(id: string): Promise<StoredAudit | null> {
+    const pool = await getPool();
+    if (!pool) {
+      console.warn("Database not available");
+      return null;
+    }
+
     const query = "SELECT * FROM audits WHERE id = $1";
 
     try {
-      const result = await this.pool.query(query, [id]);
+      const result = await pool.query(query, [id]);
       if (result.rows.length === 0) {
         return null;
       }
@@ -81,11 +91,17 @@ export class AuditService {
   }
 
   async listAudits(limit: number = 50, offset: number = 0): Promise<StoredAudit[]> {
+    const pool = await getPool();
+    if (!pool) {
+      console.warn("Database not available");
+      return [];
+    }
+
     const query =
       "SELECT * FROM audits ORDER BY created_at DESC LIMIT $1 OFFSET $2";
 
     try {
-      const result = await this.pool.query(query, [limit, offset]);
+      const result = await pool.query(query, [limit, offset]);
       return result.rows.map((row) => ({
         id: row.id,
         url: row.url,
@@ -104,10 +120,16 @@ export class AuditService {
   }
 
   async deleteAudit(id: string): Promise<boolean> {
+    const pool = await getPool();
+    if (!pool) {
+      console.warn("Database not available");
+      return false;
+    }
+
     const query = "DELETE FROM audits WHERE id = $1";
 
     try {
-      const result = await this.pool.query(query, [id]);
+      const result = await pool.query(query, [id]);
       return result.rowCount > 0;
     } catch (error) {
       console.error("Error deleting audit:", error);
@@ -116,11 +138,17 @@ export class AuditService {
   }
 
   async getAuditsByUrl(url: string): Promise<StoredAudit[]> {
+    const pool = await getPool();
+    if (!pool) {
+      console.warn("Database not available");
+      return [];
+    }
+
     const query =
       "SELECT * FROM audits WHERE url = $1 ORDER BY created_at DESC LIMIT 10";
 
     try {
-      const result = await this.pool.query(query, [url]);
+      const result = await pool.query(query, [url]);
       return result.rows.map((row) => ({
         id: row.id,
         url: row.url,
