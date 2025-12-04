@@ -2908,6 +2908,8 @@ export const handleAudit: RequestHandler = async (req, res) => {
         title: new URL(url).hostname,
         fallbackUsed: true,
       });
+      // Store the demo audit so it persists
+      await storeAuditResult(demoAudit);
       return res.status(200).json(demoAudit);
     }
 
