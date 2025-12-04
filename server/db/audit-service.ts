@@ -14,7 +14,7 @@ export interface StoredAudit {
 }
 
 export class AuditService {
-  private pool = getPool();
+  private poolPromise = getPool();
 
   async saveAudit(audit: AuditResponse): Promise<void> {
     const query = `
