@@ -76,10 +76,10 @@ export function createServer() {
   app.post("/api/audit/standard", handleAuditStandard);
   app.post("/api/audit/demo", handleDemoAudit);
 
-  // Audit storage endpoints
-  app.post("/api/audits", storeAudit);
+  // Audit storage endpoints (order matters - specific routes before generic)
+  app.get("/api/audits", listAudits); // Must come before /:id route
   app.get("/api/audits/:id", getAudit);
-  app.get("/api/audits", listAudits);
+  app.post("/api/audits", storeAudit);
   app.delete("/api/audits/:id", deleteAudit);
 
   // Global error handler
