@@ -67,7 +67,9 @@ export const getAudit: RequestHandler = async (req, res) => {
         console.error(`✗ Database retrieval failed for ${id}:`, dbError);
       }
     } else {
-      console.warn(`⚠ DATABASE_URL not configured, cannot retrieve from database`);
+      console.warn(
+        `⚠ DATABASE_URL not configured, cannot retrieve from database`,
+      );
     }
 
     // Audit not found anywhere
