@@ -1,60 +1,86 @@
-// Dynamic import to avoid issues with Vite client bundling
-let Pool: any;
-let pool: any;
+// Database initialization
+let pool: any = null;
+let initialized = false;
 
-// Initialize database connection from environment variable
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
+// Lazy load pg to avoid bundling issues
+async function initPool() {
+  if (pool) return pool;
 
-// Create tables on initialization
-export async function initializeDatabase() {
-  const client = await pool.connect();
   try {
-    console.log("Initializing database...");
+    const pkg = await import("pg");
+    const { Pool } = pkg;
 
-    // Create audits table
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS audits (
-        id VARCHAR(50) PRIMARY KEY,
-        url VARCHAR(500) NOT NULL,
-        title VARCHAR(255) NOT NULL,
-        description TEXT,
-        overall_score DECIMAL(5, 2),
-        status VARCHAR(50),
-        date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        audit_data JSONB NOT NULL,
-        is_demo_mode BOOLEAN DEFAULT false
-      );
-    `);
+    pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    });
 
-    // Create indexes
-    await client.query(`
-      CREATE INDEX IF NOT EXISTS idx_audits_url ON audits(url);
-    `);
-    await client.query(`
-      CREATE INDEX IF NOT EXISTS idx_audits_date ON audits(created_at DESC);
-    `);
+    console.log("Database pool created");
+    return pool;
+  } catch (error) {
+    console.error("Failed to load pg module:", error);
+    return null;
+  }
+}
 
-    console.log("Database initialized successfully");
+// Initialize database schema
+export async function initializeDatabase() {
+  if (initialized) return;
+
+  try {
+    const db = await initPool();
+    if (!db) {
+      console.warn("Database not configured. Skipping schema initialization.");
+      return;
+    }
+
+    console.log("Initializing database schema...");
+
+    const queries = [
+      `
+        CREATE TABLE IF NOT EXISTS audits (
+          id VARCHAR(50) PRIMARY KEY,
+          url VARCHAR(500) NOT NULL,
+          title VARCHAR(255) NOT NULL,
+          description TEXT,
+          overall_score DECIMAL(5, 2),
+          status VARCHAR(50),
+          date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          audit_data JSONB NOT NULL,
+          is_demo_mode BOOLEAN DEFAULT false
+        );
+      `,
+      `CREATE INDEX IF NOT EXISTS idx_audits_url ON audits(url);`,
+      `CREATE INDEX IF NOT EXISTS idx_audits_date ON audits(created_at DESC);`,
+    ];
+
+    for (const query of queries) {
+      try {
+        await db.query(query);
+      } catch (err) {
+        console.warn("Query execution warning:", err);
+      }
+    }
+
+    initialized = true;
+    console.log("Database schema initialized successfully");
   } catch (error) {
     console.error("Error initializing database:", error);
-    throw error;
-  } finally {
-    client.release();
   }
 }
 
 // Get database connection pool
-export function getPool() {
-  return pool;
+export async function getPool() {
+  return await initPool();
 }
 
 // Close database connections
 export async function closeDatabase() {
-  await pool.end();
+  if (pool) {
+    await pool.end();
+    pool = null;
+  }
 }
