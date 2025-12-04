@@ -865,15 +865,32 @@ export default function SharedAudit() {
 
     const loadAuditData = async () => {
       try {
+        // First, try localStorage (faster and works for current browser session)
+        const stored = localStorage.getItem(`audit_${id}`);
+        if (stored) {
+          try {
+            const auditData = JSON.parse(stored);
+            setAuditData(auditData);
+            setLoading(false);
+            console.log("Loaded audit from localStorage");
+            return;
+          } catch (parseError) {
+            console.warn("Failed to parse localStorage audit:", parseError);
+          }
+        }
+
+        // Then try server API (in case it was stored server-side)
         const response = await fetch(`/api/audits/${id}`);
 
         if (response.ok) {
           const serverAudit: AuditResponse = await response.json();
           setAuditData(serverAudit);
+          setLoading(false);
+          console.log("Loaded audit from server");
           return;
         }
 
-        setError("Audit not found or no longer available.");
+        setError("Audit not found. Share links only work within the same browser session.");
       } catch (error) {
         console.error("Error loading shared audit:", error);
         setError("Failed to load audit data");
