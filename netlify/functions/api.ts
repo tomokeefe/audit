@@ -69,16 +69,25 @@ const handler: Handler = async (event, context) => {
     }
   }
 
-  // Proxy audits list endpoint to backend
+  // Proxy audits endpoints (list, get, delete) to backend
   if (path.includes("/api/audits")) {
     try {
-      const response = await fetch(`${backendUrl}/api/audits`, {
-        method: event.httpMethod || "GET",
+      const method = event.httpMethod || "GET";
+      const url = `${backendUrl}${path}`;
+
+      const fetchOptions: RequestInit = {
+        method,
         headers: {
           "Content-Type": "application/json",
         },
-        body: event.body,
-      });
+      };
+
+      if (method !== "GET" && event.body) {
+        fetchOptions.body = event.body;
+      }
+
+      console.log(`Proxying ${method} ${path} to ${url}`);
+      const response = await fetch(url, fetchOptions);
       const data = await response.json();
 
       return {
