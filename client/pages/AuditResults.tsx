@@ -1174,9 +1174,8 @@ Best regards`);
       return;
     }
 
-    // Share functionality - temporarily disabled due to session persistence issues
-    // TODO: Implement with proper database storage when available
-    const shareLink = ""; // Disabled for now
+    // Set share URL to the dedicated sharing route
+    const shareLink = `${window.location.origin}/share/audit/${id}`;
     setShareUrl(shareLink);
 
     const loadAuditData = async () => {
