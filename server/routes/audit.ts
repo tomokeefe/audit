@@ -1912,7 +1912,19 @@ function generateFallbackAudit(websiteData: any): AuditResponse {
       maxScore: 100,
       issues: 3,
       recommendations: 5,
-      details: `Brand audit analysis for ${domain} reveals solid foundational elements with opportunities for enhancement. The website maintains basic brand consistency through color and typography choices. Key areas for improvement include strengthening brand voice consistency across pages and enhancing visual brand elements to create stronger brand recognition and recall.`,
+      details: `Overview: Brand audit analysis for ${domain} reveals solid foundational elements with opportunities for enhancement. The website maintains basic brand consistency through color and typography choices, with logo placement detected across analyzed pages.
+
+Issues:
+- Messaging tone inconsistency detected across different page types
+- Logo size and placement variations between desktop and mobile versions
+- Missing comprehensive brand guidelines documentation
+
+Recommendations:
+- Develop comprehensive brand voice guidelines document specifying tone for each page type
+- Standardize logo dimensions across all devices and pages for consistency
+- Create and implement brand asset library for team reference and consistency
+- Establish quarterly brand consistency audits to maintain standards
+- Develop visual brand identity guidelines covering colors, fonts, and imagery`,
     },
     {
       name: "Design",
@@ -1920,7 +1932,21 @@ function generateFallbackAudit(websiteData: any): AuditResponse {
       maxScore: 100,
       issues: 4,
       recommendations: 6,
-      details: `Visual design shows professional presentation with clear information hierarchy. Layout structure supports user navigation effectively. Recommendations include optimizing mobile responsiveness, enhancing visual contrast for better accessibility, and implementing more modern design trends to improve user engagement and overall aesthetic appeal.`,
+      details: `Overview: Visual design shows professional presentation with clear information hierarchy. Layout structure supports user navigation effectively with good baseline implementation of design principles.
+
+Issues:
+- Mobile responsiveness needs optimization for smaller screen sizes
+- Visual contrast could be enhanced for better accessibility compliance
+- Design lacks modern visual trends that competitors are implementing
+- White space usage could be improved for better readability
+
+Recommendations:
+- Optimize mobile responsive design for tablets and smartphones
+- Enhance color contrast ratios to meet WCAG 2.1 AA standards
+- Implement modern design trends to improve visual appeal and engagement
+- Improve white space usage throughout layouts for better visual hierarchy
+- Create reusable design component library for consistency
+- Conduct accessibility audit and remediate design-related issues`,
     },
     {
       name: "Messaging",
@@ -1928,7 +1954,19 @@ function generateFallbackAudit(websiteData: any): AuditResponse {
       maxScore: 100,
       issues: 3,
       recommendations: 5,
-      details: `Messaging strategy demonstrates clear communication of core value propositions. Content structure supports logical information flow. Enhancement opportunities include strengthening call-to-action messaging, improving content tone consistency, and developing more compelling headline structures to increase conversion potential.`,
+      details: `Overview: Messaging strategy demonstrates clear communication of core value propositions. Content structure supports logical information flow across most pages with good clarity overall.
+
+Issues:
+- Messaging tone inconsistency across different sections of the site
+- Call-to-action messaging could be more conversion-focused
+- Headline structure lacks compelling benefit-focused language
+
+Recommendations:
+- Strengthen call-to-action messaging with benefit-focused language and urgency
+- Improve content tone consistency across all pages and sections
+- Develop more compelling headline structures that highlight customer benefits
+- Create messaging framework document for team alignment
+- Audit and improve value proposition clarity on key pages`,
     },
     {
       name: "Usability",
@@ -1936,7 +1974,23 @@ function generateFallbackAudit(websiteData: any): AuditResponse {
       maxScore: 100,
       issues: 5,
       recommendations: 7,
-      details: `User experience shows adequate navigation structure with room for optimization. Basic usability principles are implemented effectively. Priority improvements include simplifying navigation pathways, enhancing form usability, improving page loading performance, and implementing better mobile touch interaction patterns.`,
+      details: `Overview: User experience shows adequate navigation structure with room for optimization. Basic usability principles are implemented effectively with clear information architecture.
+
+Issues:
+- Navigation pathways could be simplified for better user wayfinding
+- Form usability needs optimization for better completion rates
+- Page loading performance requires improvement
+- Mobile touch interaction patterns need enhancement
+- Accessibility features such as skip links and ARIA labels need implementation
+
+Recommendations:
+- Simplify main navigation menu structure to reduce cognitive load
+- Enhance form usability with better labels, validation, and error messaging
+- Optimize page loading performance through asset optimization and caching
+- Implement improved mobile touch interaction patterns and spacing
+- Add accessibility features including skip links and ARIA labels
+- Conduct user testing to identify navigation friction points
+- Implement breadcrumb navigation for internal pages`,
     },
     {
       name: "Content Strategy",
@@ -1944,7 +1998,21 @@ function generateFallbackAudit(websiteData: any): AuditResponse {
       maxScore: 100,
       issues: 4,
       recommendations: 6,
-      details: `Content architecture supports user goals with appropriate information organization. Content quality demonstrates subject matter expertise effectively. Strategic enhancements include developing consistent content publishing schedules, optimizing content for search visibility, and creating more engaging multimedia content experiences.`,
+      details: `Overview: Content architecture supports user goals with appropriate information organization. Content quality demonstrates subject matter expertise effectively with good overall structure.
+
+Issues:
+- Content publishing schedule lacks consistency
+- Content optimization for search visibility needs improvement
+- Multimedia content is limited and underutilized
+- Content freshness could be improved with regular updates
+
+Recommendations:
+- Develop consistent content publishing schedule with editorial calendar
+- Optimize existing content for search visibility with keyword strategy
+- Create more engaging multimedia content experiences including videos
+- Establish content governance and quality standards documentation
+- Implement regular content audit schedule for freshness and accuracy
+- Develop content strategy framework aligned with business goals`,
     },
     {
       name: "Digital Presence",
@@ -1952,7 +2020,25 @@ function generateFallbackAudit(websiteData: any): AuditResponse {
       maxScore: 100,
       issues: 6,
       recommendations: 8,
-      details: `Digital footprint shows basic implementation across key channels with expansion opportunities. Social media integration requires strategic enhancement. Priority actions include optimizing search engine visibility, improving social media engagement strategies, and developing comprehensive digital marketing integration approaches.`,
+      details: `Overview: Digital footprint shows basic implementation across key channels with expansion opportunities. Social media integration requires strategic enhancement for better online visibility.
+
+Issues:
+- Search engine visibility optimization is below industry standards
+- Social media engagement strategies need development and implementation
+- Digital marketing integration across channels is limited
+- Missing key SEO elements like structured data and sitemaps
+- Social media presence is minimal or not properly integrated
+- Cross-platform consistency and promotion opportunities are underdeveloped
+
+Recommendations:
+- Optimize search engine visibility through keyword research and content optimization
+- Develop comprehensive social media engagement strategy and posting schedule
+- Implement digital marketing integration across email, social, and paid channels
+- Add structured data markup for enhanced search visibility
+- Create and optimize social media profiles with consistent branding
+- Implement proper website sitemaps and robots.txt files
+- Develop cross-platform content distribution strategy
+- Establish metrics and tracking for digital presence performance`,
     },
     {
       name: "Customer Experience",
@@ -1960,7 +2046,19 @@ function generateFallbackAudit(websiteData: any): AuditResponse {
       maxScore: 100,
       issues: 3,
       recommendations: 5,
-      details: `Customer interaction pathways provide accessible communication channels effectively. Service information presentation supports user needs adequately. Enhancement opportunities include implementing proactive customer support features, improving response time communication, and developing comprehensive self-service resources.`,
+      details: `Overview: Customer interaction pathways provide accessible communication channels effectively. Service information presentation supports user needs adequately with good basic implementation.
+
+Issues:
+- Proactive customer support features are not implemented
+- Response time communication and expectations are unclear
+- Self-service resources are limited or not well-organized
+
+Recommendations:
+- Implement proactive customer support features like chatbots or help widgets
+- Clarify response time expectations and communication channels prominently
+- Develop comprehensive self-service resource library and documentation
+- Create customer journey map to identify friction points
+- Implement customer feedback collection and analysis system`,
     },
     {
       name: "Competitor Analysis",
@@ -1968,7 +2066,21 @@ function generateFallbackAudit(websiteData: any): AuditResponse {
       maxScore: 100,
       issues: 4,
       recommendations: 6,
-      details: `Market positioning shows differentiation potential with unique value proposition elements. Competitive landscape analysis reveals opportunities for strategic advantage development. Recommended actions include strengthening competitive differentiation messaging and developing comprehensive competitive comparison resources.`,
+      details: `Overview: Market positioning shows differentiation potential with unique value proposition elements. Competitive landscape analysis reveals opportunities for strategic advantage development.
+
+Issues:
+- Competitive differentiation messaging could be stronger and clearer
+- Competitor comparison resources are not developed or visible
+- Unique selling propositions are not prominently featured
+- Market positioning lacks strategic clarity
+
+Recommendations:
+- Strengthen competitive differentiation messaging with clear unique value propositions
+- Develop comprehensive competitor comparison resources for informed decision-making
+- Create detailed SWOT analysis and share relevant strengths with customers
+- Establish clear market positioning and differentiation strategy
+- Develop competitive advantage messaging framework
+- Implement regular competitive intelligence monitoring process`,
     },
     {
       name: "Conversion Optimization",
@@ -1976,7 +2088,23 @@ function generateFallbackAudit(websiteData: any): AuditResponse {
       maxScore: 100,
       issues: 5,
       recommendations: 7,
-      details: `Conversion pathways present opportunities for strategic optimization enhancement. Lead capture mechanisms require systematic improvement approaches. Priority implementations include optimizing call-to-action placement and messaging, enhancing trust signal positioning, and developing comprehensive conversion funnel analysis.`,
+      details: `Overview: Conversion pathways present opportunities for strategic optimization enhancement. Lead capture mechanisms require systematic improvement approaches for better business results.
+
+Issues:
+- Call-to-action placement and visibility could be optimized
+- Lead capture mechanisms are not fully optimized for conversion
+- Trust signals are not prominently positioned throughout the site
+- Conversion funnel analysis and optimization is lacking
+- Mobile conversion experience needs improvement
+
+Recommendations:
+- Optimize call-to-action placement for maximum visibility and click-through rates
+- Enhance lead capture forms with better positioning and reduced friction
+- Implement prominent trust signals including testimonials and certifications
+- Conduct comprehensive conversion funnel analysis and optimization
+- Improve mobile conversion experience with responsive design and simplified forms
+- Implement A/B testing program for ongoing conversion improvement
+- Develop conversion rate optimization strategy with clear metrics and goals`,
     },
     {
       name: "Consistency & Compliance",
@@ -1984,7 +2112,16 @@ function generateFallbackAudit(websiteData: any): AuditResponse {
       maxScore: 100,
       issues: 2,
       recommendations: 3,
-      details: `Legal compliance and consistency standards show strong implementation across evaluated criteria. Privacy policy and security measures demonstrate appropriate protection levels. Minor optimizations include accessibility compliance enhancements and mobile optimization requirement updates.`,
+      details: `Overview: Legal compliance and consistency standards show strong implementation across evaluated criteria. Privacy policy and security measures demonstrate appropriate protection levels.
+
+Issues:
+- Accessibility compliance could be enhanced in some areas
+- Mobile optimization requirements need updates for latest standards
+
+Recommendations:
+- Conduct comprehensive accessibility audit and implement WCAG 2.1 AA compliance
+- Update mobile optimization to meet latest responsive design standards
+- Ensure all privacy and security policies are up to date and easily accessible`,
     },
   ];
 
