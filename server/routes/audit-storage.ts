@@ -29,7 +29,7 @@ export const storeAudit: RequestHandler = async (req, res) => {
   }
 };
 
-// Retrieve audit result from database
+// Retrieve audit result from database or memory
 export const getAudit: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
@@ -38,15 +38,29 @@ export const getAudit: RequestHandler = async (req, res) => {
       return res.status(400).json({ error: "Audit ID is required" });
     }
 
-    const auditData = await auditService.getAudit(id);
+    // First try to get from in-memory storage (for current session)
+    let auditData = auditStorage.get(id);
 
-    if (!auditData) {
-      return res.status(404).json({ error: "Audit not found" });
+    if (auditData) {
+      console.log(`Retrieved audit ${id} from memory`);
+      return res.status(200).json(auditData);
     }
 
-    console.log(`Retrieved audit ${id} from database`);
+    // Then try database if configured
+    if (process.env.DATABASE_URL) {
+      try {
+        const storedAudit = await auditService.getAudit(id);
+        if (storedAudit) {
+          console.log(`Retrieved audit ${id} from database`);
+          return res.status(200).json(storedAudit.audit_data);
+        }
+      } catch (dbError) {
+        console.warn("Database retrieval failed:", dbError);
+      }
+    }
 
-    res.status(200).json(auditData.audit_data);
+    // Audit not found anywhere
+    return res.status(404).json({ error: "Audit not found" });
   } catch (error) {
     console.error("Error retrieving audit:", error);
     res.status(500).json({
