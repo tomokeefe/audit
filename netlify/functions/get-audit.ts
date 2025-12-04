@@ -30,20 +30,44 @@ const handler: Handler = async (event) => {
   }
 
   try {
-    // Use lazy import to avoid bundling issues
-    const { Client } = await import("pg");
+    const dbUrl = process.env.DATABASE_URL;
+    if (!dbUrl) {
+      throw new Error("DATABASE_URL not configured");
+    }
 
-    const client = new Client({
-      connectionString: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false },
+    // Extract Neon project ID from connection string
+    // Format: postgresql://user:password@host/database
+    const url = new URL(dbUrl);
+    const host = url.hostname; // e.g., "ep-xxxxx.us-east-1.aws.neon.tech"
+
+    // Neon SQL over HTTP endpoint: https://console.neon.tech/app/projects/XXX/sql
+    // Use the connectionString directly with their HTTP API
+    const neonApiUrl = `https://${host}/sql`;
+
+    const response = await fetch(neonApiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query: "SELECT audit_data FROM audits WHERE id = $1",
+        params: [id],
+      }),
     });
 
-    await client.connect();
+    if (!response.ok) {
+      const error = await response.text();
+      console.error(`Neon API error (${response.status}):`, error);
+      return {
+        statusCode: 404,
+        headers,
+        body: JSON.stringify({ error: "Audit not found" }),
+      };
+    }
 
-    const result = await client.query("SELECT audit_data FROM audits WHERE id = $1", [id]);
-    await client.end();
+    const result = await response.json();
 
-    if (result.rows.length === 0) {
+    if (!result.rows || result.rows.length === 0) {
       console.warn(`⚠ Audit ${id} not found in database`);
       return {
         statusCode: 404,
@@ -57,7 +81,7 @@ const handler: Handler = async (event) => {
         ? JSON.parse(result.rows[0].audit_data)
         : result.rows[0].audit_data;
 
-    console.log(`✓ Retrieved audit ${id} from Neon database`);
+    console.log(`✓ Retrieved audit ${id} from Neon`);
     return {
       statusCode: 200,
       headers,
