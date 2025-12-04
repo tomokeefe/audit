@@ -90,7 +90,10 @@ export class AuditService {
     }
   }
 
-  async listAudits(limit: number = 50, offset: number = 0): Promise<StoredAudit[]> {
+  async listAudits(
+    limit: number = 50,
+    offset: number = 0,
+  ): Promise<StoredAudit[]> {
     const pool = await getPool();
     if (!pool) {
       console.warn("Database not available");
