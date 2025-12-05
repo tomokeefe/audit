@@ -701,18 +701,23 @@ async function scrapeWebsite(url: string) {
         multiPageResults = await crawlMultiplePages(url);
         console.log(`Crawled ${multiPageResults.length} pages`);
       } catch (crawlError) {
-        console.warn("Multi-page crawling failed, using homepage only:", crawlError);
-        multiPageResults = [{
-          url: url,
-          title: websiteData.title || "Homepage",
-          description: websiteData.description || "",
-          isHomepage: true,
-          pageType: "homepage",
-          headings: { h1: [], h2: [], h3: [] },
-          images: { total: 0, missingAlt: 0 },
-          forms: { count: 0, hasLabels: false },
-          contentLength: websiteData.htmlLength || 0,
-        }];
+        console.warn(
+          "Multi-page crawling failed, using homepage only:",
+          crawlError,
+        );
+        multiPageResults = [
+          {
+            url: url,
+            title: websiteData.title || "Homepage",
+            description: websiteData.description || "",
+            isHomepage: true,
+            pageType: "homepage",
+            headings: { h1: [], h2: [], h3: [] },
+            images: { total: 0, missingAlt: 0 },
+            forms: { count: 0, hasLabels: false },
+            contentLength: websiteData.htmlLength || 0,
+          },
+        ];
       }
       const crossPageAnalysis = analyzeCrossPageConsistency(multiPageResults);
 
@@ -2940,7 +2945,10 @@ export const handleAudit: RequestHandler = async (req, res) => {
         );
       }
     } catch (scrapeError) {
-      console.error("Error during scraping:", scrapeError instanceof Error ? scrapeError.message : scrapeError);
+      console.error(
+        "Error during scraping:",
+        scrapeError instanceof Error ? scrapeError.message : scrapeError,
+      );
       // Use fallback data even if scraping fails
       console.log("Using fallback data due to scraping error");
       websiteData = createFallbackData(url);
@@ -2956,7 +2964,10 @@ export const handleAudit: RequestHandler = async (req, res) => {
         auditResult.overallScore,
       );
     } catch (genError) {
-      console.error("Error during audit generation:", genError instanceof Error ? genError.message : genError);
+      console.error(
+        "Error during audit generation:",
+        genError instanceof Error ? genError.message : genError,
+      );
       throw genError; // Re-throw to use fallback
     }
 
@@ -2967,7 +2978,10 @@ export const handleAudit: RequestHandler = async (req, res) => {
     res.setHeader("Content-Type", "application/json");
     res.status(200).json(auditResult);
   } catch (error) {
-    console.error("Audit error:", error instanceof Error ? error.message : error);
+    console.error(
+      "Audit error:",
+      error instanceof Error ? error.message : error,
+    );
     console.error("Full error details:", error);
 
     // Always return a demo audit on any error
@@ -2985,7 +2999,7 @@ export const handleAudit: RequestHandler = async (req, res) => {
       console.error("Error generating fallback audit:", fallbackError);
       res.status(500).json({
         error: "Unable to generate audit",
-        details: error instanceof Error ? error.message : String(error)
+        details: error instanceof Error ? error.message : String(error),
       });
     }
   }
