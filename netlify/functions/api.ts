@@ -400,12 +400,12 @@ Respond with ONLY valid JSON (no markdown, no code blocks, no explanation):
           headers,
           body: JSON.stringify(audit),
         };
-      } catch (geminiError) {
+      } catch (grokError) {
         console.error(
-          "[AUDIT] ❌ Gemini API error:",
-          geminiError instanceof Error ? geminiError.message : geminiError,
+          "[AUDIT] ❌ Grok API error:",
+          grokError instanceof Error ? grokError.message : grokError,
         );
-        console.error("[AUDIT] Falling back to demo audit due to Gemini error");
+        console.error("[AUDIT] Falling back to demo audit due to Grok error");
         return generateDemoAudit(websiteUrl, headers);
       }
     }
