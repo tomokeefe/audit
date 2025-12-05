@@ -129,7 +129,7 @@ Respond with ONLY this exact JSON structure (no markdown, no explanation):
 }`;
 
         const geminiUrl =
-          "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" +
+          "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=" +
           geminiApiKey;
 
         const geminiResponse = await fetch(geminiUrl, {
