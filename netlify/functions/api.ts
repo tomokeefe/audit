@@ -178,13 +178,15 @@ Respond with ONLY this exact JSON structure (no markdown, no explanation):
         });
 
         console.log(`[AUDIT] Gemini status: ${geminiResponse.status}`);
+        console.log(`[AUDIT] Gemini response ok: ${geminiResponse.ok}`);
 
         if (!geminiResponse.ok) {
           const errorBody = await geminiResponse.text();
           console.error(
-            `[AUDIT] Gemini error (${geminiResponse.status}):`,
+            `[AUDIT] ❌ Gemini error (${geminiResponse.status}):`,
             errorBody.substring(0, 500),
           );
+          console.error(`[AUDIT] Falling back to demo because Gemini returned ${geminiResponse.status}`);
           return generateDemoAudit(websiteUrl, headers);
         }
 
