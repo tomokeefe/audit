@@ -83,6 +83,9 @@ const handler: Handler = async (event, context) => {
       // Get Gemini API key from environment
       const geminiApiKey = process.env.GEMINI_API_KEY;
       console.log(`[AUDIT] Gemini API Key available: ${!!geminiApiKey}`);
+      console.log(`[AUDIT] Gemini API Key length: ${geminiApiKey?.length || 0}`);
+      console.log(`[AUDIT] Gemini API Key first 10 chars: ${geminiApiKey?.substring(0, 10) || 'MISSING'}`);
+      console.log(`[AUDIT] All env keys: ${Object.keys(process.env).filter(k => k.includes('GEMINI') || k.includes('API')).join(', ')}`);
 
       // Fetch website content
       let websiteContent = "Unable to fetch content";
