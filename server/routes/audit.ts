@@ -2924,7 +2924,7 @@ export const handleAudit: RequestHandler = async (req, res) => {
 
     console.log("Generating audit for:", url);
 
-    // Use Gemini API if key is available, otherwise fallback
+    // Gemini API key check
     const geminiApiKey = process.env.GEMINI_API_KEY;
 
     if (!geminiApiKey) {
@@ -2938,6 +2938,17 @@ export const handleAudit: RequestHandler = async (req, res) => {
       res.setHeader("Content-Type", "application/json");
       return res.status(200).json(demoAudit);
     }
+
+    // Use full generateAudit function
+    const auditResult = await generateAudit({
+      url,
+      title: new URL(url).hostname,
+      fallbackUsed: false,
+    });
+
+    await storeAuditResult(auditResult);
+    res.setHeader("Content-Type", "application/json");
+    return res.status(200).json(auditResult);
 
     // Try to fetch website content
     let websiteContent = "Website analysis in progress";
