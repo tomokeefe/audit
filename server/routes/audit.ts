@@ -2967,17 +2967,24 @@ export const handleAudit: RequestHandler = async (req, res) => {
     console.log("Step 2: Generating audit using Gemini AI...");
     let auditResult;
     try {
+      console.log("Attempting Gemini API call...");
       auditResult = await generateAudit(websiteData);
       console.log(
-        "Audit generated successfully. Overall score:",
+        "✅ Audit generated successfully. Overall score:",
         auditResult.overallScore,
       );
     } catch (genError) {
       console.error(
-        "Error during audit generation:",
+        "❌ Error during audit generation:",
         genError instanceof Error ? genError.message : genError,
       );
-      throw genError; // Re-throw to use fallback
+      console.log("Using fallback audit due to generation error...");
+      // Use fallback audit instead of throwing
+      auditResult = generateFallbackAudit({
+        url: url,
+        title: websiteData.title || new URL(url).hostname,
+        fallbackUsed: true,
+      });
     }
 
     // Step 3: Store audit result for sharing
