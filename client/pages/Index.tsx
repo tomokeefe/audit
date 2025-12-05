@@ -1047,7 +1047,10 @@ export default function Index() {
         if (saveResponse.ok) {
           console.log(`✓ Audit ${auditResult.id} saved to database`);
         } else {
-          console.warn("Failed to save audit to database:", await saveResponse.text());
+          console.warn(
+            "Failed to save audit to database:",
+            await saveResponse.text(),
+          );
         }
       } catch (saveError) {
         console.error("Error saving to database:", saveError);
@@ -1230,7 +1233,10 @@ export default function Index() {
         if (saveResponse.ok) {
           console.log(`✓ Audit ${auditResult.id} saved to database`);
         } else {
-          console.warn("Failed to save audit to database:", await saveResponse.text());
+          console.warn(
+            "Failed to save audit to database:",
+            await saveResponse.text(),
+          );
         }
       } catch (saveError) {
         console.error("Error saving to database:", saveError);
