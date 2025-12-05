@@ -8,30 +8,33 @@ const handler: Handler = async (event, context) => {
     "Content-Type": "application/json",
   };
 
-  if (event.httpMethod === "OPTIONS") {
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({ message: "ok" }),
-    };
-  }
+  try {
+    console.log(`[API] Incoming request - method: ${event.httpMethod}, path: ${event.path}`);
 
-  // Normalize path - handle both "/api/..." and "..." formats
-  let path = event.path || "";
-  console.log(`[API] Raw event.path: ${path}, method: ${event.httpMethod}`);
+    if (event.httpMethod === "OPTIONS") {
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({ message: "ok" }),
+      };
+    }
 
-  // Ensure path starts with / for consistency
-  if (!path.startsWith("/")) {
-    path = "/" + path;
-  }
+    // Normalize path - handle both "/api/..." and "..." formats
+    let path = event.path || "";
+    console.log(`[API] Raw event.path: ${path}, method: ${event.httpMethod}`);
 
-  // If path doesn't start with /api, and it's from a redirect, add /api
-  if (!path.startsWith("/api/")) {
-    // For Netlify functions routing, the path might be stripped
-    path = "/api" + path;
-  }
+    // Ensure path starts with / for consistency
+    if (!path.startsWith("/")) {
+      path = "/" + path;
+    }
 
-  console.log(`[API] Normalized path: ${path}`);
+    // If path doesn't start with /api, and it's from a redirect, add /api
+    if (!path.startsWith("/api/")) {
+      // For Netlify functions routing, the path might be stripped
+      path = "/api" + path;
+    }
+
+    console.log(`[API] Normalized path: ${path}`);
 
   // Ping endpoint
   if (path.includes("/api/ping") || path === "/ping") {
@@ -320,17 +323,28 @@ Respond with ONLY this exact JSON structure (no markdown, no explanation):
     };
   }
 
-  console.log(`[API] No matching endpoint for: ${path}`);
-  return {
-    statusCode: 404,
-    headers,
-    body: JSON.stringify({
-      error: "Not found",
-      path: path,
-      method: event.httpMethod,
-      availableEndpoints: ["/api/ping", "/api/audit", "/api/audits", "/api/save-audit"]
-    }),
-  };
+    console.log(`[API] No matching endpoint for: ${path}`);
+    return {
+      statusCode: 404,
+      headers,
+      body: JSON.stringify({
+        error: "Not found",
+        path: path,
+        method: event.httpMethod,
+        availableEndpoints: ["/api/ping", "/api/audit", "/api/audits", "/api/save-audit"]
+      }),
+    };
+  } catch (error) {
+    console.error(`[API] Handler error:`, error);
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({
+        error: "Internal server error",
+        message: error instanceof Error ? error.message : String(error)
+      }),
+    };
+  }
 };
 
 function generateDemoAudit(url: string, headers: Record<string, string>) {
