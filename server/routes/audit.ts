@@ -2914,22 +2914,38 @@ export const handleAudit: RequestHandler = async (req, res) => {
     }
 
     // Step 1: Scrape website content
-    const websiteData = await scrapeWebsite(url);
-    if (websiteData.fallbackUsed) {
-      console.log("Using fallback data for analysis due to scraping issues");
-    } else {
-      console.log(
-        "Website data extracted successfully. Title:",
-        websiteData.title,
-      );
+    console.log("Step 1: Scraping website content...");
+    let websiteData;
+    try {
+      websiteData = await scrapeWebsite(url);
+      if (websiteData.fallbackUsed) {
+        console.log("Using fallback data for analysis due to scraping issues");
+      } else {
+        console.log(
+          "Website data extracted successfully. Title:",
+          websiteData.title,
+        );
+      }
+    } catch (scrapeError) {
+      console.error("Error during scraping:", scrapeError instanceof Error ? scrapeError.message : scrapeError);
+      // Use fallback data even if scraping fails
+      console.log("Using fallback data due to scraping error");
+      websiteData = createFallbackData(url);
     }
 
     // Step 2: Generate audit using Gemini AI
-    const auditResult = await generateAudit(websiteData);
-    console.log(
-      "Audit generated successfully. Overall score:",
-      auditResult.overallScore,
-    );
+    console.log("Step 2: Generating audit using Gemini AI...");
+    let auditResult;
+    try {
+      auditResult = await generateAudit(websiteData);
+      console.log(
+        "Audit generated successfully. Overall score:",
+        auditResult.overallScore,
+      );
+    } catch (genError) {
+      console.error("Error during audit generation:", genError instanceof Error ? genError.message : genError);
+      throw genError; // Re-throw to use fallback
+    }
 
     // Step 3: Store audit result for sharing
     await storeAuditResult(auditResult);
@@ -2938,7 +2954,8 @@ export const handleAudit: RequestHandler = async (req, res) => {
     res.setHeader("Content-Type", "application/json");
     res.status(200).json(auditResult);
   } catch (error) {
-    console.error("Audit error:", error);
+    console.error("Audit error:", error instanceof Error ? error.message : error);
+    console.error("Full error details:", error);
 
     // Always return a demo audit on any error
     try {
@@ -2953,7 +2970,10 @@ export const handleAudit: RequestHandler = async (req, res) => {
       res.status(200).json(demoAudit);
     } catch (fallbackError) {
       console.error("Error generating fallback audit:", fallbackError);
-      res.status(500).json({ error: "Unable to generate audit" });
+      res.status(500).json({
+        error: "Unable to generate audit",
+        details: error instanceof Error ? error.message : String(error)
+      });
     }
   }
 };
