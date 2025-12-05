@@ -264,7 +264,7 @@ Respond with ONLY this exact JSON structure (no markdown, no explanation):
         };
 
         console.log(
-          `[AUDIT] ✓ Success! Generated audit ${auditId} with score ${overallScore}`,
+          `[AUDIT] ✅ SUCCESS! Generated audit ${auditId} with Gemini - Score: ${overallScore}%`,
         );
 
         return {
