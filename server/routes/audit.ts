@@ -2949,7 +2949,6 @@ export const handleAudit: RequestHandler = async (req, res) => {
     await storeAuditResult(auditResult);
     res.setHeader("Content-Type", "application/json");
     return res.status(200).json(auditResult);
-
   } catch (error) {
     console.error(
       "Audit error:",
