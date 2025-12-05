@@ -2769,9 +2769,20 @@ Be thorough, professional, and provide actionable insights based on the availabl
   const startTime = Date.now();
 
   try {
-    const result = await model.generateContent(prompt);
+    console.log("Calling Gemini API with prompt...");
+
+    // Add timeout to Gemini API call (60 seconds max)
+    const geminiPromise = model.generateContent(prompt);
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("Gemini API timeout after 60 seconds")), 60000)
+    );
+
+    const result = await Promise.race([geminiPromise, timeoutPromise]);
+    console.log("Gemini API response received");
+
     const response = await result.response;
     const text = response.text();
+    console.log("Gemini response text length:", text.length);
 
     // Parse the JSON response
     const jsonMatch = text.match(/\{[\s\S]*\}/);
