@@ -1183,6 +1183,11 @@ Best regards`);
           const serverAudit: AuditResponse = await response.json();
           setAuditData(serverAudit);
           console.log("Loaded audit from server database");
+
+          // Set share URL with encoded audit data for cross-device sharing
+          const encodedData = btoa(JSON.stringify(serverAudit));
+          const shareLink = `${window.location.origin}/share/audit/${id}?data=${encodedData}`;
+          setShareUrl(shareLink);
           return;
         }
 
@@ -1193,6 +1198,11 @@ Best regards`);
           const audit: AuditResponse = JSON.parse(storedData);
           setAuditData(audit);
           console.log("Loaded audit from localStorage");
+
+          // Set share URL with encoded audit data for cross-device sharing
+          const encodedData = btoa(JSON.stringify(audit));
+          const shareLink = `${window.location.origin}/share/audit/${id}?data=${encodedData}`;
+          setShareUrl(shareLink);
           return;
         }
 
@@ -1210,6 +1220,11 @@ Best regards`);
             const audit: AuditResponse = JSON.parse(storedData);
             setAuditData(audit);
             console.log("Loaded audit from localStorage as fallback");
+
+            // Set share URL with encoded audit data for cross-device sharing
+            const encodedData = btoa(JSON.stringify(audit));
+            const shareLink = `${window.location.origin}/share/audit/${id}?data=${encodedData}`;
+            setShareUrl(shareLink);
             return;
           }
         } catch (localError) {
