@@ -110,38 +110,65 @@ const handler: Handler = async (event, context) => {
     }
   }
 
-  // Proxy other audits endpoints (list, delete) to backend
-  if (path.includes("/api/audits")) {
+  // Get all audits from Neon database
+  if (path === "/api/audits" && event.httpMethod === "GET") {
     try {
-      const method = event.httpMethod || "GET";
-      const url = `${backendUrl}${path}`;
-
-      const fetchOptions: RequestInit = {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
-
-      if (method !== "GET" && event.body) {
-        fetchOptions.body = event.body;
+      const databaseUrl = process.env.DATABASE_URL;
+      if (!databaseUrl) {
+        return {
+          statusCode: 503,
+          headers,
+          body: JSON.stringify({ error: "Database not configured" }),
+        };
       }
 
-      console.log(`Proxying ${method} ${path} to ${url}`);
-      const response = await fetch(url, fetchOptions);
-      const data = await response.json();
+      const url = new URL(databaseUrl);
+      const host = url.hostname;
+      const database = url.pathname.slice(1);
+      const user = url.username;
+      const password = url.password;
 
+      // Query Neon for all audits, ordered by date descending
+      const response = await fetch(
+        `https://${host}/sql?database=${database}&user=${user}&password=${password}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            query:
+              "SELECT id, url, title, description, overall_score as overallScore, status, date FROM audits ORDER BY date DESC LIMIT 100",
+            params: [],
+          }),
+        },
+      );
+
+      if (!response.ok) {
+        console.error("Neon API error:", await response.text());
+        return {
+          statusCode: 500,
+          headers,
+          body: JSON.stringify({ error: "Database query failed" }),
+        };
+      }
+
+      const result = await response.json();
+      const audits = result.rows || [];
+
+      console.log(`✓ Retrieved ${audits.length} audits from Neon`);
       return {
-        statusCode: response.status,
+        statusCode: 200,
         headers,
-        body: JSON.stringify(data),
+        body: JSON.stringify({ audits }),
       };
     } catch (error) {
-      console.error("Audits proxy error:", error);
+      console.error("Audits list error:", error);
       return {
-        statusCode: 503,
+        statusCode: 500,
         headers,
-        body: JSON.stringify({ error: "Backend service unavailable" }),
+        body: JSON.stringify({
+          error: "Failed to retrieve audits",
+          message: error instanceof Error ? error.message : String(error),
+        }),
       };
     }
   }
