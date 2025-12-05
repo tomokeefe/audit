@@ -2978,14 +2978,20 @@ Return ONLY valid JSON with this structure:
 }`;
 
     const geminiResponse = await Promise.race([
-      fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + geminiApiKey, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-        }),
-      }),
-      new Promise<never>((_, reject) => setTimeout(() => reject(new Error("Gemini timeout")), 30000)),
+      fetch(
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" +
+          geminiApiKey,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+          }),
+        },
+      ),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Gemini timeout")), 30000),
+      ),
     ]);
 
     if (!geminiResponse.ok) {
@@ -2993,7 +2999,8 @@ Return ONLY valid JSON with this structure:
     }
 
     const geminiData = await geminiResponse.json();
-    const responseText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    const responseText =
+      geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
     if (!responseText) {
       throw new Error("Empty Gemini response");
@@ -3012,7 +3019,8 @@ Return ONLY valid JSON with this structure:
     }
 
     const overallScore = Math.round(
-      sections.reduce((sum: number, s: any) => sum + (s.score || 0), 0) / sections.length
+      sections.reduce((sum: number, s: any) => sum + (s.score || 0), 0) /
+        sections.length,
     );
 
     const auditId = Date.now().toString();
