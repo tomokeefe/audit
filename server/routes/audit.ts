@@ -2890,10 +2890,16 @@ Be thorough, professional, and provide actionable insights based on the availabl
 }
 
 export const handleAudit: RequestHandler = async (req, res) => {
+  console.log("========== handleAudit called ==========");
+  console.log("Request body:", req.body);
+
   try {
     const { url } = req.body as AuditRequest;
 
+    console.log("🚀 Audit request received for URL:", url);
+
     if (!url) {
+      console.log("❌ No URL provided");
       return res.status(400).json({ error: "URL is required" });
     }
 
@@ -2901,13 +2907,14 @@ export const handleAudit: RequestHandler = async (req, res) => {
     try {
       new URL(url);
     } catch {
+      console.log("❌ Invalid URL format:", url);
       return res.status(400).json({
         error:
           "Invalid URL format. Please enter a valid URL starting with http:// or https://",
       });
     }
 
-    console.log("Starting audit for URL:", url);
+    console.log("✅ Starting audit for URL:", url);
 
     // If Gemini API key is not configured, use fallback demo audit
     if (!process.env.GEMINI_API_KEY) {
