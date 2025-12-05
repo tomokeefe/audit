@@ -1210,6 +1210,32 @@ export default function Index() {
         `✓ Audit ${auditResult.id} saved to browser storage for sharing`,
       );
 
+      // Save audit to database for shareable links
+      try {
+        const saveResponse = await fetch("/api/save-audit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: auditResult.id,
+            url: auditRequest.url,
+            title: auditResult.title || "Audit Report",
+            description: auditResult.description || null,
+            overallScore: auditResult.overallScore || 0,
+            status: "completed",
+            date: new Date().toISOString(),
+            audit_data: auditResult,
+          }),
+        });
+
+        if (saveResponse.ok) {
+          console.log(`✓ Audit ${auditResult.id} saved to database`);
+        } else {
+          console.warn("Failed to save audit to database:", await saveResponse.text());
+        }
+      } catch (saveError) {
+        console.error("Error saving to database:", saveError);
+      }
+
       // Reload recent audits to show the new one
       loadRecentAudits();
 
