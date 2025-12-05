@@ -141,9 +141,7 @@ const handler: Handler = async (event, context) => {
       const brandScore = Math.floor(Math.random() * 30) + 65; // 65-95
       const designScore = Math.floor(Math.random() * 30) + 65;
       const uxScore = Math.floor(Math.random() * 30) + 65;
-      const overallScore = Math.floor(
-        (brandScore + designScore + uxScore) / 3
-      );
+      const overallScore = Math.floor((brandScore + designScore + uxScore) / 3);
 
       const auditId = Date.now().toString();
       const domain = new URL(websiteUrl).hostname.replace("www.", "");
