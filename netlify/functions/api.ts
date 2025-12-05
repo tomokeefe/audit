@@ -137,59 +137,72 @@ Respond with ONLY valid JSON (no markdown):
   ]
 }`;
 
+      console.log("[AUDIT] Gemini API key:", geminiApiKey ? "present" : "MISSING");
       console.log("[AUDIT] Calling Gemini API...");
-      const geminiResponse = await fetch(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" +
-          geminiApiKey,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: analysisPrompt }] }],
-          }),
-        },
-      );
-
-      if (!geminiResponse.ok) {
-        const errorText = await geminiResponse.text();
-        console.error(
-          "[AUDIT] Gemini API error:",
-          geminiResponse.status,
-          errorText.substring(0, 200),
-        );
-        return generateDemoAudit(websiteUrl, headers);
-      }
-
-      const geminiData = await geminiResponse.json();
-      const responseText =
-        geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "";
-
-      if (!responseText) {
-        console.error("[AUDIT] Empty Gemini response");
-        return generateDemoAudit(websiteUrl, headers);
-      }
-
-      // Extract JSON from response
-      let jsonMatch = responseText.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) {
-        console.error(
-          "[AUDIT] No JSON in response:",
-          responseText.substring(0, 300),
-        );
-        return generateDemoAudit(websiteUrl, headers);
-      }
 
       let auditData;
       try {
-        auditData = JSON.parse(jsonMatch[0]);
-      } catch (parseError) {
-        console.error("[AUDIT] JSON parse error:", parseError);
-        return generateDemoAudit(websiteUrl, headers);
-      }
+        const geminiResponse = await fetch(
+          "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" +
+            geminiApiKey,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: analysisPrompt }] }],
+            }),
+          },
+        );
 
-      const sections = auditData.sections || [];
-      if (!Array.isArray(sections) || sections.length === 0) {
-        console.error("[AUDIT] Invalid sections in response");
+        console.log("[AUDIT] Gemini response status:", geminiResponse.status);
+
+        if (!geminiResponse.ok) {
+          const errorText = await geminiResponse.text();
+          console.error(
+            "[AUDIT] Gemini API error:",
+            geminiResponse.status,
+            errorText.substring(0, 300),
+          );
+          return generateDemoAudit(websiteUrl, headers);
+        }
+
+        const geminiData = await geminiResponse.json();
+        const responseText =
+          geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
+        if (!responseText) {
+          console.error("[AUDIT] Empty Gemini response");
+          return generateDemoAudit(websiteUrl, headers);
+        }
+
+        console.log("[AUDIT] Got response from Gemini, length:", responseText.length);
+
+        // Extract JSON from response
+        let jsonMatch = responseText.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) {
+          console.error(
+            "[AUDIT] No JSON in response:",
+            responseText.substring(0, 300),
+          );
+          return generateDemoAudit(websiteUrl, headers);
+        }
+
+        try {
+          auditData = JSON.parse(jsonMatch[0]);
+        } catch (parseError) {
+          console.error("[AUDIT] JSON parse error:", parseError);
+          return generateDemoAudit(websiteUrl, headers);
+        }
+
+        const sections = auditData.sections || [];
+        if (!Array.isArray(sections) || sections.length === 0) {
+          console.error("[AUDIT] Invalid sections in response");
+          return generateDemoAudit(websiteUrl, headers);
+        }
+
+        console.log("[AUDIT] ✓ Successfully got", sections.length, "sections from Gemini");
+      } catch (geminiError) {
+        console.error("[AUDIT] Gemini call failed:", geminiError instanceof Error ? geminiError.message : geminiError);
         return generateDemoAudit(websiteUrl, headers);
       }
 
