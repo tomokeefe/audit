@@ -1174,19 +1174,17 @@ Best regards`);
       return;
     }
 
-    // Share URL will be set after data loads (with encoded data for reliability)
-    let shareLink = `${window.location.origin}/share/audit/${id}`;
-
     const loadAuditData = async () => {
       try {
         let auditToDisplay: AuditResponse | null = null;
 
         // First try server API
+        console.log(`Attempting to load audit ${id} from API...`);
         const response = await fetch(`/api/audits/${id}`);
 
         if (response.ok) {
           auditToDisplay = await response.json();
-          console.log("✓ Loaded audit from server");
+          console.log("✓ Loaded audit from server API");
         } else {
           // Fallback to localStorage (for current session results)
           console.log("Server API failed, checking localStorage...");
@@ -1203,9 +1201,9 @@ Best regards`);
 
         if (auditToDisplay) {
           setAuditData(auditToDisplay);
-          // Generate shareable link with encoded data for reliability across sessions
-          const encodedData = btoa(JSON.stringify(auditToDisplay));
-          shareLink = `${window.location.origin}/share/audit/${id}?data=${encodedData}`;
+          // Generate simple shareable link using just the ID
+          // The API will handle fetching from the database
+          const shareLink = `${window.location.origin}/share/audit/${id}`;
           setShareUrl(shareLink);
           return;
         }
@@ -1223,9 +1221,8 @@ Best regards`);
           if (storedData) {
             const audit: AuditResponse = JSON.parse(storedData);
             setAuditData(audit);
-            // Generate shareable link with encoded data
-            const encodedData = btoa(JSON.stringify(audit));
-            shareLink = `${window.location.origin}/share/audit/${id}?data=${encodedData}`;
+            // Generate simple shareable link using just the ID
+            const shareLink = `${window.location.origin}/share/audit/${id}`;
             setShareUrl(shareLink);
             console.log("✓ Loaded audit from localStorage (fallback)");
             return;
