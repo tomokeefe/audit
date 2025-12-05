@@ -240,37 +240,45 @@ Respond with ONLY valid JSON (no markdown, no code blocks, no explanation):
 
         console.log("[AUDIT] ✓ JSON found, parsing...");
         const auditData = JSON.parse(jsonMatch[0]);
-        const sections = auditData.sections;
+        const geminiSections = auditData.sections;
 
-        if (!Array.isArray(sections) || sections.length === 0) {
+        if (!Array.isArray(geminiSections) || geminiSections.length === 0) {
           console.error("[AUDIT] ❌ Invalid sections in response");
           return generateDemoAudit(websiteUrl, headers);
         }
 
         console.log(
-          `[AUDIT] ✓ Validated ${sections.length} sections from Gemini`,
+          `[AUDIT] ✓ Validated ${geminiSections.length} sections from Gemini`,
         );
 
-        // Validate sections
-        for (const section of sections) {
+        // Validate sections (check for required fields, not score)
+        for (const section of geminiSections) {
           if (
             !section.name ||
-            typeof section.score !== "number" ||
-            section.score < 0 ||
-            section.score > 100
+            typeof section.issues !== "number" ||
+            typeof section.recommendations !== "number" ||
+            !section.details
           ) {
             console.error(
-              "[AUDIT] Invalid section:",
+              "[AUDIT] ❌ Invalid section:",
               JSON.stringify(section).substring(0, 100),
             );
             return generateDemoAudit(websiteUrl, headers);
           }
         }
 
-        const overallScore = Math.round(
-          sections.reduce((sum: number, s: any) => sum + s.score, 0) /
-            sections.length,
-        );
+        // Generate deterministic scores based on website content
+        const { scores: deterministicScores, overall: overallScore } =
+          generateDeterministicScores(websiteUrl, websiteContent);
+
+        // Apply deterministic scores to Gemini recommendations
+        const sections = geminiSections.map((section: any, index: number) => ({
+          name: section.name,
+          score: deterministicScores[index],
+          issues: section.issues,
+          recommendations: section.recommendations,
+          details: section.details,
+        }));
         const auditId = Date.now().toString();
         const domain = new URL(websiteUrl).hostname.replace("www.", "");
 
