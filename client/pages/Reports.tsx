@@ -29,6 +29,7 @@ import {
   Minus,
   Filter,
 } from "lucide-react";
+import { apiGet } from "@/lib/api-client";
 import {
   BarChart,
   Bar,
@@ -85,12 +86,11 @@ export default function Reports() {
         setLoading(true);
         setError(null);
 
-        const response = await fetch("/api/audits");
-        if (!response.ok) {
-          throw new Error(`Failed to load audits: ${response.status}`);
+        const data = await apiGet<{ audits: AuditSummary[] }>("/api/audits");
+        if (!data) {
+          throw new Error("Failed to load audits");
         }
 
-        const data = await response.json();
         setAudits(data.audits || []);
       } catch (err) {
         console.error("Error loading audits:", err);
