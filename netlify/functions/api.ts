@@ -31,11 +31,17 @@ const handler: Handler = async (event, context) => {
   if (path === "/api/save-audit" && event.httpMethod === "POST") {
     try {
       const body = JSON.parse(event.body || "{}");
-      console.log(`Audit save requested for ${body.id} (using localStorage fallback)`);
+      console.log(
+        `Audit save requested for ${body.id} (using localStorage fallback)`,
+      );
       return {
         statusCode: 200,
         headers,
-        body: JSON.stringify({ success: true, id: body.id, note: "Stored in browser" }),
+        body: JSON.stringify({
+          success: true,
+          id: body.id,
+          note: "Stored in browser",
+        }),
       };
     } catch (error) {
       console.error("Save audit error:", error);
@@ -286,7 +292,9 @@ You MUST respond with ONLY valid JSON (no markdown, no explanation, just the raw
           typeof section.score !== "number" ||
           !section.details
         ) {
-          throw new Error(`Invalid section structure: ${JSON.stringify(section)}`);
+          throw new Error(
+            `Invalid section structure: ${JSON.stringify(section)}`,
+          );
         }
       }
 
@@ -341,7 +349,9 @@ You MUST respond with ONLY valid JSON (no markdown, no explanation, just the raw
   // Get all audits from localStorage (client-side fallback)
   if (path === "/api/audits" && event.httpMethod === "GET") {
     try {
-      console.log("GET /api/audits - returning empty list (database not configured)");
+      console.log(
+        "GET /api/audits - returning empty list (database not configured)",
+      );
       return {
         statusCode: 200,
         headers,
