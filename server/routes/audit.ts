@@ -2944,24 +2944,38 @@ export const handleAudit: RequestHandler = async (req, res) => {
         console.warn("[AUDIT] Could not fetch website content:", fetchError);
       }
 
-      const prompt = `Analyze this website and provide audit scores for 10 brand criteria. Vary scores based on actual analysis - they should be DIFFERENT for each section (not all the same).
+      const prompt = `Analyze this website deeply and provide audit scores. CRITICAL: Each score must be different and based on your actual analysis of the content.
 
 Website: ${url}
 Content: ${websiteContent}
 
-Respond with ONLY valid JSON:
+Score Analysis Guidelines:
+- Branding (60-95): Evaluate logo presence, color scheme consistency, brand identity strength
+- Design (55-95): Judge visual hierarchy, typography quality, whitespace, modern aesthetic
+- Messaging (65-95): Assess headline strength, value prop clarity, copy quality
+- Usability (60-95): Rate navigation clarity, information architecture, user flow
+- Content Strategy (55-95): Evaluate content depth, relevance, organization quality
+- Digital Presence (50-90): Check SEO signals, social integration, online visibility
+- Customer Experience (60-95): Assess support accessibility, trust signals, responsiveness
+- Competitor Analysis (55-95): Rate unique positioning, differentiation clarity, market fit
+- Conversion Optimization (55-95): Judge CTA effectiveness, form optimization, funnel clarity
+- Compliance & Security (70-95): Evaluate privacy, security, legal compliance signals
+
+Generate DIFFERENT scores for each - vary by 5-15 points between sections.
+
+Return ONLY valid JSON with unique scores:
 {
   "sections": [
-    {"name": "Branding", "score": 72, "issues": 3, "recommendations": 4, "details": "Based on the website content, the branding shows moderate consistency in visual identity and color usage."},
-    {"name": "Design", "score": 68, "issues": 4, "recommendations": 5, "details": "Design quality appears adequate with some opportunities for improvement in visual hierarchy and spacing."},
-    {"name": "Messaging", "score": 78, "issues": 2, "recommendations": 3, "details": "Value proposition and messaging are relatively clear but could be more compelling."},
-    {"name": "Usability", "score": 75, "issues": 3, "recommendations": 4, "details": "Navigation structure seems reasonable but accessibility features could be enhanced."},
-    {"name": "Content Strategy", "score": 70, "issues": 4, "recommendations": 5, "details": "Content exists but organization and depth could be improved for better user engagement."},
-    {"name": "Digital Presence", "score": 65, "issues": 5, "recommendations": 5, "details": "SEO optimization and social integration signals are limited or weak based on available content."},
-    {"name": "Customer Experience", "score": 76, "issues": 3, "recommendations": 4, "details": "Customer support options are visible but could be more prominent and comprehensive."},
-    {"name": "Competitor Analysis", "score": 71, "issues": 3, "recommendations": 4, "details": "Differentiation is present but competitive positioning messaging could be stronger."},
-    {"name": "Conversion Optimization", "score": 73, "issues": 3, "recommendations": 4, "details": "CTAs and conversion elements are present but could be better optimized for effectiveness."},
-    {"name": "Compliance & Security", "score": 82, "issues": 2, "recommendations": 3, "details": "Security measures and compliance elements appear adequately implemented."}
+    {"name": "Branding", "score": 68, "issues": 3, "recommendations": 4, "details": "Analysis based on actual branding signals in the website content provided."},
+    {"name": "Design", "score": 72, "issues": 4, "recommendations": 5, "details": "Design assessment based on visible design patterns in the HTML content."},
+    {"name": "Messaging", "score": 81, "issues": 2, "recommendations": 3, "details": "Messaging evaluation based on headlines and copy found in the website."},
+    {"name": "Usability", "score": 69, "issues": 3, "recommendations": 4, "details": "Usability score based on navigation and structure analysis."},
+    {"name": "Content Strategy", "score": 64, "issues": 4, "recommendations": 5, "details": "Content evaluation based on depth and organization observed."},
+    {"name": "Digital Presence", "score": 58, "issues": 5, "recommendations": 6, "details": "Digital presence score based on SEO and online visibility indicators."},
+    {"name": "Customer Experience", "score": 73, "issues": 3, "recommendations": 4, "details": "Customer experience assessment based on support and trust signals."},
+    {"name": "Competitor Analysis", "score": 66, "issues": 3, "recommendations": 4, "details": "Competitive analysis based on positioning and differentiation found."},
+    {"name": "Conversion Optimization", "score": 70, "issues": 3, "recommendations": 4, "details": "Conversion analysis based on CTA and funnel elements observed."},
+    {"name": "Compliance & Security", "score": 85, "issues": 2, "recommendations": 3, "details": "Compliance assessment based on security and legal signals."}
   ]
 }`;
 
