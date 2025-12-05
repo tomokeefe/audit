@@ -2774,7 +2774,10 @@ Be thorough, professional, and provide actionable insights based on the availabl
     // Add timeout to Gemini API call (60 seconds max)
     const geminiPromise = model.generateContent(prompt);
     const timeoutPromise = new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error("Gemini API timeout after 60 seconds")), 60000)
+      setTimeout(
+        () => reject(new Error("Gemini API timeout after 60 seconds")),
+        60000,
+      ),
     );
 
     const result = await Promise.race([geminiPromise, timeoutPromise]);
