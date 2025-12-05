@@ -31,49 +31,10 @@ const handler: Handler = async (event) => {
       };
     }
 
-    const databaseUrl = process.env.DATABASE_URL;
-    if (!databaseUrl) {
-      console.warn("DATABASE_URL not set on Netlify");
-      // Don't fail - just skip database save
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({ success: true, id: audit.id, stored: false }),
-      };
-    }
-
-    // Parse connection string to get host
-    const url = new URL(databaseUrl);
-    const host = url.hostname;
-
-    // Call Neon HTTP endpoint
-    const response = await fetch(`https://${host}/sql`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        query: `
-          INSERT INTO audits (id, url, title, description, overall_score, status, date, audit_data, is_demo_mode, created_at)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW())
-          ON CONFLICT (id) DO UPDATE SET audit_data = $8
-        `,
-        params: [
-          audit.id,
-          audit.url,
-          audit.title,
-          audit.description || null,
-          audit.overallScore,
-          audit.status || "completed",
-          audit.date,
-          JSON.stringify(audit),
-          false,
-        ],
-      }),
-    });
-
-    if (!response.ok) {
-      const error = await response.text();
-      console.error("Neon HTTP API error:", error);
-      // Don't fail the audit - database is optional
+    const dbUrl = process.env.DATABASE_URL;
+    if (!dbUrl) {
+      console.warn("DATABASE_URL not configured on Netlify");
+      // Return success anyway - don't break audit creation
       return {
         statusCode: 200,
         headers,
@@ -81,10 +42,21 @@ const handler: Handler = async (event) => {
           success: true,
           id: audit.id,
           stored: false,
-          dbError: "Database unavailable",
+          note: "Database not configured",
         }),
       };
     }
+
+    // Use Neon serverless driver
+    const { sql } = await import("@neondatabase/serverless");
+    
+    const client = sql(dbUrl);
+
+    await client`
+      INSERT INTO audits (id, url, title, description, overall_score, status, date, audit_data, is_demo_mode, created_at)
+      VALUES (${audit.id}, ${audit.url}, ${audit.title}, ${audit.description || null}, ${audit.overallScore}, ${audit.status || "completed"}, ${audit.date}, ${JSON.stringify(audit)}, false, NOW())
+      ON CONFLICT (id) DO UPDATE SET audit_data = ${JSON.stringify(audit)}
+    `;
 
     console.log(`✓ Saved audit ${audit.id} to Neon`);
     return {
@@ -101,6 +73,7 @@ const handler: Handler = async (event) => {
       body: JSON.stringify({
         success: true,
         error: error instanceof Error ? error.message : "Unknown error",
+        note: "Audit created but database save failed - share links may not work",
       }),
     };
   }
