@@ -2926,7 +2926,7 @@ export const handleAudit: RequestHandler = async (req, res) => {
 
     // Try to use Gemini API
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
       // Fetch website content
       let websiteContent = "Website content unavailable";
