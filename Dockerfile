@@ -12,7 +12,7 @@ RUN npm ci
 # Copy all source code
 COPY . .
 
-# Build Vite frontend
+# Build Vite frontend and server
 RUN npm run build
 
 # Production stage
@@ -26,11 +26,8 @@ COPY package.json package-lock.json ./
 # Install production dependencies only
 RUN npm ci --omit=dev
 
-# Copy built frontend from builder
+# Copy built frontend and server from builder
 COPY --from=builder /app/dist ./dist
-
-# Copy server files
-COPY server ./server
 
 # Expose port
 EXPOSE 8080
@@ -40,4 +37,4 @@ ENV NODE_ENV=production
 ENV PORT=8080
 
 # Start the server
-CMD ["node", "server/index.ts"]
+CMD ["npm", "start"]
