@@ -2751,23 +2751,52 @@ Be thorough, professional, and provide actionable insights based on the availabl
   const startTime = Date.now();
 
   try {
-    console.log("Calling Gemini API with prompt...");
+    console.log("Calling Grok API with prompt...");
 
-    // Add timeout to Gemini API call (60 seconds max)
-    const geminiPromise = model.generateContent(prompt);
+    // Add timeout to Grok API call (60 seconds max)
+    const grokPromise = fetch(GROK_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${GROK_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "grok-2-1212",
+        messages: [
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+        temperature: 0.4,
+        top_p: 0.8,
+        max_tokens: 8192,
+      }),
+    });
+
     const timeoutPromise = new Promise<never>((_, reject) =>
       setTimeout(
-        () => reject(new Error("Gemini API timeout after 60 seconds")),
+        () => reject(new Error("Grok API timeout after 60 seconds")),
         60000,
       ),
     );
 
-    const result = await Promise.race([geminiPromise, timeoutPromise]);
-    console.log("Gemini API response received");
+    const response = await Promise.race([grokPromise, timeoutPromise]);
+    console.log("Grok API response received");
 
-    const response = await result.response;
-    const text = response.text();
-    console.log("Gemini response text length:", text.length);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Grok API error: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    const text = data.choices?.[0]?.message?.content;
+
+    if (!text) {
+      throw new Error("No content in Grok API response");
+    }
+
+    console.log("Grok response text length:", text.length);
 
     // Parse the JSON response
     const jsonMatch = text.match(/\{[\s\S]*\}/);
