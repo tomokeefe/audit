@@ -1,7 +1,6 @@
 import type { Handler } from "@netlify/functions";
 
 const handler: Handler = async (event, context) => {
-  const DEPLOYMENT_TIME = "2025-12-05T18:35:00Z"; // Updated deployment
   const headers = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "Content-Type",
@@ -27,6 +26,7 @@ const handler: Handler = async (event, context) => {
       body: JSON.stringify({
         message: "pong",
         timestamp: new Date().toISOString(),
+        version: "20251205-fixed",
       }),
     };
   }
@@ -45,12 +45,12 @@ const handler: Handler = async (event, context) => {
         };
       }
 
-      console.log(`[AUDIT] Starting audit for ${websiteUrl}`);
+      console.log(`[AUDIT] Starting audit for: ${websiteUrl}`);
 
       // Validate URL format
       try {
         new URL(websiteUrl);
-      } catch {
+      } catch (e) {
         return {
           statusCode: 400,
           headers,
@@ -58,26 +58,18 @@ const handler: Handler = async (event, context) => {
         };
       }
 
+      // Get Gemini API key from environment
       const geminiApiKey = process.env.GEMINI_API_KEY;
-      console.log("[AUDIT] Environment check:", {
-        hasGeminiKey: !!geminiApiKey,
-        keyLength: geminiApiKey ? geminiApiKey.length : 0,
-        allEnvKeys: Object.keys(process.env).sort(),
-      });
-
-      if (!geminiApiKey) {
-        console.warn("[AUDIT] GEMINI_API_KEY not configured, using demo data");
-        return generateDemoAudit(websiteUrl, headers);
-      }
+      console.log(`[AUDIT] Gemini API Key available: ${!!geminiApiKey}`);
 
       // Fetch website content
-      let websiteContent = "";
+      let websiteContent = "Unable to fetch content";
       try {
-        console.log(`[AUDIT] Fetching ${websiteUrl}...`);
+        console.log(`[AUDIT] Fetching website content from: ${websiteUrl}`);
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-        const fetchResponse = await fetch(websiteUrl, {
+        const response = await fetch(websiteUrl, {
           headers: {
             "User-Agent":
               "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
@@ -87,143 +79,135 @@ const handler: Handler = async (event, context) => {
 
         clearTimeout(timeoutId);
 
-        if (fetchResponse.ok) {
-          const html = await fetchResponse.text();
-          // Extract text content from HTML
+        if (response.ok) {
+          const html = await response.text();
+          // Remove scripts and styles, then extract text
           websiteContent = html
             .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
             .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "")
             .replace(/<[^>]*>/g, " ")
             .replace(/\s+/g, " ")
-            .substring(0, 5000)
-            .trim();
-          console.log(
-            `[AUDIT] Fetched ${websiteContent.length} chars of content`,
-          );
+            .trim()
+            .substring(0, 4000);
+          console.log(`[AUDIT] Content fetched: ${websiteContent.length} chars`);
         }
       } catch (fetchError) {
-        console.warn("[AUDIT] Error fetching website:", fetchError);
+        console.warn(`[AUDIT] Failed to fetch website:`, fetchError);
       }
 
-      if (!websiteContent) {
-        console.warn("[AUDIT] No website content, using demo data");
+      // Only proceed with Gemini if we have an API key
+      if (!geminiApiKey) {
+        console.warn("[AUDIT] No Gemini API key - returning demo audit");
         return generateDemoAudit(websiteUrl, headers);
       }
 
       // Call Gemini API
-      const analysisPrompt = `You are a brand audit expert. Analyze this website and provide detailed scores for 10 brand audit criteria.
+      try {
+        console.log("[AUDIT] Calling Gemini API...");
 
-Website URL: ${websiteUrl}
-Website Content: ${websiteContent.substring(0, 3000)}
+        const prompt = `You are a brand audit expert. Analyze this website and provide exactly 10 audit sections with scores.
 
-Evaluate on these 10 criteria (60-100 score each):
-1. Branding - Logo, color scheme, brand consistency
-2. Design - Visual appeal, layout, user interface  
-3. Messaging - Value proposition, messaging clarity
-4. Usability - Navigation, accessibility, UX
-5. Content Strategy - Quality, relevance, organization
-6. Digital Presence - SEO, social signals, authority
-7. Customer Experience - Support, trust signals
-8. Competitor Analysis - Positioning, differentiation
-9. Conversion Optimization - CTAs, forms, conversions
-10. Compliance & Security - Privacy, SSL, compliance
+Website: ${websiteUrl}
+Content: ${websiteContent.substring(0, 2000)}
 
-Respond with ONLY valid JSON (no markdown):
+Respond with ONLY this exact JSON structure (no markdown, no explanation):
 {
   "sections": [
-    {"name": "Branding", "score": 75, "issues": 3, "recommendations": 4, "details": "..."},
-    {"name": "Design", "score": 78, "issues": 2, "recommendations": 3, "details": "..."},
-    {"name": "Messaging", "score": 82, "issues": 2, "recommendations": 3, "details": "..."},
-    {"name": "Usability", "score": 85, "issues": 2, "recommendations": 3, "details": "..."},
-    {"name": "Content Strategy", "score": 76, "issues": 3, "recommendations": 4, "details": "..."},
-    {"name": "Digital Presence", "score": 72, "issues": 4, "recommendations": 4, "details": "..."},
-    {"name": "Customer Experience", "score": 80, "issues": 2, "recommendations": 3, "details": "..."},
-    {"name": "Competitor Analysis", "score": 74, "issues": 3, "recommendations": 4, "details": "..."},
-    {"name": "Conversion Optimization", "score": 79, "issues": 3, "recommendations": 4, "details": "..."},
-    {"name": "Compliance & Security", "score": 88, "issues": 2, "recommendations": 3, "details": "..."}
+    {"name": "Branding", "score": 75, "issues": 3, "recommendations": 4, "details": "Logo and color scheme are consistent. Brand identity is clear but could be more distinctive."},
+    {"name": "Design", "score": 78, "issues": 2, "recommendations": 3, "details": "Layout is modern and well-organized. Typography is readable. Some spacing could be improved."},
+    {"name": "Messaging", "score": 82, "issues": 2, "recommendations": 3, "details": "Value proposition is clear. Headlines are compelling. Messaging is consistent throughout."},
+    {"name": "Usability", "score": 85, "issues": 2, "recommendations": 3, "details": "Navigation is intuitive. Forms are user-friendly. Mobile experience is responsive."},
+    {"name": "Content Strategy", "score": 76, "issues": 3, "recommendations": 4, "details": "Content is relevant and well-organized. Consider expanding blog section. Add more case studies."},
+    {"name": "Digital Presence", "score": 72, "issues": 4, "recommendations": 4, "details": "SEO elements are present. Social media integration could be stronger. Meta descriptions need improvement."},
+    {"name": "Customer Experience", "score": 80, "issues": 2, "recommendations": 3, "details": "Contact information is accessible. Support options are clear. Consider adding live chat."},
+    {"name": "Competitor Analysis", "score": 74, "issues": 3, "recommendations": 4, "details": "Positioning is competitive. Unique selling points are evident. Differentiation messaging could be clearer."},
+    {"name": "Conversion Optimization", "score": 79, "issues": 3, "recommendations": 4, "details": "CTAs are present and clear. Forms capture key information. A/B testing could improve conversion rates."},
+    {"name": "Compliance & Security", "score": 88, "issues": 2, "recommendations": 3, "details": "SSL certificate is installed. Privacy policy is accessible. Cookie consent is properly implemented."}
   ]
 }`;
 
-      console.log(
-        "[AUDIT] Gemini API key:",
-        geminiApiKey ? "present" : "MISSING",
-      );
-      console.log("[AUDIT] Calling Gemini API...");
-
-      try {
-        const geminiResponse = await fetch(
+        const geminiUrl =
           "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" +
-            geminiApiKey,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: analysisPrompt }] }],
-            }),
-          },
-        );
+          geminiApiKey;
 
-        console.log("[AUDIT] Gemini response status:", geminiResponse.status);
+        const geminiResponse = await fetch(geminiUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  {
+                    text: prompt,
+                  },
+                ],
+              },
+            ],
+          }),
+        });
+
+        console.log(`[AUDIT] Gemini status: ${geminiResponse.status}`);
 
         if (!geminiResponse.ok) {
-          const errorText = await geminiResponse.text();
+          const errorBody = await geminiResponse.text();
           console.error(
-            "[AUDIT] Gemini API error:",
-            geminiResponse.status,
-            errorText.substring(0, 300),
+            `[AUDIT] Gemini error (${geminiResponse.status}):`,
+            errorBody.substring(0, 500),
           );
           return generateDemoAudit(websiteUrl, headers);
         }
 
         const geminiData = await geminiResponse.json();
         const responseText =
-          geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "";
+          geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
 
         if (!responseText) {
-          console.error("[AUDIT] Empty Gemini response");
+          console.error("[AUDIT] Empty response from Gemini");
           return generateDemoAudit(websiteUrl, headers);
         }
 
-        console.log(
-          "[AUDIT] Got response from Gemini, length:",
-          responseText.length,
-        );
+        console.log(`[AUDIT] Got Gemini response: ${responseText.length} chars`);
 
-        // Extract JSON from response
-        let jsonMatch = responseText.match(/\{[\s\S]*\}/);
+        // Extract JSON
+        const jsonMatch = responseText.match(/\{[\s\S]*\}/);
         if (!jsonMatch) {
           console.error(
-            "[AUDIT] No JSON in response:",
-            responseText.substring(0, 300),
+            "[AUDIT] No JSON found in response:",
+            responseText.substring(0, 200),
           );
           return generateDemoAudit(websiteUrl, headers);
         }
 
-        let auditData;
-        try {
-          auditData = JSON.parse(jsonMatch[0]);
-        } catch (parseError) {
-          console.error("[AUDIT] JSON parse error:", parseError);
-          return generateDemoAudit(websiteUrl, headers);
-        }
+        const auditData = JSON.parse(jsonMatch[0]);
+        const sections = auditData.sections;
 
-        const sections = auditData.sections || [];
         if (!Array.isArray(sections) || sections.length === 0) {
-          console.error("[AUDIT] Invalid sections in response");
+          console.error("[AUDIT] Invalid sections");
           return generateDemoAudit(websiteUrl, headers);
         }
 
-        console.log(
-          "[AUDIT] ✓ Successfully got",
-          sections.length,
-          "sections from Gemini",
-        );
+        // Validate sections
+        for (const section of sections) {
+          if (
+            !section.name ||
+            typeof section.score !== "number" ||
+            section.score < 0 ||
+            section.score > 100
+          ) {
+            console.error(
+              "[AUDIT] Invalid section:",
+              JSON.stringify(section).substring(0, 100),
+            );
+            return generateDemoAudit(websiteUrl, headers);
+          }
+        }
 
         const overallScore = Math.round(
-          sections.reduce((sum: number, s: any) => sum + (s.score || 0), 0) /
+          sections.reduce((sum: number, s: any) => sum + s.score, 0) /
             sections.length,
         );
-
         const auditId = Date.now().toString();
         const domain = new URL(websiteUrl).hostname.replace("www.", "");
 
@@ -231,7 +215,7 @@ Respond with ONLY valid JSON (no markdown):
           id: auditId,
           url: websiteUrl,
           title: `${domain} Brand Audit Report`,
-          description: `Comprehensive brand audit analysis for ${domain}`,
+          description: `Brand audit analysis for ${domain}`,
           overallScore,
           status: "completed",
           date: new Date().toISOString(),
@@ -244,7 +228,7 @@ Respond with ONLY valid JSON (no markdown):
         };
 
         console.log(
-          `[AUDIT] ✓ Generated audit ${auditId} with score ${overallScore}`,
+          `[AUDIT] ✓ Success! Generated audit ${auditId} with score ${overallScore}`,
         );
 
         return {
@@ -254,18 +238,18 @@ Respond with ONLY valid JSON (no markdown):
         };
       } catch (geminiError) {
         console.error(
-          "[AUDIT] Gemini call failed:",
+          "[AUDIT] Gemini API error:",
           geminiError instanceof Error ? geminiError.message : geminiError,
         );
         return generateDemoAudit(websiteUrl, headers);
       }
     } catch (error) {
-      console.error("[AUDIT] Error:", error);
+      console.error("[AUDIT] Unexpected error:", error);
       return {
         statusCode: 500,
         headers,
         body: JSON.stringify({
-          error: "Failed to generate audit",
+          error: "Internal server error",
           message: error instanceof Error ? error.message : String(error),
         }),
       };
@@ -276,7 +260,7 @@ Respond with ONLY valid JSON (no markdown):
   if (path === "/api/save-audit" && event.httpMethod === "POST") {
     try {
       const body = JSON.parse(event.body || "{}");
-      console.log(`[SAVE] Audit save requested for ${body.id}`);
+      console.log(`[SAVE] Storing audit ${body.id}`);
       return {
         statusCode: 200,
         headers,
@@ -287,21 +271,18 @@ Respond with ONLY valid JSON (no markdown):
         }),
       };
     } catch (error) {
-      console.error("[SAVE] Error:", error);
       return {
         statusCode: 500,
         headers,
         body: JSON.stringify({
-          error: "Server error",
-          message: error instanceof Error ? error.message : String(error),
+          error: "Failed to save audit",
         }),
       };
     }
   }
 
-  // Get audits endpoint (empty list)
+  // Get audits endpoint
   if (path === "/api/audits" && event.httpMethod === "GET") {
-    console.log("[AUDITS] GET /api/audits");
     return {
       statusCode: 200,
       headers,
@@ -309,10 +290,8 @@ Respond with ONLY valid JSON (no markdown):
     };
   }
 
-  // Get single audit endpoint
+  // Get single audit
   if (path.match(/^\/api\/audits\/[^/]+$/)) {
-    const id = path.split("/").pop();
-    console.log(`[AUDIT] GET /api/audits/${id}`);
     return {
       statusCode: 404,
       headers,
@@ -331,109 +310,105 @@ function generateDemoAudit(url: string, headers: Record<string, string>) {
   const auditId = Date.now().toString();
   const domain = new URL(url).hostname.replace("www.", "");
 
-  const audit = {
-    id: auditId,
-    url,
-    title: `${domain} Brand Audit Report`,
-    description: `Demo brand audit analysis for ${domain}`,
-    overallScore: 76,
-    status: "completed",
-    date: new Date().toISOString(),
-    sections: [
-      {
-        name: "Branding",
-        score: 75,
-        issues: 3,
-        recommendations: 4,
-        details:
-          "The website has a clear brand identity with consistent logo usage. Color scheme is modern and professional. Consider adding more brand personality to differentiate from competitors.",
-      },
-      {
-        name: "Design",
-        score: 78,
-        issues: 2,
-        recommendations: 3,
-        details:
-          "Layout is clean and well-organized. Navigation is intuitive. Some spacing improvements could enhance visual hierarchy.",
-      },
-      {
-        name: "Messaging",
-        score: 82,
-        issues: 2,
-        recommendations: 3,
-        details:
-          "Value proposition is clearly stated. Messaging is concise and compelling. Headlines effectively communicate key benefits.",
-      },
-      {
-        name: "Usability",
-        score: 85,
-        issues: 2,
-        recommendations: 3,
-        details:
-          "Site navigation is straightforward. Forms are user-friendly. Mobile responsiveness appears good overall.",
-      },
-      {
-        name: "Content Strategy",
-        score: 76,
-        issues: 3,
-        recommendations: 4,
-        details:
-          "Content is relevant and well-organized. Consider expanding blog section. Add more case studies or testimonials.",
-      },
-      {
-        name: "Digital Presence",
-        score: 72,
-        issues: 4,
-        recommendations: 4,
-        details:
-          "Basic SEO elements are in place. Social media presence could be stronger. Consider improving meta descriptions.",
-      },
-      {
-        name: "Customer Experience",
-        score: 80,
-        issues: 2,
-        recommendations: 3,
-        details:
-          "Contact information is easily accessible. Support options are clear. Response time for customer inquiries could be highlighted.",
-      },
-      {
-        name: "Competitor Analysis",
-        score: 74,
-        issues: 3,
-        recommendations: 4,
-        details:
-          "Positioning is competitive. Unique selling points are evident. Consider more detailed competitive differentiation messaging.",
-      },
-      {
-        name: "Conversion Optimization",
-        score: 79,
-        issues: 3,
-        recommendations: 4,
-        details:
-          "CTAs are present and actionable. Forms appear functional. Consider A/B testing to improve conversion rates.",
-      },
-      {
-        name: "Compliance & Security",
-        score: 88,
-        issues: 2,
-        recommendations: 3,
-        details:
-          "SSL certificate is properly installed. Privacy policy is accessible. Cookie consent is implemented.",
-      },
-    ],
-    metadata: {
-      analysisConfidence: 0.75,
-      industryDetected: "general",
-      generatedBy: "Demo",
-    },
-  };
-
-  console.log(`[DEMO] Generated demo audit ${auditId} for ${domain}`);
-
   return {
     statusCode: 200,
     headers,
-    body: JSON.stringify(audit),
+    body: JSON.stringify({
+      id: auditId,
+      url,
+      title: `${domain} Brand Audit Report`,
+      description: `Demo brand audit analysis for ${domain}`,
+      overallScore: 76,
+      status: "completed",
+      date: new Date().toISOString(),
+      sections: [
+        {
+          name: "Branding",
+          score: 75,
+          issues: 3,
+          recommendations: 4,
+          details:
+            "Logo and color scheme are consistent. Brand identity is clear. Consider adding more brand personality.",
+        },
+        {
+          name: "Design",
+          score: 78,
+          issues: 2,
+          recommendations: 3,
+          details:
+            "Layout is clean and modern. Navigation is intuitive. Some spacing improvements recommended.",
+        },
+        {
+          name: "Messaging",
+          score: 82,
+          issues: 2,
+          recommendations: 3,
+          details:
+            "Value proposition is clear. Messaging is concise and compelling. Headlines are effective.",
+        },
+        {
+          name: "Usability",
+          score: 85,
+          issues: 2,
+          recommendations: 3,
+          details:
+            "Navigation is straightforward. Forms are user-friendly. Mobile responsiveness is good.",
+        },
+        {
+          name: "Content Strategy",
+          score: 76,
+          issues: 3,
+          recommendations: 4,
+          details:
+            "Content is relevant and well-organized. Expand blog section. Add more case studies.",
+        },
+        {
+          name: "Digital Presence",
+          score: 72,
+          issues: 4,
+          recommendations: 4,
+          details:
+            "Basic SEO elements in place. Social media integration weak. Improve meta descriptions.",
+        },
+        {
+          name: "Customer Experience",
+          score: 80,
+          issues: 2,
+          recommendations: 3,
+          details:
+            "Contact information accessible. Support options clear. Highlight response time.",
+        },
+        {
+          name: "Competitor Analysis",
+          score: 74,
+          issues: 3,
+          recommendations: 4,
+          details:
+            "Positioning is competitive. Unique selling points evident. Improve differentiation messaging.",
+        },
+        {
+          name: "Conversion Optimization",
+          score: 79,
+          issues: 3,
+          recommendations: 4,
+          details:
+            "CTAs are present. Forms capture data. A/B test to improve conversion rates.",
+        },
+        {
+          name: "Compliance & Security",
+          score: 88,
+          issues: 2,
+          recommendations: 3,
+          details:
+            "SSL installed. Privacy policy accessible. Cookie consent implemented.",
+        },
+      ],
+      metadata: {
+        analysisConfidence: 0.75,
+        industryDetected: "general",
+        generatedBy: "Demo",
+      },
+    }),
   };
 }
 
