@@ -59,6 +59,12 @@ const handler: Handler = async (event, context) => {
       }
 
       const geminiApiKey = process.env.GEMINI_API_KEY;
+      console.log("[AUDIT] Environment check:", {
+        hasGeminiKey: !!geminiApiKey,
+        keyLength: geminiApiKey ? geminiApiKey.length : 0,
+        allEnvKeys: Object.keys(process.env).sort(),
+      });
+
       if (!geminiApiKey) {
         console.warn("[AUDIT] GEMINI_API_KEY not configured, using demo data");
         return generateDemoAudit(websiteUrl, headers);
