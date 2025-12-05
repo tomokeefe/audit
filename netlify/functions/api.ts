@@ -298,7 +298,7 @@ Respond with ONLY valid JSON (no markdown, no code blocks, no explanation):
         };
 
         console.log(
-          `[AUDIT] ✅ SUCCESS! Generated audit ${auditId} with Gemini - Score: ${overallScore}%`,
+          `[AUDIT] ✅ SUCCESS! Generated audit ${auditId} with Deterministic Score: ${overallScore}%`,
         );
 
         return {
