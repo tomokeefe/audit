@@ -2971,19 +2971,35 @@ Generate a JSON response with exactly this structure (all numeric values must va
 RETURN ONLY THE JSON, no other text.`;
 
       console.log("[AUDIT] Calling Gemini API...");
-      console.log("[AUDIT] Model:", model);
 
-      let result;
-      try {
-        result = await model.generateContent(prompt);
-      } catch (modelError) {
-        console.error("[AUDIT] Gemini model.generateContent error:", modelError);
-        throw modelError;
+      const geminiResponse = await fetch(
+        "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=" + geminiApiKey,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+          }),
+        },
+      );
+
+      console.log("[AUDIT] Gemini status:", geminiResponse.status);
+
+      if (!geminiResponse.ok) {
+        const errorText = await geminiResponse.text();
+        console.error("[AUDIT] Gemini error:", geminiResponse.status, errorText.substring(0, 300));
+        throw new Error("API error: " + geminiResponse.status);
       }
 
-      const responseText = result.response.text();
-      console.log("[AUDIT] Got Gemini response, length:", responseText.length);
-      console.log("[AUDIT] Response text:", responseText.substring(0, 200));
+      const geminiData = await geminiResponse.json();
+      const responseText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
+      if (!responseText) {
+        console.error("[AUDIT] Empty response");
+        throw new Error("Empty response");
+      }
+
+      console.log("[AUDIT] Got response, length:", responseText.length);
 
       // Extract JSON
       const jsonMatch = responseText.match(/\{[\s\S]*\}/);
