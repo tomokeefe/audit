@@ -124,13 +124,15 @@ const handler: Handler = async (event, context) => {
 
       // Only proceed with Gemini if we have an API key
       if (!geminiApiKey) {
-        console.warn("[AUDIT] No Gemini API key - returning demo audit");
+        console.warn("[AUDIT] ❌ No Gemini API key found - returning demo audit");
+        console.warn(`[AUDIT] Available env vars with 'API': ${Object.keys(process.env).filter(k => k.includes('API')).join(', ')}`);
         return generateDemoAudit(websiteUrl, headers);
       }
 
       // Call Gemini API
       try {
-        console.log("[AUDIT] Calling Gemini API...");
+        console.log("[AUDIT] ✓ Gemini API key found, proceeding with Gemini call");
+        console.log(`[AUDIT] Calling Gemini API with key: ${geminiApiKey.substring(0, 20)}...`);
 
         const prompt = `You are a brand audit expert. Analyze this website and provide exactly 10 audit sections with scores.
 
