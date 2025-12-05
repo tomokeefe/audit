@@ -137,111 +137,182 @@ const handler: Handler = async (event, context) => {
 
       console.log(`Generating audit for ${websiteUrl}`);
 
-      const auditId = Date.now().toString();
-      const domain = new URL(websiteUrl).hostname.replace("www.", "");
-
-      // Generate 10 criteria with variable scores
-      const sections = [
-        {
-          name: "Branding",
-          baseScore: 75,
-          issues: Math.floor(Math.random() * 3) + 2,
-          recommendations: Math.floor(Math.random() * 3) + 4,
-          getDetails: (score: number) =>
-            `Brand audit analysis reveals ${score > 80 ? "strong" : "solid"} brand alignment. Logo usage, color palette, and typography show ${score > 80 ? "excellent" : "good"} consistency across pages with opportunities for enhancement.`,
-        },
-        {
-          name: "Design",
-          baseScore: 70,
-          issues: Math.floor(Math.random() * 4) + 2,
-          recommendations: Math.floor(Math.random() * 4) + 3,
-          getDetails: (score: number) =>
-            `Design quality shows ${score > 80 ? "excellent" : "good"} visual hierarchy and layout principles. The interface demonstrates ${score > 80 ? "modern" : "solid"} design patterns with clear opportunities for improvement.`,
-        },
-        {
-          name: "Messaging",
-          baseScore: 72,
-          issues: Math.floor(Math.random() * 3) + 2,
-          recommendations: Math.floor(Math.random() * 3) + 4,
-          getDetails: (score: number) =>
-            `Messaging strategy demonstrates ${score > 80 ? "excellent" : "clear"} communication of value propositions. Content structure supports logical information flow effectively across pages.`,
-        },
-        {
-          name: "Usability",
-          baseScore: 68,
-          issues: Math.floor(Math.random() * 4) + 2,
-          recommendations: Math.floor(Math.random() * 4) + 3,
-          getDetails: (score: number) =>
-            `User experience shows ${score > 80 ? "excellent" : "adequate"} navigation structure with ${score > 80 ? "excellent" : "solid"} usability principles implemented throughout.`,
-        },
-        {
-          name: "Content Strategy",
-          baseScore: 73,
-          issues: Math.floor(Math.random() * 3) + 2,
-          recommendations: Math.floor(Math.random() * 3) + 4,
-          getDetails: (score: number) =>
-            `Content architecture supports user goals with ${score > 80 ? "excellent" : "appropriate"} organization. Content demonstrates subject matter expertise and ${score > 80 ? "excellent" : "solid"} structure.`,
-        },
-        {
-          name: "Digital Presence",
-          baseScore: 65,
-          issues: Math.floor(Math.random() * 4) + 3,
-          recommendations: Math.floor(Math.random() * 4) + 4,
-          getDetails: (score: number) =>
-            `Digital footprint shows ${score > 80 ? "strong" : "basic"} implementation across channels. ${score > 80 ? "Excellent" : "Good"} opportunities for enhancing online visibility and reach.`,
-        },
-        {
-          name: "Customer Experience",
-          baseScore: 74,
-          issues: Math.floor(Math.random() * 3) + 2,
-          recommendations: Math.floor(Math.random() * 3) + 4,
-          getDetails: (score: number) =>
-            `Customer interaction pathways provide ${score > 80 ? "excellent" : "accessible"} communication channels. Service information ${score > 80 ? "excellently" : "adequately"} supports user needs.`,
-        },
-        {
-          name: "Competitor Analysis",
-          baseScore: 71,
-          issues: Math.floor(Math.random() * 3) + 2,
-          recommendations: Math.floor(Math.random() * 3) + 4,
-          getDetails: (score: number) =>
-            `Market positioning shows ${score > 80 ? "strong" : "solid"} differentiation potential. Competitive analysis reveals ${score > 80 ? "significant" : "good"} strategic opportunities for growth.`,
-        },
-        {
-          name: "Conversion Optimization",
-          baseScore: 66,
-          issues: Math.floor(Math.random() * 4) + 2,
-          recommendations: Math.floor(Math.random() * 4) + 3,
-          getDetails: (score: number) =>
-            `Conversion pathways present ${score > 80 ? "excellent" : "good"} optimization opportunities. Lead capture mechanisms show ${score > 80 ? "strong" : "adequate"} implementation.`,
-        },
-        {
-          name: "Compliance & Security",
-          baseScore: 69,
-          issues: Math.floor(Math.random() * 3) + 2,
-          recommendations: Math.floor(Math.random() * 3) + 4,
-          getDetails: (score: number) =>
-            `Website demonstrates ${score > 80 ? "excellent" : "solid"} security and compliance standards. Privacy practices and data protection are ${score > 80 ? "comprehensively" : "adequately"} implemented.`,
-        },
-      ].map((criterion) => {
-        const variance = Math.floor(Math.random() * 30) - 15;
-        const score = Math.max(
-          60,
-          Math.min(95, criterion.baseScore + variance),
-        );
+      const geminiApiKey = process.env.GEMINI_API_KEY;
+      if (!geminiApiKey) {
+        console.error("GEMINI_API_KEY not configured");
         return {
-          name: criterion.name,
-          score,
-          maxScore: 100,
-          issues: criterion.issues,
-          recommendations: criterion.recommendations,
-          details: criterion.getDetails(score),
+          statusCode: 500,
+          headers,
+          body: JSON.stringify({ error: "API key not configured" }),
         };
-      });
+      }
+
+      // Fetch website content
+      let websiteContent = "";
+      try {
+        console.log(`Fetching content from ${websiteUrl}`);
+        const fetchResponse = await fetch(websiteUrl, {
+          headers: {
+            "User-Agent":
+              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+          },
+        });
+
+        if (fetchResponse.ok) {
+          const html = await fetchResponse.text();
+          // Extract text content from HTML
+          websiteContent = html
+            .replace(
+              /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+              ""
+            )
+            .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "")
+            .replace(/<[^>]*>/g, " ")
+            .replace(/\s+/g, " ")
+            .substring(0, 5000);
+        }
+      } catch (fetchError) {
+        console.warn("Error fetching website:", fetchError);
+        websiteContent = "Website content could not be fetched";
+      }
+
+      // Use Gemini to analyze the website
+      const analysisPrompt = `Analyze this website and provide detailed scores for 10 brand audit criteria based on the actual content.
+
+Website URL: ${websiteUrl}
+Website Content (excerpt): ${websiteContent}
+
+You MUST respond with ONLY valid JSON (no markdown, no explanation, just raw JSON):
+{
+  "sections": [
+    {
+      "name": "Branding",
+      "score": <60-100>,
+      "issues": <2-5>,
+      "recommendations": <3-5>,
+      "details": "<specific analysis based on what you see>"
+    },
+    {
+      "name": "Design",
+      "score": <60-100>,
+      "issues": <2-5>,
+      "recommendations": <3-5>,
+      "details": "<specific analysis>"
+    },
+    {
+      "name": "Messaging",
+      "score": <60-100>,
+      "issues": <2-5>,
+      "recommendations": <3-5>,
+      "details": "<specific analysis>"
+    },
+    {
+      "name": "Usability",
+      "score": <60-100>,
+      "issues": <2-5>,
+      "recommendations": <3-5>,
+      "details": "<specific analysis>"
+    },
+    {
+      "name": "Content Strategy",
+      "score": <60-100>,
+      "issues": <2-5>,
+      "recommendations": <3-5>,
+      "details": "<specific analysis>"
+    },
+    {
+      "name": "Digital Presence",
+      "score": <60-100>,
+      "issues": <2-5>,
+      "recommendations": <3-5>,
+      "details": "<specific analysis>"
+    },
+    {
+      "name": "Customer Experience",
+      "score": <60-100>,
+      "issues": <2-5>,
+      "recommendations": <3-5>,
+      "details": "<specific analysis>"
+    },
+    {
+      "name": "Competitor Analysis",
+      "score": <60-100>,
+      "issues": <2-5>,
+      "recommendations": <3-5>,
+      "details": "<specific analysis>"
+    },
+    {
+      "name": "Conversion Optimization",
+      "score": <60-100>,
+      "issues": <2-5>,
+      "recommendations": <3-5>,
+      "details": "<specific analysis>"
+    },
+    {
+      "name": "Compliance & Security",
+      "score": <60-100>,
+      "issues": <2-5>,
+      "recommendations": <3-5>,
+      "details": "<specific analysis>"
+    }
+  ]
+}`;
+
+      console.log("Calling Gemini API for detailed audit analysis");
+
+      const geminiResponse = await fetch(
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" +
+          geminiApiKey,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [{ text: analysisPrompt }],
+              },
+            ],
+          }),
+        }
+      );
+
+      if (!geminiResponse.ok) {
+        const errorText = await geminiResponse.text();
+        console.error("Gemini API error:", errorText);
+        throw new Error(`Gemini API error: ${geminiResponse.status}`);
+      }
+
+      const geminiData = await geminiResponse.json();
+      const responseText =
+        geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
+      if (!responseText) {
+        throw new Error("Empty response from Gemini API");
+      }
+
+      console.log("Gemini analysis received, parsing JSON");
+
+      // Parse the JSON response
+      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        console.error("Could not find JSON in response");
+        throw new Error("No valid JSON in Gemini response");
+      }
+
+      const auditData = JSON.parse(jsonMatch[0]);
+      const sections = auditData.sections || [];
+
+      if (!sections || sections.length === 0) {
+        throw new Error("Invalid audit data structure");
+      }
 
       const overallScore = Math.round(
-        sections.reduce((sum, section) => sum + section.score, 0) /
-          sections.length,
+        sections.reduce((sum: number, section: any) => sum + (section.score || 0), 0) /
+          sections.length
       );
+
+      const auditId = Date.now().toString();
+      const domain = new URL(websiteUrl).hostname.replace("www.", "");
 
       const fullAudit = {
         id: auditId,
@@ -253,7 +324,7 @@ const handler: Handler = async (event, context) => {
         date: new Date().toISOString(),
         sections,
         metadata: {
-          analysisConfidence: 0.8,
+          analysisConfidence: 0.85,
           industryDetected: "general",
         },
       };
@@ -290,7 +361,7 @@ const handler: Handler = async (event, context) => {
                   JSON.stringify(fullAudit),
                 ],
               }),
-            },
+            }
           );
           console.log(`✓ Saved audit ${auditId} to database`);
         } catch (dbError) {
@@ -347,7 +418,7 @@ const handler: Handler = async (event, context) => {
             query: "SELECT audit_data FROM audits WHERE id = $1",
             params: [id],
           }),
-        },
+        }
       );
 
       if (!response.ok) {
@@ -420,7 +491,7 @@ const handler: Handler = async (event, context) => {
               "SELECT id, url, title, description, overall_score as overallScore, status, date FROM audits ORDER BY date DESC LIMIT 100",
             params: [],
           }),
-        },
+        }
       );
 
       if (!response.ok) {
