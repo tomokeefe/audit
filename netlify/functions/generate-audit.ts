@@ -45,9 +45,9 @@ const handler: Handler = async (event, context) => {
 
     console.log(`Generating audit for ${url}`);
 
-    const geminiApiKey = process.env.GEMINI_API_KEY;
-    if (!geminiApiKey) {
-      console.error("GEMINI_API_KEY not configured");
+    const grokApiKey = process.env.GROK_API_KEY;
+    if (!grokApiKey) {
+      console.error("GROK_API_KEY not configured");
       return {
         statusCode: 500,
         headers,
@@ -81,9 +81,8 @@ const handler: Handler = async (event, context) => {
       websiteContent = "Website content could not be fetched";
     }
 
-    // Generate audit using Gemini
-    const client = new GoogleGenerativeAI(geminiApiKey);
-    const model = client.getGenerativeModel({ model: "gemini-pro" });
+    // Generate audit using Grok
+    const grokUrl = "https://api.x.ai/v1/chat/completions";
 
     const prompt = `Analyze this website and provide a brand audit. Generate realistic, varied scores (not all the same).
 
