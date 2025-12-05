@@ -4,7 +4,9 @@ import { AuditResponse } from "@shared/api";
  * Save audit to database for sharing across browsers/devices
  * This bypasses the backend and saves directly to Neon via a Netlify function
  */
-export async function saveAuditToDatabase(audit: AuditResponse): Promise<boolean> {
+export async function saveAuditToDatabase(
+  audit: AuditResponse,
+): Promise<boolean> {
   try {
     console.log(`Saving audit ${audit.id} to database...`);
 
@@ -35,7 +37,9 @@ export async function saveAuditToDatabase(audit: AuditResponse): Promise<boolean
 /**
  * Retrieve audit from database
  */
-export async function getAuditFromDatabase(id: string): Promise<AuditResponse | null> {
+export async function getAuditFromDatabase(
+  id: string,
+): Promise<AuditResponse | null> {
   try {
     const response = await fetch(`/.netlify/functions/get-audit/${id}`);
 

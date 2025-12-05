@@ -76,12 +76,15 @@ const handler: Handler = async (event, context) => {
       console.log(`Retrieving audit ${id} from Neon database`);
 
       // Use the dedicated get-audit function instead of proxying to Fly.io
-      const response = await fetch(`${event.headers.host || "localhost"}/.netlify/functions/get-audit/${id}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${event.headers.host || "localhost"}/.netlify/functions/get-audit/${id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
-      });
+      );
 
       if (!response.ok) {
         return {

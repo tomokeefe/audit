@@ -51,7 +51,7 @@ const handler: Handler = async (event) => {
             query: "SELECT audit_data FROM audits WHERE id = $1",
             params: [id],
           }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -118,7 +118,7 @@ const handler: Handler = async (event) => {
               JSON.stringify(audit),
             ],
           }),
-        }
+        },
       );
 
       if (!response.ok) {
