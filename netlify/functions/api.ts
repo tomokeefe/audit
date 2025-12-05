@@ -27,6 +27,29 @@ const handler: Handler = async (event, context) => {
     };
   }
 
+  // Save audit endpoint (localStorage fallback - just acknowledge)
+  if (path === "/api/save-audit" && event.httpMethod === "POST") {
+    try {
+      const body = JSON.parse(event.body || "{}");
+      console.log(`Audit save requested for ${body.id} (using localStorage fallback)`);
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({ success: true, id: body.id, note: "Stored in browser" }),
+      };
+    } catch (error) {
+      console.error("Save audit error:", error);
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({
+          error: "Server error",
+          message: error instanceof Error ? error.message : String(error),
+        }),
+      };
+    }
+  }
+
   // Generate audit using Gemini API
   if (path === "/api/audit" && event.httpMethod === "POST") {
     try {
