@@ -42,8 +42,6 @@ const handler: Handler = async (event) => {
     }
 
     // Use Neon serverless driver
-    const { sql } = await import("@neondatabase/serverless");
-    
     const client = sql(dbUrl);
     
     const result = await client`SELECT audit_data FROM audits WHERE id = ${id}`;
