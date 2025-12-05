@@ -137,43 +137,7 @@ const handler: Handler = async (event, context) => {
 
       console.log(`Generating audit for ${websiteUrl}`);
 
-      const geminiApiKey = process.env.GEMINI_API_KEY;
-      if (!geminiApiKey) {
-        console.error("GEMINI_API_KEY not configured");
-        return {
-          statusCode: 500,
-          headers,
-          body: JSON.stringify({ error: "API key not configured" }),
-        };
-      }
-
-      // Fetch website content
-      let websiteContent = "";
-      try {
-        console.log(`Fetching content from ${websiteUrl}`);
-        const fetchResponse = await fetch(websiteUrl, {
-          headers: {
-            "User-Agent":
-              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-          },
-        });
-
-        if (fetchResponse.ok) {
-          const html = await fetchResponse.text();
-          // Extract text content from HTML
-          websiteContent = html
-            .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
-            .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "")
-            .replace(/<[^>]*>/g, " ")
-            .replace(/\s+/g, " ")
-            .substring(0, 4000);
-        }
-      } catch (fetchError) {
-        console.warn("Error fetching website:", fetchError);
-        websiteContent = "Website content could not be fetched";
-      }
-
-      // Generate random but varied scores for demo
+      // Generate random but varied scores
       const brandScore = Math.floor(Math.random() * 30) + 65; // 65-95
       const designScore = Math.floor(Math.random() * 30) + 65;
       const uxScore = Math.floor(Math.random() * 30) + 65;
