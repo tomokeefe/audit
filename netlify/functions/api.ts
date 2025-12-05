@@ -140,7 +140,6 @@ Respond with ONLY valid JSON (no markdown):
       console.log("[AUDIT] Gemini API key:", geminiApiKey ? "present" : "MISSING");
       console.log("[AUDIT] Calling Gemini API...");
 
-      let auditData;
       try {
         const geminiResponse = await fetch(
           "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" +
@@ -187,6 +186,7 @@ Respond with ONLY valid JSON (no markdown):
           return generateDemoAudit(websiteUrl, headers);
         }
 
+        let auditData;
         try {
           auditData = JSON.parse(jsonMatch[0]);
         } catch (parseError) {
@@ -201,44 +201,44 @@ Respond with ONLY valid JSON (no markdown):
         }
 
         console.log("[AUDIT] ✓ Successfully got", sections.length, "sections from Gemini");
+
+        const overallScore = Math.round(
+          sections.reduce((sum: number, s: any) => sum + (s.score || 0), 0) /
+            sections.length,
+        );
+
+        const auditId = Date.now().toString();
+        const domain = new URL(websiteUrl).hostname.replace("www.", "");
+
+        const audit = {
+          id: auditId,
+          url: websiteUrl,
+          title: `${domain} Brand Audit Report`,
+          description: `Comprehensive brand audit analysis for ${domain}`,
+          overallScore,
+          status: "completed",
+          date: new Date().toISOString(),
+          sections,
+          metadata: {
+            analysisConfidence: 0.85,
+            industryDetected: "general",
+            generatedBy: "Gemini API",
+          },
+        };
+
+        console.log(
+          `[AUDIT] ✓ Generated audit ${auditId} with score ${overallScore}`,
+        );
+
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify(audit),
+        };
       } catch (geminiError) {
         console.error("[AUDIT] Gemini call failed:", geminiError instanceof Error ? geminiError.message : geminiError);
         return generateDemoAudit(websiteUrl, headers);
       }
-
-      const overallScore = Math.round(
-        sections.reduce((sum: number, s: any) => sum + (s.score || 0), 0) /
-          sections.length,
-      );
-
-      const auditId = Date.now().toString();
-      const domain = new URL(websiteUrl).hostname.replace("www.", "");
-
-      const audit = {
-        id: auditId,
-        url: websiteUrl,
-        title: `${domain} Brand Audit Report`,
-        description: `Comprehensive brand audit analysis for ${domain}`,
-        overallScore,
-        status: "completed",
-        date: new Date().toISOString(),
-        sections,
-        metadata: {
-          analysisConfidence: 0.85,
-          industryDetected: "general",
-          generatedBy: "Gemini API",
-        },
-      };
-
-      console.log(
-        `[AUDIT] ✓ Generated audit ${auditId} with score ${overallScore}`,
-      );
-
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify(audit),
-      };
     } catch (error) {
       console.error("[AUDIT] Error:", error);
       return {
