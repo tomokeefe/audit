@@ -405,7 +405,10 @@ const deterministicCache = new Map<string, any>();
 /**
  * Generate deterministic scores based on website content
  */
-function generateDeterministicScores(url: string, websiteContent: string): { scores: number[], overall: number } {
+function generateDeterministicScores(
+  url: string,
+  websiteContent: string,
+): { scores: number[]; overall: number } {
   // Create cache key from URL
   const urlHash = crypto.createHash("sha256").update(url).digest("hex");
 
@@ -420,9 +423,16 @@ function generateDeterministicScores(url: string, websiteContent: string): { sco
 
   // Base section scores derived from content analysis
   const sectionNames = [
-    "Branding", "Design", "Messaging", "Usability",
-    "Content Strategy", "Digital Presence", "Customer Experience",
-    "Competitor Analysis", "Conversion Optimization", "Compliance & Security"
+    "Branding",
+    "Design",
+    "Messaging",
+    "Usability",
+    "Content Strategy",
+    "Digital Presence",
+    "Customer Experience",
+    "Competitor Analysis",
+    "Conversion Optimization",
+    "Compliance & Security",
   ];
 
   // Generate deterministic scores for each section
@@ -438,27 +448,36 @@ function generateDeterministicScores(url: string, websiteContent: string): { sco
 
     // Fine-tune based on content signals
     let adjustment = 0;
-    if (websiteContent.includes("contact") || websiteContent.includes("support")) {
-      adjustment += (index === 6) ? 5 : 0; // Customer Experience boost
+    if (
+      websiteContent.includes("contact") ||
+      websiteContent.includes("support")
+    ) {
+      adjustment += index === 6 ? 5 : 0; // Customer Experience boost
     }
     if (websiteContent.includes("https") || websiteContent.includes("ssl")) {
-      adjustment += (index === 9) ? 5 : 0; // Compliance boost
+      adjustment += index === 9 ? 5 : 0; // Compliance boost
     }
     if (websiteContent.includes("nav") || websiteContent.includes("menu")) {
-      adjustment += (index === 3) ? 3 : 0; // Usability boost
+      adjustment += index === 3 ? 3 : 0; // Usability boost
     }
 
     return Math.max(0, Math.min(100, Math.round(baseScore + adjustment)));
   });
 
   // Calculate weighted overall score
-  const overall = Math.round(
-    scores.reduce((sum, score, i) => sum + score * SECTION_WEIGHTS_ARRAY[i], 0) * 10
-  ) / 10;
+  const overall =
+    Math.round(
+      scores.reduce(
+        (sum, score, i) => sum + score * SECTION_WEIGHTS_ARRAY[i],
+        0,
+      ) * 10,
+    ) / 10;
 
   const result = { scores, overall };
   deterministicCache.set(urlHash, result);
-  console.log(`[SCORING] Generated deterministic score: ${overall}% for ${url}`);
+  console.log(
+    `[SCORING] Generated deterministic score: ${overall}% for ${url}`,
+  );
 
   return result;
 }
