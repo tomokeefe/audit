@@ -9,7 +9,9 @@ const handler: Handler = async (event, context) => {
   };
 
   try {
-    console.log(`[API] Incoming request - method: ${event.httpMethod}, path: ${event.path}`);
+    console.log(
+      `[API] Incoming request - method: ${event.httpMethod}, path: ${event.path}`
+    );
 
     if (event.httpMethod === "OPTIONS") {
       return {
@@ -28,31 +30,29 @@ const handler: Handler = async (event, context) => {
       path = "/" + path;
     }
 
-    // If path doesn't start with /api, and it's from a redirect, add /api
+    // If path doesn't start with /api, add /api prefix (for Netlify routing)
     if (!path.startsWith("/api/")) {
-      // For Netlify functions routing, the path might be stripped
       path = "/api" + path;
     }
 
     console.log(`[API] Normalized path: ${path}`);
 
-  // Ping endpoint
-  if (path.includes("/api/ping") || path === "/ping") {
-    console.log("[API] Serving ping endpoint");
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({
-        message: "pong",
-        timestamp: new Date().toISOString(),
-        version: "20251205-fixed",
-      }),
-    };
-  }
+    // Ping endpoint
+    if (path.includes("/api/ping") || path === "/ping") {
+      console.log("[API] Serving ping endpoint");
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          message: "pong",
+          timestamp: new Date().toISOString(),
+          version: "20251205-fixed",
+        }),
+      };
+    }
 
-  // Generate audit using Gemini API
-  if ((path === "/api/audit" || path === "/audit") && event.httpMethod === "POST") {
-    try {
+    // Generate audit using Gemini API
+    if ((path === "/api/audit" || path === "/audit") && event.httpMethod === "POST") {
       const body = JSON.parse(event.body || "{}");
       const { url: websiteUrl } = body;
 
@@ -102,14 +102,20 @@ const handler: Handler = async (event, context) => {
           const html = await response.text();
           // Remove scripts and styles, then extract text
           websiteContent = html
-            .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
-            .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "")
+            .replace(
+              /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+              ""
+            )
+            .replace(
+              /<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi,
+              ""
+            )
             .replace(/<[^>]*>/g, " ")
             .replace(/\s+/g, " ")
             .trim()
             .substring(0, 4000);
           console.log(
-            `[AUDIT] Content fetched: ${websiteContent.length} chars`,
+            `[AUDIT] Content fetched: ${websiteContent.length} chars`
           );
         }
       } catch (fetchError) {
@@ -175,7 +181,7 @@ Respond with ONLY this exact JSON structure (no markdown, no explanation):
           const errorBody = await geminiResponse.text();
           console.error(
             `[AUDIT] Gemini error (${geminiResponse.status}):`,
-            errorBody.substring(0, 500),
+            errorBody.substring(0, 500)
           );
           return generateDemoAudit(websiteUrl, headers);
         }
@@ -190,7 +196,7 @@ Respond with ONLY this exact JSON structure (no markdown, no explanation):
         }
 
         console.log(
-          `[AUDIT] Got Gemini response: ${responseText.length} chars`,
+          `[AUDIT] Got Gemini response: ${responseText.length} chars`
         );
 
         // Extract JSON
@@ -198,7 +204,7 @@ Respond with ONLY this exact JSON structure (no markdown, no explanation):
         if (!jsonMatch) {
           console.error(
             "[AUDIT] No JSON found in response:",
-            responseText.substring(0, 200),
+            responseText.substring(0, 200)
           );
           return generateDemoAudit(websiteUrl, headers);
         }
@@ -221,7 +227,7 @@ Respond with ONLY this exact JSON structure (no markdown, no explanation):
           ) {
             console.error(
               "[AUDIT] Invalid section:",
-              JSON.stringify(section).substring(0, 100),
+              JSON.stringify(section).substring(0, 100)
             );
             return generateDemoAudit(websiteUrl, headers);
           }
@@ -229,7 +235,7 @@ Respond with ONLY this exact JSON structure (no markdown, no explanation):
 
         const overallScore = Math.round(
           sections.reduce((sum: number, s: any) => sum + s.score, 0) /
-            sections.length,
+            sections.length
         );
         const auditId = Date.now().toString();
         const domain = new URL(websiteUrl).hostname.replace("www.", "");
@@ -251,7 +257,7 @@ Respond with ONLY this exact JSON structure (no markdown, no explanation):
         };
 
         console.log(
-          `[AUDIT] ✓ Success! Generated audit ${auditId} with score ${overallScore}`,
+          `[AUDIT] ✓ Success! Generated audit ${auditId} with score ${overallScore}`
         );
 
         return {
@@ -262,67 +268,66 @@ Respond with ONLY this exact JSON structure (no markdown, no explanation):
       } catch (geminiError) {
         console.error(
           "[AUDIT] Gemini API error:",
-          geminiError instanceof Error ? geminiError.message : geminiError,
+          geminiError instanceof Error ? geminiError.message : geminiError
         );
         return generateDemoAudit(websiteUrl, headers);
       }
-    } catch (error) {
-      console.error("[AUDIT] Unexpected error:", error);
-      return {
-        statusCode: 500,
-        headers,
-        body: JSON.stringify({
-          error: "Internal server error",
-          message: error instanceof Error ? error.message : String(error),
-        }),
-      };
     }
-  }
 
-  // Save audit endpoint
-  if ((path === "/api/save-audit" || path === "/save-audit") && event.httpMethod === "POST") {
-    try {
-      const body = JSON.parse(event.body || "{}");
-      console.log(`[SAVE] Storing audit ${body.id}`);
+    // Save audit endpoint
+    if (
+      (path === "/api/save-audit" || path === "/save-audit") &&
+      event.httpMethod === "POST"
+    ) {
+      try {
+        const body = JSON.parse(event.body || "{}");
+        console.log(`[SAVE] Storing audit ${body.id}`);
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            success: true,
+            id: body.id,
+            note: "Stored in browser",
+          }),
+        };
+      } catch (error) {
+        return {
+          statusCode: 500,
+          headers,
+          body: JSON.stringify({
+            error: "Failed to save audit",
+          }),
+        };
+      }
+    }
+
+    // Get audits endpoint
+    if (
+      (path === "/api/audits" || path === "/audits") &&
+      event.httpMethod === "GET"
+    ) {
+      console.log("[API] Serving audits endpoint");
       return {
         statusCode: 200,
         headers,
-        body: JSON.stringify({
-          success: true,
-          id: body.id,
-          note: "Stored in browser",
-        }),
-      };
-    } catch (error) {
-      return {
-        statusCode: 500,
-        headers,
-        body: JSON.stringify({
-          error: "Failed to save audit",
-        }),
+        body: JSON.stringify({ audits: [] }),
       };
     }
-  }
 
-  // Get audits endpoint
-  if ((path === "/api/audits" || path === "/audits") && event.httpMethod === "GET") {
-    console.log("[API] Serving audits endpoint");
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({ audits: [] }),
-    };
-  }
+    // Get single audit
+    if (
+      path.match(/^\/api\/audits\/[^/]+$/) ||
+      path.match(/^\/audits\/[^/]+$/)
+    ) {
+      return {
+        statusCode: 404,
+        headers,
+        body: JSON.stringify({ error: "Audit not found" }),
+      };
+    }
 
-  // Get single audit
-  if (path.match(/^\/api\/audits\/[^/]+$/) || path.match(/^\/audits\/[^/]+$/)) {
-    return {
-      statusCode: 404,
-      headers,
-      body: JSON.stringify({ error: "Audit not found" }),
-    };
-  }
-
+    // Default 404 for unmatched endpoints
     console.log(`[API] No matching endpoint for: ${path}`);
     return {
       statusCode: 404,
@@ -331,7 +336,12 @@ Respond with ONLY this exact JSON structure (no markdown, no explanation):
         error: "Not found",
         path: path,
         method: event.httpMethod,
-        availableEndpoints: ["/api/ping", "/api/audit", "/api/audits", "/api/save-audit"]
+        availableEndpoints: [
+          "/api/ping",
+          "/api/audit",
+          "/api/audits",
+          "/api/save-audit",
+        ],
       }),
     };
   } catch (error) {
@@ -341,7 +351,8 @@ Respond with ONLY this exact JSON structure (no markdown, no explanation):
       headers,
       body: JSON.stringify({
         error: "Internal server error",
-        message: error instanceof Error ? error.message : String(error)
+        message:
+          error instanceof Error ? error.message : String(error),
       }),
     };
   }
