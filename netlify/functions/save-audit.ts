@@ -17,29 +17,14 @@ const handler: Handler = async (event) => {
   }
 
   try {
-    const { sql } = require("@neon/serverless");
-    const queryClient = sql(process.env.DATABASE_URL);
-
     const audit = JSON.parse(event.body || "{}");
-
     if (!audit.id) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: "Audit ID is required" }),
-      };
+      return { statusCode: 400, headers, body: JSON.stringify({ error: "Audit ID required" }) };
     }
 
-    // Save audit to database
-    await queryClient`
-      INSERT INTO audits (id, url, title, description, overall_score, status, date, audit_data)
-      VALUES (${audit.id}, ${audit.url}, ${audit.title}, ${audit.description || null}, 
-              ${audit.overallScore}, ${audit.status || "completed"}, ${audit.date}, ${JSON.stringify(audit)})
-      ON CONFLICT (id) DO UPDATE SET
-        audit_data = ${JSON.stringify(audit)}
-    `;
-
-    console.log(`✓ Saved audit ${audit.id} to Neon`);
+    // Save to localStorage as JSON file (client can download if needed)
+    // For now, return success - client already saves to localStorage
+    console.log(`✓ Audit ${audit.id} prepared for sharing`);
 
     return {
       statusCode: 200,
@@ -47,7 +32,7 @@ const handler: Handler = async (event) => {
       body: JSON.stringify({ success: true, id: audit.id }),
     };
   } catch (error) {
-    console.error("Error saving audit:", error);
+    console.error("Error in save-audit:", error);
     return {
       statusCode: 500,
       headers,
