@@ -12,8 +12,8 @@ RUN npm ci
 # Copy source code
 COPY . .
 
-# Build server only (backend API)
-RUN npm run build:server
+# Build both client and server
+RUN npm run build
 
 # Production stage
 FROM node:20-alpine
@@ -26,7 +26,7 @@ COPY package.json package-lock.json ./
 # Install production dependencies only
 RUN npm ci --omit=dev
 
-# Copy built server from builder
+# Copy dist folder from builder
 COPY --from=builder /app/dist ./dist
 
 # Expose port
@@ -36,5 +36,5 @@ EXPOSE 8080
 ENV NODE_ENV=production
 ENV PORT=8080
 
-# Start the Node.js server
+# Start the Node.js server using the built server
 CMD ["node", "dist/server/node-build.mjs"]
