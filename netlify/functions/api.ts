@@ -277,7 +277,7 @@ Respond with ONLY this exact JSON structure (no markdown, no explanation):
   }
 
   // Save audit endpoint
-  if (path === "/api/save-audit" && event.httpMethod === "POST") {
+  if ((path === "/api/save-audit" || path === "/save-audit") && event.httpMethod === "POST") {
     try {
       const body = JSON.parse(event.body || "{}");
       console.log(`[SAVE] Storing audit ${body.id}`);
@@ -302,7 +302,8 @@ Respond with ONLY this exact JSON structure (no markdown, no explanation):
   }
 
   // Get audits endpoint
-  if (path === "/api/audits" && event.httpMethod === "GET") {
+  if ((path === "/api/audits" || path === "/audits") && event.httpMethod === "GET") {
+    console.log("[API] Serving audits endpoint");
     return {
       statusCode: 200,
       headers,
@@ -311,7 +312,7 @@ Respond with ONLY this exact JSON structure (no markdown, no explanation):
   }
 
   // Get single audit
-  if (path.match(/^\/api\/audits\/[^/]+$/)) {
+  if (path.match(/^\/api\/audits\/[^/]+$/) || path.match(/^\/audits\/[^/]+$/)) {
     return {
       statusCode: 404,
       headers,
