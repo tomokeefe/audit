@@ -1023,25 +1023,7 @@ export default function Index() {
         JSON.stringify(auditResult),
       );
 
-      // Store audit in Neon database for cross-browser sharing
-      try {
-        const saveResponse = await fetch("/.netlify/functions/save-audit", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(auditResult),
-        });
-
-        if (saveResponse.ok) {
-          const saveResult = await saveResponse.json();
-          console.log(`✓ Audit ${auditResult.id} saved to Neon:`, saveResult);
-        } else {
-          console.warn("Failed to save to Neon, using localStorage only");
-        }
-      } catch (storeError) {
-        console.warn("Failed to store audit in database:", storeError);
-      }
+      console.log(`✓ Audit ${auditResult.id} saved to browser storage for sharing`);
 
       // Reload recent audits to show the new one
       loadRecentAudits();
@@ -1196,25 +1178,7 @@ export default function Index() {
         JSON.stringify(auditResult),
       );
 
-      // Store audit in Neon database for cross-browser sharing
-      try {
-        const saveResponse = await fetch("/.netlify/functions/save-audit", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(auditResult),
-        });
-
-        if (saveResponse.ok) {
-          const saveResult = await saveResponse.json();
-          console.log(`✓ Audit ${auditResult.id} saved to Neon:`, saveResult);
-        } else {
-          console.warn("Failed to save to Neon, using localStorage only");
-        }
-      } catch (storeError) {
-        console.warn("Failed to store audit in database:", storeError);
-      }
+      console.log(`✓ Audit ${auditResult.id} saved to browser storage for sharing`);
 
       // Reload recent audits to show the new one
       loadRecentAudits();
