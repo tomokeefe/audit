@@ -2985,20 +2985,29 @@ export const handleAudit: RequestHandler = async (req, res) => {
       error instanceof Error ? error.message : error,
     );
     console.error("Full error details:", error);
+    if (error instanceof Error) {
+      console.error("Error stack:", error.stack);
+    }
 
     // Always return a demo audit on any error
     try {
+      const url = (req.body as AuditRequest).url || "example.com";
+      console.log("Generating fallback audit for:", url);
       const demoAudit = generateFallbackAudit({
-        url: (req.body as AuditRequest).url || "example.com",
-        title: new URL((req.body as AuditRequest).url || "https://example.com")
-          .hostname,
+        url: url,
+        title: new URL(url).hostname,
         fallbackUsed: true,
       });
+      console.log("Fallback audit generated successfully");
       // Store the fallback audit so it persists for sharing
       await storeAuditResult(demoAudit);
+      console.log("Returning fallback audit to client");
       res.status(200).json(demoAudit);
     } catch (fallbackError) {
       console.error("Error generating fallback audit:", fallbackError);
+      if (fallbackError instanceof Error) {
+        console.error("Fallback error stack:", fallbackError.stack);
+      }
       res.status(500).json({
         error: "Unable to generate audit",
         details: error instanceof Error ? error.message : String(error),
