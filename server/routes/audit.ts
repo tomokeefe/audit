@@ -696,11 +696,24 @@ async function scrapeWebsite(url: string) {
 
       // Perform multi-page crawling
       console.log("Starting comprehensive multi-page crawling...");
-      const multiPageResults = await crawlMultiplePages(
-        url,
-        siteStructure.discoveredPages,
-        8,
-      );
+      let multiPageResults = [];
+      try {
+        multiPageResults = await crawlMultiplePages(url);
+        console.log(`Crawled ${multiPageResults.length} pages`);
+      } catch (crawlError) {
+        console.warn("Multi-page crawling failed, using homepage only:", crawlError);
+        multiPageResults = [{
+          url: url,
+          title: websiteData.title || "Homepage",
+          description: websiteData.description || "",
+          isHomepage: true,
+          pageType: "homepage",
+          headings: { h1: [], h2: [], h3: [] },
+          images: { total: 0, missingAlt: 0 },
+          forms: { count: 0, hasLabels: false },
+          contentLength: websiteData.htmlLength || 0,
+        }];
+      }
       const crossPageAnalysis = analyzeCrossPageConsistency(multiPageResults);
 
       return {
