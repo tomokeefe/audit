@@ -327,8 +327,10 @@ Respond with ONLY valid JSON (no markdown, no code blocks, no explanation):
           // Use Gemini's score if provided, otherwise use deterministic
           let score = section.score;
           if (typeof score !== "number" || score < 0 || score > 100) {
-            const { scores: deterministicScores } =
-              generateDeterministicScores(websiteUrl, websiteContent);
+            const { scores: deterministicScores } = generateDeterministicScores(
+              websiteUrl,
+              websiteContent,
+            );
             score = deterministicScores[index];
           }
 
