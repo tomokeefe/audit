@@ -17,7 +17,6 @@ const handler: Handler = async (event, context) => {
   }
 
   const path = event.path || "";
-  const backendUrl = process.env.BACKEND_URL || "http://localhost:3000";
 
   // Ping endpoint (local)
   if (path.includes("/api/ping")) {
@@ -26,88 +25,6 @@ const handler: Handler = async (event, context) => {
       headers,
       body: JSON.stringify({ message: "ping pong" }),
     };
-  }
-
-  // Save audit to Neon database
-  if (path === "/api/save-audit" && event.httpMethod === "POST") {
-    try {
-      const databaseUrl = process.env.DATABASE_URL;
-      if (!databaseUrl) {
-        return {
-          statusCode: 503,
-          headers,
-          body: JSON.stringify({ error: "Database not configured" }),
-        };
-      }
-
-      const audit = JSON.parse(event.body || "{}");
-      if (!audit.id) {
-        return {
-          statusCode: 400,
-          headers,
-          body: JSON.stringify({ error: "Audit ID required" }),
-        };
-      }
-
-      const url = new URL(databaseUrl);
-      const host = url.hostname;
-      const database = url.pathname.slice(1);
-      const user = url.username;
-      const password = url.password;
-
-      // Insert or update audit in Neon
-      const response = await fetch(
-        `https://${host}/sql?database=${database}&user=${user}&password=${password}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            query: `
-              INSERT INTO audits (id, url, title, description, overall_score, status, date, audit_data)
-              VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-              ON CONFLICT (id) DO UPDATE SET audit_data = $8, date = $7
-            `,
-            params: [
-              audit.id,
-              audit.url,
-              audit.title || "Audit Report",
-              audit.description || null,
-              audit.overallScore || 0,
-              audit.status || "completed",
-              audit.date || new Date().toISOString(),
-              JSON.stringify(audit.audit_data || audit),
-            ],
-          }),
-        },
-      );
-
-      if (!response.ok) {
-        const error = await response.text();
-        console.error("Neon API error:", error);
-        return {
-          statusCode: 500,
-          headers,
-          body: JSON.stringify({ error: "Failed to save audit" }),
-        };
-      }
-
-      console.log(`✓ Saved audit ${audit.id} to Neon via REST API`);
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({ success: true, id: audit.id }),
-      };
-    } catch (error) {
-      console.error("Save audit error:", error);
-      return {
-        statusCode: 500,
-        headers,
-        body: JSON.stringify({
-          error: "Server error",
-          message: error instanceof Error ? error.message : String(error),
-        }),
-      };
-    }
   }
 
   // Generate audit using Gemini API
@@ -147,110 +64,139 @@ const handler: Handler = async (event, context) => {
         };
       }
 
-      // Fetch website content
+      // Fetch website content with timeout
       let websiteContent = "";
       try {
         console.log(`Fetching content from ${websiteUrl}`);
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
+
         const fetchResponse = await fetch(websiteUrl, {
           headers: {
             "User-Agent":
               "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
           },
+          signal: controller.signal,
         });
+
+        clearTimeout(timeoutId);
 
         if (fetchResponse.ok) {
           const html = await fetchResponse.text();
-          // Extract text content from HTML
+          // Extract text content from HTML (first 5000 chars)
           websiteContent = html
             .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
             .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "")
             .replace(/<[^>]*>/g, " ")
             .replace(/\s+/g, " ")
-            .substring(0, 5000);
+            .substring(0, 5000)
+            .trim();
         }
       } catch (fetchError) {
         console.warn("Error fetching website:", fetchError);
         websiteContent = "Website content could not be fetched";
       }
 
+      if (!websiteContent) {
+        websiteContent = "Unable to extract website content";
+      }
+
       // Use Gemini to analyze the website
-      const analysisPrompt = `Analyze this website and provide detailed scores for 10 brand audit criteria based on the actual content.
+      const analysisPrompt = `You are a brand audit expert. Analyze this website and provide detailed scores for 10 brand audit criteria based on the actual content provided.
 
 Website URL: ${websiteUrl}
-Website Content (excerpt): ${websiteContent}
+Website Content (excerpt): ${websiteContent.substring(0, 3000)}
 
-You MUST respond with ONLY valid JSON (no markdown, no explanation, just raw JSON):
+Evaluate the website on these 10 criteria:
+1. Branding - Logo, color scheme, brand consistency
+2. Design - Visual appeal, layout, user interface
+3. Messaging - Clear value proposition, messaging clarity
+4. Usability - Navigation, accessibility, user experience
+5. Content Strategy - Quality, relevance, organization
+6. Digital Presence - SEO, social signals, authority
+7. Customer Experience - Customer support, trust signals
+8. Competitor Analysis - Competitive positioning, differentiation
+9. Conversion Optimization - CTAs, forms, conversion elements
+10. Compliance & Security - Privacy policy, SSL, compliance
+
+For EACH criteria, provide:
+- score: a number between 60-100
+- issues: number between 2-5
+- recommendations: number between 3-5
+- details: specific analysis based on the website content
+
+You MUST respond with ONLY valid JSON (no markdown, no explanation, just the raw JSON object):
 {
   "sections": [
     {
       "name": "Branding",
-      "score": <60-100>,
-      "issues": <2-5>,
-      "recommendations": <3-5>,
-      "details": "<specific analysis based on what you see>"
+      "score": 75,
+      "issues": 3,
+      "recommendations": 4,
+      "details": "Based on the website content..."
     },
     {
       "name": "Design",
-      "score": <60-100>,
-      "issues": <2-5>,
-      "recommendations": <3-5>,
-      "details": "<specific analysis>"
+      "score": 78,
+      "issues": 2,
+      "recommendations": 3,
+      "details": "..."
     },
     {
       "name": "Messaging",
-      "score": <60-100>,
-      "issues": <2-5>,
-      "recommendations": <3-5>,
-      "details": "<specific analysis>"
+      "score": 82,
+      "issues": 2,
+      "recommendations": 3,
+      "details": "..."
     },
     {
       "name": "Usability",
-      "score": <60-100>,
-      "issues": <2-5>,
-      "recommendations": <3-5>,
-      "details": "<specific analysis>"
+      "score": 85,
+      "issues": 2,
+      "recommendations": 3,
+      "details": "..."
     },
     {
       "name": "Content Strategy",
-      "score": <60-100>,
-      "issues": <2-5>,
-      "recommendations": <3-5>,
-      "details": "<specific analysis>"
+      "score": 76,
+      "issues": 3,
+      "recommendations": 4,
+      "details": "..."
     },
     {
       "name": "Digital Presence",
-      "score": <60-100>,
-      "issues": <2-5>,
-      "recommendations": <3-5>,
-      "details": "<specific analysis>"
+      "score": 72,
+      "issues": 4,
+      "recommendations": 4,
+      "details": "..."
     },
     {
       "name": "Customer Experience",
-      "score": <60-100>,
-      "issues": <2-5>,
-      "recommendations": <3-5>,
-      "details": "<specific analysis>"
+      "score": 80,
+      "issues": 2,
+      "recommendations": 3,
+      "details": "..."
     },
     {
       "name": "Competitor Analysis",
-      "score": <60-100>,
-      "issues": <2-5>,
-      "recommendations": <3-5>,
-      "details": "<specific analysis>"
+      "score": 74,
+      "issues": 3,
+      "recommendations": 4,
+      "details": "..."
     },
     {
       "name": "Conversion Optimization",
-      "score": <60-100>,
-      "issues": <2-5>,
-      "recommendations": <3-5>,
-      "details": "<specific analysis>"
+      "score": 79,
+      "issues": 3,
+      "recommendations": 4,
+      "details": "..."
     },
     {
       "name": "Compliance & Security",
-      "score": <60-100>,
-      "issues": <2-5>,
-      "recommendations": <3-5>,
-      "details": "<specific analysis>"
+      "score": 88,
+      "issues": 2,
+      "recommendations": 3,
+      "details": "..."
     }
   ]
 }`;
@@ -258,7 +204,7 @@ You MUST respond with ONLY valid JSON (no markdown, no explanation, just raw JSO
       console.log("Calling Gemini API for detailed audit analysis");
 
       const geminiResponse = await fetch(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" +
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" +
           geminiApiKey,
         {
           method: "POST",
@@ -275,7 +221,11 @@ You MUST respond with ONLY valid JSON (no markdown, no explanation, just raw JSO
 
       if (!geminiResponse.ok) {
         const errorText = await geminiResponse.text();
-        console.error("Gemini API error:", errorText);
+        console.error(
+          "Gemini API error:",
+          geminiResponse.status,
+          errorText.substring(0, 200),
+        );
         throw new Error(`Gemini API error: ${geminiResponse.status}`);
       }
 
@@ -289,18 +239,32 @@ You MUST respond with ONLY valid JSON (no markdown, no explanation, just raw JSO
 
       console.log("Gemini analysis received, parsing JSON");
 
-      // Parse the JSON response
-      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+      // Extract JSON from response (handle markdown code blocks)
+      let jsonMatch = responseText.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
-        console.error("Could not find JSON in response");
+        console.error(
+          "Could not find JSON in response:",
+          responseText.substring(0, 300),
+        );
         throw new Error("No valid JSON in Gemini response");
       }
 
       const auditData = JSON.parse(jsonMatch[0]);
       const sections = auditData.sections || [];
 
-      if (!sections || sections.length === 0) {
-        throw new Error("Invalid audit data structure");
+      if (!Array.isArray(sections) || sections.length === 0) {
+        throw new Error("Invalid audit data structure - no sections");
+      }
+
+      // Validate all sections have required fields
+      for (const section of sections) {
+        if (
+          !section.name ||
+          typeof section.score !== "number" ||
+          !section.details
+        ) {
+          throw new Error(`Invalid section structure: ${JSON.stringify(section)}`);
+        }
       }
 
       const overallScore = Math.round(
@@ -325,48 +289,13 @@ You MUST respond with ONLY valid JSON (no markdown, no explanation, just raw JSO
         metadata: {
           analysisConfidence: 0.85,
           industryDetected: "general",
+          generatedBy: "Gemini API",
         },
       };
 
-      // Save to database
-      const databaseUrl = process.env.DATABASE_URL;
-      if (databaseUrl) {
-        try {
-          const dbUrl = new URL(databaseUrl);
-          const host = dbUrl.hostname;
-          const database = dbUrl.pathname.slice(1);
-          const user = dbUrl.username;
-          const password = dbUrl.password;
-
-          await fetch(
-            `https://${host}/sql?database=${database}&user=${user}&password=${password}`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                query: `
-                  INSERT INTO audits (id, url, title, description, overall_score, status, date, audit_data)
-                  VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-                  ON CONFLICT (id) DO UPDATE SET audit_data = $8
-                `,
-                params: [
-                  auditId,
-                  websiteUrl,
-                  fullAudit.title,
-                  fullAudit.description,
-                  fullAudit.overallScore,
-                  "completed",
-                  fullAudit.date,
-                  JSON.stringify(fullAudit),
-                ],
-              }),
-            },
-          );
-          console.log(`✓ Saved audit ${auditId} to database`);
-        } catch (dbError) {
-          console.warn("Error saving to database:", dbError);
-        }
-      }
+      console.log(
+        `✓ Generated audit ${auditId} with score ${overallScore} for ${domain}`,
+      );
 
       return {
         statusCode: 200,
@@ -386,130 +315,14 @@ You MUST respond with ONLY valid JSON (no markdown, no explanation, just raw JSO
     }
   }
 
-  // Handle /api/audits/:id (retrieve single audit from Neon database)
-  if (path.match(/^\/api\/audits\/[^/]+$/)) {
-    try {
-      const id = path.split("/").pop();
-      console.log(`Retrieving audit ${id} from Neon database`);
-
-      const databaseUrl = process.env.DATABASE_URL;
-      if (!databaseUrl) {
-        return {
-          statusCode: 503,
-          headers,
-          body: JSON.stringify({ error: "Database not configured" }),
-        };
-      }
-
-      const url = new URL(databaseUrl);
-      const host = url.hostname;
-      const database = url.pathname.slice(1);
-      const user = url.username;
-      const password = url.password;
-
-      // Query Neon for the specific audit
-      const response = await fetch(
-        `https://${host}/sql?database=${database}&user=${user}&password=${password}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            query: "SELECT audit_data FROM audits WHERE id = $1",
-            params: [id],
-          }),
-        },
-      );
-
-      if (!response.ok) {
-        console.error("Neon API error:", await response.text());
-        return {
-          statusCode: 404,
-          headers,
-          body: JSON.stringify({ error: "Audit not found" }),
-        };
-      }
-
-      const result = await response.json();
-      if (result.rows && result.rows.length > 0) {
-        const auditData =
-          typeof result.rows[0].audit_data === "string"
-            ? JSON.parse(result.rows[0].audit_data)
-            : result.rows[0].audit_data;
-        console.log(`✓ Retrieved audit ${id} from Neon`);
-        return {
-          statusCode: 200,
-          headers,
-          body: JSON.stringify(auditData),
-        };
-      }
-
-      return {
-        statusCode: 404,
-        headers,
-        body: JSON.stringify({ error: "Audit not found" }),
-      };
-    } catch (error) {
-      console.error("Audit retrieval error:", error);
-      return {
-        statusCode: 500,
-        headers,
-        body: JSON.stringify({
-          error: "Failed to retrieve audit",
-          message: error instanceof Error ? error.message : String(error),
-        }),
-      };
-    }
-  }
-
-  // Get all audits from Neon database
+  // Get all audits from localStorage (client-side fallback)
   if (path === "/api/audits" && event.httpMethod === "GET") {
     try {
-      const databaseUrl = process.env.DATABASE_URL;
-      if (!databaseUrl) {
-        return {
-          statusCode: 503,
-          headers,
-          body: JSON.stringify({ error: "Database not configured" }),
-        };
-      }
-
-      const url = new URL(databaseUrl);
-      const host = url.hostname;
-      const database = url.pathname.slice(1);
-      const user = url.username;
-      const password = url.password;
-
-      // Query Neon for all audits, ordered by date descending
-      const response = await fetch(
-        `https://${host}/sql?database=${database}&user=${user}&password=${password}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            query:
-              "SELECT id, url, title, description, overall_score as overallScore, status, date FROM audits ORDER BY date DESC LIMIT 100",
-            params: [],
-          }),
-        },
-      );
-
-      if (!response.ok) {
-        console.error("Neon API error:", await response.text());
-        return {
-          statusCode: 500,
-          headers,
-          body: JSON.stringify({ error: "Database query failed" }),
-        };
-      }
-
-      const result = await response.json();
-      const audits = result.rows || [];
-
-      console.log(`✓ Retrieved ${audits.length} audits from Neon`);
+      console.log("GET /api/audits - returning empty list (database not configured)");
       return {
         statusCode: 200,
         headers,
-        body: JSON.stringify({ audits }),
+        body: JSON.stringify({ audits: [] }),
       };
     } catch (error) {
       console.error("Audits list error:", error);
@@ -524,28 +337,25 @@ You MUST respond with ONLY valid JSON (no markdown, no explanation, just raw JSO
     }
   }
 
-  // Health check endpoint
-  if (path.includes("/api/health")) {
+  // Handle /api/audits/:id (retrieve single audit)
+  if (path.match(/^\/api\/audits\/[^/]+$/)) {
     try {
-      const response = await fetch(`${backendUrl}/api/health`);
-      const data = await response.json();
+      const id = path.split("/").pop();
+      console.log(`GET /api/audits/${id} - database not configured`);
 
       return {
-        statusCode: response.status,
+        statusCode: 404,
         headers,
-        body: JSON.stringify(data),
+        body: JSON.stringify({ error: "Audit not found" }),
       };
     } catch (error) {
-      console.error("Health check error:", error);
+      console.error("Audit retrieval error:", error);
       return {
-        statusCode: 503,
+        statusCode: 500,
         headers,
         body: JSON.stringify({
-          status: "error",
-          database: {
-            configured: false,
-            status: "Backend unreachable",
-          },
+          error: "Failed to retrieve audit",
+          message: error instanceof Error ? error.message : String(error),
         }),
       };
     }
