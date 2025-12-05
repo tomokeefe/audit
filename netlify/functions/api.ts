@@ -1,6 +1,19 @@
 import type { Handler } from "@netlify/functions";
 import crypto from "crypto";
-import { SECTION_WEIGHTS_ARRAY } from "../server/constants/scoring";
+
+// Section weights (copied from server/constants/scoring.ts for Netlify functions)
+const SECTION_WEIGHTS_ARRAY = [
+  0.18, // Branding
+  0.13, // Design
+  0.13, // Messaging
+  0.13, // Usability
+  0.09, // Content Strategy
+  0.09, // Digital Presence
+  0.05, // Customer Experience
+  0.05, // Competitor Analysis
+  0.1, // Conversion Optimization
+  0.05, // Compliance & Security
+];
 
 const handler: Handler = async (event, context) => {
   const headers = {
