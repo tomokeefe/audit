@@ -865,43 +865,23 @@ export default function SharedAudit() {
 
     const loadAuditData = async () => {
       try {
-        console.log(`Loading audit ${id}...`);
+        console.log(`Loading audit ${id} from server...`);
 
-        // Check for encoded data in URL (works across devices/browsers)
-        const searchParams = new URLSearchParams(window.location.search);
-        const encodedData = searchParams.get("data");
+        // Fetch from backend API (works across all devices/browsers)
+        const response = await fetch(`/api/audits/${id}`);
 
-        if (encodedData) {
-          try {
-            const decodedString = atob(encodedData);
-            const auditData = JSON.parse(decodedString);
-            setAuditData(auditData);
-            console.log("✓ Loaded audit from share link");
-            return;
-          } catch (decodeError) {
-            console.error("Failed to decode audit data from URL:", decodeError);
-          }
+        if (response.ok) {
+          const auditData = await response.json();
+          setAuditData(auditData);
+          console.log("✓ Loaded audit from server");
+          return;
         }
 
-        // Fallback: Load from localStorage (works within the same browser)
-        const stored = localStorage.getItem(`audit_${id}`);
-        if (stored) {
-          try {
-            const auditData = JSON.parse(stored);
-            setAuditData(auditData);
-            console.log("✓ Loaded audit from browser storage");
-            return;
-          } catch (parseError) {
-            console.error("Failed to parse audit data:", parseError);
-          }
-        }
-
-        setError(
-          "Audit not found. Please use the copy link button to generate a valid shareable link.",
-        );
+        // If not found, show error
+        setError("Audit not found. The link may be invalid or the audit may have expired.");
       } catch (error) {
         console.error("Error loading shared audit:", error);
-        setError("Failed to load audit data");
+        setError("Failed to load audit data. Please check the link and try again.");
       } finally {
         setLoading(false);
       }
