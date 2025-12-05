@@ -137,7 +137,10 @@ Respond with ONLY valid JSON (no markdown):
   ]
 }`;
 
-      console.log("[AUDIT] Gemini API key:", geminiApiKey ? "present" : "MISSING");
+      console.log(
+        "[AUDIT] Gemini API key:",
+        geminiApiKey ? "present" : "MISSING",
+      );
       console.log("[AUDIT] Calling Gemini API...");
 
       try {
@@ -174,7 +177,10 @@ Respond with ONLY valid JSON (no markdown):
           return generateDemoAudit(websiteUrl, headers);
         }
 
-        console.log("[AUDIT] Got response from Gemini, length:", responseText.length);
+        console.log(
+          "[AUDIT] Got response from Gemini, length:",
+          responseText.length,
+        );
 
         // Extract JSON from response
         let jsonMatch = responseText.match(/\{[\s\S]*\}/);
@@ -200,7 +206,11 @@ Respond with ONLY valid JSON (no markdown):
           return generateDemoAudit(websiteUrl, headers);
         }
 
-        console.log("[AUDIT] ✓ Successfully got", sections.length, "sections from Gemini");
+        console.log(
+          "[AUDIT] ✓ Successfully got",
+          sections.length,
+          "sections from Gemini",
+        );
 
         const overallScore = Math.round(
           sections.reduce((sum: number, s: any) => sum + (s.score || 0), 0) /
@@ -236,7 +246,10 @@ Respond with ONLY valid JSON (no markdown):
           body: JSON.stringify(audit),
         };
       } catch (geminiError) {
-        console.error("[AUDIT] Gemini call failed:", geminiError instanceof Error ? geminiError.message : geminiError);
+        console.error(
+          "[AUDIT] Gemini call failed:",
+          geminiError instanceof Error ? geminiError.message : geminiError,
+        );
         return generateDemoAudit(websiteUrl, headers);
       }
     } catch (error) {
