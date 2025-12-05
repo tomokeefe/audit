@@ -712,10 +712,12 @@ async function scrapeWebsite(url: string) {
             description: websiteData.description || "",
             isHomepage: true,
             pageType: "homepage",
-            headings: { h1: [], h2: [], h3: [] },
+            headings: { h1: [websiteData.title || ""], h2: [], h3: [] },
             images: { total: 0, missingAlt: 0 },
             forms: { count: 0, hasLabels: false },
             contentLength: websiteData.htmlLength || 0,
+            brandElements: { logo: false },
+            navigation: { mainNav: "" },
           },
         ];
       }
