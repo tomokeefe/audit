@@ -22,7 +22,9 @@ import {
   calculateAveragePerformance,
 } from "../utils/phase1-enhancements";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+// Grok API configuration (x.ai)
+const GROK_API_KEY = process.env.GROK_API_KEY;
+const GROK_API_URL = "https://api.x.ai/v1/chat/completions";
 
 // In-memory storage for audit results (shared with audit-storage.ts)
 // In production, this would be replaced with a proper database
