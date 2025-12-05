@@ -172,34 +172,65 @@ const handler: Handler = async (event, context) => {
 Website Content:
 ${websiteContent.substring(0, 3000)}
 
-Create a JSON response with exactly 10 audit sections. Each section must be uniquely tailored to THIS website's actual content and characteristics.
+Create a JSON response with exactly 10 audit sections in this exact order:
+1. Branding
+2. Design
+3. Messaging
+4. Usability
+5. Content Strategy
+6. Digital Presence
+7. Customer Experience
+8. Competitor Analysis
+9. Conversion Optimization
+10. Compliance & Security
 
-For each section, include:
-- name: Category (Branding, Design, Messaging, Usability, Content Strategy, Digital Presence, Customer Experience, Competitor Analysis, Conversion Optimization, or Compliance & Security)
-- score: 0-100 score (vary between sections, not all the same)
-- issues: count of issues (1-4)
-- recommendations: count of recommendations (2-4)
-- details: Analysis of this website with these exact sections:
+IMPORTANT: Your scores must be CONSISTENT and DETERMINISTIC based on objective analysis of the website content above.
+
+For each section, analyze:
+- How well does the website implement this aspect?
+- Are there visible issues, missing elements, or poor implementation?
+- What improvements could be made?
+
+Then assign a score (0-100) based on:
+- 85-100: Excellent implementation with no major issues
+- 70-84: Good implementation with minor areas for improvement
+- 60-69: Average implementation with noticeable issues
+- 50-59: Below average with significant gaps
+- Below 50: Poor implementation with major deficiencies
+
+Include:
+- name: The category name (exactly as listed above)
+- score: Objective 0-100 score based on implementation quality (will vary between sections)
+- issues: Number of specific issues found (1-4)
+- recommendations: Number of actionable improvements (2-4)
+- details: Detailed analysis with these sections:
 
   Overview:
-  [2-3 sentences about this specific website]
+  [2-3 sentences describing this aspect of the website]
 
   Issues Found:
-  - [Specific issue for THIS website]
+  - [Specific issue found in the website content]
   - [Another specific issue]
+  (List based on what you actually see in the content)
 
   Recommendations:
-  - [Specific, actionable recommendation]
-  - [Another specific recommendation]
-  - [Optional third recommendation if needed]
-
-Analyze the actual content above and provide realistic, specific feedback unique to this website. Use different scores for different sections.
+  - [Specific, actionable improvement]
+  - [Another improvement]
+  - [Optional third improvement]
 
 Respond with ONLY valid JSON (no markdown, no code blocks, no explanation):
 {
   "sections": [
-    {"name": "string", "score": number, "issues": number, "recommendations": number, "details": "Analysis with Overview, Issues Found, and Recommendations sections"},
-    ... (10 total sections)
+    {"name": "Branding", "score": number, "issues": number, "recommendations": number, "details": "string"},
+    {"name": "Design", "score": number, "issues": number, "recommendations": number, "details": "string"},
+    {"name": "Messaging", "score": number, "issues": number, "recommendations": number, "details": "string"},
+    {"name": "Usability", "score": number, "issues": number, "recommendations": number, "details": "string"},
+    {"name": "Content Strategy", "score": number, "issues": number, "recommendations": number, "details": "string"},
+    {"name": "Digital Presence", "score": number, "issues": number, "recommendations": number, "details": "string"},
+    {"name": "Customer Experience", "score": number, "issues": number, "recommendations": number, "details": "string"},
+    {"name": "Competitor Analysis", "score": number, "issues": number, "recommendations": number, "details": "string"},
+    {"name": "Conversion Optimization", "score": number, "issues": number, "recommendations": number, "details": "string"},
+    {"name": "Compliance & Security", "score": number, "issues": number, "recommendations": number, "details": "string"}
   ]
 }`;
 
