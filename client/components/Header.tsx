@@ -19,6 +19,7 @@ export default function Header() {
             <Link
               to="/"
               className="text-gray-600 hover:text-gray-900 font-semibold transition-colors"
+              style={{ marginLeft: "-1px" }}
             >
               Dashboard
             </Link>
