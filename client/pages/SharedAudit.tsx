@@ -865,51 +865,40 @@ export default function SharedAudit() {
 
     const loadAuditData = async () => {
       try {
-        // First, try server API (works across browsers and devices)
-        const response = await fetch(`/api/audits/${id}`);
+        console.log(`Loading audit ${id}...`);
 
-        if (response.ok) {
-          const serverAudit: AuditResponse = await response.json();
-          setAuditData(serverAudit);
-          setLoading(false);
-          console.log("Loaded audit from server database");
-          return;
-        }
-
-        // Fallback to localStorage (for current browser session)
+        // Try localStorage FIRST (fastest, works in same browser)
         const stored = localStorage.getItem(`audit_${id}`);
         if (stored) {
           try {
             const auditData = JSON.parse(stored);
             setAuditData(auditData);
             setLoading(false);
-            console.log("Loaded audit from localStorage as fallback");
+            console.log("✓ Loaded audit from localStorage");
             return;
           } catch (parseError) {
             console.warn("Failed to parse localStorage audit:", parseError);
           }
         }
 
+        // Try server API (for cross-browser/device sharing)
+        console.log("Attempting to fetch from server...");
+        const response = await fetch(`/api/audits/${id}`);
+
+        if (response.ok) {
+          const serverAudit: AuditResponse = await response.json();
+          setAuditData(serverAudit);
+          setLoading(false);
+          console.log("✓ Loaded audit from server database");
+          return;
+        }
+
+        console.warn(`Server returned ${response.status}`);
         setError(
-          "Audit not found. The audit may have expired or the link is invalid.",
+          "Audit not found. Share links work within the same browser. For cross-browser sharing, ensure the audit is saved to the database.",
         );
       } catch (error) {
         console.error("Error loading shared audit:", error);
-
-        // Try localStorage as last resort
-        try {
-          const stored = localStorage.getItem(`audit_${id}`);
-          if (stored) {
-            const auditData = JSON.parse(stored);
-            setAuditData(auditData);
-            setLoading(false);
-            console.log("Loaded audit from localStorage as last resort");
-            return;
-          }
-        } catch (localError) {
-          console.error("localStorage fallback also failed:", localError);
-        }
-
         setError("Failed to load audit data");
       } finally {
         setLoading(false);
