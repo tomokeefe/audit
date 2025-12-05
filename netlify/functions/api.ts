@@ -28,6 +28,88 @@ const handler: Handler = async (event, context) => {
     };
   }
 
+  // Save audit to Neon database
+  if (path === "/api/save-audit" && event.httpMethod === "POST") {
+    try {
+      const databaseUrl = process.env.DATABASE_URL;
+      if (!databaseUrl) {
+        return {
+          statusCode: 503,
+          headers,
+          body: JSON.stringify({ error: "Database not configured" }),
+        };
+      }
+
+      const audit = JSON.parse(event.body || "{}");
+      if (!audit.id) {
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ error: "Audit ID required" }),
+        };
+      }
+
+      const url = new URL(databaseUrl);
+      const host = url.hostname;
+      const database = url.pathname.slice(1);
+      const user = url.username;
+      const password = url.password;
+
+      // Insert or update audit in Neon
+      const response = await fetch(
+        `https://${host}/sql?database=${database}&user=${user}&password=${password}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            query: `
+              INSERT INTO audits (id, url, title, description, overall_score, status, date, audit_data)
+              VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+              ON CONFLICT (id) DO UPDATE SET audit_data = $8, date = $7
+            `,
+            params: [
+              audit.id,
+              audit.url,
+              audit.title || "Audit Report",
+              audit.description || null,
+              audit.overallScore || 0,
+              audit.status || "completed",
+              audit.date || new Date().toISOString(),
+              JSON.stringify(audit.audit_data || audit),
+            ],
+          }),
+        },
+      );
+
+      if (!response.ok) {
+        const error = await response.text();
+        console.error("Neon API error:", error);
+        return {
+          statusCode: 500,
+          headers,
+          body: JSON.stringify({ error: "Failed to save audit" }),
+        };
+      }
+
+      console.log(`✓ Saved audit ${audit.id} to Neon via REST API`);
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({ success: true, id: audit.id }),
+      };
+    } catch (error) {
+      console.error("Save audit error:", error);
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({
+          error: "Server error",
+          message: error instanceof Error ? error.message : String(error),
+        }),
+      };
+    }
+  }
+
   // Proxy audit endpoints to backend
   if (path.includes("/api/audit")) {
     try {
