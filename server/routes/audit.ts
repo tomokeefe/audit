@@ -2944,25 +2944,90 @@ export const handleAudit: RequestHandler = async (req, res) => {
         console.warn("[AUDIT] Could not fetch website content:", fetchError);
       }
 
-      const prompt = `Analyze this website and provide exactly 10 brand audit sections with scores. Website: ${url}
+      const prompt = `You are a professional brand auditor. Analyze this website and provide a detailed audit with 10 specific sections. Each section must have a unique score between 55-95 based on actual analysis of the provided content.
 
-Content: ${websiteContent}
+Website URL: ${url}
+Website Content: ${websiteContent}
 
-Respond with ONLY this JSON (no markdown):
+For each section, evaluate ONLY based on what you can determine from the website content provided. Vary scores significantly - they should reflect the actual quality of different aspects. Do NOT use template scores.
+
+Respond with ONLY valid JSON (no markdown, no explanation):
 {
   "sections": [
-    {"name": "Branding", "score": 75, "issues": 3, "recommendations": 4, "details": "Logo and brand identity are consistent throughout the website."},
-    {"name": "Design", "score": 78, "issues": 2, "recommendations": 3, "details": "Visual design is modern and well-organized with good use of whitespace."},
-    {"name": "Messaging", "score": 82, "issues": 2, "recommendations": 3, "details": "Value proposition is clear and messaging is compelling throughout."},
-    {"name": "Usability", "score": 85, "issues": 2, "recommendations": 3, "details": "Navigation is intuitive and user experience is smooth."},
-    {"name": "Content Strategy", "score": 76, "issues": 3, "recommendations": 4, "details": "Content is relevant and well-organized with good structure."},
-    {"name": "Digital Presence", "score": 72, "issues": 4, "recommendations": 4, "details": "SEO basics are in place but social media presence could improve."},
-    {"name": "Customer Experience", "score": 80, "issues": 2, "recommendations": 3, "details": "Contact information is accessible and support options are clear."},
-    {"name": "Competitor Analysis", "score": 74, "issues": 3, "recommendations": 4, "details": "Positioning is competitive with good differentiation messaging."},
-    {"name": "Conversion Optimization", "score": 79, "issues": 3, "recommendations": 4, "details": "CTAs are present and actionable with clear conversion paths."},
-    {"name": "Compliance & Security", "score": 88, "issues": 2, "recommendations": 3, "details": "SSL certificate installed and privacy policy accessible."}
+    {
+      "name": "Branding",
+      "score": VARY_BY_ANALYSIS,
+      "issues": NUMBER_2_TO_5,
+      "recommendations": NUMBER_3_TO_5,
+      "details": "Detailed analysis based on logo, color scheme, brand consistency, and identity elements observed in the website content."
+    },
+    {
+      "name": "Design",
+      "score": VARY_BY_ANALYSIS,
+      "issues": NUMBER_2_TO_5,
+      "recommendations": NUMBER_3_TO_5,
+      "details": "Analysis of visual appeal, layout quality, typography, whitespace usage, and overall aesthetic based on HTML content."
+    },
+    {
+      "name": "Messaging",
+      "score": VARY_BY_ANALYSIS,
+      "issues": NUMBER_2_TO_5,
+      "recommendations": NUMBER_3_TO_5,
+      "details": "Evaluation of value proposition clarity, headline effectiveness, copy quality, and messaging consistency throughout the site."
+    },
+    {
+      "name": "Usability",
+      "score": VARY_BY_ANALYSIS,
+      "issues": NUMBER_2_TO_5,
+      "recommendations": NUMBER_3_TO_5,
+      "details": "Assessment of navigation intuitiveness, information architecture, mobile responsiveness hints, and user experience based on structure."
+    },
+    {
+      "name": "Content Strategy",
+      "score": VARY_BY_ANALYSIS,
+      "issues": NUMBER_2_TO_5,
+      "recommendations": NUMBER_3_TO_5,
+      "details": "Analysis of content organization, quality, relevance, depth, and whether content supports business goals effectively."
+    },
+    {
+      "name": "Digital Presence",
+      "score": VARY_BY_ANALYSIS,
+      "issues": NUMBER_2_TO_5,
+      "recommendations": NUMBER_3_TO_5,
+      "details": "Evaluation of SEO elements present, meta tags quality, sitemap hints, mobile viewport, social integration signals, and online visibility indicators."
+    },
+    {
+      "name": "Customer Experience",
+      "score": VARY_BY_ANALYSIS,
+      "issues": NUMBER_2_TO_5,
+      "recommendations": NUMBER_3_TO_5,
+      "details": "Assessment of contact accessibility, support options availability, trust signals, privacy policy presence, and customer-centric features."
+    },
+    {
+      "name": "Competitor Analysis",
+      "score": VARY_BY_ANALYSIS,
+      "issues": NUMBER_2_TO_5,
+      "recommendations": NUMBER_3_TO_5,
+      "details": "Evaluation of unique value proposition clarity, competitive differentiation, positioning statements, and distinctive messaging compared to typical competitors."
+    },
+    {
+      "name": "Conversion Optimization",
+      "score": VARY_BY_ANALYSIS,
+      "issues": NUMBER_2_TO_5,
+      "recommendations": NUMBER_3_TO_5,
+      "details": "Analysis of CTA presence and clarity, form optimization, conversion elements, persuasive design patterns, and funnel effectiveness signals."
+    },
+    {
+      "name": "Compliance & Security",
+      "score": VARY_BY_ANALYSIS,
+      "issues": NUMBER_2_TO_5,
+      "recommendations": NUMBER_3_TO_5,
+      "details": "Assessment of SSL/HTTPS implementation, privacy policy accessibility, cookie consent, GDPR compliance signals, and security best practices observed."
+    }
   ]
-}`;
+}
+
+IMPORTANT: Replace VARY_BY_ANALYSIS with DIFFERENT scores for each section (55-95 range). Replace NUMBER_2_TO_5 with actual numbers 2-5. Each section should have unique scores reflecting actual differences in quality.`;
 
       console.log("[AUDIT] Calling Gemini API...");
       const result = await model.generateContent(prompt);
