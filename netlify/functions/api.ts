@@ -174,16 +174,13 @@ const handler: Handler = async (event, context) => {
         websiteContent = "Website content could not be fetched";
       }
 
-      // Generate audit using Gemini
-      const client = new GoogleGenerativeAI(geminiApiKey);
-      const model = client.getGenerativeModel({ model: "gemini-pro" });
-
-      const prompt = `Analyze this website and provide a brand audit with realistic, varied scores (not all the same).
+      // Generate audit using Gemini via REST API
+      const prompt = `Analyze this website and provide a brand audit with realistic, varied scores.
 
 Website URL: ${websiteUrl}
-Website Content: ${websiteContent}
+Website Content: ${websiteContent.substring(0, 3000)}
 
-Provide a JSON response with this exact structure (no other text):
+Provide ONLY a valid JSON response (no other text) with this exact structure:
 {
   "overallScore": <number 60-95>,
   "sections": [
@@ -193,7 +190,7 @@ Provide a JSON response with this exact structure (no other text):
       "maxScore": 100,
       "issues": <number 1-5>,
       "recommendations": <number 3-6>,
-      "details": "Detailed analysis of brand consistency..."
+      "details": "Detailed analysis..."
     },
     {
       "name": "Design Quality",
@@ -201,7 +198,7 @@ Provide a JSON response with this exact structure (no other text):
       "maxScore": 100,
       "issues": <number 1-5>,
       "recommendations": <number 3-6>,
-      "details": "Detailed analysis of design quality..."
+      "details": "Detailed analysis..."
     },
     {
       "name": "User Experience",
@@ -209,20 +206,50 @@ Provide a JSON response with this exact structure (no other text):
       "maxScore": 100,
       "issues": <number 1-5>,
       "recommendations": <number 3-6>,
-      "details": "Detailed analysis of user experience..."
+      "details": "Detailed analysis..."
     }
   ]
-}
-
-Important: Make sure scores VARY (don't use the same score for all sections). Base scores on the actual website content.`;
+}`;
 
       console.log("Calling Gemini API for audit generation");
-      const result = await model.generateContent(prompt);
-      const responseText = result.response.text();
+
+      const geminiResponse = await fetch(
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" +
+          geminiApiKey,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [{ text: prompt }],
+              },
+            ],
+          }),
+        }
+      );
+
+      if (!geminiResponse.ok) {
+        const errorText = await geminiResponse.text();
+        console.error("Gemini API error:", errorText);
+        throw new Error(`Gemini API error: ${geminiResponse.status}`);
+      }
+
+      const geminiData = await geminiResponse.json();
+      const responseText =
+        geminiData.candidates?.[0]?.content?.parts?.[0]?.text ||
+        "";
+
+      if (!responseText) {
+        throw new Error("Empty response from Gemini API");
+      }
+
+      console.log("Gemini response:", responseText.substring(0, 200));
 
       // Extract JSON from response
       const jsonMatch = responseText.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
+        console.error("Could not find JSON in response:", responseText);
         throw new Error("No valid JSON in Gemini response");
       }
 
