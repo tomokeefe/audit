@@ -320,10 +320,16 @@ Respond with ONLY this exact JSON structure (no markdown, no explanation):
     };
   }
 
+  console.log(`[API] No matching endpoint for: ${path}`);
   return {
     statusCode: 404,
     headers,
-    body: JSON.stringify({ error: "Not found" }),
+    body: JSON.stringify({
+      error: "Not found",
+      path: path,
+      method: event.httpMethod,
+      availableEndpoints: ["/api/ping", "/api/audit", "/api/audits", "/api/save-audit"]
+    }),
   };
 };
 
