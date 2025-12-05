@@ -2250,26 +2250,11 @@ async function generateAudit(websiteData: any): Promise<AuditResponse> {
     return buildAuditFromCache(cachedResult, websiteData, url);
   }
 
-  const model = genAI.getGenerativeModel({
-    model: "gemini-1.5-flash",
-    generationConfig: {
-      temperature: 0.4, // Balanced creativity vs consistency
-      topP: 0.8, // Focus on high-probability tokens
-      topK: 40, // Limit vocabulary for more focused responses
-      maxOutputTokens: 8192, // Allow for detailed analysis
-      responseMimeType: "application/json", // Ensure JSON response
-    },
-    safetySettings: [
-      {
-        category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-        threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-      },
-      {
-        category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-        threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-      },
-    ],
-  });
+  // Validate Grok API key
+  if (!GROK_API_KEY) {
+    console.error("GROK_API_KEY not configured");
+    throw new Error("Grok API key not configured");
+  }
 
   // Detect business context and industry
   const businessContext = detectBusinessContext(websiteData);
