@@ -163,10 +163,7 @@ const handler: Handler = async (event, context) => {
           const html = await fetchResponse.text();
           // Extract text content from HTML
           websiteContent = html
-            .replace(
-              /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
-              ""
-            )
+            .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
             .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "")
             .replace(/<[^>]*>/g, " ")
             .replace(/\s+/g, " ")
@@ -287,7 +284,7 @@ Important: Make sure scores VARY (don't use the same score for all sections). Ba
                   JSON.stringify(fullAudit),
                 ],
               }),
-            }
+            },
           );
           console.log(`✓ Saved audit ${auditId} to database`);
         } catch (dbError) {
