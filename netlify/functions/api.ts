@@ -137,14 +137,107 @@ const handler: Handler = async (event, context) => {
 
       console.log(`Generating audit for ${websiteUrl}`);
 
-      // Generate random but varied scores
-      const brandScore = Math.floor(Math.random() * 30) + 65; // 65-95
-      const designScore = Math.floor(Math.random() * 30) + 65;
-      const uxScore = Math.floor(Math.random() * 30) + 65;
-      const overallScore = Math.floor((brandScore + designScore + uxScore) / 3);
-
       const auditId = Date.now().toString();
       const domain = new URL(websiteUrl).hostname.replace("www.", "");
+
+      // Generate 10 criteria with variable scores
+      const sections = [
+        {
+          name: "Branding",
+          baseScore: 75,
+          issues: Math.floor(Math.random() * 3) + 2,
+          recommendations: Math.floor(Math.random() * 3) + 4,
+          getDetails: (score: number) =>
+            `Brand audit analysis reveals ${score > 80 ? "strong" : "solid"} brand alignment. Logo usage, color palette, and typography show ${score > 80 ? "excellent" : "good"} consistency across pages with opportunities for enhancement.`,
+        },
+        {
+          name: "Design",
+          baseScore: 70,
+          issues: Math.floor(Math.random() * 4) + 2,
+          recommendations: Math.floor(Math.random() * 4) + 3,
+          getDetails: (score: number) =>
+            `Design quality shows ${score > 80 ? "excellent" : "good"} visual hierarchy and layout principles. The interface demonstrates ${score > 80 ? "modern" : "solid"} design patterns with clear opportunities for improvement.`,
+        },
+        {
+          name: "Messaging",
+          baseScore: 72,
+          issues: Math.floor(Math.random() * 3) + 2,
+          recommendations: Math.floor(Math.random() * 3) + 4,
+          getDetails: (score: number) =>
+            `Messaging strategy demonstrates ${score > 80 ? "excellent" : "clear"} communication of value propositions. Content structure supports logical information flow effectively across pages.`,
+        },
+        {
+          name: "Usability",
+          baseScore: 68,
+          issues: Math.floor(Math.random() * 4) + 2,
+          recommendations: Math.floor(Math.random() * 4) + 3,
+          getDetails: (score: number) =>
+            `User experience shows ${score > 80 ? "excellent" : "adequate"} navigation structure with ${score > 80 ? "excellent" : "solid"} usability principles implemented throughout.`,
+        },
+        {
+          name: "Content Strategy",
+          baseScore: 73,
+          issues: Math.floor(Math.random() * 3) + 2,
+          recommendations: Math.floor(Math.random() * 3) + 4,
+          getDetails: (score: number) =>
+            `Content architecture supports user goals with ${score > 80 ? "excellent" : "appropriate"} organization. Content demonstrates subject matter expertise and ${score > 80 ? "excellent" : "solid"} structure.`,
+        },
+        {
+          name: "Digital Presence",
+          baseScore: 65,
+          issues: Math.floor(Math.random() * 4) + 3,
+          recommendations: Math.floor(Math.random() * 4) + 4,
+          getDetails: (score: number) =>
+            `Digital footprint shows ${score > 80 ? "strong" : "basic"} implementation across channels. ${score > 80 ? "Excellent" : "Good"} opportunities for enhancing online visibility and reach.`,
+        },
+        {
+          name: "Customer Experience",
+          baseScore: 74,
+          issues: Math.floor(Math.random() * 3) + 2,
+          recommendations: Math.floor(Math.random() * 3) + 4,
+          getDetails: (score: number) =>
+            `Customer interaction pathways provide ${score > 80 ? "excellent" : "accessible"} communication channels. Service information ${score > 80 ? "excellently" : "adequately"} supports user needs.`,
+        },
+        {
+          name: "Competitor Analysis",
+          baseScore: 71,
+          issues: Math.floor(Math.random() * 3) + 2,
+          recommendations: Math.floor(Math.random() * 3) + 4,
+          getDetails: (score: number) =>
+            `Market positioning shows ${score > 80 ? "strong" : "solid"} differentiation potential. Competitive analysis reveals ${score > 80 ? "significant" : "good"} strategic opportunities for growth.`,
+        },
+        {
+          name: "Conversion Optimization",
+          baseScore: 66,
+          issues: Math.floor(Math.random() * 4) + 2,
+          recommendations: Math.floor(Math.random() * 4) + 3,
+          getDetails: (score: number) =>
+            `Conversion pathways present ${score > 80 ? "excellent" : "good"} optimization opportunities. Lead capture mechanisms show ${score > 80 ? "strong" : "adequate"} implementation.`,
+        },
+        {
+          name: "Compliance & Security",
+          baseScore: 69,
+          issues: Math.floor(Math.random() * 3) + 2,
+          recommendations: Math.floor(Math.random() * 3) + 4,
+          getDetails: (score: number) =>
+            `Website demonstrates ${score > 80 ? "excellent" : "solid"} security and compliance standards. Privacy practices and data protection are ${score > 80 ? "comprehensively" : "adequately"} implemented.`,
+        },
+      ].map((criterion) => {
+        const variance = Math.floor(Math.random() * 30) - 15;
+        const score = Math.max(60, Math.min(95, criterion.baseScore + variance));
+        return {
+          name: criterion.name,
+          score,
+          maxScore: 100,
+          issues: criterion.issues,
+          recommendations: criterion.recommendations,
+          details: criterion.getDetails(score),
+        };
+      });
+
+      const overallScore = Math.round(
+        sections.reduce((sum, section) => sum + section.score, 0) / sections.length
+      );
 
       const fullAudit = {
         id: auditId,
@@ -154,32 +247,7 @@ const handler: Handler = async (event, context) => {
         overallScore,
         status: "completed",
         date: new Date().toISOString(),
-        sections: [
-          {
-            name: "Brand Consistency",
-            score: brandScore,
-            maxScore: 100,
-            issues: Math.floor(Math.random() * 3) + 2,
-            recommendations: Math.floor(Math.random() * 3) + 4,
-            details: `Brand consistency analysis for ${domain} reveals ${brandScore > 80 ? "strong" : "moderate"} brand alignment across the website. Logo usage, color palette, and typography show ${brandScore > 80 ? "excellent" : "good"} consistency with minor areas for improvement.`,
-          },
-          {
-            name: "Design Quality",
-            score: designScore,
-            maxScore: 100,
-            issues: Math.floor(Math.random() * 3) + 2,
-            recommendations: Math.floor(Math.random() * 3) + 4,
-            details: `Design quality assessment shows ${designScore > 80 ? "excellent" : "good"} visual hierarchy and layout principles. The interface demonstrates ${designScore > 80 ? "modern" : "solid"} design patterns with clear opportunities for enhancement in responsive design and accessibility features.`,
-          },
-          {
-            name: "User Experience",
-            score: uxScore,
-            maxScore: 100,
-            issues: Math.floor(Math.random() * 3) + 2,
-            recommendations: Math.floor(Math.random() * 3) + 4,
-            details: `User experience evaluation indicates ${uxScore > 80 ? "excellent" : "good"} navigation flow and information architecture. Key areas of strength include intuitive layout and clear call-to-action elements. Recommendations focus on improving mobile experience and reducing friction in user journeys.`,
-          },
-        ],
+        sections,
         metadata: {
           analysisConfidence: 0.8,
           industryDetected: "general",
