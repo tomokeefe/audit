@@ -1174,10 +1174,6 @@ Best regards`);
       return;
     }
 
-    // Set share URL to the dedicated sharing route
-    const shareLink = `${window.location.origin}/share/audit/${id}`;
-    setShareUrl(shareLink);
-
     const loadAuditData = async () => {
       try {
         // First, try to load from server database (works across browsers/devices)
