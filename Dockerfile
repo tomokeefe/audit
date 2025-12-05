@@ -1,4 +1,4 @@
-# Build stage - frontend and backend
+# Build stage
 FROM node:20-alpine as builder
 
 WORKDIR /app
@@ -9,11 +9,11 @@ COPY package.json package-lock.json ./
 # Install dependencies
 RUN npm ci
 
-# Copy all source code
+# Copy source code
 COPY . .
 
-# Build Vite frontend and server
-RUN npm run build
+# Build server only (backend API)
+RUN npm run build:server
 
 # Production stage
 FROM node:20-alpine
@@ -26,7 +26,7 @@ COPY package.json package-lock.json ./
 # Install production dependencies only
 RUN npm ci --omit=dev
 
-# Copy built frontend and server from builder
+# Copy built server from builder
 COPY --from=builder /app/dist ./dist
 
 # Expose port
@@ -36,5 +36,5 @@ EXPOSE 8080
 ENV NODE_ENV=production
 ENV PORT=8080
 
-# Start the server
-CMD ["npm", "start"]
+# Start the Node.js server
+CMD ["node", "dist/server/node-build.mjs"]
