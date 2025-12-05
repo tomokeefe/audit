@@ -7,8 +7,19 @@ async function initPool() {
   if (pool) return pool;
 
   try {
-    const pkg = await import("pg");
-    const { Pool } = pkg;
+    // Try to load pg module, but handle gracefully if not available
+    let pgModule: any = null;
+
+    try {
+      pgModule = await import("pg");
+    } catch (importError) {
+      console.warn("pg module not available - using fallback mode");
+      return null;
+    }
+
+    if (!pgModule) return null;
+
+    const { Pool } = pgModule;
 
     pool = new Pool({
       connectionString: process.env.DATABASE_URL,
@@ -20,7 +31,7 @@ async function initPool() {
     console.log("Database pool created");
     return pool;
   } catch (error) {
-    console.error("Failed to load pg module:", error);
+    console.error("Failed to initialize database pool:", error);
     return null;
   }
 }
