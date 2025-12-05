@@ -122,14 +122,45 @@ Provide a JSON response with this structure:
 
 Make sure scores vary (don't use the same score for all sections). Be realistic and base scores on the actual website content provided.`;
 
-    console.log("Calling Gemini API for audit generation");
-    const result = await model.generateContent(prompt);
-    const responseText = result.response.text();
+    console.log("Calling Grok API for audit generation");
+    const grokResponse = await fetch(grokUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${grokApiKey}`,
+      },
+      body: JSON.stringify({
+        model: "grok-2-1212",
+        messages: [
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+        temperature: 0.4,
+        top_p: 0.8,
+        max_tokens: 4096,
+      }),
+    });
+
+    if (!grokResponse.ok) {
+      const errorText = await grokResponse.text();
+      throw new Error(
+        `Grok API error: ${grokResponse.status} - ${errorText}`,
+      );
+    }
+
+    const grokData = await grokResponse.json();
+    const responseText = grokData.choices?.[0]?.message?.content;
+
+    if (!responseText) {
+      throw new Error("No content in Grok API response");
+    }
 
     // Extract JSON from response
     const jsonMatch = responseText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      throw new Error("No valid JSON in Gemini response");
+      throw new Error("No valid JSON in Grok response");
     }
 
     const auditData = JSON.parse(jsonMatch[0]);
