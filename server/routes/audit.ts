@@ -2968,10 +2968,19 @@ Generate a JSON response with exactly this structure (all numeric values must va
 RETURN ONLY THE JSON, no other text.`;
 
       console.log("[AUDIT] Calling Gemini API...");
-      const result = await model.generateContent(prompt);
-      const responseText = result.response.text();
+      console.log("[AUDIT] Model:", model);
 
-      console.log("[AUDIT] Got Gemini response");
+      let result;
+      try {
+        result = await model.generateContent(prompt);
+      } catch (modelError) {
+        console.error("[AUDIT] Gemini model.generateContent error:", modelError);
+        throw modelError;
+      }
+
+      const responseText = result.response.text();
+      console.log("[AUDIT] Got Gemini response, length:", responseText.length);
+      console.log("[AUDIT] Response text:", responseText.substring(0, 200));
 
       // Extract JSON
       const jsonMatch = responseText.match(/\{[\s\S]*\}/);
