@@ -2944,90 +2944,26 @@ export const handleAudit: RequestHandler = async (req, res) => {
         console.warn("[AUDIT] Could not fetch website content:", fetchError);
       }
 
-      const prompt = `You are a professional brand auditor. Analyze this website and provide a detailed audit with 10 specific sections. Each section must have a unique score between 55-95 based on actual analysis of the provided content.
+      const prompt = `Analyze this website and provide audit scores for 10 brand criteria. Vary scores based on actual analysis - they should be DIFFERENT for each section (not all the same).
 
-Website URL: ${url}
-Website Content: ${websiteContent}
+Website: ${url}
+Content: ${websiteContent}
 
-For each section, evaluate ONLY based on what you can determine from the website content provided. Vary scores significantly - they should reflect the actual quality of different aspects. Do NOT use template scores.
-
-Respond with ONLY valid JSON (no markdown, no explanation):
+Respond with ONLY valid JSON:
 {
   "sections": [
-    {
-      "name": "Branding",
-      "score": VARY_BY_ANALYSIS,
-      "issues": NUMBER_2_TO_5,
-      "recommendations": NUMBER_3_TO_5,
-      "details": "Detailed analysis based on logo, color scheme, brand consistency, and identity elements observed in the website content."
-    },
-    {
-      "name": "Design",
-      "score": VARY_BY_ANALYSIS,
-      "issues": NUMBER_2_TO_5,
-      "recommendations": NUMBER_3_TO_5,
-      "details": "Analysis of visual appeal, layout quality, typography, whitespace usage, and overall aesthetic based on HTML content."
-    },
-    {
-      "name": "Messaging",
-      "score": VARY_BY_ANALYSIS,
-      "issues": NUMBER_2_TO_5,
-      "recommendations": NUMBER_3_TO_5,
-      "details": "Evaluation of value proposition clarity, headline effectiveness, copy quality, and messaging consistency throughout the site."
-    },
-    {
-      "name": "Usability",
-      "score": VARY_BY_ANALYSIS,
-      "issues": NUMBER_2_TO_5,
-      "recommendations": NUMBER_3_TO_5,
-      "details": "Assessment of navigation intuitiveness, information architecture, mobile responsiveness hints, and user experience based on structure."
-    },
-    {
-      "name": "Content Strategy",
-      "score": VARY_BY_ANALYSIS,
-      "issues": NUMBER_2_TO_5,
-      "recommendations": NUMBER_3_TO_5,
-      "details": "Analysis of content organization, quality, relevance, depth, and whether content supports business goals effectively."
-    },
-    {
-      "name": "Digital Presence",
-      "score": VARY_BY_ANALYSIS,
-      "issues": NUMBER_2_TO_5,
-      "recommendations": NUMBER_3_TO_5,
-      "details": "Evaluation of SEO elements present, meta tags quality, sitemap hints, mobile viewport, social integration signals, and online visibility indicators."
-    },
-    {
-      "name": "Customer Experience",
-      "score": VARY_BY_ANALYSIS,
-      "issues": NUMBER_2_TO_5,
-      "recommendations": NUMBER_3_TO_5,
-      "details": "Assessment of contact accessibility, support options availability, trust signals, privacy policy presence, and customer-centric features."
-    },
-    {
-      "name": "Competitor Analysis",
-      "score": VARY_BY_ANALYSIS,
-      "issues": NUMBER_2_TO_5,
-      "recommendations": NUMBER_3_TO_5,
-      "details": "Evaluation of unique value proposition clarity, competitive differentiation, positioning statements, and distinctive messaging compared to typical competitors."
-    },
-    {
-      "name": "Conversion Optimization",
-      "score": VARY_BY_ANALYSIS,
-      "issues": NUMBER_2_TO_5,
-      "recommendations": NUMBER_3_TO_5,
-      "details": "Analysis of CTA presence and clarity, form optimization, conversion elements, persuasive design patterns, and funnel effectiveness signals."
-    },
-    {
-      "name": "Compliance & Security",
-      "score": VARY_BY_ANALYSIS,
-      "issues": NUMBER_2_TO_5,
-      "recommendations": NUMBER_3_TO_5,
-      "details": "Assessment of SSL/HTTPS implementation, privacy policy accessibility, cookie consent, GDPR compliance signals, and security best practices observed."
-    }
+    {"name": "Branding", "score": 72, "issues": 3, "recommendations": 4, "details": "Based on the website content, the branding shows moderate consistency in visual identity and color usage."},
+    {"name": "Design", "score": 68, "issues": 4, "recommendations": 5, "details": "Design quality appears adequate with some opportunities for improvement in visual hierarchy and spacing."},
+    {"name": "Messaging", "score": 78, "issues": 2, "recommendations": 3, "details": "Value proposition and messaging are relatively clear but could be more compelling."},
+    {"name": "Usability", "score": 75, "issues": 3, "recommendations": 4, "details": "Navigation structure seems reasonable but accessibility features could be enhanced."},
+    {"name": "Content Strategy", "score": 70, "issues": 4, "recommendations": 5, "details": "Content exists but organization and depth could be improved for better user engagement."},
+    {"name": "Digital Presence", "score": 65, "issues": 5, "recommendations": 5, "details": "SEO optimization and social integration signals are limited or weak based on available content."},
+    {"name": "Customer Experience", "score": 76, "issues": 3, "recommendations": 4, "details": "Customer support options are visible but could be more prominent and comprehensive."},
+    {"name": "Competitor Analysis", "score": 71, "issues": 3, "recommendations": 4, "details": "Differentiation is present but competitive positioning messaging could be stronger."},
+    {"name": "Conversion Optimization", "score": 73, "issues": 3, "recommendations": 4, "details": "CTAs and conversion elements are present but could be better optimized for effectiveness."},
+    {"name": "Compliance & Security", "score": 82, "issues": 2, "recommendations": 3, "details": "Security measures and compliance elements appear adequately implemented."}
   ]
-}
-
-IMPORTANT: Replace VARY_BY_ANALYSIS with DIFFERENT scores for each section (55-95 range). Replace NUMBER_2_TO_5 with actual numbers 2-5. Each section should have unique scores reflecting actual differences in quality.`;
+}`;
 
       console.log("[AUDIT] Calling Gemini API...");
       const result = await model.generateContent(prompt);
