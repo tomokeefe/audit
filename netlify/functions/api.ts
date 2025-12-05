@@ -152,24 +152,27 @@ const handler: Handler = async (event, context) => {
           `[AUDIT] Calling Gemini API with key: ${geminiApiKey.substring(0, 20)}...`,
         );
 
-        const prompt = `You are a brand audit expert. Analyze this website and provide exactly 10 audit sections with scores.
+        const prompt = `You are a professional brand audit expert. Analyze the website for ${websiteUrl} and generate a detailed audit report.
 
-Website: ${websiteUrl}
-Content: ${websiteContent.substring(0, 2000)}
+Website Content:
+${websiteContent.substring(0, 3000)}
 
-Respond with ONLY this exact JSON structure (no markdown, no explanation):
+Create a JSON response with exactly 10 audit sections. Each section must be uniquely tailored to THIS website's actual content and characteristics.
+
+For each section, provide:
+- name: Category name
+- score: 0-100 score based on actual observations
+- issues: number of issues found
+- recommendations: number of recommendations
+- details: specific, actionable feedback about THIS website (not generic advice)
+
+Analyze this website specifically and generate realistic scores that reflect what you actually observe. Use different scores for different sections (not all the same). Base recommendations on the actual content provided above.
+
+Respond with ONLY valid JSON (no markdown, no code blocks, no explanation):
 {
   "sections": [
-    {"name": "Branding", "score": 75, "issues": 3, "recommendations": 4, "details": "Logo and color scheme are consistent. Brand identity is clear but could be more distinctive."},
-    {"name": "Design", "score": 78, "issues": 2, "recommendations": 3, "details": "Layout is modern and well-organized. Typography is readable. Some spacing could be improved."},
-    {"name": "Messaging", "score": 82, "issues": 2, "recommendations": 3, "details": "Value proposition is clear. Headlines are compelling. Messaging is consistent throughout."},
-    {"name": "Usability", "score": 85, "issues": 2, "recommendations": 3, "details": "Navigation is intuitive. Forms are user-friendly. Mobile experience is responsive."},
-    {"name": "Content Strategy", "score": 76, "issues": 3, "recommendations": 4, "details": "Content is relevant and well-organized. Consider expanding blog section. Add more case studies."},
-    {"name": "Digital Presence", "score": 72, "issues": 4, "recommendations": 4, "details": "SEO elements are present. Social media integration could be stronger. Meta descriptions need improvement."},
-    {"name": "Customer Experience", "score": 80, "issues": 2, "recommendations": 3, "details": "Contact information is accessible. Support options are clear. Consider adding live chat."},
-    {"name": "Competitor Analysis", "score": 74, "issues": 3, "recommendations": 4, "details": "Positioning is competitive. Unique selling points are evident. Differentiation messaging could be clearer."},
-    {"name": "Conversion Optimization", "score": 79, "issues": 3, "recommendations": 4, "details": "CTAs are present and clear. Forms capture key information. A/B testing could improve conversion rates."},
-    {"name": "Compliance & Security", "score": 88, "issues": 2, "recommendations": 3, "details": "SSL certificate is installed. Privacy policy is accessible. Cookie consent is properly implemented."}
+    {"name": "string", "score": number, "issues": number, "recommendations": number, "details": "specific feedback for this website"},
+    ... (10 total sections)
   ]
 }`;
 
