@@ -2973,7 +2973,8 @@ RETURN ONLY THE JSON, no other text.`;
       console.log("[AUDIT] Calling Gemini API...");
 
       const geminiResponse = await fetch(
-        "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=" + geminiApiKey,
+        "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=" +
+          geminiApiKey,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -2987,12 +2988,17 @@ RETURN ONLY THE JSON, no other text.`;
 
       if (!geminiResponse.ok) {
         const errorText = await geminiResponse.text();
-        console.error("[AUDIT] Gemini error:", geminiResponse.status, errorText.substring(0, 300));
+        console.error(
+          "[AUDIT] Gemini error:",
+          geminiResponse.status,
+          errorText.substring(0, 300),
+        );
         throw new Error("API error: " + geminiResponse.status);
       }
 
       const geminiData = await geminiResponse.json();
-      const responseText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "";
+      const responseText =
+        geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
       if (!responseText) {
         console.error("[AUDIT] Empty response");

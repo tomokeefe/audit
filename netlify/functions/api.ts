@@ -10,7 +10,7 @@ const handler: Handler = async (event, context) => {
 
   try {
     console.log(
-      `[API] Incoming request - method: ${event.httpMethod}, path: ${event.path}`
+      `[API] Incoming request - method: ${event.httpMethod}, path: ${event.path}`,
     );
 
     if (event.httpMethod === "OPTIONS") {
@@ -52,7 +52,10 @@ const handler: Handler = async (event, context) => {
     }
 
     // Generate audit using Gemini API
-    if ((path === "/api/audit" || path === "/audit") && event.httpMethod === "POST") {
+    if (
+      (path === "/api/audit" || path === "/audit") &&
+      event.httpMethod === "POST"
+    ) {
       const body = JSON.parse(event.body || "{}");
       const { url: websiteUrl } = body;
 
@@ -102,20 +105,14 @@ const handler: Handler = async (event, context) => {
           const html = await response.text();
           // Remove scripts and styles, then extract text
           websiteContent = html
-            .replace(
-              /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
-              ""
-            )
-            .replace(
-              /<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi,
-              ""
-            )
+            .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
+            .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "")
             .replace(/<[^>]*>/g, " ")
             .replace(/\s+/g, " ")
             .trim()
             .substring(0, 4000);
           console.log(
-            `[AUDIT] Content fetched: ${websiteContent.length} chars`
+            `[AUDIT] Content fetched: ${websiteContent.length} chars`,
           );
         }
       } catch (fetchError) {
@@ -181,7 +178,7 @@ Respond with ONLY this exact JSON structure (no markdown, no explanation):
           const errorBody = await geminiResponse.text();
           console.error(
             `[AUDIT] Gemini error (${geminiResponse.status}):`,
-            errorBody.substring(0, 500)
+            errorBody.substring(0, 500),
           );
           return generateDemoAudit(websiteUrl, headers);
         }
@@ -196,7 +193,7 @@ Respond with ONLY this exact JSON structure (no markdown, no explanation):
         }
 
         console.log(
-          `[AUDIT] Got Gemini response: ${responseText.length} chars`
+          `[AUDIT] Got Gemini response: ${responseText.length} chars`,
         );
 
         // Extract JSON
@@ -204,7 +201,7 @@ Respond with ONLY this exact JSON structure (no markdown, no explanation):
         if (!jsonMatch) {
           console.error(
             "[AUDIT] No JSON found in response:",
-            responseText.substring(0, 200)
+            responseText.substring(0, 200),
           );
           return generateDemoAudit(websiteUrl, headers);
         }
@@ -227,7 +224,7 @@ Respond with ONLY this exact JSON structure (no markdown, no explanation):
           ) {
             console.error(
               "[AUDIT] Invalid section:",
-              JSON.stringify(section).substring(0, 100)
+              JSON.stringify(section).substring(0, 100),
             );
             return generateDemoAudit(websiteUrl, headers);
           }
@@ -235,7 +232,7 @@ Respond with ONLY this exact JSON structure (no markdown, no explanation):
 
         const overallScore = Math.round(
           sections.reduce((sum: number, s: any) => sum + s.score, 0) /
-            sections.length
+            sections.length,
         );
         const auditId = Date.now().toString();
         const domain = new URL(websiteUrl).hostname.replace("www.", "");
@@ -257,7 +254,7 @@ Respond with ONLY this exact JSON structure (no markdown, no explanation):
         };
 
         console.log(
-          `[AUDIT] ✓ Success! Generated audit ${auditId} with score ${overallScore}`
+          `[AUDIT] ✓ Success! Generated audit ${auditId} with score ${overallScore}`,
         );
 
         return {
@@ -268,7 +265,7 @@ Respond with ONLY this exact JSON structure (no markdown, no explanation):
       } catch (geminiError) {
         console.error(
           "[AUDIT] Gemini API error:",
-          geminiError instanceof Error ? geminiError.message : geminiError
+          geminiError instanceof Error ? geminiError.message : geminiError,
         );
         return generateDemoAudit(websiteUrl, headers);
       }
@@ -351,8 +348,7 @@ Respond with ONLY this exact JSON structure (no markdown, no explanation):
       headers,
       body: JSON.stringify({
         error: "Internal server error",
-        message:
-          error instanceof Error ? error.message : String(error),
+        message: error instanceof Error ? error.message : String(error),
       }),
     };
   }
