@@ -2974,11 +2974,13 @@ Respond with ONLY this JSON (no markdown):
       const jsonMatch = responseText.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
         console.warn("[AUDIT] No JSON in Gemini response");
-        return res.status(200).json(generateFallbackAudit({
-          url,
-          title: new URL(url).hostname,
-          fallbackUsed: false,
-        }));
+        return res.status(200).json(
+          generateFallbackAudit({
+            url,
+            title: new URL(url).hostname,
+            fallbackUsed: false,
+          }),
+        );
       }
 
       const auditData = JSON.parse(jsonMatch[0]);
@@ -2986,11 +2988,13 @@ Respond with ONLY this JSON (no markdown):
 
       if (!Array.isArray(sections) || sections.length === 0) {
         console.warn("[AUDIT] Invalid sections from Gemini");
-        return res.status(200).json(generateFallbackAudit({
-          url,
-          title: new URL(url).hostname,
-          fallbackUsed: false,
-        }));
+        return res.status(200).json(
+          generateFallbackAudit({
+            url,
+            title: new URL(url).hostname,
+            fallbackUsed: false,
+          }),
+        );
       }
 
       const overallScore = Math.round(
@@ -3016,7 +3020,10 @@ Respond with ONLY this JSON (no markdown):
       res.setHeader("Content-Type", "application/json");
       return res.status(200).json(auditResult);
     } catch (geminiError) {
-      console.warn("[AUDIT] Gemini API failed:", geminiError instanceof Error ? geminiError.message : geminiError);
+      console.warn(
+        "[AUDIT] Gemini API failed:",
+        geminiError instanceof Error ? geminiError.message : geminiError,
+      );
       // Fall back to demo audit
       const auditResult = generateFallbackAudit({
         url,
@@ -3028,7 +3035,10 @@ Respond with ONLY this JSON (no markdown):
       return res.status(200).json(auditResult);
     }
   } catch (error) {
-    console.error("[AUDIT] Unexpected error:", error instanceof Error ? error.message : error);
+    console.error(
+      "[AUDIT] Unexpected error:",
+      error instanceof Error ? error.message : error,
+    );
 
     try {
       const url = (req.body as AuditRequest).url || "example.com";
