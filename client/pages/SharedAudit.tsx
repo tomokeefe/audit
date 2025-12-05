@@ -881,21 +881,21 @@ export default function SharedAudit() {
           }
         }
 
-        // Try server API (for cross-browser/device sharing)
-        console.log("Attempting to fetch from server...");
-        const response = await fetch(`/api/audits/${id}`);
+        // Try Netlify function to retrieve from Neon database (for cross-browser sharing)
+        console.log("Fetching from Neon database via Netlify function...");
+        const response = await fetch(`/.netlify/functions/get-audit/${id}`);
 
         if (response.ok) {
-          const serverAudit: AuditResponse = await response.json();
-          setAuditData(serverAudit);
+          const auditData: AuditResponse = await response.json();
+          setAuditData(auditData);
           setLoading(false);
-          console.log("✓ Loaded audit from server database");
+          console.log("✓ Loaded audit from Neon database");
           return;
         }
 
-        console.warn(`Server returned ${response.status}`);
+        console.warn(`Netlify function returned ${response.status}`);
         setError(
-          "Audit not found. Share links work within the same browser. For cross-browser sharing, ensure the audit is saved to the database.",
+          "Audit not found. The audit may have expired or the sharing link is invalid.",
         );
       } catch (error) {
         console.error("Error loading shared audit:", error);
