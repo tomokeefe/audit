@@ -162,18 +162,17 @@ ${websiteContent.substring(0, 3000)}
 Create a JSON response with exactly 10 audit sections. Each section must be uniquely tailored to THIS website's actual content and characteristics.
 
 For each section, provide:
-- name: Category name
-- score: 0-100 score based on actual observations
-- issues: number of issues found
-- recommendations: number of recommendations
-- details: specific, actionable feedback about THIS website (not generic advice)
+- name: Category name (must be: Branding, Design, Messaging, Usability, Content Strategy, Digital Presence, Customer Experience, Competitor Analysis, Conversion Optimization, Compliance & Security)
+- issues: count of specific issues found (0-5)
+- recommendations: count of specific improvements (2-5)
+- details: specific, actionable feedback about THIS website (2-3 sentences)
 
-Analyze this website specifically and generate realistic scores that reflect what you actually observe. Use different scores for different sections (not all the same). Base recommendations on the actual content provided above.
+Analyze this website specifically and provide realistic, unique feedback. Base recommendations on the actual content provided above.
 
 Respond with ONLY valid JSON (no markdown, no code blocks, no explanation):
 {
   "sections": [
-    {"name": "string", "score": number, "issues": number, "recommendations": number, "details": "specific feedback for this website"},
+    {"name": "string", "issues": number, "recommendations": number, "details": "specific feedback for this website"},
     ... (10 total sections)
   ]
 }`;
