@@ -2944,30 +2944,28 @@ export const handleAudit: RequestHandler = async (req, res) => {
         console.warn("[AUDIT] Could not fetch website content:", fetchError);
       }
 
-      const prompt = `Analyze this website and provide 10 brand audit sections with scores.
+      const prompt = `You are a brand auditor. Analyze this website and provide a JSON response with 10 audit sections.
 
 Website: ${url}
 Content: ${websiteContent}
 
-For each section, assign a score between 50-95 based on your analysis. Each score MUST be unique and different from others.
-
-Return ONLY valid JSON with 10 sections:
+Generate a JSON response with exactly this structure (all numeric values must vary based on your analysis):
 {
   "sections": [
-    {"name": "Branding", "score": ANALYZE_AND_ASSIGN_UNIQUE_SCORE_1, "issues": RANDOM_2_5, "recommendations": RANDOM_3_5, "details": "Your analysis of branding based on the website content."},
-    {"name": "Design", "score": ANALYZE_AND_ASSIGN_UNIQUE_SCORE_2, "issues": RANDOM_2_5, "recommendations": RANDOM_3_5, "details": "Your analysis of design based on the website content."},
-    {"name": "Messaging", "score": ANALYZE_AND_ASSIGN_UNIQUE_SCORE_3, "issues": RANDOM_2_5, "recommendations": RANDOM_3_5, "details": "Your analysis of messaging based on the website content."},
-    {"name": "Usability", "score": ANALYZE_AND_ASSIGN_UNIQUE_SCORE_4, "issues": RANDOM_2_5, "recommendations": RANDOM_3_5, "details": "Your analysis of usability based on the website content."},
-    {"name": "Content Strategy", "score": ANALYZE_AND_ASSIGN_UNIQUE_SCORE_5, "issues": RANDOM_2_5, "recommendations": RANDOM_3_5, "details": "Your analysis of content strategy based on the website content."},
-    {"name": "Digital Presence", "score": ANALYZE_AND_ASSIGN_UNIQUE_SCORE_6, "issues": RANDOM_2_5, "recommendations": RANDOM_3_5, "details": "Your analysis of digital presence based on the website content."},
-    {"name": "Customer Experience", "score": ANALYZE_AND_ASSIGN_UNIQUE_SCORE_7, "issues": RANDOM_2_5, "recommendations": RANDOM_3_5, "details": "Your analysis of customer experience based on the website content."},
-    {"name": "Competitor Analysis", "score": ANALYZE_AND_ASSIGN_UNIQUE_SCORE_8, "issues": RANDOM_2_5, "recommendations": RANDOM_3_5, "details": "Your analysis of competitive positioning based on the website content."},
-    {"name": "Conversion Optimization", "score": ANALYZE_AND_ASSIGN_UNIQUE_SCORE_9, "issues": RANDOM_2_5, "recommendations": RANDOM_3_5, "details": "Your analysis of conversion elements based on the website content."},
-    {"name": "Compliance & Security", "score": ANALYZE_AND_ASSIGN_UNIQUE_SCORE_10, "issues": RANDOM_2_5, "recommendations": RANDOM_3_5, "details": "Your analysis of compliance and security based on the website content."}
+    {"name": "Branding", "score": 73, "issues": 3, "recommendations": 4, "details": "Brand identity analysis"},
+    {"name": "Design", "score": 81, "issues": 2, "recommendations": 3, "details": "Design quality analysis"},
+    {"name": "Messaging", "score": 85, "issues": 2, "recommendations": 3, "details": "Value proposition analysis"},
+    {"name": "Usability", "score": 68, "issues": 4, "recommendations": 5, "details": "Usability analysis"},
+    {"name": "Content Strategy", "score": 77, "issues": 3, "recommendations": 4, "details": "Content quality analysis"},
+    {"name": "Digital Presence", "score": 62, "issues": 5, "recommendations": 5, "details": "SEO and online visibility"},
+    {"name": "Customer Experience", "score": 79, "issues": 2, "recommendations": 3, "details": "Customer support analysis"},
+    {"name": "Competitor Analysis", "score": 71, "issues": 3, "recommendations": 4, "details": "Competitive positioning"},
+    {"name": "Conversion Optimization", "score": 76, "issues": 3, "recommendations": 4, "details": "Conversion elements"},
+    {"name": "Compliance & Security", "score": 88, "issues": 1, "recommendations": 2, "details": "Security and compliance"}
   ]
 }
 
-IMPORTANT: Replace ANALYZE_AND_ASSIGN_UNIQUE_SCORE_X with actual numeric scores between 50-95. All scores must be DIFFERENT from each other. Replace RANDOM_2_5 with a number 2-5. Replace RANDOM_3_5 with a number 3-5.`;
+RETURN ONLY THE JSON, no other text.`;
 
       console.log("[AUDIT] Calling Gemini API...");
       const result = await model.generateContent(prompt);
