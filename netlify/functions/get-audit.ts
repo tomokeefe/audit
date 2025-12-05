@@ -1,4 +1,5 @@
 import type { Handler } from "@netlify/functions";
+import { sql } from "@neondatabase/serverless";
 
 const handler: Handler = async (event) => {
   const headers = {
