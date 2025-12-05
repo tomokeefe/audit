@@ -12,7 +12,7 @@ const handler: Handler = async (event, context) => {
 
   try {
     console.log(
-      `[API] Incoming request - method: ${event.httpMethod}, path: ${event.path}`,
+      `[API] Incoming request - method: ${event.httpMethod}, path: ${event.path}`
     );
 
     if (event.httpMethod === "OPTIONS") {
@@ -85,16 +85,16 @@ const handler: Handler = async (event, context) => {
       // Get Gemini API key from environment
       const geminiApiKey = process.env.GEMINI_API_KEY;
       console.log(`[AUDIT] Gemini API Key available: ${!!geminiApiKey}`);
+      console.log(`[AUDIT] Gemini API Key length: ${geminiApiKey?.length || 0}`);
       console.log(
-        `[AUDIT] Gemini API Key length: ${geminiApiKey?.length || 0}`,
-      );
-      console.log(
-        `[AUDIT] Gemini API Key first 10 chars: ${geminiApiKey?.substring(0, 10) || "MISSING"}`,
+        `[AUDIT] Gemini API Key first 10 chars: ${geminiApiKey?.substring(0, 10) || "MISSING"}`
       );
       console.log(
         `[AUDIT] All env keys: ${Object.keys(process.env)
-          .filter((k) => k.includes("GEMINI") || k.includes("API"))
-          .join(", ")}`,
+          .filter(
+            (k) => k.includes("GEMINI") || k.includes("API")
+          )
+          .join(", ")}`
       );
 
       // Fetch website content
@@ -118,14 +118,20 @@ const handler: Handler = async (event, context) => {
           const html = await response.text();
           // Remove scripts and styles, then extract text
           websiteContent = html
-            .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
-            .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "")
+            .replace(
+              /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+              ""
+            )
+            .replace(
+              /<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi,
+              ""
+            )
             .replace(/<[^>]*>/g, " ")
             .replace(/\s+/g, " ")
             .trim()
             .substring(0, 4000);
           console.log(
-            `[AUDIT] Content fetched: ${websiteContent.length} chars`,
+            `[AUDIT] Content fetched: ${websiteContent.length} chars`
           );
         }
       } catch (fetchError) {
@@ -135,12 +141,12 @@ const handler: Handler = async (event, context) => {
       // Only proceed with Gemini if we have an API key
       if (!geminiApiKey) {
         console.warn(
-          "[AUDIT] ❌ No Gemini API key found - returning demo audit",
+          "[AUDIT] ❌ No Gemini API key found - returning demo audit"
         );
         console.warn(
           `[AUDIT] Available env vars with 'API': ${Object.keys(process.env)
             .filter((k) => k.includes("API"))
-            .join(", ")}`,
+            .join(", ")}`
         );
         return generateDemoAudit(websiteUrl, headers);
       }
@@ -148,10 +154,10 @@ const handler: Handler = async (event, context) => {
       // Call Gemini API
       try {
         console.log(
-          "[AUDIT] ✓ Gemini API key found, proceeding with Gemini call",
+          "[AUDIT] ✓ Gemini API key found, proceeding with Gemini call"
         );
         console.log(
-          `[AUDIT] Calling Gemini API with key: ${geminiApiKey.substring(0, 20)}...`,
+          `[AUDIT] Calling Gemini API with key: ${geminiApiKey.substring(0, 20)}...`
         );
 
         const prompt = `You are a professional brand audit expert. Analyze the website for ${websiteUrl} and generate a detailed audit report.
@@ -159,7 +165,7 @@ const handler: Handler = async (event, context) => {
 Website Content:
 ${websiteContent.substring(0, 3000)}
 
-Create a JSON response with exactly 10 audit sections. Each section must be uniquely tailored to THIS website's actual content and characteristics.
+Create a JSON response with exactly 10 audit sections. Each section must be uniquely tailored to THIS website's actual content and characteristics. 
 
 For each section, provide:
 - name: Category name (must be: Branding, Design, Messaging, Usability, Content Strategy, Digital Presence, Customer Experience, Competitor Analysis, Conversion Optimization, Compliance & Security)
@@ -206,10 +212,10 @@ Respond with ONLY valid JSON (no markdown, no code blocks, no explanation):
           const errorBody = await geminiResponse.text();
           console.error(
             `[AUDIT] ❌ Gemini error (${geminiResponse.status}):`,
-            errorBody.substring(0, 500),
+            errorBody.substring(0, 500)
           );
           console.error(
-            `[AUDIT] Falling back to demo because Gemini returned ${geminiResponse.status}`,
+            `[AUDIT] Falling back to demo because Gemini returned ${geminiResponse.status}`
           );
           return generateDemoAudit(websiteUrl, headers);
         }
@@ -224,7 +230,7 @@ Respond with ONLY valid JSON (no markdown, no code blocks, no explanation):
         }
 
         console.log(
-          `[AUDIT] ✓ Got Gemini response: ${responseText.length} chars`,
+          `[AUDIT] ✓ Got Gemini response: ${responseText.length} chars`
         );
 
         // Extract JSON
@@ -232,7 +238,7 @@ Respond with ONLY valid JSON (no markdown, no code blocks, no explanation):
         if (!jsonMatch) {
           console.error(
             "[AUDIT] ❌ No JSON found in response:",
-            responseText.substring(0, 200),
+            responseText.substring(0, 200)
           );
           return generateDemoAudit(websiteUrl, headers);
         }
@@ -247,7 +253,7 @@ Respond with ONLY valid JSON (no markdown, no code blocks, no explanation):
         }
 
         console.log(
-          `[AUDIT] ✓ Validated ${geminiSections.length} sections from Gemini`,
+          `[AUDIT] ✓ Validated ${geminiSections.length} sections from Gemini`
         );
 
         // Validate sections (check for required fields, not score)
@@ -260,7 +266,7 @@ Respond with ONLY valid JSON (no markdown, no code blocks, no explanation):
           ) {
             console.error(
               "[AUDIT] ❌ Invalid section:",
-              JSON.stringify(section).substring(0, 100),
+              JSON.stringify(section).substring(0, 100)
             );
             return generateDemoAudit(websiteUrl, headers);
           }
@@ -298,7 +304,7 @@ Respond with ONLY valid JSON (no markdown, no code blocks, no explanation):
         };
 
         console.log(
-          `[AUDIT] ✅ SUCCESS! Generated audit ${auditId} with Deterministic Score: ${overallScore}%`,
+          `[AUDIT] ✅ SUCCESS! Generated audit ${auditId} with Deterministic Score: ${overallScore}%`
         );
 
         return {
@@ -309,7 +315,7 @@ Respond with ONLY valid JSON (no markdown, no code blocks, no explanation):
       } catch (geminiError) {
         console.error(
           "[AUDIT] ❌ Gemini API error:",
-          geminiError instanceof Error ? geminiError.message : geminiError,
+          geminiError instanceof Error ? geminiError.message : geminiError
         );
         console.error("[AUDIT] Falling back to demo audit due to Gemini error");
         return generateDemoAudit(websiteUrl, headers);
@@ -393,7 +399,8 @@ Respond with ONLY valid JSON (no markdown, no code blocks, no explanation):
       headers,
       body: JSON.stringify({
         error: "Internal server error",
-        message: error instanceof Error ? error.message : String(error),
+        message:
+          error instanceof Error ? error.message : String(error),
       }),
     };
   }
@@ -407,7 +414,7 @@ const deterministicCache = new Map<string, any>();
  */
 function generateDeterministicScores(
   url: string,
-  websiteContent: string,
+  websiteContent: string
 ): { scores: number[]; overall: number } {
   // Create cache key from URL
   const urlHash = crypto.createHash("sha256").update(url).digest("hex");
@@ -469,14 +476,14 @@ function generateDeterministicScores(
     Math.round(
       scores.reduce(
         (sum, score, i) => sum + score * SECTION_WEIGHTS_ARRAY[i],
-        0,
-      ) * 10,
+        0
+      ) * 10
     ) / 10;
 
   const result = { scores, overall };
   deterministicCache.set(urlHash, result);
   console.log(
-    `[SCORING] Generated deterministic score: ${overall}% for ${url}`,
+    `[SCORING] Generated deterministic score: ${overall}% for ${url}`
   );
 
   return result;
