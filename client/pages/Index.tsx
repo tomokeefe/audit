@@ -1023,22 +1023,28 @@ export default function Index() {
         JSON.stringify(auditResult),
       );
 
-      // Store audit server-side for sharing and persistence
+      // Store audit in Neon database for cross-browser sharing
       try {
-        await fetch("/api/audits", {
+        const saveResponse = await fetch("/.netlify/functions/save-audit", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(auditResult),
         });
-        console.log("Audit stored server-side successfully");
-        // Reload recent audits to show the new one
-        loadRecentAudits();
+
+        if (saveResponse.ok) {
+          const saveResult = await saveResponse.json();
+          console.log(`✓ Audit ${auditResult.id} saved to Neon:`, saveResult);
+        } else {
+          console.warn("Failed to save to Neon, using localStorage only");
+        }
       } catch (storeError) {
-        console.warn("Failed to store audit server-side:", storeError);
-        // Continue anyway as we have localStorage backup
+        console.warn("Failed to store audit in database:", storeError);
       }
+
+      // Reload recent audits to show the new one
+      loadRecentAudits();
 
       // Complete final progress step
       updateProgress("finalizing", true);
@@ -1190,22 +1196,28 @@ export default function Index() {
         JSON.stringify(auditResult),
       );
 
-      // Store audit server-side for sharing and persistence
+      // Store audit in Neon database for cross-browser sharing
       try {
-        await fetch("/api/audits", {
+        const saveResponse = await fetch("/.netlify/functions/save-audit", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(auditResult),
         });
-        console.log("Audit stored server-side successfully");
-        // Reload recent audits to show the new one
-        loadRecentAudits();
+
+        if (saveResponse.ok) {
+          const saveResult = await saveResponse.json();
+          console.log(`✓ Audit ${auditResult.id} saved to Neon:`, saveResult);
+        } else {
+          console.warn("Failed to save to Neon, using localStorage only");
+        }
       } catch (storeError) {
-        console.warn("Failed to store audit server-side:", storeError);
-        // Continue anyway as we have localStorage backup
+        console.warn("Failed to store audit in database:", storeError);
       }
+
+      // Reload recent audits to show the new one
+      loadRecentAudits();
 
       // Complete final progress step
       updateProgress("finalizing", true);
