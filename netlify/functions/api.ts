@@ -213,6 +213,12 @@ Respond with ONLY valid JSON (no markdown, no code blocks, no explanation):
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
+            generationConfig: {
+              temperature: 0,
+              topP: 1,
+              topK: 1,
+              maxOutputTokens: 4096,
+            },
             contents: [
               {
                 parts: [
