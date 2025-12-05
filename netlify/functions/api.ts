@@ -16,10 +16,26 @@ const handler: Handler = async (event, context) => {
     };
   }
 
-  const path = event.path || "";
+  // Normalize path - handle both "/api/..." and "..." formats
+  let path = event.path || "";
+  console.log(`[API] Raw event.path: ${path}, method: ${event.httpMethod}`);
+
+  // Ensure path starts with / for consistency
+  if (!path.startsWith("/")) {
+    path = "/" + path;
+  }
+
+  // If path doesn't start with /api, and it's from a redirect, add /api
+  if (!path.startsWith("/api/")) {
+    // For Netlify functions routing, the path might be stripped
+    path = "/api" + path;
+  }
+
+  console.log(`[API] Normalized path: ${path}`);
 
   // Ping endpoint
-  if (path.includes("/api/ping")) {
+  if (path.includes("/api/ping") || path === "/ping") {
+    console.log("[API] Serving ping endpoint");
     return {
       statusCode: 200,
       headers,
@@ -32,7 +48,7 @@ const handler: Handler = async (event, context) => {
   }
 
   // Generate audit using Gemini API
-  if (path === "/api/audit" && event.httpMethod === "POST") {
+  if ((path === "/api/audit" || path === "/audit") && event.httpMethod === "POST") {
     try {
       const body = JSON.parse(event.body || "{}");
       const { url: websiteUrl } = body;
