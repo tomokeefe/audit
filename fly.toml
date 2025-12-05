@@ -1,7 +1,6 @@
 # Fly.io configuration for Brand Whisperer Audit
 app = "audit-guc9-q"
 primary_region = "ord"
-build_image = "fly/builder:latest"
 
 [build]
 builder = "docker"
