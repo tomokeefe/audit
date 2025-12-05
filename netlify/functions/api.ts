@@ -172,20 +172,33 @@ const handler: Handler = async (event, context) => {
 Website Content:
 ${websiteContent.substring(0, 3000)}
 
-Create a JSON response with exactly 10 audit sections. Each section must be uniquely tailored to THIS website's actual content and characteristics. 
+Create a JSON response with exactly 10 audit sections. Each section must be uniquely tailored to THIS website's actual content and characteristics.
 
-For each section, provide:
-- name: Category name (must be: Branding, Design, Messaging, Usability, Content Strategy, Digital Presence, Customer Experience, Competitor Analysis, Conversion Optimization, Compliance & Security)
-- issues: count of specific issues found (0-5)
-- recommendations: count of specific improvements (2-5)
-- details: specific, actionable feedback about THIS website (2-3 sentences)
+For each section, include:
+- name: Category (Branding, Design, Messaging, Usability, Content Strategy, Digital Presence, Customer Experience, Competitor Analysis, Conversion Optimization, or Compliance & Security)
+- score: 0-100 score (vary between sections, not all the same)
+- issues: count of issues (1-4)
+- recommendations: count of recommendations (2-4)
+- details: Analysis of this website with these exact sections:
 
-Analyze this website specifically and provide realistic, unique feedback. Base recommendations on the actual content provided above.
+  Overview:
+  [2-3 sentences about this specific website]
+
+  Issues Found:
+  - [Specific issue for THIS website]
+  - [Another specific issue]
+
+  Recommendations:
+  - [Specific, actionable recommendation]
+  - [Another specific recommendation]
+  - [Optional third recommendation if needed]
+
+Analyze the actual content above and provide realistic, specific feedback unique to this website. Use different scores for different sections.
 
 Respond with ONLY valid JSON (no markdown, no code blocks, no explanation):
 {
   "sections": [
-    {"name": "string", "issues": number, "recommendations": number, "details": "specific feedback for this website"},
+    {"name": "string", "score": number, "issues": number, "recommendations": number, "details": "Analysis with Overview, Issues Found, and Recommendations sections"},
     ... (10 total sections)
   ]
 }`;
