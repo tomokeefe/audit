@@ -1174,9 +1174,8 @@ Best regards`);
       return;
     }
 
-    // Set share URL immediately
-    const shareLink = `${window.location.origin}/share/audit/${id}`;
-    setShareUrl(shareLink);
+    // Share URL will be set after data loads (with encoded data for reliability)
+    let shareLink = `${window.location.origin}/share/audit/${id}`;
 
     const loadAuditData = async () => {
       try {
