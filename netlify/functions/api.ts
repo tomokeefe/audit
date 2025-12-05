@@ -1,4 +1,5 @@
 import type { Handler } from "@netlify/functions";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const handler: Handler = async (event, context) => {
   const headers = {
