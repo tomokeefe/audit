@@ -274,9 +274,10 @@ Respond with ONLY this exact JSON structure (no markdown, no explanation):
         };
       } catch (geminiError) {
         console.error(
-          "[AUDIT] Gemini API error:",
+          "[AUDIT] ❌ Gemini API error:",
           geminiError instanceof Error ? geminiError.message : geminiError,
         );
+        console.error("[AUDIT] Falling back to demo audit due to Gemini error");
         return generateDemoAudit(websiteUrl, headers);
       }
     }
