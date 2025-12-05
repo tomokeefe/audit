@@ -83,9 +83,17 @@ const handler: Handler = async (event, context) => {
       // Get Gemini API key from environment
       const geminiApiKey = process.env.GEMINI_API_KEY;
       console.log(`[AUDIT] Gemini API Key available: ${!!geminiApiKey}`);
-      console.log(`[AUDIT] Gemini API Key length: ${geminiApiKey?.length || 0}`);
-      console.log(`[AUDIT] Gemini API Key first 10 chars: ${geminiApiKey?.substring(0, 10) || 'MISSING'}`);
-      console.log(`[AUDIT] All env keys: ${Object.keys(process.env).filter(k => k.includes('GEMINI') || k.includes('API')).join(', ')}`);
+      console.log(
+        `[AUDIT] Gemini API Key length: ${geminiApiKey?.length || 0}`,
+      );
+      console.log(
+        `[AUDIT] Gemini API Key first 10 chars: ${geminiApiKey?.substring(0, 10) || "MISSING"}`,
+      );
+      console.log(
+        `[AUDIT] All env keys: ${Object.keys(process.env)
+          .filter((k) => k.includes("GEMINI") || k.includes("API"))
+          .join(", ")}`,
+      );
 
       // Fetch website content
       let websiteContent = "Unable to fetch content";
@@ -124,15 +132,25 @@ const handler: Handler = async (event, context) => {
 
       // Only proceed with Gemini if we have an API key
       if (!geminiApiKey) {
-        console.warn("[AUDIT] ❌ No Gemini API key found - returning demo audit");
-        console.warn(`[AUDIT] Available env vars with 'API': ${Object.keys(process.env).filter(k => k.includes('API')).join(', ')}`);
+        console.warn(
+          "[AUDIT] ❌ No Gemini API key found - returning demo audit",
+        );
+        console.warn(
+          `[AUDIT] Available env vars with 'API': ${Object.keys(process.env)
+            .filter((k) => k.includes("API"))
+            .join(", ")}`,
+        );
         return generateDemoAudit(websiteUrl, headers);
       }
 
       // Call Gemini API
       try {
-        console.log("[AUDIT] ✓ Gemini API key found, proceeding with Gemini call");
-        console.log(`[AUDIT] Calling Gemini API with key: ${geminiApiKey.substring(0, 20)}...`);
+        console.log(
+          "[AUDIT] ✓ Gemini API key found, proceeding with Gemini call",
+        );
+        console.log(
+          `[AUDIT] Calling Gemini API with key: ${geminiApiKey.substring(0, 20)}...`,
+        );
 
         const prompt = `You are a brand audit expert. Analyze this website and provide exactly 10 audit sections with scores.
 
@@ -186,7 +204,9 @@ Respond with ONLY this exact JSON structure (no markdown, no explanation):
             `[AUDIT] ❌ Gemini error (${geminiResponse.status}):`,
             errorBody.substring(0, 500),
           );
-          console.error(`[AUDIT] Falling back to demo because Gemini returned ${geminiResponse.status}`);
+          console.error(
+            `[AUDIT] Falling back to demo because Gemini returned ${geminiResponse.status}`,
+          );
           return generateDemoAudit(websiteUrl, headers);
         }
 
@@ -222,7 +242,9 @@ Respond with ONLY this exact JSON structure (no markdown, no explanation):
           return generateDemoAudit(websiteUrl, headers);
         }
 
-        console.log(`[AUDIT] ✓ Validated ${sections.length} sections from Gemini`);
+        console.log(
+          `[AUDIT] ✓ Validated ${sections.length} sections from Gemini`,
+        );
 
         // Validate sections
         for (const section of sections) {
