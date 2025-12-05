@@ -1023,7 +1023,9 @@ export default function Index() {
         JSON.stringify(auditResult),
       );
 
-      console.log(`✓ Audit ${auditResult.id} saved to browser storage for sharing`);
+      console.log(
+        `✓ Audit ${auditResult.id} saved to browser storage for sharing`,
+      );
 
       // Reload recent audits to show the new one
       loadRecentAudits();
@@ -1178,7 +1180,9 @@ export default function Index() {
         JSON.stringify(auditResult),
       );
 
-      console.log(`✓ Audit ${auditResult.id} saved to browser storage for sharing`);
+      console.log(
+        `✓ Audit ${auditResult.id} saved to browser storage for sharing`,
+      );
 
       // Reload recent audits to show the new one
       loadRecentAudits();
