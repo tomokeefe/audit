@@ -865,19 +865,36 @@ export default function SharedAudit() {
 
     const loadAuditData = async () => {
       try {
-        console.log(`Loading audit ${id} from server...`);
+        console.log(`Loading audit ${id}...`);
 
-        // Fetch from backend API (works across all devices/browsers)
+        // First, check for encoded data in URL (works across all devices/browsers reliably)
+        const searchParams = new URLSearchParams(window.location.search);
+        const encodedData = searchParams.get("data");
+
+        if (encodedData) {
+          try {
+            const decodedString = atob(encodedData);
+            const auditData = JSON.parse(decodedString);
+            setAuditData(auditData);
+            console.log("✓ Loaded audit from encoded link");
+            return;
+          } catch (decodeError) {
+            console.error("Failed to decode audit data from URL:", decodeError);
+            // Fall through to try API
+          }
+        }
+
+        // Fallback: Fetch from backend API
         const response = await fetch(`/api/audits/${id}`);
 
         if (response.ok) {
           const auditData = await response.json();
           setAuditData(auditData);
-          console.log("✓ Loaded audit from server");
+          console.log("✓ Loaded audit from server API");
           return;
         }
 
-        // If not found, show error
+        // If not found anywhere, show error
         setError("Audit not found. The link may be invalid or the audit may have expired.");
       } catch (error) {
         console.error("Error loading shared audit:", error);
