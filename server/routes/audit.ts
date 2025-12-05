@@ -2924,9 +2924,12 @@ export const handleAudit: RequestHandler = async (req, res) => {
 
     console.log("[AUDIT] Generating audit for:", url);
 
-    // Try to use Gemini API
+    // Try to use Gemini API via fetch
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+      const geminiApiKey = process.env.GEMINI_API_KEY;
+      if (!geminiApiKey) {
+        throw new Error("No API key");
+      }
 
       // Fetch website content
       let websiteContent = "Website content unavailable";
