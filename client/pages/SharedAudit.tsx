@@ -869,17 +869,16 @@ export default function SharedAudit() {
         console.log(`Loading shared audit ${id}...`);
 
         // Fetch from backend API
-        const response = await fetch(`/api/audits/${id}`);
+        const auditData = await apiGet<AuditResponse>(`/api/audits/${id}`);
 
-        if (!response.ok) {
-          console.error(`API returned status ${response.status}`);
+        if (!auditData) {
+          console.error("Failed to fetch audit data");
           setError(
             "Audit not found. The link may be invalid or the audit may have expired.",
           );
           return;
         }
 
-        const auditData = await response.json();
         setAuditData(auditData);
         console.log("✓ Loaded shared audit from API");
       } catch (error) {
