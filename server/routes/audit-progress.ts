@@ -370,7 +370,7 @@ export const handleAuditStandard = async (req: Request, res: Response) => {
     }
 
     // Check API key
-    if (!process.env.GEMINI_API_KEY) {
+    if (!process.env.GROK_API_KEY) {
       return res
         .status(500)
         .json({ error: "Server configuration error. Please contact support." });
