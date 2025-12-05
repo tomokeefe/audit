@@ -10,7 +10,7 @@ const handler: Handler = async (event, context) => {
 
   try {
     console.log(
-      `[API] Incoming request - method: ${event.httpMethod}, path: ${event.path}`,
+      `[API] Incoming request - method: ${event.httpMethod}, path: ${event.path}`
     );
 
     if (event.httpMethod === "OPTIONS") {
@@ -46,16 +46,13 @@ const handler: Handler = async (event, context) => {
         body: JSON.stringify({
           message: "pong",
           timestamp: new Date().toISOString(),
-          version: "20251205-fixed",
+          version: "20251205-deterministic",
         }),
       };
     }
 
-    // Generate audit using Gemini API
-    if (
-      (path === "/api/audit" || path === "/audit") &&
-      event.httpMethod === "POST"
-    ) {
+    // Generate audit using deterministic scoring formula
+    if ((path === "/api/audit" || path === "/audit") && event.httpMethod === "POST") {
       const body = JSON.parse(event.body || "{}");
       const { url: websiteUrl } = body;
 
@@ -80,21 +77,6 @@ const handler: Handler = async (event, context) => {
         };
       }
 
-      // Get Gemini API key from environment
-      const geminiApiKey = process.env.GEMINI_API_KEY;
-      console.log(`[AUDIT] Gemini API Key available: ${!!geminiApiKey}`);
-      console.log(
-        `[AUDIT] Gemini API Key length: ${geminiApiKey?.length || 0}`,
-      );
-      console.log(
-        `[AUDIT] Gemini API Key first 10 chars: ${geminiApiKey?.substring(0, 10) || "MISSING"}`,
-      );
-      console.log(
-        `[AUDIT] All env keys: ${Object.keys(process.env)
-          .filter((k) => k.includes("GEMINI") || k.includes("API"))
-          .join(", ")}`,
-      );
-
       // Fetch website content
       let websiteContent = "Unable to fetch content";
       try {
@@ -116,195 +98,139 @@ const handler: Handler = async (event, context) => {
           const html = await response.text();
           // Remove scripts and styles, then extract text
           websiteContent = html
-            .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
-            .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "")
+            .replace(
+              /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+              ""
+            )
+            .replace(
+              /<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi,
+              ""
+            )
             .replace(/<[^>]*>/g, " ")
             .replace(/\s+/g, " ")
             .trim()
             .substring(0, 4000);
           console.log(
-            `[AUDIT] Content fetched: ${websiteContent.length} chars`,
+            `[AUDIT] Content fetched: ${websiteContent.length} chars`
           );
         }
       } catch (fetchError) {
         console.warn(`[AUDIT] Failed to fetch website:`, fetchError);
       }
 
-      // Only proceed with Gemini if we have an API key
-      if (!geminiApiKey) {
-        console.warn(
-          "[AUDIT] ❌ No Gemini API key found - returning demo audit",
-        );
-        console.warn(
-          `[AUDIT] Available env vars with 'API': ${Object.keys(process.env)
-            .filter((k) => k.includes("API"))
-            .join(", ")}`,
-        );
-        return generateDemoAudit(websiteUrl, headers);
-      }
+      // Calculate deterministic scores based on website analysis
+      console.log("[AUDIT] Calculating deterministic scores...");
+      
+      const auditId = Date.now().toString();
+      const domain = new URL(websiteUrl).hostname.replace("www.", "");
+      
+      // Deterministic scoring based on website content analysis
+      const scores = calculateDeterministicScores(websiteContent, websiteUrl);
+      
+      const sections = [
+        {
+          name: "Branding",
+          score: scores.branding,
+          issues: Math.floor((100 - scores.branding) / 15),
+          recommendations: Math.max(2, Math.floor((100 - scores.branding) / 20)),
+          details: `Brand consistency and identity. ${scores.brandingDetails}`,
+        },
+        {
+          name: "Design",
+          score: scores.design,
+          issues: Math.floor((100 - scores.design) / 15),
+          recommendations: Math.max(2, Math.floor((100 - scores.design) / 20)),
+          details: `Visual design and layout. ${scores.designDetails}`,
+        },
+        {
+          name: "Messaging",
+          score: scores.messaging,
+          issues: Math.floor((100 - scores.messaging) / 15),
+          recommendations: Math.max(2, Math.floor((100 - scores.messaging) / 20)),
+          details: `Value proposition clarity. ${scores.messagingDetails}`,
+        },
+        {
+          name: "Usability",
+          score: scores.usability,
+          issues: Math.floor((100 - scores.usability) / 15),
+          recommendations: Math.max(2, Math.floor((100 - scores.usability) / 20)),
+          details: `Navigation and UX. ${scores.usabilityDetails}`,
+        },
+        {
+          name: "Content Strategy",
+          score: scores.contentStrategy,
+          issues: Math.floor((100 - scores.contentStrategy) / 15),
+          recommendations: Math.max(2, Math.floor((100 - scores.contentStrategy) / 20)),
+          details: `Content relevance. ${scores.contentStrategyDetails}`,
+        },
+        {
+          name: "Digital Presence",
+          score: scores.digitalPresence,
+          issues: Math.floor((100 - scores.digitalPresence) / 15),
+          recommendations: Math.max(2, Math.floor((100 - scores.digitalPresence) / 20)),
+          details: `SEO and visibility. ${scores.digitalPresenceDetails}`,
+        },
+        {
+          name: "Customer Experience",
+          score: scores.customerExperience,
+          issues: Math.floor((100 - scores.customerExperience) / 15),
+          recommendations: Math.max(2, Math.floor((100 - scores.customerExperience) / 20)),
+          details: `Support accessibility. ${scores.customerExperienceDetails}`,
+        },
+        {
+          name: "Competitor Analysis",
+          score: scores.competitorAnalysis,
+          issues: Math.floor((100 - scores.competitorAnalysis) / 15),
+          recommendations: Math.max(2, Math.floor((100 - scores.competitorAnalysis) / 20)),
+          details: `Market positioning. ${scores.competitorAnalysisDetails}`,
+        },
+        {
+          name: "Conversion Optimization",
+          score: scores.conversionOptimization,
+          issues: Math.floor((100 - scores.conversionOptimization) / 15),
+          recommendations: Math.max(2, Math.floor((100 - scores.conversionOptimization) / 20)),
+          details: `CTA effectiveness. ${scores.conversionOptimizationDetails}`,
+        },
+        {
+          name: "Compliance & Security",
+          score: scores.compliance,
+          issues: Math.floor((100 - scores.compliance) / 15),
+          recommendations: Math.max(2, Math.floor((100 - scores.compliance) / 20)),
+          details: `Security protocols. ${scores.complianceDetails}`,
+        },
+      ];
+      
+      const overallScore = Math.round(
+        sections.reduce((sum: number, s: any) => sum + s.score, 0) /
+          sections.length
+      );
 
-      // Call Gemini API
-      try {
-        console.log(
-          "[AUDIT] ✓ Gemini API key found, proceeding with Gemini call",
-        );
-        console.log(
-          `[AUDIT] Calling Gemini API with key: ${geminiApiKey.substring(0, 20)}...`,
-        );
+      const audit = {
+        id: auditId,
+        url: websiteUrl,
+        title: `${domain} Brand Audit Report`,
+        description: `Brand audit analysis for ${domain}`,
+        overallScore,
+        status: "completed",
+        date: new Date().toISOString(),
+        sections,
+        metadata: {
+          analysisConfidence: 0.85,
+          industryDetected: "general",
+          generatedBy: "Deterministic Formula",
+          methodology: "Formula-based analysis of website content and structure",
+        },
+      };
 
-        const prompt = `You are a professional brand audit expert. Analyze the website for ${websiteUrl} and generate a detailed audit report.
+      console.log(
+        `[AUDIT] ✅ SUCCESS! Generated audit ${auditId} - Score: ${overallScore}%`
+      );
 
-Website Content:
-${websiteContent.substring(0, 3000)}
-
-Create a JSON response with exactly 10 audit sections. Each section must be uniquely tailored to THIS website's actual content and characteristics.
-
-For each section, provide:
-- name: Category name
-- score: 0-100 score based on actual observations
-- issues: number of issues found
-- recommendations: number of recommendations
-- details: specific, actionable feedback about THIS website (not generic advice)
-
-Analyze this website specifically and generate realistic scores that reflect what you actually observe. Use different scores for different sections (not all the same). Base recommendations on the actual content provided above.
-
-Respond with ONLY valid JSON (no markdown, no code blocks, no explanation):
-{
-  "sections": [
-    {"name": "string", "score": number, "issues": number, "recommendations": number, "details": "specific feedback for this website"},
-    ... (10 total sections)
-  ]
-}`;
-
-        const geminiUrl =
-          "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" +
-          geminiApiKey;
-
-        const geminiResponse = await fetch(geminiUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            contents: [
-              {
-                parts: [
-                  {
-                    text: prompt,
-                  },
-                ],
-              },
-            ],
-          }),
-        });
-
-        console.log(`[AUDIT] Gemini status: ${geminiResponse.status}`);
-        console.log(`[AUDIT] Gemini response ok: ${geminiResponse.ok}`);
-
-        if (!geminiResponse.ok) {
-          const errorBody = await geminiResponse.text();
-          console.error(
-            `[AUDIT] ❌ Gemini error (${geminiResponse.status}):`,
-            errorBody.substring(0, 500),
-          );
-          console.error(
-            `[AUDIT] Falling back to demo because Gemini returned ${geminiResponse.status}`,
-          );
-          return generateDemoAudit(websiteUrl, headers);
-        }
-
-        const geminiData = await geminiResponse.json();
-        const responseText =
-          geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
-
-        if (!responseText) {
-          console.error("[AUDIT] ❌ Empty response from Gemini");
-          return generateDemoAudit(websiteUrl, headers);
-        }
-
-        console.log(
-          `[AUDIT] ✓ Got Gemini response: ${responseText.length} chars`,
-        );
-
-        // Extract JSON
-        const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-        if (!jsonMatch) {
-          console.error(
-            "[AUDIT] ❌ No JSON found in response:",
-            responseText.substring(0, 200),
-          );
-          return generateDemoAudit(websiteUrl, headers);
-        }
-
-        console.log("[AUDIT] ✓ JSON found, parsing...");
-        const auditData = JSON.parse(jsonMatch[0]);
-        const sections = auditData.sections;
-
-        if (!Array.isArray(sections) || sections.length === 0) {
-          console.error("[AUDIT] ❌ Invalid sections in response");
-          return generateDemoAudit(websiteUrl, headers);
-        }
-
-        console.log(
-          `[AUDIT] ✓ Validated ${sections.length} sections from Gemini`,
-        );
-
-        // Validate sections
-        for (const section of sections) {
-          if (
-            !section.name ||
-            typeof section.score !== "number" ||
-            section.score < 0 ||
-            section.score > 100
-          ) {
-            console.error(
-              "[AUDIT] Invalid section:",
-              JSON.stringify(section).substring(0, 100),
-            );
-            return generateDemoAudit(websiteUrl, headers);
-          }
-        }
-
-        const overallScore = Math.round(
-          sections.reduce((sum: number, s: any) => sum + s.score, 0) /
-            sections.length,
-        );
-        const auditId = Date.now().toString();
-        const domain = new URL(websiteUrl).hostname.replace("www.", "");
-
-        const audit = {
-          id: auditId,
-          url: websiteUrl,
-          title: `${domain} Brand Audit Report`,
-          description: `Brand audit analysis for ${domain}`,
-          overallScore,
-          status: "completed",
-          date: new Date().toISOString(),
-          sections,
-          metadata: {
-            analysisConfidence: 0.85,
-            industryDetected: "general",
-            generatedBy: "Gemini API",
-          },
-        };
-
-        console.log(
-          `[AUDIT] ✅ SUCCESS! Generated audit ${auditId} with Gemini - Score: ${overallScore}%`,
-        );
-
-        return {
-          statusCode: 200,
-          headers,
-          body: JSON.stringify(audit),
-        };
-      } catch (geminiError) {
-        console.error(
-          "[AUDIT] ❌ Gemini API error:",
-          geminiError instanceof Error ? geminiError.message : geminiError,
-        );
-        console.error("[AUDIT] Falling back to demo audit due to Gemini error");
-        return generateDemoAudit(websiteUrl, headers);
-      }
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify(audit),
+      };
     }
 
     // Save audit endpoint
@@ -384,115 +310,165 @@ Respond with ONLY valid JSON (no markdown, no code blocks, no explanation):
       headers,
       body: JSON.stringify({
         error: "Internal server error",
-        message: error instanceof Error ? error.message : String(error),
+        message:
+          error instanceof Error ? error.message : String(error),
       }),
     };
   }
 };
 
-function generateDemoAudit(url: string, headers: Record<string, string>) {
-  const auditId = Date.now().toString();
-  const domain = new URL(url).hostname.replace("www.", "");
+function calculateDeterministicScores(
+  content: string,
+  url: string
+): {
+  branding: number;
+  design: number;
+  messaging: number;
+  usability: number;
+  contentStrategy: number;
+  digitalPresence: number;
+  customerExperience: number;
+  competitorAnalysis: number;
+  conversionOptimization: number;
+  compliance: number;
+  brandingDetails: string;
+  designDetails: string;
+  messagingDetails: string;
+  usabilityDetails: string;
+  contentStrategyDetails: string;
+  digitalPresenceDetails: string;
+  customerExperienceDetails: string;
+  competitorAnalysisDetails: string;
+  conversionOptimizationDetails: string;
+  complianceDetails: string;
+} {
+  const contentLower = content.toLowerCase();
+  
+  // Base scores
+  let branding = 65;
+  let design = 68;
+  let messaging = 72;
+  let usability = 70;
+  let contentStrategy = 66;
+  let digitalPresence = 62;
+  let customerExperience = 68;
+  let competitorAnalysis = 70;
+  let conversionOptimization = 65;
+  let compliance = 80;
+
+  // Adjust based on content presence
+  if (contentLower.includes("logo") || contentLower.includes("brand")) {
+    branding += 8;
+  }
+  if (contentLower.includes("design") || contentLower.includes("style")) {
+    design += 10;
+  }
+  if (contentLower.includes("mission") || contentLower.includes("vision")) {
+    messaging += 12;
+  }
+  if (contentLower.includes("navigation") || contentLower.includes("menu")) {
+    usability += 8;
+  }
+  if (contentLower.includes("blog") || contentLower.includes("article")) {
+    contentStrategy += 10;
+  }
+  if (contentLower.includes("seo") || contentLower.includes("search")) {
+    digitalPresence += 12;
+  }
+  if (
+    contentLower.includes("contact") ||
+    contentLower.includes("support") ||
+    contentLower.includes("help")
+  ) {
+    customerExperience += 10;
+  }
+  if (contentLower.includes("call to action") || contentLower.includes("cta")) {
+    conversionOptimization += 12;
+  }
+  if (contentLower.includes("ssl") || contentLower.includes("secure")) {
+    compliance += 5;
+  }
+
+  // Adjust based on content length (longer content usually indicates better site)
+  const contentLength = content.length;
+  if (contentLength > 3000) {
+    design += 5;
+    contentStrategy += 8;
+    messaging += 4;
+  } else if (contentLength < 500) {
+    design -= 10;
+    contentStrategy -= 10;
+    messaging -= 8;
+  }
+
+  // Check for specific patterns
+  const hasImages = contentLower.includes("image") || content.includes("<img");
+  const hasForms = contentLower.includes("form") || content.includes("<form");
+  const hasHeadings = content.includes("<h");
+  const hasSocialLinks =
+    contentLower.includes("facebook") ||
+    contentLower.includes("twitter") ||
+    contentLower.includes("linkedin") ||
+    contentLower.includes("instagram");
+
+  if (hasImages) design += 6;
+  if (hasForms) usability += 7;
+  if (hasHeadings) messaging += 5;
+  if (hasSocialLinks) digitalPresence += 8;
+
+  // Ensure scores stay within bounds
+  const clamp = (score: number) =>
+    Math.min(100, Math.max(0, Math.round(score)));
+
+  branding = clamp(branding);
+  design = clamp(design);
+  messaging = clamp(messaging);
+  usability = clamp(usability);
+  contentStrategy = clamp(contentStrategy);
+  digitalPresence = clamp(digitalPresence);
+  customerExperience = clamp(customerExperience);
+  competitorAnalysis = clamp(competitorAnalysis);
+  conversionOptimization = clamp(conversionOptimization);
+  compliance = clamp(compliance);
+
+  // Generate details based on scores
+  const getDetail = (score: number, category: string) => {
+    if (score >= 80)
+      return `${category} is strong. Continue refining for excellence.`;
+    if (score >= 70)
+      return `${category} is good. Some improvements recommended.`;
+    if (score >= 60)
+      return `${category} needs attention. Focus on key improvements.`;
+    return `${category} requires significant improvement.`;
+  };
 
   return {
-    statusCode: 200,
-    headers,
-    body: JSON.stringify({
-      id: auditId,
-      url,
-      title: `${domain} Brand Audit Report`,
-      description: `Demo brand audit analysis for ${domain}`,
-      overallScore: 76,
-      status: "completed",
-      date: new Date().toISOString(),
-      sections: [
-        {
-          name: "Branding",
-          score: 75,
-          issues: 3,
-          recommendations: 4,
-          details:
-            "Logo and color scheme are consistent. Brand identity is clear. Consider adding more brand personality.",
-        },
-        {
-          name: "Design",
-          score: 78,
-          issues: 2,
-          recommendations: 3,
-          details:
-            "Layout is clean and modern. Navigation is intuitive. Some spacing improvements recommended.",
-        },
-        {
-          name: "Messaging",
-          score: 82,
-          issues: 2,
-          recommendations: 3,
-          details:
-            "Value proposition is clear. Messaging is concise and compelling. Headlines are effective.",
-        },
-        {
-          name: "Usability",
-          score: 85,
-          issues: 2,
-          recommendations: 3,
-          details:
-            "Navigation is straightforward. Forms are user-friendly. Mobile responsiveness is good.",
-        },
-        {
-          name: "Content Strategy",
-          score: 76,
-          issues: 3,
-          recommendations: 4,
-          details:
-            "Content is relevant and well-organized. Expand blog section. Add more case studies.",
-        },
-        {
-          name: "Digital Presence",
-          score: 72,
-          issues: 4,
-          recommendations: 4,
-          details:
-            "Basic SEO elements in place. Social media integration weak. Improve meta descriptions.",
-        },
-        {
-          name: "Customer Experience",
-          score: 80,
-          issues: 2,
-          recommendations: 3,
-          details:
-            "Contact information accessible. Support options clear. Highlight response time.",
-        },
-        {
-          name: "Competitor Analysis",
-          score: 74,
-          issues: 3,
-          recommendations: 4,
-          details:
-            "Positioning is competitive. Unique selling points evident. Improve differentiation messaging.",
-        },
-        {
-          name: "Conversion Optimization",
-          score: 79,
-          issues: 3,
-          recommendations: 4,
-          details:
-            "CTAs are present. Forms capture data. A/B test to improve conversion rates.",
-        },
-        {
-          name: "Compliance & Security",
-          score: 88,
-          issues: 2,
-          recommendations: 3,
-          details:
-            "SSL installed. Privacy policy accessible. Cookie consent implemented.",
-        },
-      ],
-      metadata: {
-        analysisConfidence: 0.75,
-        industryDetected: "general",
-        generatedBy: "Demo",
-      },
-    }),
+    branding,
+    design,
+    messaging,
+    usability,
+    contentStrategy,
+    digitalPresence,
+    customerExperience,
+    competitorAnalysis,
+    conversionOptimization,
+    compliance,
+    brandingDetails: getDetail(branding, "Brand identity"),
+    designDetails: getDetail(design, "Visual design"),
+    messagingDetails: getDetail(messaging, "Core messaging"),
+    usabilityDetails: getDetail(usability, "User experience"),
+    contentStrategyDetails: getDetail(contentStrategy, "Content"),
+    digitalPresenceDetails: getDetail(digitalPresence, "Digital presence"),
+    customerExperienceDetails: getDetail(
+      customerExperience,
+      "Customer support"
+    ),
+    competitorAnalysisDetails: getDetail(
+      competitorAnalysis,
+      "Competitive position"
+    ),
+    conversionOptimizationDetails: getDetail(conversionOptimization, "CTAs"),
+    complianceDetails: getDetail(compliance, "Security"),
   };
 }
 
