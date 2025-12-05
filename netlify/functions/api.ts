@@ -1,6 +1,7 @@
 import type { Handler } from "@netlify/functions";
 
 const handler: Handler = async (event, context) => {
+  const DEPLOYMENT_TIME = "2025-12-05T18:35:00Z"; // Updated deployment
   const headers = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "Content-Type",
