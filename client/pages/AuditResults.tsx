@@ -1180,7 +1180,7 @@ Best regards`);
 
     const loadAuditData = async () => {
       try {
-        // Load from server database
+        // First try server API
         const response = await fetch(`/api/audits/${id}`);
 
         if (response.ok) {
@@ -1190,12 +1190,36 @@ Best regards`);
           return;
         }
 
-        // If not found, show error
+        // Fallback to localStorage (for current session results)
+        console.log("Server API failed, checking localStorage...");
+        const storedData = localStorage.getItem(`audit_${id}`);
+        if (storedData) {
+          const audit: AuditResponse = JSON.parse(storedData);
+          setAuditData(audit);
+          console.log("✓ Loaded audit from localStorage");
+          return;
+        }
+
+        // If both fail, show error
         setError(
           "Audit not found. The audit may have expired or the link is invalid.",
         );
       } catch (error) {
         console.error("Error loading audit data:", error);
+
+        // Try localStorage as fallback
+        try {
+          const storedData = localStorage.getItem(`audit_${id}`);
+          if (storedData) {
+            const audit: AuditResponse = JSON.parse(storedData);
+            setAuditData(audit);
+            console.log("✓ Loaded audit from localStorage (fallback)");
+            return;
+          }
+        } catch (localError) {
+          console.error("localStorage also failed:", localError);
+        }
+
         setError("Failed to load audit data");
       } finally {
         setLoading(false);
