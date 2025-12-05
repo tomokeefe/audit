@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import { AuditResponse } from "@shared/api";
+import { apiGet } from "@/lib/api-client";
 import {
   Card,
   CardContent,
@@ -1180,10 +1181,9 @@ Best regards`);
 
         // First try server API
         console.log(`Attempting to load audit ${id} from API...`);
-        const response = await fetch(`/api/audits/${id}`);
+        auditToDisplay = await apiGet<AuditResponse>(`/api/audits/${id}`);
 
-        if (response.ok) {
-          auditToDisplay = await response.json();
+        if (auditToDisplay) {
           console.log("✓ Loaded audit from server API");
         } else {
           // Fallback to localStorage (for current session results)
