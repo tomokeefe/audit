@@ -1,11 +1,6 @@
 import { RequestHandler } from "express";
 import axios from "axios";
 import * as cheerio from "cheerio";
-import {
-  GoogleGenerativeAI,
-  HarmCategory,
-  HarmBlockThreshold,
-} from "@google/generative-ai";
 import { AuditRequest, AuditResponse } from "@shared/api";
 import {
   generateWebsiteSignature,
