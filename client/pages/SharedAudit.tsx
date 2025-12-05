@@ -867,7 +867,23 @@ export default function SharedAudit() {
       try {
         console.log(`Loading audit ${id}...`);
 
-        // Load from localStorage (shares work within the same browser)
+        // Check for encoded data in URL (works across devices/browsers)
+        const searchParams = new URLSearchParams(window.location.search);
+        const encodedData = searchParams.get("data");
+
+        if (encodedData) {
+          try {
+            const decodedString = atob(encodedData);
+            const auditData = JSON.parse(decodedString);
+            setAuditData(auditData);
+            console.log("✓ Loaded audit from share link");
+            return;
+          } catch (decodeError) {
+            console.error("Failed to decode audit data from URL:", decodeError);
+          }
+        }
+
+        // Fallback: Load from localStorage (works within the same browser)
         const stored = localStorage.getItem(`audit_${id}`);
         if (stored) {
           try {
@@ -881,7 +897,7 @@ export default function SharedAudit() {
         }
 
         setError(
-          "Audit not found. Share links work within the same browser session. Open the link in the browser where you created the audit.",
+          "Audit not found. Please use the copy link button to generate a valid shareable link.",
         );
       } catch (error) {
         console.error("Error loading shared audit:", error);
