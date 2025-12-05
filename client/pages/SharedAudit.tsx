@@ -867,35 +867,21 @@ export default function SharedAudit() {
       try {
         console.log(`Loading audit ${id}...`);
 
-        // Try localStorage FIRST (fastest, works in same browser)
+        // Load from localStorage (shares work within the same browser)
         const stored = localStorage.getItem(`audit_${id}`);
         if (stored) {
           try {
             const auditData = JSON.parse(stored);
             setAuditData(auditData);
-            setLoading(false);
-            console.log("✓ Loaded audit from localStorage");
+            console.log("✓ Loaded audit from browser storage");
             return;
           } catch (parseError) {
-            console.warn("Failed to parse localStorage audit:", parseError);
+            console.error("Failed to parse audit data:", parseError);
           }
         }
 
-        // Try Netlify function to retrieve from Neon database (for cross-browser sharing)
-        console.log("Fetching from Neon database via Netlify function...");
-        const response = await fetch(`/.netlify/functions/get-audit/${id}`);
-
-        if (response.ok) {
-          const auditData: AuditResponse = await response.json();
-          setAuditData(auditData);
-          setLoading(false);
-          console.log("✓ Loaded audit from Neon database");
-          return;
-        }
-
-        console.warn(`Netlify function returned ${response.status}`);
         setError(
-          "Audit not found. The audit may have expired or the sharing link is invalid.",
+          "Audit not found. Share links work within the same browser session. Open the link in the browser where you created the audit.",
         );
       } catch (error) {
         console.error("Error loading shared audit:", error);
