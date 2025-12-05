@@ -1,16 +1,10 @@
 /**
  * API client utility for backend communication
- * Uses Fly.io backend by default, with fallback to local API
+ * Uses Netlify Functions for all API calls via relative paths
  */
 
 const getApiBaseUrl = (): string => {
-  // Use environment variable if set (Fly.io backend)
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  if (backendUrl) {
-    return backendUrl;
-  }
-
-  // Fallback to relative paths for local development
+  // Always use relative paths - Netlify routes /api/* to /.netlify/functions/api
   return "";
 };
 
