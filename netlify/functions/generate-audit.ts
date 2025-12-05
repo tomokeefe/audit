@@ -145,9 +145,7 @@ Make sure scores vary (don't use the same score for all sections). Be realistic 
 
     if (!grokResponse.ok) {
       const errorText = await grokResponse.text();
-      throw new Error(
-        `Grok API error: ${grokResponse.status} - ${errorText}`,
-      );
+      throw new Error(`Grok API error: ${grokResponse.status} - ${errorText}`);
     }
 
     const grokData = await grokResponse.json();

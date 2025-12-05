@@ -98,9 +98,7 @@ const handler: Handler = async (event, context) => {
       // Get Grok API key from environment
       const grokApiKey = process.env.GROK_API_KEY;
       console.log(`[AUDIT] Grok API Key available: ${!!grokApiKey}`);
-      console.log(
-        `[AUDIT] Grok API Key length: ${grokApiKey?.length || 0}`,
-      );
+      console.log(`[AUDIT] Grok API Key length: ${grokApiKey?.length || 0}`);
       console.log(
         `[AUDIT] Grok API Key first 10 chars: ${grokApiKey?.substring(0, 10) || "MISSING"}`,
       );
@@ -147,9 +145,7 @@ const handler: Handler = async (event, context) => {
 
       // Only proceed with Grok if we have an API key
       if (!grokApiKey) {
-        console.warn(
-          "[AUDIT] ❌ No Grok API key found - returning demo audit",
-        );
+        console.warn("[AUDIT] ❌ No Grok API key found - returning demo audit");
         console.warn(
           `[AUDIT] Available env vars with 'API': ${Object.keys(process.env)
             .filter((k) => k.includes("API"))
@@ -160,9 +156,7 @@ const handler: Handler = async (event, context) => {
 
       // Call Grok API
       try {
-        console.log(
-          "[AUDIT] ✓ Grok API key found, proceeding with Grok call",
-        );
+        console.log("[AUDIT] ✓ Grok API key found, proceeding with Grok call");
         console.log(
           `[AUDIT] Calling Grok API with key: ${grokApiKey.substring(0, 20)}...`,
         );
