@@ -1179,23 +1179,34 @@ Best regards`);
 
     const loadAuditData = async () => {
       try {
+        let auditToDisplay: AuditResponse | null = null;
+
         // First try server API
         const response = await fetch(`/api/audits/${id}`);
 
         if (response.ok) {
-          const serverAudit: AuditResponse = await response.json();
-          setAuditData(serverAudit);
+          auditToDisplay = await response.json();
           console.log("✓ Loaded audit from server");
-          return;
+        } else {
+          // Fallback to localStorage (for current session results)
+          console.log("Server API failed, checking localStorage...");
+          const storedData = localStorage.getItem(`audit_${id}`);
+          if (storedData) {
+            try {
+              auditToDisplay = JSON.parse(storedData);
+              console.log("✓ Loaded audit from localStorage");
+            } catch (parseError) {
+              console.error("Failed to parse localStorage data:", parseError);
+            }
+          }
         }
 
-        // Fallback to localStorage (for current session results)
-        console.log("Server API failed, checking localStorage...");
-        const storedData = localStorage.getItem(`audit_${id}`);
-        if (storedData) {
-          const audit: AuditResponse = JSON.parse(storedData);
-          setAuditData(audit);
-          console.log("✓ Loaded audit from localStorage");
+        if (auditToDisplay) {
+          setAuditData(auditToDisplay);
+          // Generate shareable link with encoded data for reliability across sessions
+          const encodedData = btoa(JSON.stringify(auditToDisplay));
+          shareLink = `${window.location.origin}/share/audit/${id}?data=${encodedData}`;
+          setShareUrl(shareLink);
           return;
         }
 
@@ -1206,12 +1217,16 @@ Best regards`);
       } catch (error) {
         console.error("Error loading audit data:", error);
 
-        // Try localStorage as fallback
+        // Try localStorage as final fallback
         try {
           const storedData = localStorage.getItem(`audit_${id}`);
           if (storedData) {
             const audit: AuditResponse = JSON.parse(storedData);
             setAuditData(audit);
+            // Generate shareable link with encoded data
+            const encodedData = btoa(JSON.stringify(audit));
+            shareLink = `${window.location.origin}/share/audit/${id}?data=${encodedData}`;
+            setShareUrl(shareLink);
             console.log("✓ Loaded audit from localStorage (fallback)");
             return;
           }
