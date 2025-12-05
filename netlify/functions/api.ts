@@ -162,10 +162,7 @@ const handler: Handler = async (event, context) => {
           const html = await fetchResponse.text();
           // Extract text content from HTML
           websiteContent = html
-            .replace(
-              /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
-              ""
-            )
+            .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
             .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "")
             .replace(/<[^>]*>/g, " ")
             .replace(/\s+/g, " ")
@@ -273,7 +270,7 @@ You MUST respond with ONLY valid JSON (no markdown, no explanation, just raw JSO
               },
             ],
           }),
-        }
+        },
       );
 
       if (!geminiResponse.ok) {
@@ -307,8 +304,10 @@ You MUST respond with ONLY valid JSON (no markdown, no explanation, just raw JSO
       }
 
       const overallScore = Math.round(
-        sections.reduce((sum: number, section: any) => sum + (section.score || 0), 0) /
-          sections.length
+        sections.reduce(
+          (sum: number, section: any) => sum + (section.score || 0),
+          0,
+        ) / sections.length,
       );
 
       const auditId = Date.now().toString();
@@ -361,7 +360,7 @@ You MUST respond with ONLY valid JSON (no markdown, no explanation, just raw JSO
                   JSON.stringify(fullAudit),
                 ],
               }),
-            }
+            },
           );
           console.log(`✓ Saved audit ${auditId} to database`);
         } catch (dbError) {
@@ -418,7 +417,7 @@ You MUST respond with ONLY valid JSON (no markdown, no explanation, just raw JSO
             query: "SELECT audit_data FROM audits WHERE id = $1",
             params: [id],
           }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -491,7 +490,7 @@ You MUST respond with ONLY valid JSON (no markdown, no explanation, just raw JSO
               "SELECT id, url, title, description, overall_score as overallScore, status, date FROM audits ORDER BY date DESC LIMIT 100",
             params: [],
           }),
-        }
+        },
       );
 
       if (!response.ok) {
