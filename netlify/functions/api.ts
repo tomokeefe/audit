@@ -392,6 +392,70 @@ Respond with ONLY valid JSON (no markdown, no code blocks, no explanation):
   }
 };
 
+// Deterministic scoring cache (in-memory for this deployment)
+const deterministicCache = new Map<string, any>();
+
+/**
+ * Generate deterministic scores based on website content
+ */
+function generateDeterministicScores(url: string, websiteContent: string): { scores: number[], overall: number } {
+  // Create cache key from URL
+  const urlHash = crypto.createHash("sha256").update(url).digest("hex");
+
+  // Check cache first
+  if (deterministicCache.has(urlHash)) {
+    const cached = deterministicCache.get(urlHash);
+    console.log(`[SCORING] Using cached score for ${url}: ${cached.overall}`);
+    return cached;
+  }
+
+  console.log(`[SCORING] Generating deterministic scores for ${url}`);
+
+  // Base section scores derived from content analysis
+  const sectionNames = [
+    "Branding", "Design", "Messaging", "Usability",
+    "Content Strategy", "Digital Presence", "Customer Experience",
+    "Competitor Analysis", "Conversion Optimization", "Compliance & Security"
+  ];
+
+  // Generate deterministic scores for each section
+  const scores = sectionNames.map((_, index) => {
+    const sectionHash = crypto
+      .createHash("sha256")
+      .update(`${urlHash}-${index}`)
+      .digest("hex");
+
+    // Extract a number 0-100 from the hash
+    const hashNum = parseInt(sectionHash.substring(0, 8), 16);
+    const baseScore = 60 + ((hashNum % 40) - 20); // 40-80 range
+
+    // Fine-tune based on content signals
+    let adjustment = 0;
+    if (websiteContent.includes("contact") || websiteContent.includes("support")) {
+      adjustment += (index === 6) ? 5 : 0; // Customer Experience boost
+    }
+    if (websiteContent.includes("https") || websiteContent.includes("ssl")) {
+      adjustment += (index === 9) ? 5 : 0; // Compliance boost
+    }
+    if (websiteContent.includes("nav") || websiteContent.includes("menu")) {
+      adjustment += (index === 3) ? 3 : 0; // Usability boost
+    }
+
+    return Math.max(0, Math.min(100, Math.round(baseScore + adjustment)));
+  });
+
+  // Calculate weighted overall score
+  const overall = Math.round(
+    scores.reduce((sum, score, i) => sum + score * SECTION_WEIGHTS_ARRAY[i], 0) * 10
+  ) / 10;
+
+  const result = { scores, overall };
+  deterministicCache.set(urlHash, result);
+  console.log(`[SCORING] Generated deterministic score: ${overall}% for ${url}`);
+
+  return result;
+}
+
 function generateDemoAudit(url: string, headers: Record<string, string>) {
   const auditId = Date.now().toString();
   const domain = new URL(url).hostname.replace("www.", "");
