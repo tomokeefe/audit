@@ -1335,7 +1335,7 @@ export default function Index() {
             <p className="mt-6 max-w-3xl mx-auto text-xl text-gray-600">
               Get comprehensive website analysis with detailed scoring,
               insights, and actionable recommendations to enhance your brand's
-              digital presence
+              digital presence.
             </p>
           </div>
 
