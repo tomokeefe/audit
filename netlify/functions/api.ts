@@ -276,13 +276,17 @@ Respond with ONLY valid JSON (no markdown, no code blocks, no explanation):
           `[AUDIT] ✓ Validated ${geminiSections.length} sections from Gemini`,
         );
 
-        // Validate sections (check for required fields, not score)
+        // Validate sections
         for (const section of geminiSections) {
           if (
             !section.name ||
             typeof section.issues !== "number" ||
             typeof section.recommendations !== "number" ||
-            !section.details
+            !section.details ||
+            (section.score !== undefined &&
+              (typeof section.score !== "number" ||
+                section.score < 0 ||
+                section.score > 100))
           ) {
             console.error(
               "[AUDIT] ❌ Invalid section:",
@@ -292,18 +296,50 @@ Respond with ONLY valid JSON (no markdown, no code blocks, no explanation):
           }
         }
 
-        // Generate deterministic scores based on website content
-        const { scores: deterministicScores, overall: overallScore } =
-          generateDeterministicScores(websiteUrl, websiteContent);
+        // Calculate overall score from Gemini scores or use deterministic fallback
+        let overallScore: number;
+        const hasGeminiScores = geminiSections.some(
+          (s: any) => typeof s.score === "number",
+        );
 
-        // Apply deterministic scores to Gemini recommendations
-        const sections = geminiSections.map((section: any, index: number) => ({
-          name: section.name,
-          score: deterministicScores[index],
-          issues: section.issues,
-          recommendations: section.recommendations,
-          details: section.details,
-        }));
+        if (hasGeminiScores) {
+          const validScores = geminiSections
+            .filter((s: any) => typeof s.score === "number")
+            .map((s: any) => s.score);
+          overallScore = Math.round(
+            validScores.reduce((a, b) => a + b, 0) / validScores.length,
+          );
+          console.log(
+            `[AUDIT] ✓ Using Gemini scores, overall: ${overallScore}%`,
+          );
+        } else {
+          // Fallback to deterministic scores
+          const { scores: deterministicScores, overall } =
+            generateDeterministicScores(websiteUrl, websiteContent);
+          overallScore = overall;
+          console.log(
+            `[AUDIT] ✓ Using deterministic scores, overall: ${overallScore}%`,
+          );
+        }
+
+        // Build sections from Gemini response
+        const sections = geminiSections.map((section: any, index: number) => {
+          // Use Gemini's score if provided, otherwise use deterministic
+          let score = section.score;
+          if (typeof score !== "number" || score < 0 || score > 100) {
+            const { scores: deterministicScores } =
+              generateDeterministicScores(websiteUrl, websiteContent);
+            score = deterministicScores[index];
+          }
+
+          return {
+            name: section.name,
+            score,
+            issues: section.issues,
+            recommendations: section.recommendations,
+            details: section.details,
+          };
+        });
         const auditId = Date.now().toString();
         const domain = new URL(websiteUrl).hostname.replace("www.", "");
 
