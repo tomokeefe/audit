@@ -10,7 +10,7 @@ const handler: Handler = async (event, context) => {
 
   try {
     console.log(
-      `[API] Incoming request - method: ${event.httpMethod}, path: ${event.path}`
+      `[API] Incoming request - method: ${event.httpMethod}, path: ${event.path}`,
     );
 
     if (event.httpMethod === "OPTIONS") {
@@ -52,7 +52,10 @@ const handler: Handler = async (event, context) => {
     }
 
     // Generate audit using deterministic scoring formula
-    if ((path === "/api/audit" || path === "/audit") && event.httpMethod === "POST") {
+    if (
+      (path === "/api/audit" || path === "/audit") &&
+      event.httpMethod === "POST"
+    ) {
       const body = JSON.parse(event.body || "{}");
       const { url: websiteUrl } = body;
 
@@ -98,20 +101,14 @@ const handler: Handler = async (event, context) => {
           const html = await response.text();
           // Remove scripts and styles, then extract text
           websiteContent = html
-            .replace(
-              /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
-              ""
-            )
-            .replace(
-              /<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi,
-              ""
-            )
+            .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
+            .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "")
             .replace(/<[^>]*>/g, " ")
             .replace(/\s+/g, " ")
             .trim()
             .substring(0, 4000);
           console.log(
-            `[AUDIT] Content fetched: ${websiteContent.length} chars`
+            `[AUDIT] Content fetched: ${websiteContent.length} chars`,
           );
         }
       } catch (fetchError) {
@@ -120,19 +117,22 @@ const handler: Handler = async (event, context) => {
 
       // Calculate deterministic scores based on website analysis
       console.log("[AUDIT] Calculating deterministic scores...");
-      
+
       const auditId = Date.now().toString();
       const domain = new URL(websiteUrl).hostname.replace("www.", "");
-      
+
       // Deterministic scoring based on website content analysis
       const scores = calculateDeterministicScores(websiteContent, websiteUrl);
-      
+
       const sections = [
         {
           name: "Branding",
           score: scores.branding,
           issues: Math.floor((100 - scores.branding) / 15),
-          recommendations: Math.max(2, Math.floor((100 - scores.branding) / 20)),
+          recommendations: Math.max(
+            2,
+            Math.floor((100 - scores.branding) / 20),
+          ),
           details: `Brand consistency and identity. ${scores.brandingDetails}`,
         },
         {
@@ -146,63 +146,87 @@ const handler: Handler = async (event, context) => {
           name: "Messaging",
           score: scores.messaging,
           issues: Math.floor((100 - scores.messaging) / 15),
-          recommendations: Math.max(2, Math.floor((100 - scores.messaging) / 20)),
+          recommendations: Math.max(
+            2,
+            Math.floor((100 - scores.messaging) / 20),
+          ),
           details: `Value proposition clarity. ${scores.messagingDetails}`,
         },
         {
           name: "Usability",
           score: scores.usability,
           issues: Math.floor((100 - scores.usability) / 15),
-          recommendations: Math.max(2, Math.floor((100 - scores.usability) / 20)),
+          recommendations: Math.max(
+            2,
+            Math.floor((100 - scores.usability) / 20),
+          ),
           details: `Navigation and UX. ${scores.usabilityDetails}`,
         },
         {
           name: "Content Strategy",
           score: scores.contentStrategy,
           issues: Math.floor((100 - scores.contentStrategy) / 15),
-          recommendations: Math.max(2, Math.floor((100 - scores.contentStrategy) / 20)),
+          recommendations: Math.max(
+            2,
+            Math.floor((100 - scores.contentStrategy) / 20),
+          ),
           details: `Content relevance. ${scores.contentStrategyDetails}`,
         },
         {
           name: "Digital Presence",
           score: scores.digitalPresence,
           issues: Math.floor((100 - scores.digitalPresence) / 15),
-          recommendations: Math.max(2, Math.floor((100 - scores.digitalPresence) / 20)),
+          recommendations: Math.max(
+            2,
+            Math.floor((100 - scores.digitalPresence) / 20),
+          ),
           details: `SEO and visibility. ${scores.digitalPresenceDetails}`,
         },
         {
           name: "Customer Experience",
           score: scores.customerExperience,
           issues: Math.floor((100 - scores.customerExperience) / 15),
-          recommendations: Math.max(2, Math.floor((100 - scores.customerExperience) / 20)),
+          recommendations: Math.max(
+            2,
+            Math.floor((100 - scores.customerExperience) / 20),
+          ),
           details: `Support accessibility. ${scores.customerExperienceDetails}`,
         },
         {
           name: "Competitor Analysis",
           score: scores.competitorAnalysis,
           issues: Math.floor((100 - scores.competitorAnalysis) / 15),
-          recommendations: Math.max(2, Math.floor((100 - scores.competitorAnalysis) / 20)),
+          recommendations: Math.max(
+            2,
+            Math.floor((100 - scores.competitorAnalysis) / 20),
+          ),
           details: `Market positioning. ${scores.competitorAnalysisDetails}`,
         },
         {
           name: "Conversion Optimization",
           score: scores.conversionOptimization,
           issues: Math.floor((100 - scores.conversionOptimization) / 15),
-          recommendations: Math.max(2, Math.floor((100 - scores.conversionOptimization) / 20)),
+          recommendations: Math.max(
+            2,
+            Math.floor((100 - scores.conversionOptimization) / 20),
+          ),
           details: `CTA effectiveness. ${scores.conversionOptimizationDetails}`,
         },
         {
           name: "Compliance & Security",
           score: scores.compliance,
           issues: Math.floor((100 - scores.compliance) / 15),
-          recommendations: Math.max(2, Math.floor((100 - scores.compliance) / 20)),
+          recommendations: Math.max(
+            2,
+            Math.floor((100 - scores.compliance) / 20),
+          ),
           details: `Security protocols. ${scores.complianceDetails}`,
         },
       ];
-      
+
       const overallScore = Math.round(
         sections.reduce((sum: number, s: any) => sum + s.score, 0) /
-          sections.length
+          sections.length,
       );
 
       const audit = {
@@ -218,12 +242,13 @@ const handler: Handler = async (event, context) => {
           analysisConfidence: 0.85,
           industryDetected: "general",
           generatedBy: "Deterministic Formula",
-          methodology: "Formula-based analysis of website content and structure",
+          methodology:
+            "Formula-based analysis of website content and structure",
         },
       };
 
       console.log(
-        `[AUDIT] ✅ SUCCESS! Generated audit ${auditId} - Score: ${overallScore}%`
+        `[AUDIT] ✅ SUCCESS! Generated audit ${auditId} - Score: ${overallScore}%`,
       );
 
       return {
@@ -310,8 +335,7 @@ const handler: Handler = async (event, context) => {
       headers,
       body: JSON.stringify({
         error: "Internal server error",
-        message:
-          error instanceof Error ? error.message : String(error),
+        message: error instanceof Error ? error.message : String(error),
       }),
     };
   }
@@ -319,7 +343,7 @@ const handler: Handler = async (event, context) => {
 
 function calculateDeterministicScores(
   content: string,
-  url: string
+  url: string,
 ): {
   branding: number;
   design: number;
@@ -343,7 +367,7 @@ function calculateDeterministicScores(
   complianceDetails: string;
 } {
   const contentLower = content.toLowerCase();
-  
+
   // Base scores
   let branding = 65;
   let design = 68;
@@ -461,11 +485,11 @@ function calculateDeterministicScores(
     digitalPresenceDetails: getDetail(digitalPresence, "Digital presence"),
     customerExperienceDetails: getDetail(
       customerExperience,
-      "Customer support"
+      "Customer support",
     ),
     competitorAnalysisDetails: getDetail(
       competitorAnalysis,
-      "Competitive position"
+      "Competitive position",
     ),
     conversionOptimizationDetails: getDetail(conversionOptimization, "CTAs"),
     complianceDetails: getDetail(compliance, "Security"),
