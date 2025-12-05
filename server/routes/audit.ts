@@ -2232,7 +2232,7 @@ async function buildAuditFromCache(
   };
 }
 
-// Function to generate audit using Gemini
+// Function to generate audit using Grok
 async function generateAudit(websiteData: any): Promise<AuditResponse> {
   const auditStartTime = Date.now();
   const { url } = websiteData;
