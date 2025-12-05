@@ -145,10 +145,10 @@ const handler: Handler = async (event, context) => {
         console.warn(`[AUDIT] Failed to fetch website:`, fetchError);
       }
 
-      // Only proceed with Gemini if we have an API key
-      if (!geminiApiKey) {
+      // Only proceed with Grok if we have an API key
+      if (!grokApiKey) {
         console.warn(
-          "[AUDIT] ❌ No Gemini API key found - returning demo audit",
+          "[AUDIT] ❌ No Grok API key found - returning demo audit",
         );
         console.warn(
           `[AUDIT] Available env vars with 'API': ${Object.keys(process.env)
@@ -158,13 +158,13 @@ const handler: Handler = async (event, context) => {
         return generateDemoAudit(websiteUrl, headers);
       }
 
-      // Call Gemini API
+      // Call Grok API
       try {
         console.log(
-          "[AUDIT] ✓ Gemini API key found, proceeding with Gemini call",
+          "[AUDIT] ✓ Grok API key found, proceeding with Grok call",
         );
         console.log(
-          `[AUDIT] Calling Gemini API with key: ${geminiApiKey.substring(0, 20)}...`,
+          `[AUDIT] Calling Grok API with key: ${grokApiKey.substring(0, 20)}...`,
         );
 
         const prompt = `You are a professional brand audit expert. Analyze the website for ${websiteUrl} and generate a detailed audit report.
@@ -234,60 +234,53 @@ Respond with ONLY valid JSON (no markdown, no code blocks, no explanation):
   ]
 }`;
 
-        const geminiUrl =
-          "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" +
-          geminiApiKey;
+        const grokUrl = "https://api.x.ai/v1/chat/completions";
 
-        const geminiResponse = await fetch(geminiUrl, {
+        const grokResponse = await fetch(grokUrl, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${grokApiKey}`,
           },
           body: JSON.stringify({
-            generationConfig: {
-              temperature: 0,
-              topP: 1,
-              topK: 1,
-              maxOutputTokens: 4096,
-            },
-            contents: [
+            model: "grok-2-1212",
+            messages: [
               {
-                parts: [
-                  {
-                    text: prompt,
-                  },
-                ],
+                role: "user",
+                content: prompt,
               },
             ],
+            temperature: 0.4,
+            top_p: 0.8,
+            max_tokens: 8192,
           }),
         });
 
-        console.log(`[AUDIT] Gemini status: ${geminiResponse.status}`);
-        console.log(`[AUDIT] Gemini response ok: ${geminiResponse.ok}`);
+        console.log(`[AUDIT] Grok status: ${grokResponse.status}`);
+        console.log(`[AUDIT] Grok response ok: ${grokResponse.ok}`);
 
-        if (!geminiResponse.ok) {
-          const errorBody = await geminiResponse.text();
+        if (!grokResponse.ok) {
+          const errorBody = await grokResponse.text();
           console.error(
-            `[AUDIT] ❌ Gemini error (${geminiResponse.status}):`,
+            `[AUDIT] ❌ Grok error (${grokResponse.status}):`,
             errorBody.substring(0, 500),
           );
           console.error(
-            `[AUDIT] Falling back to demo because Gemini returned ${geminiResponse.status}`,
+            `[AUDIT] Falling back to demo because Grok returned ${grokResponse.status}`,
           );
           return generateDemoAudit(websiteUrl, headers);
         }
 
-        const geminiData = await geminiResponse.json();
-        const responseText =
-          geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
+        const grokData = await grokResponse.json();
+        const responseText = grokData.choices?.[0]?.message?.content;
 
         if (!responseText) {
-          console.error("[AUDIT] ❌ Empty response from Gemini");
+          console.error("[AUDIT] ❌ Empty response from Grok");
           return generateDemoAudit(websiteUrl, headers);
         }
 
         console.log(
-          `[AUDIT] ✓ Got Gemini response: ${responseText.length} chars`,
+          `[AUDIT] ✓ Got Grok response: ${responseText.length} chars`,
         );
 
         // Extract JSON
