@@ -195,31 +195,34 @@ Respond with ONLY this exact JSON structure (no markdown, no explanation):
           geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
 
         if (!responseText) {
-          console.error("[AUDIT] Empty response from Gemini");
+          console.error("[AUDIT] ❌ Empty response from Gemini");
           return generateDemoAudit(websiteUrl, headers);
         }
 
         console.log(
-          `[AUDIT] Got Gemini response: ${responseText.length} chars`,
+          `[AUDIT] ✓ Got Gemini response: ${responseText.length} chars`,
         );
 
         // Extract JSON
         const jsonMatch = responseText.match(/\{[\s\S]*\}/);
         if (!jsonMatch) {
           console.error(
-            "[AUDIT] No JSON found in response:",
+            "[AUDIT] ❌ No JSON found in response:",
             responseText.substring(0, 200),
           );
           return generateDemoAudit(websiteUrl, headers);
         }
 
+        console.log("[AUDIT] ✓ JSON found, parsing...");
         const auditData = JSON.parse(jsonMatch[0]);
         const sections = auditData.sections;
 
         if (!Array.isArray(sections) || sections.length === 0) {
-          console.error("[AUDIT] Invalid sections");
+          console.error("[AUDIT] ❌ Invalid sections in response");
           return generateDemoAudit(websiteUrl, headers);
         }
+
+        console.log(`[AUDIT] ✓ Validated ${sections.length} sections from Gemini`);
 
         // Validate sections
         for (const section of sections) {
