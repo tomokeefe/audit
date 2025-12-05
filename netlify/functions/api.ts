@@ -89,7 +89,9 @@ const handler: Handler = async (event, context) => {
             .replace(/\s+/g, " ")
             .trim()
             .substring(0, 4000);
-          console.log(`[AUDIT] Content fetched: ${websiteContent.length} chars`);
+          console.log(
+            `[AUDIT] Content fetched: ${websiteContent.length} chars`,
+          );
         }
       } catch (fetchError) {
         console.warn(`[AUDIT] Failed to fetch website:`, fetchError);
@@ -168,7 +170,9 @@ Respond with ONLY this exact JSON structure (no markdown, no explanation):
           return generateDemoAudit(websiteUrl, headers);
         }
 
-        console.log(`[AUDIT] Got Gemini response: ${responseText.length} chars`);
+        console.log(
+          `[AUDIT] Got Gemini response: ${responseText.length} chars`,
+        );
 
         // Extract JSON
         const jsonMatch = responseText.match(/\{[\s\S]*\}/);
