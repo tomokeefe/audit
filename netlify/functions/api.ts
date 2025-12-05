@@ -23,7 +23,10 @@ const handler: Handler = async (event, context) => {
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ message: "pong", timestamp: new Date().toISOString() }),
+      body: JSON.stringify({
+        message: "pong",
+        timestamp: new Date().toISOString(),
+      }),
     };
   }
 
@@ -87,7 +90,9 @@ const handler: Handler = async (event, context) => {
             .replace(/\s+/g, " ")
             .substring(0, 5000)
             .trim();
-          console.log(`[AUDIT] Fetched ${websiteContent.length} chars of content`);
+          console.log(
+            `[AUDIT] Fetched ${websiteContent.length} chars of content`,
+          );
         }
       } catch (fetchError) {
         console.warn("[AUDIT] Error fetching website:", fetchError);
@@ -147,12 +152,17 @@ Respond with ONLY valid JSON (no markdown):
 
       if (!geminiResponse.ok) {
         const errorText = await geminiResponse.text();
-        console.error("[AUDIT] Gemini API error:", geminiResponse.status, errorText.substring(0, 200));
+        console.error(
+          "[AUDIT] Gemini API error:",
+          geminiResponse.status,
+          errorText.substring(0, 200),
+        );
         return generateDemoAudit(websiteUrl, headers);
       }
 
       const geminiData = await geminiResponse.json();
-      const responseText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "";
+      const responseText =
+        geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
       if (!responseText) {
         console.error("[AUDIT] Empty Gemini response");
@@ -162,7 +172,10 @@ Respond with ONLY valid JSON (no markdown):
       // Extract JSON from response
       let jsonMatch = responseText.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
-        console.error("[AUDIT] No JSON in response:", responseText.substring(0, 300));
+        console.error(
+          "[AUDIT] No JSON in response:",
+          responseText.substring(0, 300),
+        );
         return generateDemoAudit(websiteUrl, headers);
       }
 
@@ -204,7 +217,9 @@ Respond with ONLY valid JSON (no markdown):
         },
       };
 
-      console.log(`[AUDIT] ✓ Generated audit ${auditId} with score ${overallScore}`);
+      console.log(
+        `[AUDIT] ✓ Generated audit ${auditId} with score ${overallScore}`,
+      );
 
       return {
         statusCode: 200,
