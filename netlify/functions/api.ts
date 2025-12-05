@@ -225,7 +225,7 @@ Provide ONLY a valid JSON response (no other text) with this exact structure:
               },
             ],
           }),
-        }
+        },
       );
 
       if (!geminiResponse.ok) {
@@ -236,8 +236,7 @@ Provide ONLY a valid JSON response (no other text) with this exact structure:
 
       const geminiData = await geminiResponse.json();
       const responseText =
-        geminiData.candidates?.[0]?.content?.parts?.[0]?.text ||
-        "";
+        geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
       if (!responseText) {
         throw new Error("Empty response from Gemini API");
