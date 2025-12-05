@@ -95,18 +95,18 @@ const handler: Handler = async (event, context) => {
         };
       }
 
-      // Get Gemini API key from environment
-      const geminiApiKey = process.env.GEMINI_API_KEY;
-      console.log(`[AUDIT] Gemini API Key available: ${!!geminiApiKey}`);
+      // Get Grok API key from environment
+      const grokApiKey = process.env.GROK_API_KEY;
+      console.log(`[AUDIT] Grok API Key available: ${!!grokApiKey}`);
       console.log(
-        `[AUDIT] Gemini API Key length: ${geminiApiKey?.length || 0}`,
+        `[AUDIT] Grok API Key length: ${grokApiKey?.length || 0}`,
       );
       console.log(
-        `[AUDIT] Gemini API Key first 10 chars: ${geminiApiKey?.substring(0, 10) || "MISSING"}`,
+        `[AUDIT] Grok API Key first 10 chars: ${grokApiKey?.substring(0, 10) || "MISSING"}`,
       );
       console.log(
         `[AUDIT] All env keys: ${Object.keys(process.env)
-          .filter((k) => k.includes("GEMINI") || k.includes("API"))
+          .filter((k) => k.includes("GROK") || k.includes("API"))
           .join(", ")}`,
       );
 
