@@ -32,43 +32,23 @@ const handler: Handler = async (event) => {
   try {
     const dbUrl = process.env.DATABASE_URL;
     if (!dbUrl) {
-      throw new Error("DATABASE_URL not configured");
-    }
-
-    // Extract Neon project ID from connection string
-    // Format: postgresql://user:password@host/database
-    const url = new URL(dbUrl);
-    const host = url.hostname; // e.g., "ep-xxxxx.us-east-1.aws.neon.tech"
-
-    // Neon SQL over HTTP endpoint: https://console.neon.tech/app/projects/XXX/sql
-    // Use the connectionString directly with their HTTP API
-    const neonApiUrl = `https://${host}/sql`;
-
-    const response = await fetch(neonApiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        query: "SELECT audit_data FROM audits WHERE id = $1",
-        params: [id],
-      }),
-    });
-
-    if (!response.ok) {
-      const error = await response.text();
-      console.error(`Neon API error (${response.status}):`, error);
+      console.error("DATABASE_URL not configured");
       return {
-        statusCode: 404,
+        statusCode: 503,
         headers,
-        body: JSON.stringify({ error: "Audit not found" }),
+        body: JSON.stringify({ error: "Database not configured" }),
       };
     }
 
-    const result = await response.json();
+    // Use Neon serverless driver
+    const { sql } = await import("@neondatabase/serverless");
+    
+    const client = sql(dbUrl);
+    
+    const result = await client`SELECT audit_data FROM audits WHERE id = ${id}`;
 
-    if (!result.rows || result.rows.length === 0) {
-      console.warn(`⚠ Audit ${id} not found in database`);
+    if (!result || result.length === 0) {
+      console.warn(`⚠ Audit ${id} not found`);
       return {
         statusCode: 404,
         headers,
@@ -77,9 +57,9 @@ const handler: Handler = async (event) => {
     }
 
     const auditData =
-      typeof result.rows[0].audit_data === "string"
-        ? JSON.parse(result.rows[0].audit_data)
-        : result.rows[0].audit_data;
+      typeof result[0].audit_data === "string"
+        ? JSON.parse(result[0].audit_data)
+        : result[0].audit_data;
 
     console.log(`✓ Retrieved audit ${id} from Neon`);
     return {
