@@ -872,7 +872,9 @@ export default function SharedAudit() {
 
         if (!response.ok) {
           console.error(`API returned status ${response.status}`);
-          setError("Audit not found. The link may be invalid or the audit may have expired.");
+          setError(
+            "Audit not found. The link may be invalid or the audit may have expired.",
+          );
           return;
         }
 
@@ -881,7 +883,9 @@ export default function SharedAudit() {
         console.log("✓ Loaded shared audit from API");
       } catch (error) {
         console.error("Error loading shared audit:", error);
-        setError("Failed to load audit data. Please check the link and try again.");
+        setError(
+          "Failed to load audit data. Please check the link and try again.",
+        );
       } finally {
         setLoading(false);
       }
