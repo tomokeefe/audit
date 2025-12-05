@@ -224,7 +224,10 @@ const handler: Handler = async (event, context) => {
         },
       ].map((criterion) => {
         const variance = Math.floor(Math.random() * 30) - 15;
-        const score = Math.max(60, Math.min(95, criterion.baseScore + variance));
+        const score = Math.max(
+          60,
+          Math.min(95, criterion.baseScore + variance),
+        );
         return {
           name: criterion.name,
           score,
@@ -236,7 +239,8 @@ const handler: Handler = async (event, context) => {
       });
 
       const overallScore = Math.round(
-        sections.reduce((sum, section) => sum + section.score, 0) / sections.length
+        sections.reduce((sum, section) => sum + section.score, 0) /
+          sections.length,
       );
 
       const fullAudit = {
