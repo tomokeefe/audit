@@ -1,4 +1,6 @@
 import type { Handler } from "@netlify/functions";
+import crypto from "crypto";
+import { SECTION_WEIGHTS_ARRAY } from "../server/constants/scoring";
 
 const handler: Handler = async (event, context) => {
   const headers = {
