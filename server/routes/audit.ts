@@ -2944,40 +2944,30 @@ export const handleAudit: RequestHandler = async (req, res) => {
         console.warn("[AUDIT] Could not fetch website content:", fetchError);
       }
 
-      const prompt = `Analyze this website deeply and provide audit scores. CRITICAL: Each score must be different and based on your actual analysis of the content.
+      const prompt = `Analyze this website and provide 10 brand audit sections with scores.
 
 Website: ${url}
 Content: ${websiteContent}
 
-Score Analysis Guidelines:
-- Branding (60-95): Evaluate logo presence, color scheme consistency, brand identity strength
-- Design (55-95): Judge visual hierarchy, typography quality, whitespace, modern aesthetic
-- Messaging (65-95): Assess headline strength, value prop clarity, copy quality
-- Usability (60-95): Rate navigation clarity, information architecture, user flow
-- Content Strategy (55-95): Evaluate content depth, relevance, organization quality
-- Digital Presence (50-90): Check SEO signals, social integration, online visibility
-- Customer Experience (60-95): Assess support accessibility, trust signals, responsiveness
-- Competitor Analysis (55-95): Rate unique positioning, differentiation clarity, market fit
-- Conversion Optimization (55-95): Judge CTA effectiveness, form optimization, funnel clarity
-- Compliance & Security (70-95): Evaluate privacy, security, legal compliance signals
+For each section, assign a score between 50-95 based on your analysis. Each score MUST be unique and different from others.
 
-Generate DIFFERENT scores for each - vary by 5-15 points between sections.
-
-Return ONLY valid JSON with unique scores:
+Return ONLY valid JSON with 10 sections:
 {
   "sections": [
-    {"name": "Branding", "score": 68, "issues": 3, "recommendations": 4, "details": "Analysis based on actual branding signals in the website content provided."},
-    {"name": "Design", "score": 72, "issues": 4, "recommendations": 5, "details": "Design assessment based on visible design patterns in the HTML content."},
-    {"name": "Messaging", "score": 81, "issues": 2, "recommendations": 3, "details": "Messaging evaluation based on headlines and copy found in the website."},
-    {"name": "Usability", "score": 69, "issues": 3, "recommendations": 4, "details": "Usability score based on navigation and structure analysis."},
-    {"name": "Content Strategy", "score": 64, "issues": 4, "recommendations": 5, "details": "Content evaluation based on depth and organization observed."},
-    {"name": "Digital Presence", "score": 58, "issues": 5, "recommendations": 6, "details": "Digital presence score based on SEO and online visibility indicators."},
-    {"name": "Customer Experience", "score": 73, "issues": 3, "recommendations": 4, "details": "Customer experience assessment based on support and trust signals."},
-    {"name": "Competitor Analysis", "score": 66, "issues": 3, "recommendations": 4, "details": "Competitive analysis based on positioning and differentiation found."},
-    {"name": "Conversion Optimization", "score": 70, "issues": 3, "recommendations": 4, "details": "Conversion analysis based on CTA and funnel elements observed."},
-    {"name": "Compliance & Security", "score": 85, "issues": 2, "recommendations": 3, "details": "Compliance assessment based on security and legal signals."}
+    {"name": "Branding", "score": ANALYZE_AND_ASSIGN_UNIQUE_SCORE_1, "issues": RANDOM_2_5, "recommendations": RANDOM_3_5, "details": "Your analysis of branding based on the website content."},
+    {"name": "Design", "score": ANALYZE_AND_ASSIGN_UNIQUE_SCORE_2, "issues": RANDOM_2_5, "recommendations": RANDOM_3_5, "details": "Your analysis of design based on the website content."},
+    {"name": "Messaging", "score": ANALYZE_AND_ASSIGN_UNIQUE_SCORE_3, "issues": RANDOM_2_5, "recommendations": RANDOM_3_5, "details": "Your analysis of messaging based on the website content."},
+    {"name": "Usability", "score": ANALYZE_AND_ASSIGN_UNIQUE_SCORE_4, "issues": RANDOM_2_5, "recommendations": RANDOM_3_5, "details": "Your analysis of usability based on the website content."},
+    {"name": "Content Strategy", "score": ANALYZE_AND_ASSIGN_UNIQUE_SCORE_5, "issues": RANDOM_2_5, "recommendations": RANDOM_3_5, "details": "Your analysis of content strategy based on the website content."},
+    {"name": "Digital Presence", "score": ANALYZE_AND_ASSIGN_UNIQUE_SCORE_6, "issues": RANDOM_2_5, "recommendations": RANDOM_3_5, "details": "Your analysis of digital presence based on the website content."},
+    {"name": "Customer Experience", "score": ANALYZE_AND_ASSIGN_UNIQUE_SCORE_7, "issues": RANDOM_2_5, "recommendations": RANDOM_3_5, "details": "Your analysis of customer experience based on the website content."},
+    {"name": "Competitor Analysis", "score": ANALYZE_AND_ASSIGN_UNIQUE_SCORE_8, "issues": RANDOM_2_5, "recommendations": RANDOM_3_5, "details": "Your analysis of competitive positioning based on the website content."},
+    {"name": "Conversion Optimization", "score": ANALYZE_AND_ASSIGN_UNIQUE_SCORE_9, "issues": RANDOM_2_5, "recommendations": RANDOM_3_5, "details": "Your analysis of conversion elements based on the website content."},
+    {"name": "Compliance & Security", "score": ANALYZE_AND_ASSIGN_UNIQUE_SCORE_10, "issues": RANDOM_2_5, "recommendations": RANDOM_3_5, "details": "Your analysis of compliance and security based on the website content."}
   ]
-}`;
+}
+
+IMPORTANT: Replace ANALYZE_AND_ASSIGN_UNIQUE_SCORE_X with actual numeric scores between 50-95. All scores must be DIFFERENT from each other. Replace RANDOM_2_5 with a number 2-5. Replace RANDOM_3_5 with a number 3-5.`;
 
       console.log("[AUDIT] Calling Gemini API...");
       const result = await model.generateContent(prompt);
