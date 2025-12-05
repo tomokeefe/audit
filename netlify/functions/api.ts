@@ -75,37 +75,71 @@ const handler: Handler = async (event, context) => {
       const id = path.split("/").pop();
       console.log(`Retrieving audit ${id} from Neon database`);
 
-      // Use the dedicated get-audit function instead of proxying to Fly.io
+      const databaseUrl = process.env.DATABASE_URL;
+      if (!databaseUrl) {
+        return {
+          statusCode: 503,
+          headers,
+          body: JSON.stringify({ error: "Database not configured" }),
+        };
+      }
+
+      const url = new URL(databaseUrl);
+      const host = url.hostname;
+      const database = url.pathname.slice(1);
+      const user = url.username;
+      const password = url.password;
+
+      // Query Neon for the specific audit
       const response = await fetch(
-        `${event.headers.host || "localhost"}/.netlify/functions/get-audit/${id}`,
+        `https://${host}/sql?database=${database}&user=${user}&password=${password}`,
         {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            query: "SELECT audit_data FROM audits WHERE id = $1",
+            params: [id],
+          }),
         },
       );
 
       if (!response.ok) {
+        console.error("Neon API error:", await response.text());
         return {
-          statusCode: response.status,
+          statusCode: 404,
           headers,
           body: JSON.stringify({ error: "Audit not found" }),
         };
       }
 
-      const data = await response.json();
+      const result = await response.json();
+      if (result.rows && result.rows.length > 0) {
+        const auditData =
+          typeof result.rows[0].audit_data === "string"
+            ? JSON.parse(result.rows[0].audit_data)
+            : result.rows[0].audit_data;
+        console.log(`✓ Retrieved audit ${id} from Neon`);
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify(auditData),
+        };
+      }
+
       return {
-        statusCode: 200,
+        statusCode: 404,
         headers,
-        body: JSON.stringify(data),
+        body: JSON.stringify({ error: "Audit not found" }),
       };
     } catch (error) {
       console.error("Audit retrieval error:", error);
       return {
         statusCode: 500,
         headers,
-        body: JSON.stringify({ error: "Failed to retrieve audit" }),
+        body: JSON.stringify({
+          error: "Failed to retrieve audit",
+          message: error instanceof Error ? error.message : String(error),
+        }),
       };
     }
   }
