@@ -43,11 +43,7 @@ export default function Header() {
           </nav>
 
           {/* User section */}
-          <div className="flex items-center space-x-4">
-            <button className="bg-brand-500 hover:bg-brand-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-              New Audit
-            </button>
-          </div>
+          <div className="flex items-center space-x-4" />
         </div>
       </div>
     </header>
