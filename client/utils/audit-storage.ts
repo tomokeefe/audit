@@ -2,7 +2,7 @@ import { AuditResponse } from "@shared/api";
 
 /**
  * Save audit to database for sharing across browsers/devices
- * This bypasses the backend and saves directly to Neon via a Netlify function
+ * This uses the Fly.io Express server endpoint to save to Neon
  */
 export async function saveAuditToDatabase(
   audit: AuditResponse,
@@ -10,8 +10,8 @@ export async function saveAuditToDatabase(
   try {
     console.log(`Saving audit ${audit.id} to database...`);
 
-    // Call Netlify function to save to Neon
-    const response = await fetch("/.netlify/functions/save-audit", {
+    // Call Express server endpoint to save to Neon
+    const response = await fetch("/api/audits", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -41,7 +41,7 @@ export async function getAuditFromDatabase(
   id: string,
 ): Promise<AuditResponse | null> {
   try {
-    const response = await fetch(`/.netlify/functions/get-audit/${id}`);
+    const response = await fetch(`/api/audits/${id}`);
 
     if (!response.ok) {
       console.warn(`Audit ${id} not found in database`);

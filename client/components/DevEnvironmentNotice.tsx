@@ -19,7 +19,7 @@ export default function DevEnvironmentNotice() {
               You're viewing the development preview. API endpoints are not available in this environment.
             </p>
             <a
-              href="https://web-audit-tool-2024.netlify.app"
+              href="https://audit-dl0hvw.fly.dev"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center space-x-1 text-sm text-blue-800 hover:text-blue-900 font-medium"

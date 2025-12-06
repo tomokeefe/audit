@@ -1,10 +1,10 @@
 /**
  * API client utility for backend communication
- * Uses Netlify Functions for all API calls via relative paths
+ * Uses Fly.io Express server for all API calls via relative paths
  */
 
 const getApiBaseUrl = (): string => {
-  // Always use relative paths - Netlify routes /api/* to /.netlify/functions/api
+  // Always use relative paths - Express server handles /api/* routes
   return "";
 };
 
