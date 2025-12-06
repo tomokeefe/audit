@@ -279,12 +279,19 @@ export default function Index() {
 
       try {
         const pingResponse = await fetchWithTimeout("/api/ping", 5000);
+        if (!pingResponse) {
+          throw new Error("No response from ping endpoint");
+        }
         console.log("Ping response status:", pingResponse.status);
         console.log("Ping response ok:", pingResponse.ok);
-        console.log(
-          "Ping response headers:",
-          Object.fromEntries(pingResponse.headers.entries()),
-        );
+        try {
+          console.log(
+            "Ping response headers:",
+            Object.fromEntries(pingResponse.headers.entries()),
+          );
+        } catch (headerError) {
+          console.warn("Could not read response headers:", headerError);
+        }
 
         pingOk = pingResponse.ok;
         if (pingResponse.ok) {
