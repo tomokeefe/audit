@@ -1,39 +1,15 @@
-# Build stage
-FROM node:20-alpine as builder
-
-WORKDIR /app
-
-# Install pnpm
-RUN npm install -g pnpm
-
-# Copy package files
-COPY package.json pnpm-lock.yaml ./
-
-# Install dependencies with pnpm
-RUN pnpm install --frozen-lockfile
-
-# Copy source code
-COPY . .
-
-# Build both client and server
-RUN pnpm build
-
-# Production stage
 FROM node:20-alpine
 
 WORKDIR /app
 
-# Install pnpm
-RUN npm install -g pnpm
+# Copy everything
+COPY . .
 
-# Copy package files
-COPY package.json pnpm-lock.yaml ./
+# Install pnpm and dependencies
+RUN npm install -g pnpm && pnpm install --frozen-lockfile
 
-# Install production dependencies only
-RUN pnpm install --frozen-lockfile --prod
-
-# Copy dist folder from builder
-COPY --from=builder /app/dist ./dist
+# Build the app
+RUN pnpm build
 
 # Expose port
 EXPOSE 8080
@@ -42,5 +18,5 @@ EXPOSE 8080
 ENV NODE_ENV=production
 ENV PORT=8080
 
-# Start the Node.js server using the built server
+# Start
 CMD ["node", "dist/server/node-build.mjs"]
