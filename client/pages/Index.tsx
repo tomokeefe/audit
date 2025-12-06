@@ -330,13 +330,20 @@ export default function Index() {
 
       try {
         const auditsResponse = await fetchWithTimeout("/api/audits", 5000);
+        if (!auditsResponse) {
+          throw new Error("No response from audits endpoint");
+        }
         console.log("Audits response status:", auditsResponse.status);
         console.log("Audits response ok:", auditsResponse.ok);
         console.log("Audits response url:", auditsResponse.url);
-        console.log(
-          "Audits response headers:",
-          Object.fromEntries(auditsResponse.headers.entries()),
-        );
+        try {
+          console.log(
+            "Audits response headers:",
+            Object.fromEntries(auditsResponse.headers.entries()),
+          );
+        } catch (headerError) {
+          console.warn("Could not read audits response headers:", headerError);
+        }
 
         auditsOk = auditsResponse.ok;
         if (auditsResponse.ok) {
