@@ -1,6 +1,76 @@
 import type { Handler } from "@netlify/functions";
 import crypto from "crypto";
 
+// Parse markdown audit response from Grok
+function parseGrokMarkdownResponse(text: string): {
+  overallScore: number;
+  sections: Array<{
+    name: string;
+    score: number;
+    issues: number;
+    recommendations: number;
+    details: string;
+  }>;
+} | null {
+  try {
+    // Extract overall score from "**Overall: X/100**" format
+    const overallMatch = text.match(/\*\*Overall:\s*(\d+(?:\.\d+)?)\s*\/\s*100\*\*/i);
+    const overallScore = overallMatch ? Math.round(parseFloat(overallMatch[1])) : 75;
+
+    // Extract section scores from "N. Name – X/10" format
+    const sectionNames = [
+      "Branding & Identity",
+      "Messaging & Positioning",
+      "Content Strategy",
+      "Customer Experience",
+      "Conversion Optimization",
+      "Visual Design & Aesthetics",
+      "Usability & Navigation",
+      "Digital Presence & SEO",
+      "Competitor Differentiation",
+      "Consistency & Compliance",
+    ];
+
+    const sections: any[] = [];
+    const scoreLines = text.match(/^\s*\d+\.\s+[^–-]+ – \d+(?:\.\d+)?\/10/gm) || [];
+
+    scoreLines.forEach((line, index) => {
+      const scoreMatch = line.match(/(\d+(?:\.\d+)?)\s*\/\s*10/);
+      const score = scoreMatch
+        ? Math.round((parseFloat(scoreMatch[1]) / 10) * 100)
+        : 75;
+      sections.push({
+        name: sectionNames[index] || `Section ${index + 1}`,
+        score: Math.max(0, Math.min(100, score)),
+        issues: 2,
+        recommendations: 3,
+        details: `Analysis for ${sectionNames[index] || `Section ${index + 1}`}. Score: ${Math.round((parseFloat(scoreMatch?.[1] || "7.5") / 10) * 100)}/100.`,
+      });
+    });
+
+    // If we couldn't parse sections, create defaults
+    if (sections.length === 0) {
+      sectionNames.forEach((name) => {
+        sections.push({
+          name,
+          score: overallScore,
+          issues: 2,
+          recommendations: 3,
+          details: `Analysis for ${name}. Review the full audit for detailed feedback.`,
+        });
+      });
+    }
+
+    return {
+      overallScore,
+      sections: sections.slice(0, 10),
+    };
+  } catch (error) {
+    console.error("Error parsing markdown response:", error);
+    return null;
+  }
+}
+
 // Section weights (copied from server/constants/scoring.ts for Netlify functions)
 const SECTION_WEIGHTS_ARRAY = [
   0.18, // Branding
