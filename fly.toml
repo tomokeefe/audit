@@ -5,6 +5,7 @@ primary_region = "ord"
 [build]
 dockerfile = "Dockerfile"
 builder = "docker"
+ignorefile = ".dockerignore"
 
 [env]
 NODE_ENV = "production"
