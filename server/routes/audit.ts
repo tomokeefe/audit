@@ -2751,7 +2751,57 @@ Be thorough, professional, and provide actionable insights based on the availabl
   const startTime = Date.now();
 
   try {
-    console.log("Calling Grok API with prompt...");
+    console.log("Calling Grok API with Brand Whisperer prompt...");
+
+    // Brand Whisperer prompt with auto-extraction
+    const systemPrompt = `You are Brand Whisperer's senior brand strategist. For URL-only inputs, FIRST extract/infer: Brand Name (from <title>/meta), Target Audience (from copy like 'for millennials' or hero sections), Challenges/Goals (infer from pain points or CTAs). If unclear, use 'General Consumer' and note it.
+
+Then evaluate across exactly these 10 criteria (0–10 scores, half-points OK). Weights for overall /100:
+1. Branding & Identity (15%)
+2. Messaging & Positioning (15%)
+3. Content Strategy (10%)
+4. Customer Experience (10%)
+5. Conversion Optimization (10%)
+6. Visual Design & Aesthetics (10%)
+7. Usability & Navigation (10%)
+8. Digital Presence & SEO (10%)
+9. Competitor Differentiation (10%)
+10. Consistency & Compliance (10%)
+
+Be insightful/candid. Structure exactly: # Brand Whisperer Audit: [Name]
+**Overall: X/100** (Grade)
+## Section Scores
+1. ... – X/10
+2. ... – X/10
+3. ... – X/10
+4. ... – X/10
+5. ... – X/10
+6. ... – X/10
+7. ... – X/10
+8. ... – X/10
+9. ... – X/10
+10. ... – X/10
+## Key Strengths
+- [Strength]
+## Biggest Opportunities
+- [Opportunity]
+## Detailed Analysis
+[2–4 paragraphs]
+## Prioritized Recommendations
+1. [Recommendation]
+
+End: 'This audit shows where your brand stands—Brand Whisperer scales it to unicorn status. Reply for a custom strategy call.'`;
+
+    const userPrompt = `Audit this brand's website: ${websiteData.url}. Extract/infer name, audience, challenges as needed. Analyze live site thoroughly.
+
+Website Data:
+- Title: ${websiteData.title}
+- Description: ${websiteData.description}
+- Content: ${websiteData.paragraphs.slice(0, 5).join(" ").substring(0, 1500)}
+- Navigation: ${websiteData.navigation}
+- SSL: ${websiteData.performance?.hasSSL ? "Yes" : "No"}
+- Mobile: ${websiteData.performance?.mobileViewport ? "Yes" : "No"}
+- Pages: ${websiteData.siteStructure?.pageCount || 1}`;
 
     // Add timeout to Grok API call (60 seconds max)
     const grokPromise = fetch(GROK_API_URL, {
@@ -2761,16 +2811,19 @@ Be thorough, professional, and provide actionable insights based on the availabl
         Authorization: `Bearer ${GROK_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "grok-2-1212",
         messages: [
           {
+            role: "system",
+            content: systemPrompt,
+          },
+          {
             role: "user",
-            content: prompt,
+            content: userPrompt,
           },
         ],
-        temperature: 0.4,
-        top_p: 0.8,
-        max_tokens: 8192,
+        model: "grok-4-0709",
+        temperature: 0.7,
+        max_tokens: 2500,
       }),
     });
 
@@ -2798,21 +2851,8 @@ Be thorough, professional, and provide actionable insights based on the availabl
 
     console.log("Grok response text length:", text.length);
 
-    // Parse the JSON response
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      console.error("No JSON found in AI response:", text);
-      throw new Error("Invalid response format from AI service");
-    }
-
-    let auditData;
-    try {
-      auditData = JSON.parse(jsonMatch[0]);
-    } catch (parseError) {
-      console.error("JSON parse error:", parseError);
-      console.error("Raw AI response:", text);
-      throw new Error("Failed to parse AI response");
-    }
+    // Parse markdown response and convert to structured data
+    let auditData = parseMarkdownAuditResponse(text);
 
     // Quality Assurance Validation
     const validationResults = validateAuditOutput(auditData, businessContext);
