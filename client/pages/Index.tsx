@@ -329,7 +329,7 @@ export default function Index() {
       );
 
       try {
-        const auditsResponse = await fetchWithTimeout("/api/audits", 5000);
+        const auditsResponse = await fetchWithTimeout("/api/audits", 10000);
         if (!auditsResponse) {
           throw new Error("No response from audits endpoint");
         }
