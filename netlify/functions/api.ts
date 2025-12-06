@@ -161,72 +161,41 @@ const handler: Handler = async (event, context) => {
           `[AUDIT] Calling Grok API with key: ${grokApiKey.substring(0, 20)}...`,
         );
 
-        const prompt = `You are a professional brand audit expert. Analyze the website for ${websiteUrl} and generate a detailed audit report.
+        const systemPrompt = `You are Brand Whisperer's senior brand strategist. For URL-only inputs, FIRST extract/infer: Brand Name (from <title>/meta), Target Audience (from copy like 'for millennials' or hero sections), Challenges/Goals (infer from pain points or CTAs). If unclear, use 'General Consumer' and note it.
+
+Then evaluate across exactly these 10 criteria (0–10 scores, half-points OK). Weights for overall /100:
+1. Branding & Identity (15%)
+2. Messaging & Positioning (15%)
+3. Content Strategy (10%)
+4. Customer Experience (10%)
+5. Conversion Optimization (10%)
+6. Visual Design & Aesthetics (10%)
+7. Usability & Navigation (10%)
+8. Digital Presence & SEO (10%)
+9. Competitor Differentiation (10%)
+10. Consistency & Compliance (10%)
+
+Be insightful/candid. Structure exactly: # Brand Whisperer Audit: [Name]
+**Overall: X/100** (Grade)
+## Section Scores
+1. ... – X/10
+2. ... – X/10
+... (all 10)
+## Key Strengths
+- [Strength]
+## Biggest Opportunities
+- [Opportunity]
+## Detailed Analysis
+[2–4 paragraphs]
+## Prioritized Recommendations
+1. [Recommendation]
+
+End: 'This audit shows where your brand stands—Brand Whisperer scales it to unicorn status. Reply for a custom strategy call.'`;
+
+        const userPrompt = `Audit this brand's website: ${websiteUrl}. Extract/infer name, audience, challenges as needed.
 
 Website Content:
-${websiteContent.substring(0, 3000)}
-
-Create a JSON response with exactly 10 audit sections in this exact order:
-1. Branding
-2. Design
-3. Messaging
-4. Usability
-5. Content Strategy
-6. Digital Presence
-7. Customer Experience
-8. Competitor Analysis
-9. Conversion Optimization
-10. Compliance & Security
-
-IMPORTANT: Your scores must be CONSISTENT and DETERMINISTIC based on objective analysis of the website content above.
-
-For each section, analyze:
-- How well does the website implement this aspect?
-- Are there visible issues, missing elements, or poor implementation?
-- What improvements could be made?
-
-Then assign a score (0-100) based on:
-- 85-100: Excellent implementation with no major issues
-- 70-84: Good implementation with minor areas for improvement
-- 60-69: Average implementation with noticeable issues
-- 50-59: Below average with significant gaps
-- Below 50: Poor implementation with major deficiencies
-
-Include:
-- name: The category name (exactly as listed above)
-- score: Objective 0-100 score based on implementation quality (will vary between sections)
-- issues: Number of specific issues found (1-4)
-- recommendations: Number of actionable improvements (2-4)
-- details: Detailed analysis with these sections:
-
-  Overview:
-  [2-3 sentences describing this aspect of the website]
-
-  Issues Found:
-  - [Specific issue found in the website content]
-  - [Another specific issue]
-  (List based on what you actually see in the content)
-
-  Recommendations:
-  - [Specific, actionable improvement]
-  - [Another improvement]
-  - [Optional third improvement]
-
-Respond with ONLY valid JSON (no markdown, no code blocks, no explanation):
-{
-  "sections": [
-    {"name": "Branding", "score": number, "issues": number, "recommendations": number, "details": "string"},
-    {"name": "Design", "score": number, "issues": number, "recommendations": number, "details": "string"},
-    {"name": "Messaging", "score": number, "issues": number, "recommendations": number, "details": "string"},
-    {"name": "Usability", "score": number, "issues": number, "recommendations": number, "details": "string"},
-    {"name": "Content Strategy", "score": number, "issues": number, "recommendations": number, "details": "string"},
-    {"name": "Digital Presence", "score": number, "issues": number, "recommendations": number, "details": "string"},
-    {"name": "Customer Experience", "score": number, "issues": number, "recommendations": number, "details": "string"},
-    {"name": "Competitor Analysis", "score": number, "issues": number, "recommendations": number, "details": "string"},
-    {"name": "Conversion Optimization", "score": number, "issues": number, "recommendations": number, "details": "string"},
-    {"name": "Compliance & Security", "score": number, "issues": number, "recommendations": number, "details": "string"}
-  ]
-}`;
+${websiteContent.substring(0, 2000)}`;
 
         const grokUrl = "https://api.x.ai/v1/chat/completions";
 
