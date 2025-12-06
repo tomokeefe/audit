@@ -206,16 +206,19 @@ ${websiteContent.substring(0, 2000)}`;
             Authorization: `Bearer ${grokApiKey}`,
           },
           body: JSON.stringify({
-            model: "grok-2-1212",
             messages: [
               {
+                role: "system",
+                content: systemPrompt,
+              },
+              {
                 role: "user",
-                content: prompt,
+                content: userPrompt,
               },
             ],
-            temperature: 0.4,
-            top_p: 0.8,
-            max_tokens: 8192,
+            model: "grok-4-0709",
+            temperature: 0.7,
+            max_tokens: 2500,
           }),
         });
 
