@@ -6,9 +6,6 @@ primary_region = "ord"
 builder = "docker"
 dockerfile = "./Dockerfile"
 
-[build.docker]
-build-target = "production"
-
 [env]
 NODE_ENV = "production"
 
