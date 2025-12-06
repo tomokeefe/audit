@@ -347,7 +347,7 @@ ${websiteContent.substring(0, 2000)}`;
           metadata: {
             analysisConfidence: 0.85,
             industryDetected: "general",
-            generatedBy: "Gemini API",
+            generatedBy: "Brand Whisperer - Grok AI",
           },
         };
 
