@@ -249,95 +249,19 @@ ${websiteContent.substring(0, 2000)}`;
           `[AUDIT] ✓ Got Grok response: ${responseText.length} chars`,
         );
 
-        // Extract JSON
-        const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-        if (!jsonMatch) {
-          console.error(
-            "[AUDIT] ❌ No JSON found in response:",
-            responseText.substring(0, 200),
-          );
-          return generateDemoAudit(websiteUrl, headers);
-        }
-
-        console.log("[AUDIT] ✓ JSON found, parsing...");
-        const auditData = JSON.parse(jsonMatch[0]);
-        const geminiSections = auditData.sections;
-
-        if (!Array.isArray(geminiSections) || geminiSections.length === 0) {
-          console.error("[AUDIT] ❌ Invalid sections in response");
+        // Parse markdown response
+        const auditData = parseGrokMarkdownResponse(responseText);
+        if (!auditData || !auditData.sections || auditData.sections.length === 0) {
+          console.error("[AUDIT] ❌ Failed to parse Grok response");
           return generateDemoAudit(websiteUrl, headers);
         }
 
         console.log(
-          `[AUDIT] ✓ Validated ${geminiSections.length} sections from Gemini`,
+          `[AUDIT] ✓ Parsed ${auditData.sections.length} sections from Grok`,
         );
 
-        // Validate sections
-        for (const section of geminiSections) {
-          if (
-            !section.name ||
-            typeof section.issues !== "number" ||
-            typeof section.recommendations !== "number" ||
-            !section.details ||
-            (section.score !== undefined &&
-              (typeof section.score !== "number" ||
-                section.score < 0 ||
-                section.score > 100))
-          ) {
-            console.error(
-              "[AUDIT] ❌ Invalid section:",
-              JSON.stringify(section).substring(0, 100),
-            );
-            return generateDemoAudit(websiteUrl, headers);
-          }
-        }
-
-        // Calculate overall score from Gemini scores or use deterministic fallback
-        let overallScore: number;
-        const hasGeminiScores = geminiSections.some(
-          (s: any) => typeof s.score === "number",
-        );
-
-        if (hasGeminiScores) {
-          const validScores = geminiSections
-            .filter((s: any) => typeof s.score === "number")
-            .map((s: any) => s.score);
-          overallScore = Math.round(
-            validScores.reduce((a, b) => a + b, 0) / validScores.length,
-          );
-          console.log(
-            `[AUDIT] ✓ Using Gemini scores, overall: ${overallScore}%`,
-          );
-        } else {
-          // Fallback to deterministic scores
-          const { scores: deterministicScores, overall } =
-            generateDeterministicScores(websiteUrl, websiteContent);
-          overallScore = overall;
-          console.log(
-            `[AUDIT] ✓ Using deterministic scores, overall: ${overallScore}%`,
-          );
-        }
-
-        // Build sections from Gemini response
-        const sections = geminiSections.map((section: any, index: number) => {
-          // Use Gemini's score if provided, otherwise use deterministic
-          let score = section.score;
-          if (typeof score !== "number" || score < 0 || score > 100) {
-            const { scores: deterministicScores } = generateDeterministicScores(
-              websiteUrl,
-              websiteContent,
-            );
-            score = deterministicScores[index];
-          }
-
-          return {
-            name: section.name,
-            score,
-            issues: section.issues,
-            recommendations: section.recommendations,
-            details: section.details,
-          };
-        });
+        const overallScore = auditData.overallScore || 75;
+        const sections = auditData.sections;
         const auditId = Date.now().toString();
         const domain = new URL(websiteUrl).hostname.replace("www.", "");
 
