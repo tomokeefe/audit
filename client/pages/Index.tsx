@@ -278,7 +278,7 @@ export default function Index() {
       );
 
       try {
-        const pingResponse = await fetchWithTimeout("/api/ping", 5000);
+        const pingResponse = await fetchWithTimeout("/api/ping", 10000);
         if (!pingResponse) {
           throw new Error("No response from ping endpoint");
         }
