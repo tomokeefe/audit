@@ -2444,6 +2444,14 @@ function parseMarkdownAuditResponse(text: string): any {
       "[PARSE DEBUG] Sample section scores:",
       result.sections.slice(0, 3).map((s) => `${s.name}: ${s.score}`),
     );
+    console.log(
+      "[PARSE DEBUG] Section details preview:",
+      result.sections.slice(0, 2).map((s) => ({
+        name: s.name,
+        detailsLength: s.details?.length || 0,
+        detailsPreview: s.details?.substring(0, 150) || 'No details'
+      }))
+    );
 
     return result;
   } catch (error) {
