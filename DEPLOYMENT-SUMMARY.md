@@ -4,7 +4,7 @@
 
 ✅ **Audits not saving** - Database schema updated  
 ✅ **Cloudflare bypass failing** - Puppeteer installed with Chromium  
-✅ **Production "Failed to fetch" errors** - CORS and error handling improved  
+✅ **Production "Failed to fetch" errors** - CORS and error handling improved
 
 ## Deploy Now (Railway)
 
@@ -18,6 +18,7 @@ git push origin main
 ```
 
 Railway will automatically:
+
 - Detect the updated Dockerfile
 - Build with Chromium support
 - Deploy the fixed application
@@ -31,14 +32,14 @@ Railway will automatically:
 
 ## What Changed
 
-| Component | Before | After |
-|-----------|--------|-------|
-| Base Image | node:20-alpine | node:20 (with Chromium) |
-| Puppeteer | ❌ Missing | ✅ Working |
-| CORS | Basic | Explicit configuration |
-| Error Handling | Crashes | Graceful fallbacks |
-| Logging | Limited | Comprehensive |
-| Database | Missing column | ✅ Schema updated |
+| Component      | Before         | After                   |
+| -------------- | -------------- | ----------------------- |
+| Base Image     | node:20-alpine | node:20 (with Chromium) |
+| Puppeteer      | ❌ Missing     | ✅ Working              |
+| CORS           | Basic          | Explicit configuration  |
+| Error Handling | Crashes        | Graceful fallbacks      |
+| Logging        | Limited        | Comprehensive           |
+| Database       | Missing column | ✅ Schema updated       |
 
 ## Files Modified
 
@@ -51,6 +52,7 @@ Railway will automatically:
 ## Expected Result
 
 After deployment:
+
 - ✅ Frontend loads on Railway URL
 - ✅ No "Failed to fetch" errors
 - ✅ Audits save to database
