@@ -6,8 +6,10 @@ import { extname } from "path";
 import { createServer } from "./index.js";
 
 const port = parseInt(process.env.PORT || "3000", 10);
-const __dirname = import.meta.url.split("/").slice(0, -1).join("/");
+const __dirname = import.meta.dirname || path.dirname(new URL(import.meta.url).pathname);
 const distPath = path.join(__dirname, "../dist/spa");
+console.log("distPath:", distPath);
+console.log("distPath exists:", existsSync(distPath));
 
 const mimeTypes: { [key: string]: string } = {
   ".html": "text/html",
