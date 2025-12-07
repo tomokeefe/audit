@@ -65,10 +65,20 @@ async function start() {
     const ext = extname(filePath);
     const contentType = mimeTypes[ext] || "application/octet-stream";
 
+    console.log(`[Static] Request: ${req.method} ${req.path}`, {
+      resolvedPath: filePath,
+      distPath,
+      exists: existsSync(filePath),
+    });
+
     // Check if file exists
     if (!existsSync(filePath)) {
       // Not found - serve index.html for SPA routing
       const indexPath = path.join(distPath, "index.html");
+      console.log(`[Static] File not found, checking for index.html`, {
+        indexPath,
+        exists: existsSync(indexPath),
+      });
       if (existsSync(indexPath)) {
         res.setHeader("Content-Type", "text/html");
         return createReadStream(indexPath).pipe(res);
