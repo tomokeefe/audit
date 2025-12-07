@@ -2388,14 +2388,14 @@ function parseMarkdownAuditResponse(text: string): any {
           maxScore: 100,
           issues,
           recommendations,
-          details: extractSectionDetails(text, sectionName, score),
+          details: extractSectionDetails(text, sectionName, score, index),
         });
       });
     }
 
     // If we couldn't parse sections, create default ones
     if (sections.length === 0) {
-      sectionNames.forEach((name) => {
+      sectionNames.forEach((name, index) => {
         const issues = Math.max(1, Math.round((100 - overallScore) / 15));
         const recommendations = Math.max(
           1,
@@ -2408,7 +2408,7 @@ function parseMarkdownAuditResponse(text: string): any {
           maxScore: 100,
           issues,
           recommendations,
-          details: extractSectionDetails(text, name, overallScore),
+          details: extractSectionDetails(text, name, overallScore, index),
         });
       });
     }
