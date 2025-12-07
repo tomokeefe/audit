@@ -2965,11 +2965,19 @@ RULES:
 
     return auditResult;
   } catch (error) {
-    console.error("[AUDIT DEBUG] Error generating audit:", error);
-    console.error(
-      "[AUDIT DEBUG] Error message:",
-      error instanceof Error ? error.message : "Unknown error",
-    );
+    console.error("[AUDIT DEBUG] ========== ERROR GENERATING AUDIT ==========");
+    console.error("[AUDIT DEBUG] Error type:", error instanceof Error ? error.constructor.name : typeof error);
+    console.error("[AUDIT DEBUG] Error message:", error instanceof Error ? error.message : "Unknown error");
+    console.error("[AUDIT DEBUG] Error stack:", error instanceof Error ? error.stack : "No stack trace");
+    console.error("[AUDIT DEBUG] URL:", websiteData.url);
+    console.error("[AUDIT DEBUG] Time elapsed:", Date.now() - auditStartTime, "ms");
+    console.error("[AUDIT DEBUG] ================================================");
+
+    // Check if it's a timeout error
+    if (error instanceof Error && error.message.includes("timeout")) {
+      console.log("[AUDIT DEBUG] Grok API timeout - request took too long");
+      return generateFallbackAudit(websiteData);
+    }
 
     // Check if it's a Grok API overload error
     if (error instanceof Error && error.message.includes("overloaded")) {
@@ -2981,9 +2989,11 @@ RULES:
     if (
       error instanceof Error &&
       (error.message.includes("503") ||
-        error.message.includes("Service Unavailable"))
+        error.message.includes("Service Unavailable") ||
+        error.message.includes("429") ||
+        error.message.includes("rate limit"))
     ) {
-      console.log("AI service unavailable, providing fallback audit");
+      console.log("[AUDIT DEBUG] AI service unavailable or rate limited, providing fallback audit");
       return generateFallbackAudit(websiteData);
     }
 
