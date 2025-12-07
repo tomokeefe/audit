@@ -15,19 +15,25 @@ export interface StoredAudit {
 
 export class AuditService {
   async saveAudit(audit: AuditResponse): Promise<void> {
+    console.log(`🔵 [DB SAVE] ======== saveAudit CALLED ========`);
+    console.log(`🔵 [DB SAVE] Audit ID: ${audit.id}`);
+
     const pool = await getPool();
     if (!pool) {
-      console.warn("⚠️  Database pool not available, skipping audit save");
+      console.error("❌ [DB SAVE] Database pool not available, skipping audit save");
+      console.error("❌ [DB SAVE] This means DATABASE_URL might be invalid or database initialization failed");
       return;
     }
 
-    console.log(
-      `[DB SAVE] Attempting to save audit ${audit.id} to database...`,
-    );
-    console.log(`[DB SAVE] URL: ${audit.url}`);
-    console.log(`[DB SAVE] Title: ${audit.title}`);
-    console.log(`[DB SAVE] Score: ${audit.overallScore}`);
-    console.log(`[DB SAVE] Date: ${audit.date} (type: ${typeof audit.date})`);
+    console.log(`✅ [DB SAVE] Database pool obtained`);
+    console.log(`🔵 [DB SAVE] Audit details:`);
+    console.log(`   - ID: ${audit.id}`);
+    console.log(`   - URL: ${audit.url}`);
+    console.log(`   - Title: ${audit.title}`);
+    console.log(`   - Score: ${audit.overallScore}`);
+    console.log(`   - Date: ${audit.date} (type: ${typeof audit.date})`);
+    console.log(`   - Status: ${audit.status || "completed"}`);
+    console.log(`   - Sections: ${audit.sections?.length || 0}`);
 
     // Ensure date is in ISO format for PostgreSQL
     let dateValue: string;
@@ -35,11 +41,11 @@ export class AuditService {
       dateValue = audit.date
         ? new Date(audit.date).toISOString()
         : new Date().toISOString();
-      console.log(`[DB SAVE] Normalized date: ${dateValue}`);
+      console.log(`✅ [DB SAVE] Date normalized: ${dateValue}`);
     } catch (dateError) {
-      console.error(`[DB SAVE] Error parsing date "${audit.date}":`, dateError);
+      console.error(`❌ [DB SAVE] Error parsing date "${audit.date}":`, dateError);
       dateValue = new Date().toISOString();
-      console.log(`[DB SAVE] Using fallback date: ${dateValue}`);
+      console.log(`⚠️  [DB SAVE] Using fallback date: ${dateValue}`);
     }
 
     const query = `
@@ -69,24 +75,31 @@ export class AuditService {
       isDemoMode,
     ];
 
-    console.log(
-      `[DB SAVE] Query values:`,
-      values.map(
-        (v, i) => `$${i + 1}=${typeof v === "string" ? v.substring(0, 50) : v}`,
-      ),
-    );
+    console.log(`🔵 [DB SAVE] Executing query with values:`);
+    values.forEach((v, i) => {
+      const displayValue = typeof v === "string" && v.length > 50
+        ? v.substring(0, 50) + "..."
+        : v;
+      console.log(`   $${i + 1} = ${displayValue} (${typeof v})`);
+    });
 
     try {
+      console.log(`🔵 [DB SAVE] Executing database query...`);
       const result = await pool.query(query, values);
-      console.log(
-        `✅ [DB SAVE] Successfully saved audit ${audit.id} to database (${result.rowCount} row(s) affected)`,
-      );
+      console.log(`✅ [DB SAVE] ======== SUCCESS ========`);
+      console.log(`✅ [DB SAVE] Audit ${audit.id} saved to database`);
+      console.log(`✅ [DB SAVE] Rows affected: ${result.rowCount}`);
+      console.log(`✅ [DB SAVE] ========================`);
     } catch (error) {
+      console.error(`❌ [DB SAVE] ======== QUERY FAILED ========`);
       console.error(`❌ [DB SAVE] Error saving audit ${audit.id}:`, error);
-      console.error(`[DB SAVE] Error details:`, {
+      console.error(`❌ [DB SAVE] Error details:`, {
         message: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
+        code: (error as any)?.code,
+        detail: (error as any)?.detail,
       });
+      console.error(`❌ [DB SAVE] ========================`);
       throw error;
     }
   }
