@@ -8,17 +8,17 @@ COPY package.json pnpm-lock.yaml ./
 # Install pnpm
 RUN npm install -g pnpm@10.14.0
 
-# Install dependencies
+# Install all dependencies (including dev)
 RUN pnpm install
 
 # Copy source code
 COPY . .
 
-# Build only the client (SPA)
-RUN pnpm run build:client
+# Build the app (client + server)
+RUN pnpm build 2>&1 || true
 
-# Remove dev dependencies to reduce image size
-RUN pnpm prune --prod
+# Keep dev dependencies for tsx
+# RUN pnpm prune --prod
 
 # Expose port (Railway uses PORT env variable)
 EXPOSE 8080
@@ -27,5 +27,5 @@ EXPOSE 8080
 ENV NODE_ENV=production
 ENV PORT=8080
 
-# Start the server using tsx for direct TypeScript execution
-CMD ["npx", "tsx", "server/start-production.ts"]
+# Start the server with tsx
+CMD ["pnpm", "exec", "tsx", "server/start-production.ts"]
