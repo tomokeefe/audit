@@ -616,6 +616,166 @@ function analyzeCrossPageConsistency(crawlResults: any[]) {
   return analysis;
 }
 
+// Function to scrape website using Puppeteer (headless browser) for Cloudflare-protected sites
+async function scrapeWithPuppeteer(url: string) {
+  console.log(`🚀 Launching Puppeteer for ${url} (Cloudflare/bot protection detected)`);
+
+  let browser;
+  try {
+    browser = await puppeteer.launch({
+      headless: true,
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-accelerated-2d-canvas',
+        '--disable-gpu',
+        '--window-size=1920x1080',
+      ],
+    });
+
+    const page = await browser.newPage();
+
+    // Set realistic viewport and user agent
+    await page.setViewport({ width: 1920, height: 1080 });
+    await page.setUserAgent(
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    );
+
+    // Navigate to the page with a timeout
+    console.log(`   Navigating to ${url}...`);
+    await page.goto(url, {
+      waitUntil: 'networkidle2',
+      timeout: 30000,
+    });
+
+    // Wait a bit for JavaScript to render
+    await page.waitForTimeout(2000);
+
+    console.log(`   ✓ Page loaded, extracting content...`);
+
+    // Extract content using page.evaluate to run code in the browser context
+    const websiteData = await page.evaluate(() => {
+      // Helper to get text content
+      const getText = (selector: string): string => {
+        const el = document.querySelector(selector);
+        return el?.textContent?.trim() || '';
+      };
+
+      // Helper to get all text from elements
+      const getAllText = (selector: string): string[] => {
+        const elements = document.querySelectorAll(selector);
+        return Array.from(elements)
+          .map(el => el.textContent?.trim() || '')
+          .filter(text => text.length > 0);
+      };
+
+      // Helper to get attribute
+      const getAttr = (selector: string, attr: string): string => {
+        const el = document.querySelector(selector);
+        return el?.getAttribute(attr) || '';
+      };
+
+      return {
+        title: document.title || '',
+        description: getAttr('meta[name="description"]', 'content'),
+        headings: getAllText('h1, h2, h3'),
+        paragraphs: getAllText('p').slice(0, 10),
+        images: Array.from(document.querySelectorAll('img'))
+          .map(img => img.getAttribute('alt') || '')
+          .filter(alt => alt.length > 0),
+        links: getAllText('a').slice(0, 20),
+        navigation: getText('nav, .nav, .menu, .navbar') ||
+                   getAllText('nav a, .nav a, .menu a, .navbar a').join(' '),
+        footer: getText('footer'),
+        brandElements: getText('.logo, .brand, #logo, #brand'),
+        htmlLength: document.documentElement.outerHTML.length,
+      };
+    });
+
+    console.log(`   ✓ Content extracted. Title: "${websiteData.title.slice(0, 50)}..."`);
+    console.log(`   ✓ Navigation: "${websiteData.navigation.slice(0, 100)}..."`);
+
+    await browser.close();
+
+    // Get the final HTML for additional analysis
+    const html = await page.content();
+
+    // Perform the same analysis as axios-based scraping
+    const siteStructure = await analyzeSiteStructure(url, html);
+    const uxFeatures = await analyzeUXFeatures(html);
+    const performanceData = await analyzeWebsitePerformance(url);
+
+    console.log(`✓ Site structure: ${siteStructure.discoveredPages.length} pages discovered`);
+    console.log(`✓ UX features: ${uxFeatures.forms.count} forms, ${uxFeatures.media.images} images`);
+
+    // Try to crawl additional pages (limited to avoid long execution)
+    let multiPageResults: any[] = [];
+    let crossPageAnalysis: any = {
+      brandConsistency: { score: 80, issues: [], recommendations: [] },
+      navigationConsistency: { score: 80, issues: [], recommendations: [] },
+      contentConsistency: { score: 80, issues: [], recommendations: [] },
+    };
+
+    if (siteStructure.discoveredPages.length > 0) {
+      try {
+        const pagesToCrawl = Math.min(3, siteStructure.discoveredPages.length); // Limit to 3 for Puppeteer
+        console.log(`Crawling ${pagesToCrawl} additional pages...`);
+        multiPageResults = await crawlMultiplePages(url, siteStructure.discoveredPages, 3);
+
+        if (multiPageResults.length > 1) {
+          crossPageAnalysis = analyzeCrossPageConsistency(multiPageResults);
+        }
+      } catch (crawlError) {
+        console.warn("Multi-page crawl failed:", crawlError);
+      }
+    }
+
+    return {
+      title: websiteData.title.trim(),
+      description: websiteData.description.trim(),
+      headings: websiteData.headings,
+      paragraphs: websiteData.paragraphs,
+      images: websiteData.images,
+      links: websiteData.links,
+      navigation: websiteData.navigation.trim(),
+      footer: websiteData.footer.trim(),
+      brandElements: websiteData.brandElements.trim(),
+      htmlLength: websiteData.htmlLength,
+      url,
+      fallbackUsed: false,
+      scrapedWith: 'puppeteer', // Flag to indicate Puppeteer was used
+      performance: performanceData,
+      siteStructure: siteStructure,
+      uxFeatures: uxFeatures,
+      multiPageAnalysis: {
+        pagesAnalyzed: multiPageResults.length + 1,
+        pageDetails: multiPageResults,
+        crossPageConsistency: crossPageAnalysis,
+        totalContentLength: multiPageResults.reduce(
+          (sum, page) => sum + page.contentLength,
+          websiteData.htmlLength,
+        ),
+        avgImagesPerPage: multiPageResults.length > 0
+          ? multiPageResults.reduce((sum, page) => sum + page.images.total, 0) / multiPageResults.length
+          : websiteData.images.length,
+        avgFormsPerPage: multiPageResults.length > 0
+          ? multiPageResults.reduce((sum, page) => sum + page.forms.count, 0) / multiPageResults.length
+          : uxFeatures.forms.count,
+        pageTypes: multiPageResults.map(page => ({ url: page.url, type: page.pageType })),
+      },
+      analysisDepth: "puppeteer-comprehensive",
+    };
+
+  } catch (error) {
+    console.error(`❌ Puppeteer scraping failed for ${url}:`, error);
+    if (browser) {
+      await browser.close();
+    }
+    throw error;
+  }
+}
+
 // Function to scrape website content with retry logic and fallback
 async function scrapeWebsite(url: string) {
   const userAgents = [
