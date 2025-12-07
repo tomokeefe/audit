@@ -5,34 +5,22 @@ import { createServer } from "./index";
 
 async function startServer() {
   try {
-    console.log("Starting server...");
-
+    console.log("Creating server instance...");
     const app = await createServer();
+    
     const port = parseInt(process.env.PORT || "3000", 10);
-
-    // In production, serve the built SPA files
     const __dirname = import.meta.url.split("/").slice(0, -1).join("/");
     const distPath = path.join(__dirname, "../spa");
 
     console.log(`SPA path: ${distPath}`);
-
-    // Serve static files
+    console.log("Serving static files...");
+    
+    // Only serve static files, no routes at all
     app.use(express.static(distPath));
-
-    // Handle React Router - serve index.html for all non-API routes
-    app.get("*", (req, res) => {
-      // Don't serve index.html for API routes
-      if (req.path.startsWith("/api/") || req.path.startsWith("/health")) {
-        return res.status(404).json({ error: "API endpoint not found" });
-      }
-
-      res.sendFile(path.join(distPath, "index.html"));
-    });
-
+    
+    console.log("Starting server...");
     const server = app.listen(port, "0.0.0.0", () => {
       console.log(`✅ Server running on port ${port}`);
-      console.log(`📱 Frontend: http://0.0.0.0:${port}`);
-      console.log(`🔧 API: http://0.0.0.0:${port}/api`);
     });
 
     server.on("error", (error) => {
@@ -42,19 +30,13 @@ async function startServer() {
 
     // Graceful shutdown
     process.on("SIGTERM", () => {
-      console.log("🛑 Received SIGTERM, shutting down gracefully");
-      server.close(() => {
-        console.log("✅ Server closed");
-        process.exit(0);
-      });
+      console.log("🛑 SIGTERM received");
+      server.close(() => process.exit(0));
     });
 
     process.on("SIGINT", () => {
-      console.log("🛑 Received SIGINT, shutting down gracefully");
-      server.close(() => {
-        console.log("✅ Server closed");
-        process.exit(0);
-      });
+      console.log("🛑 SIGINT received");
+      server.close(() => process.exit(0));
     });
   } catch (error) {
     console.error("Failed to start server:", error);
