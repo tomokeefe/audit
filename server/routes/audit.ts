@@ -694,6 +694,10 @@ async function scrapeWebsite(url: string) {
       const uxFeatures = await analyzeUXFeatures(response.data);
       const performanceData = await analyzeWebsitePerformance(url);
 
+      console.log(`✓ Site structure: ${siteStructure.discoveredPages.length} pages discovered`);
+      console.log(`✓ UX features: ${uxFeatures.forms.count} forms, ${uxFeatures.media.images} images, ${uxFeatures.accessibility.missingAltText} missing alt tags`);
+      console.log(`✓ Performance: ${performanceData.pageSizeKB}KB, ${performanceData.responseTime}ms, SSL: ${performanceData.hasSSL}`);
+
       // Crawl multiple important pages (limit to 5 to avoid timeouts)
       let multiPageResults: any[] = [];
       let crossPageAnalysis: any = {
@@ -704,16 +708,21 @@ async function scrapeWebsite(url: string) {
 
       if (siteStructure.discoveredPages.length > 0) {
         try {
-          console.log(`Crawling ${Math.min(5, siteStructure.discoveredPages.length)} additional pages...`);
+          const pagesToCrawl = Math.min(5, siteStructure.discoveredPages.length);
+          console.log(`Crawling ${pagesToCrawl} additional pages for comprehensive analysis...`);
           multiPageResults = await crawlMultiplePages(url, siteStructure.discoveredPages, 5);
+          console.log(`✓ Successfully crawled ${multiPageResults.length} pages`);
 
           if (multiPageResults.length > 1) {
             crossPageAnalysis = analyzeCrossPageConsistency(multiPageResults);
+            console.log(`✓ Cross-page consistency - Brand: ${crossPageAnalysis.brandConsistency.score}, Navigation: ${crossPageAnalysis.navigationConsistency.score}, Content: ${crossPageAnalysis.contentConsistency.score}`);
           }
         } catch (crawlError) {
           console.warn("Multi-page crawl failed, continuing with single page:", crawlError);
           multiPageResults = [];
         }
+      } else {
+        console.log("No additional pages discovered, analyzing homepage only");
       }
 
       return {
