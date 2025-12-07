@@ -2724,31 +2724,77 @@ For EACH section, provide:
 - Specific evidence (quote data, cite metrics)
 - Quantifiable findings where available
 - Cross-page observations (if multi-page data provided)
-- 2-4 actionable recommendations with expected impact
+- 2-3 actionable recommendations SPECIFIC TO THAT SECTION
 
 Structure exactly: # Brand Whisperer Audit: [Name]
 **Overall: X/100** (Grade)
 ## Section Scores
-1. Branding & Identity – X/10 (cite specific evidence: e.g., "Logo present on 4/5 pages")
-2. Messaging & Positioning – X/10 (cite evidence from content analysis)
-3. Content Strategy – X/10 (reference headings, structure, consistency metrics)
-4. Customer Experience – X/10 (cite UX metrics, forms, engagement elements)
-5. Conversion Optimization – X/10 (reference CTAs, forms, contact accessibility)
-6. Visual Design & Aesthetics – X/10 (cite mobile viewport, design consistency)
-7. Usability & Navigation – X/10 (reference navigation consistency, accessibility scores)
-8. Digital Presence & SEO – X/10 (cite PageSpeed scores, SEO metrics, technical findings)
-9. Competitor Differentiation – X/10 (infer from positioning and unique elements)
-10. Consistency & Compliance – X/10 (cite cross-page consistency scores, accessibility compliance)
+1. Branding & Identity – X/10
+   Evidence: [e.g., "Logo present on 4/5 pages analyzed"]
+   Recommendations:
+   - [Specific recommendation for branding]
+   - [Another branding-specific recommendation]
+
+2. Messaging & Positioning – X/10
+   Evidence: [cite specific content analysis]
+   Recommendations:
+   - [Specific recommendation for messaging]
+   - [Another messaging-specific recommendation]
+
+3. Content Strategy – X/10
+   Evidence: [reference headings, structure, consistency metrics]
+   Recommendations:
+   - [Specific recommendation for content]
+   - [Another content-specific recommendation]
+
+4. Customer Experience – X/10
+   Evidence: [cite UX metrics, forms, engagement]
+   Recommendations:
+   - [Specific recommendation for CX]
+   - [Another CX-specific recommendation]
+
+5. Conversion Optimization – X/10
+   Evidence: [reference CTAs, forms found]
+   Recommendations:
+   - [Specific recommendation for conversions]
+   - [Another conversion-specific recommendation]
+
+6. Visual Design & Aesthetics – X/10
+   Evidence: [cite mobile viewport, design consistency]
+   Recommendations:
+   - [Specific recommendation for design]
+   - [Another design-specific recommendation]
+
+7. Usability & Navigation – X/10
+   Evidence: [navigation consistency data]
+   Recommendations:
+   - [Specific recommendation for usability]
+   - [Another usability-specific recommendation]
+
+8. Digital Presence & SEO – X/10
+   Evidence: [PageSpeed scores, SEO metrics]
+   Recommendations:
+   - [Specific recommendation for SEO]
+   - [Another SEO-specific recommendation]
+
+9. Competitor Differentiation – X/10
+   Evidence: [positioning analysis]
+   Recommendations:
+   - [Specific recommendation for differentiation]
+   - [Another differentiation-specific recommendation]
+
+10. Consistency & Compliance – X/10
+    Evidence: [cross-page consistency scores]
+    Recommendations:
+    - [Specific recommendation for consistency]
+    - [Another consistency-specific recommendation]
+
 ## Key Strengths
 - [Specific strength with evidence, e.g., "Strong PageSpeed score of 87/100"]
 ## Biggest Opportunities
 - [Specific opportunity with quantifiable impact, e.g., "Adding alt text to 8 missing images would improve accessibility by 40%"]
 ## Detailed Analysis
 [2–4 paragraphs with specific metrics and cross-page findings]
-## Prioritized Recommendations
-1. [High-impact recommendation with evidence and expected outcome]
-2. [Medium-impact recommendation with data support]
-3. [Quick-win recommendation with clear benefit]
 
 End: 'This audit shows where your brand stands—Brand Whisperer scales it to unicorn status. Reply for a custom strategy call.'`;
 
