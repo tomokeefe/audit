@@ -410,7 +410,16 @@ export const handleAuditStandard = async (req: Request, res: Response) => {
     res.setHeader("Content-Type", "application/json");
     res.status(200).json(auditResult);
   } catch (error) {
-    console.error("Standard audit error:", error);
-    res.status(500).json({ error: "Internal server error" });
+    const errorMessage =
+      error instanceof Error ? error.message : String(error);
+    console.error("Standard audit error:", errorMessage);
+    console.error("Full error:", error);
+
+    // Only send detailed error in development
+    const isDev = process.env.NODE_ENV !== "production";
+    res.status(500).json({
+      error: "Failed to generate audit",
+      message: isDev ? errorMessage : "Internal server error",
+    });
   }
 };
