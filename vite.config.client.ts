@@ -25,24 +25,40 @@ export default defineConfig(({ mode }) => ({
 }));
 
 let expressAppInstance: any = null;
+let expressInitialized = false;
 
 function expressPlugin(): Plugin {
   return {
     name: "express-plugin",
     apply: "serve", // Only apply during development (serve mode)
     configureServer(server) {
-      // Initialize Express app asynchronously and use it as middleware
+      // Initialize Express app asynchronously
       (async () => {
         try {
           const { createServer } = await import("./server/index.js");
           expressAppInstance = await createServer();
-          // Insert Express middleware at the beginning of the middleware stack
-          server.middlewares.use(expressAppInstance);
-          console.log("✅ Express server initialized and mounted successfully");
+          expressInitialized = true;
+          console.log("✅ Express server initialized successfully");
         } catch (error) {
           console.error("❌ Failed to initialize Express server:", error);
         }
       })();
+
+      // Return a pre middleware function that runs before Vite's default middleware
+      return (req, res, next) => {
+        // Check if this is an API request
+        if (req.url?.startsWith("/api")) {
+          if (expressAppInstance) {
+            // Call Express app as middleware
+            return expressAppInstance(req, res, () => {
+              // If Express didn't handle it, continue to next middleware
+              next();
+            });
+          }
+        }
+        // For non-API requests, continue to next middleware
+        next();
+      };
     },
   };
 }
