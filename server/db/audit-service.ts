@@ -17,8 +17,25 @@ export class AuditService {
   async saveAudit(audit: AuditResponse): Promise<void> {
     const pool = await getPool();
     if (!pool) {
-      console.warn("Database not available, skipping audit save");
+      console.warn("⚠️  Database pool not available, skipping audit save");
       return;
+    }
+
+    console.log(`[DB SAVE] Attempting to save audit ${audit.id} to database...`);
+    console.log(`[DB SAVE] URL: ${audit.url}`);
+    console.log(`[DB SAVE] Title: ${audit.title}`);
+    console.log(`[DB SAVE] Score: ${audit.overallScore}`);
+    console.log(`[DB SAVE] Date: ${audit.date} (type: ${typeof audit.date})`);
+
+    // Ensure date is in ISO format for PostgreSQL
+    let dateValue: string;
+    try {
+      dateValue = audit.date ? new Date(audit.date).toISOString() : new Date().toISOString();
+      console.log(`[DB SAVE] Normalized date: ${dateValue}`);
+    } catch (dateError) {
+      console.error(`[DB SAVE] Error parsing date "${audit.date}":`, dateError);
+      dateValue = new Date().toISOString();
+      console.log(`[DB SAVE] Using fallback date: ${dateValue}`);
     }
 
     const query = `
@@ -43,16 +60,22 @@ export class AuditService {
       audit.description || null,
       audit.overallScore,
       audit.status || "completed",
-      audit.date,
+      dateValue,
       JSON.stringify(audit),
       isDemoMode,
     ];
 
+    console.log(`[DB SAVE] Query values:`, values.map((v, i) => `$${i + 1}=${typeof v === 'string' ? v.substring(0, 50) : v}`));
+
     try {
-      await pool.query(query, values);
-      console.log(`Saved audit ${audit.id} to database`);
+      const result = await pool.query(query, values);
+      console.log(`✅ [DB SAVE] Successfully saved audit ${audit.id} to database (${result.rowCount} row(s) affected)`);
     } catch (error) {
-      console.error("Error saving audit:", error);
+      console.error(`❌ [DB SAVE] Error saving audit ${audit.id}:`, error);
+      console.error(`[DB SAVE] Error details:`, {
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
       throw error;
     }
   }
