@@ -2232,6 +2232,9 @@ Recommendations:
       fallbackSections.length,
   );
 
+  console.log("[FALLBACK] Calculated overall score:", overallScore, "from", fallbackSections.length, "sections");
+  console.log("[FALLBACK] Section scores:", fallbackSections.map(s => s.score).join(", "));
+
   return {
     id: auditId,
     url: websiteData.url,
