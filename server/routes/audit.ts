@@ -2330,6 +2330,8 @@ function parseMarkdownAuditResponse(text: string): any {
       /^\s*(\d+)\.\s+([^–-]+?)\s*(?:–|-)\s*(\d+(?:\.\d+)?)\s*\/\s*10/gm,
     );
     const sections: any[] = [];
+
+    console.log("[PARSE DEBUG] Section matches found:", sectionMatches?.length || 0);
     const sectionNames = [
       "Branding & Identity",
       "Messaging & Positioning",
