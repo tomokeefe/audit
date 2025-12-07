@@ -43,27 +43,36 @@ async function storeAuditResult(auditData: AuditResponse): Promise<void> {
     console.log(`✅ Stored audit ${auditData.id} in memory storage for sharing`);
 
     // Also save to database for persistent sharing across browsers/devices
+    console.log(`🔵 Checking DATABASE_URL: ${process.env.DATABASE_URL ? 'SET' : 'NOT SET'}`);
+
     if (process.env.DATABASE_URL) {
       try {
+        console.log(`🔵 Attempting to import audit-service...`);
         const { auditService } = await import("../db/audit-service");
+        console.log(`🔵 audit-service imported, calling saveAudit...`);
         await auditService.saveAudit(auditData);
         console.log(
-          `✓ Stored audit ${auditData.id} in database for persistent sharing`,
+          `✅ Stored audit ${auditData.id} in database for persistent sharing`,
         );
       } catch (dbError) {
         console.error(
-          `✗ ERROR saving audit ${auditData.id} to database:`,
+          `❌ ERROR saving audit ${auditData.id} to database:`,
           dbError,
         );
+        console.error(`❌ Error details:`, {
+          message: dbError instanceof Error ? dbError.message : String(dbError),
+          stack: dbError instanceof Error ? dbError.stack : undefined,
+        });
         // Don't fail - in-memory storage is still available
       }
     } else {
       console.warn(
-        `⚠ DATABASE_URL not configured - audit ${auditData.id} will only be available in current session`,
+        `⚠️  WARNING: DATABASE_URL not configured - audit ${auditData.id} will only be available in current session`,
       );
     }
   } catch (error) {
-    console.warn("Error storing audit:", error);
+    console.error("❌ CRITICAL ERROR in storeAuditResult:", error);
+    console.error("Stack:", error instanceof Error ? error.stack : undefined);
     // Don't throw - storage failure shouldn't break audit creation
   }
 }
