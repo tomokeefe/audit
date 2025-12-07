@@ -1,18 +1,6 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import { handleDemo } from "./routes/demo.js";
-import { handleAudit, handleDemoAudit } from "./routes/audit.js";
-import {
-  handleAuditProgress,
-  handleAuditStandard,
-} from "./routes/audit-progress.js";
-import {
-  storeAudit,
-  getAudit,
-  listAudits,
-  deleteAudit,
-} from "./routes/audit-storage.js";
 import { initializeDatabase } from "./db/init.js";
 
 export function createServer() {
