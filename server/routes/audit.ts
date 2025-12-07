@@ -2569,6 +2569,72 @@ function extractSectionDetails(
   return details.trim();
 }
 
+// Get default recommendations based on section and score
+function getDefaultRecommendations(sectionName: string, score: number): string[] {
+  const defaults: { [key: string]: string[] } = {
+    "Branding & Identity": [
+      "Develop comprehensive brand guidelines to ensure consistency across all touchpoints",
+      "Strengthen visual identity with consistent use of colors, fonts, and imagery",
+      "Create a cohesive brand voice that resonates with your target audience",
+    ],
+    "Messaging & Positioning": [
+      "Clarify your unique value proposition and communicate it prominently",
+      "Develop compelling messaging that speaks to customer pain points and needs",
+      "Strengthen calls-to-action with benefit-focused language",
+    ],
+    "Content Strategy": [
+      "Establish a consistent content publishing schedule with an editorial calendar",
+      "Optimize content for search engines with keyword research and on-page SEO",
+      "Create diverse content types including blog posts, videos, and infographics",
+    ],
+    "Customer Experience": [
+      "Implement proactive customer support features like live chat or chatbots",
+      "Create comprehensive self-service resources and FAQs",
+      "Map the customer journey to identify and eliminate friction points",
+    ],
+    "Conversion Optimization": [
+      "Optimize call-to-action placement and design for maximum visibility",
+      "Simplify forms and reduce friction in the conversion process",
+      "Add trust signals like testimonials, reviews, and security badges",
+    ],
+    "Visual Design & Aesthetics": [
+      "Modernize visual design to align with current trends and user expectations",
+      "Improve color contrast and typography for better readability",
+      "Create a responsive design that works seamlessly across all devices",
+    ],
+    "Usability & Navigation": [
+      "Simplify navigation structure to reduce cognitive load",
+      "Implement breadcrumb navigation for better wayfinding",
+      "Ensure mobile-friendly touch targets and interaction patterns",
+    ],
+    "Digital Presence & SEO": [
+      "Implement comprehensive on-page SEO including meta tags and structured data",
+      "Build high-quality backlinks through content marketing and partnerships",
+      "Optimize page speed and Core Web Vitals for better search rankings",
+    ],
+    "Competitor Differentiation": [
+      "Conduct competitive analysis to identify differentiation opportunities",
+      "Highlight unique features and benefits that set you apart",
+      "Develop messaging that clearly communicates your competitive advantages",
+    ],
+    "Consistency & Compliance": [
+      "Conduct accessibility audit and implement WCAG 2.1 AA standards",
+      "Ensure privacy policies and legal disclosures are up to date",
+      "Maintain brand consistency across all pages and channels",
+    ],
+  };
+
+  const defaultRecs = defaults[sectionName] || [
+    `Review and enhance ${sectionName.toLowerCase()} based on industry best practices`,
+    `Conduct user testing to identify specific areas for improvement in ${sectionName.toLowerCase()}`,
+    `Implement data-driven optimizations to boost ${sectionName.toLowerCase()} effectiveness`,
+  ];
+
+  // Return 2-3 recommendations based on score
+  const count = score < 70 ? 3 : score < 85 ? 2 : 1;
+  return defaultRecs.slice(0, count);
+}
+
 // Function to generate audit using Grok
 async function generateAudit(websiteData: any): Promise<AuditResponse> {
   const auditStartTime = Date.now();
