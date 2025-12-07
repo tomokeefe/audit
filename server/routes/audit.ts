@@ -1,7 +1,6 @@
 import { RequestHandler } from "express";
 import axios from "axios";
 import * as cheerio from "cheerio";
-import puppeteer from "puppeteer";
 import { AuditRequest, AuditResponse } from "@shared/api";
 import {
   generateWebsiteSignature,
