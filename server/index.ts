@@ -58,18 +58,13 @@ export async function createServer() {
   });
 
   // Audit routes
-  const { handleAudit, handleDemoAudit } = await import(
-    "./routes/audit.js"
-  );
+  const { handleAudit, handleDemoAudit } = await import("./routes/audit.js");
   const { handleAuditProgress, handleAuditStandard } = await import(
     "./routes/audit-progress.js"
   );
-  const {
-    storeAudit,
-    getAudit,
-    listAudits,
-    deleteAudit,
-  } = await import("./routes/audit-storage.js");
+  const { storeAudit, getAudit, listAudits, deleteAudit } = await import(
+    "./routes/audit-storage.js"
+  );
   const { handleDemo } = await import("./routes/demo.js");
 
   // Audit creation and progress tracking

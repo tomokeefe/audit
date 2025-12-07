@@ -38,11 +38,7 @@ async function start() {
     let filePath = path.join(distPath, req.path);
 
     // If requesting a directory or just /, serve index.html
-    if (
-      req.path === "/" ||
-      req.path.endsWith("/") ||
-      !extname(req.path)
-    ) {
+    if (req.path === "/" || req.path.endsWith("/") || !extname(req.path)) {
       filePath = path.join(distPath, "index.html");
     }
 
