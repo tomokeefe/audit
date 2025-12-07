@@ -195,7 +195,10 @@ export default function Index() {
         throw fetchError; // Re-throw to be handled by outer catch
       }
     } catch (error) {
-      console.warn("Failed to load recent audits (may be in preview mode):", error);
+      console.warn(
+        "Failed to load recent audits (may be in preview mode):",
+        error,
+      );
 
       // Provide more detailed error information
       let errorMsg = "";
@@ -211,7 +214,9 @@ export default function Index() {
         ) {
           // In iframe environments, this is expected and not an actual error
           isIframeError = true;
-          console.log("ℹ️ Running in preview mode - audits unavailable (this is normal)");
+          console.log(
+            "ℹ️ Running in preview mode - audits unavailable (this is normal)",
+          );
         } else {
           errorMsg = error.message;
           handleError(error);
@@ -314,7 +319,10 @@ export default function Index() {
           errorMsg = `Ping failed: ${pingResponse.status} ${pingResponse.statusText}`;
         }
       } catch (pingError) {
-        console.warn("Ping request failed (expected in iframe preview):", pingError);
+        console.warn(
+          "Ping request failed (expected in iframe preview):",
+          pingError,
+        );
         if (pingError instanceof Error) {
           if (pingError.name === "AbortError") {
             errorMsg = "Ping request timed out";
@@ -324,7 +332,9 @@ export default function Index() {
           ) {
             // This is expected in iframe environments - don't treat as error
             errorMsg = "";
-            console.log("ℹ️ Preview mode: API requests blocked by iframe security. This is normal.");
+            console.log(
+              "ℹ️ Preview mode: API requests blocked by iframe security. This is normal.",
+            );
           } else {
             errorMsg = `Ping error: ${pingError.message}`;
           }
@@ -375,7 +385,10 @@ export default function Index() {
           }
         }
       } catch (auditsError) {
-        console.warn("Audits request failed (expected in iframe preview):", auditsError);
+        console.warn(
+          "Audits request failed (expected in iframe preview):",
+          auditsError,
+        );
         if (!errorMsg) {
           // Only set if ping didn't already fail
           if (auditsError instanceof Error) {
@@ -459,11 +472,15 @@ export default function Index() {
           throw new Error(`Server responded with ${testResponse.status}`);
         } catch (error) {
           // Check if this is an iframe environment error
-          const isIframeError = error instanceof Error &&
-            (error.message.includes("Failed to fetch") || error.name === "TypeError");
+          const isIframeError =
+            error instanceof Error &&
+            (error.message.includes("Failed to fetch") ||
+              error.name === "TypeError");
 
           if (isIframeError) {
-            console.log("ℹ️ Running in iframe preview mode - API unavailable (this is normal)");
+            console.log(
+              "ℹ️ Running in iframe preview mode - API unavailable (this is normal)",
+            );
             // Don't retry in iframe mode, just set minimal status and continue
             setApiStatus({ ping: false, audits: false, error: undefined });
             return true; // Return success to stop retrying
