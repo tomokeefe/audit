@@ -25,37 +25,38 @@ export default defineConfig(({ mode }) => ({
 }));
 
 let expressAppInstance: any = null;
+const expressReadyPromise = (async () => {
+  try {
+    const { createServer } = await import("./server/index.js");
+    expressAppInstance = await createServer();
+    console.log("✅ Express server initialized successfully");
+  } catch (error) {
+    console.error("❌ Failed to initialize Express server:", error);
+  }
+})();
 
 function expressPlugin(): Plugin {
   return {
     name: "express-plugin",
     apply: "serve", // Only apply during development (serve mode)
-    configureServer(server) {
-      // Initialize Express app asynchronously
-      (async () => {
-        try {
-          const { createServer } = await import("./server/index.js");
-          expressAppInstance = await createServer();
-          console.log("✅ Express server initialized successfully");
+    async configureServer(server) {
+      // Wait for Express to be ready
+      await expressReadyPromise;
 
-          // Clear and re-add middlewares with Express first
-          const middlewares = server.middlewares;
+      // Insert Express middleware at the beginning of the stack
+      if (expressAppInstance) {
+        // Create a custom middleware that intercepts all /api requests
+        const apiHandler = (req, res, next) => {
+          if (req.url && req.url.startsWith("/api")) {
+            expressAppInstance(req, res, next);
+          } else {
+            next();
+          }
+        };
 
-          // Create a wrapper middleware that only handles /api requests
-          const apiMiddleware = (req, res, next) => {
-            if (req.url?.startsWith("/api")) {
-              expressAppInstance(req, res, next);
-            } else {
-              next();
-            }
-          };
-
-          // Add Express as a middleware
-          middlewares.use(apiMiddleware);
-        } catch (error) {
-          console.error("❌ Failed to initialize Express server:", error);
-        }
-      })();
+        // Use unshift to add at the beginning
+        server.middlewares.stack.unshift({ handle: apiHandler });
+      }
     },
   };
 }
