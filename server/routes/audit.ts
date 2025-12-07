@@ -113,18 +113,18 @@ export function createFallbackData(url: string) {
     siteStructure: {
       discoveredPages: [],
       navigation: {
-        mainNav: "Limited access",
+        mainNav: "⚠️ Not accessible - site protected",
         breadcrumbs: "",
         footer: "",
-        menuItems: ["Home", "About", "Services", "Contact"],
+        menuItems: [], // Empty - no fake data
         hasSearch: false,
         hasLanguageSelector: false,
       },
       contentStructure: {
         headingLevels: [],
         sections: [],
-        hasContactInfo: true,
-        hasAboutPage: true,
+        hasContactInfo: false, // Unknown, not assumed
+        hasAboutPage: false, // Unknown, not assumed
         hasBlog: false,
         hasProducts: false,
       },
