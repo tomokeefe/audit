@@ -1991,6 +1991,9 @@ ${featureAdaptations.map((adaptation) => `- ${adaptation}`).join("\n")}
 
 // Function to generate fallback audit when AI service is unavailable
 function generateFallbackAudit(websiteData: any): AuditResponse {
+  console.log("[FALLBACK] Generating fallback audit for:", websiteData.url);
+  console.log("[FALLBACK] This means the AI API failed or timed out");
+
   const auditId = Date.now().toString();
   const currentDate = new Date().toLocaleDateString("en-US", {
     year: "numeric",
