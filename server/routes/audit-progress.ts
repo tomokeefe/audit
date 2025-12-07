@@ -279,7 +279,9 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
 
     console.log(`🔵 [PROGRESS] Generating audit for ${url}...`);
     const auditResult = await generateAudit(websiteData);
-    console.log(`✅ [PROGRESS] Audit generated with ID: ${auditResult.id}, Score: ${auditResult.overallScore}`);
+    console.log(
+      `✅ [PROGRESS] Audit generated with ID: ${auditResult.id}, Score: ${auditResult.overallScore}`,
+    );
 
     sendProgress({
       step: "finalizing",
@@ -288,9 +290,13 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
     });
 
     // Store the result
-    console.log(`🔵 [PROGRESS] Calling storeAuditResult for ${auditResult.id}...`);
+    console.log(
+      `🔵 [PROGRESS] Calling storeAuditResult for ${auditResult.id}...`,
+    );
     await storeAuditResult(auditResult);
-    console.log(`✅ [PROGRESS] storeAuditResult completed for ${auditResult.id}`);
+    console.log(
+      `✅ [PROGRESS] storeAuditResult completed for ${auditResult.id}`,
+    );
 
     sendProgress({
       step: "completed",
@@ -378,7 +384,9 @@ export const handleAuditStandard = async (req: Request, res: Response) => {
 
     // Check API key early
     if (!process.env.GROK_API_KEY) {
-      console.error("❌ [STANDARD] GROK_API_KEY not configured - cannot process audit");
+      console.error(
+        "❌ [STANDARD] GROK_API_KEY not configured - cannot process audit",
+      );
       return res.status(500).json({
         error:
           "Server configuration error: API key not configured. Please contact support.",
@@ -409,7 +417,10 @@ export const handleAuditStandard = async (req: Request, res: Response) => {
       storeAuditResult = auditModule.storeAuditResult;
       console.log("✅ [STANDARD] Audit module imported successfully");
     } catch (importError) {
-      console.error("❌ [STANDARD] Failed to import audit module:", importError);
+      console.error(
+        "❌ [STANDARD] Failed to import audit module:",
+        importError,
+      );
       return res.status(500).json({
         error:
           "Server error: Failed to load audit module. Please try again later.",
@@ -419,11 +430,15 @@ export const handleAuditStandard = async (req: Request, res: Response) => {
     // Perform audit
     console.log(`🔵 [STANDARD] Scraping website: ${url}`);
     const websiteData = await scrapeWebsite(url);
-    console.log(`✅ [STANDARD] Website scraped. Fallback used: ${websiteData.fallbackUsed}`);
+    console.log(
+      `✅ [STANDARD] Website scraped. Fallback used: ${websiteData.fallbackUsed}`,
+    );
 
     console.log(`🔵 [STANDARD] Generating audit for ${url}...`);
     const auditResult = await generateAudit(websiteData);
-    console.log(`✅ [STANDARD] Audit generated. ID: ${auditResult.id}, Score: ${auditResult.overallScore}`);
+    console.log(
+      `✅ [STANDARD] Audit generated. ID: ${auditResult.id}, Score: ${auditResult.overallScore}`,
+    );
 
     console.log(`🔵 [STANDARD] Storing audit ${auditResult.id}...`);
     await storeAuditResult(auditResult);

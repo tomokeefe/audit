@@ -20,8 +20,12 @@ export class AuditService {
 
     const pool = await getPool();
     if (!pool) {
-      console.error("❌ [DB SAVE] Database pool not available, skipping audit save");
-      console.error("❌ [DB SAVE] This means DATABASE_URL might be invalid or database initialization failed");
+      console.error(
+        "❌ [DB SAVE] Database pool not available, skipping audit save",
+      );
+      console.error(
+        "❌ [DB SAVE] This means DATABASE_URL might be invalid or database initialization failed",
+      );
       return;
     }
 
@@ -43,7 +47,10 @@ export class AuditService {
         : new Date().toISOString();
       console.log(`✅ [DB SAVE] Date normalized: ${dateValue}`);
     } catch (dateError) {
-      console.error(`❌ [DB SAVE] Error parsing date "${audit.date}":`, dateError);
+      console.error(
+        `❌ [DB SAVE] Error parsing date "${audit.date}":`,
+        dateError,
+      );
       dateValue = new Date().toISOString();
       console.log(`⚠️  [DB SAVE] Using fallback date: ${dateValue}`);
     }
@@ -77,9 +84,8 @@ export class AuditService {
 
     console.log(`🔵 [DB SAVE] Executing query with values:`);
     values.forEach((v, i) => {
-      const displayValue = typeof v === "string" && v.length > 50
-        ? v.substring(0, 50) + "..."
-        : v;
+      const displayValue =
+        typeof v === "string" && v.length > 50 ? v.substring(0, 50) + "..." : v;
       console.log(`   $${i + 1} = ${displayValue} (${typeof v})`);
     });
 

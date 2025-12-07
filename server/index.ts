@@ -90,13 +90,13 @@ export async function createServer() {
       res.json({
         success: true,
         message: "Test audit saved",
-        auditId: testAudit.id
+        auditId: testAudit.id,
       });
     } catch (error) {
       console.error("🧪 [TEST] Test save failed:", error);
       res.status(500).json({
         success: false,
-        error: error instanceof Error ? error.message : String(error)
+        error: error instanceof Error ? error.message : String(error),
       });
     }
   });

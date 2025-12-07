@@ -50,9 +50,7 @@ async function storeAuditResult(auditData: AuditResponse): Promise<void> {
 
     // Also save to database for persistent sharing across browsers/devices
     const dbUrl = process.env.DATABASE_URL;
-    console.log(
-      `🔵 [STORE] Step 2: Checking DATABASE_URL...`,
-    );
+    console.log(`🔵 [STORE] Step 2: Checking DATABASE_URL...`);
     console.log(
       `🔵 [STORE] DATABASE_URL is ${dbUrl ? "SET (" + dbUrl.substring(0, 30) + "...)" : "NOT SET"}`,
     );
@@ -63,7 +61,9 @@ async function storeAuditResult(auditData: AuditResponse): Promise<void> {
         const auditServiceModule = await import("../db/audit-service.js");
         console.log(`✅ [STORE] audit-service module imported`);
 
-        console.log(`🔵 [STORE] Step 4: Extracting auditService from module...`);
+        console.log(
+          `🔵 [STORE] Step 4: Extracting auditService from module...`,
+        );
         const { auditService } = auditServiceModule;
         console.log(`✅ [STORE] auditService extracted:`, typeof auditService);
 
@@ -88,9 +88,18 @@ async function storeAuditResult(auditData: AuditResponse): Promise<void> {
         );
         console.error(`❌ [STORE] Error type:`, typeof dbError);
         console.error(`❌ [STORE] Error name:`, (dbError as any)?.name);
-        console.error(`❌ [STORE] Error message:`, dbError instanceof Error ? dbError.message : String(dbError));
-        console.error(`❌ [STORE] Error stack:`, dbError instanceof Error ? dbError.stack : "No stack trace");
-        console.error(`❌ [STORE] Full error object:`, JSON.stringify(dbError, null, 2));
+        console.error(
+          `❌ [STORE] Error message:`,
+          dbError instanceof Error ? dbError.message : String(dbError),
+        );
+        console.error(
+          `❌ [STORE] Error stack:`,
+          dbError instanceof Error ? dbError.stack : "No stack trace",
+        );
+        console.error(
+          `❌ [STORE] Full error object:`,
+          JSON.stringify(dbError, null, 2),
+        );
         // Don't fail - in-memory storage is still available
       }
     } else {
@@ -101,7 +110,10 @@ async function storeAuditResult(auditData: AuditResponse): Promise<void> {
   } catch (error) {
     console.error("❌ [STORE] CRITICAL ERROR in storeAuditResult:", error);
     console.error("❌ [STORE] Error type:", typeof error);
-    console.error("❌ [STORE] Error stack:", error instanceof Error ? error.stack : "No stack trace");
+    console.error(
+      "❌ [STORE] Error stack:",
+      error instanceof Error ? error.stack : "No stack trace",
+    );
     // Don't throw - storage failure shouldn't break audit creation
   }
 
