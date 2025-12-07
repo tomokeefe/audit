@@ -3012,9 +3012,9 @@ Website Data:
   } catch (error) {
     console.error("Error generating audit:", error);
 
-    // Check if it's a Gemini API overload error
+    // Check if it's a Grok API overload error
     if (error instanceof Error && error.message.includes("overloaded")) {
-      console.log("Gemini API is overloaded, providing fallback audit");
+      console.log("Grok API is overloaded, providing fallback audit");
       return generateFallbackAudit(websiteData);
     }
 
