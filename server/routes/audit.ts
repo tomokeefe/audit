@@ -2610,11 +2610,14 @@ function parseMarkdownAuditResponse(text: string): any {
     ];
 
     if (sectionMatches) {
+      console.log("[PARSE DEBUG] Parsing section scores from Grok response:");
       sectionMatches.forEach((match, index) => {
         const scoreMatch = match.match(/(\d+(?:\.\d+)?)\s*\/\s*10/);
         const scoreOut10 = scoreMatch ? parseFloat(scoreMatch[1]) : 7;
         const score = Math.round((scoreOut10 / 10) * 100);
         const sectionName = sectionNames[index] || `Section ${index + 1}`;
+
+        console.log(`[PARSE DEBUG]   ${sectionName}: ${scoreOut10}/10 → ${score}%`);
 
         // Calculate issues and recommendations based on score
         const issues = Math.max(1, Math.round((100 - score) / 15));
@@ -2629,6 +2632,7 @@ function parseMarkdownAuditResponse(text: string): any {
           details: extractSectionDetails(text, sectionName, score, index),
         });
       });
+      console.log(`[PARSE DEBUG] Average score: ${Math.round(sections.reduce((sum, s) => sum + s.score, 0) / sections.length)}%`);
     }
 
     // If we couldn't parse sections, create default ones
