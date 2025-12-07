@@ -27,5 +27,5 @@ EXPOSE 8080
 ENV NODE_ENV=production
 ENV PORT=8080
 
-# Start the server with the pre-built version
-CMD ["node", "dist/server/node-build.mjs"]
+# Start the server with tsx (handles paths correctly in ESM)
+CMD ["pnpm", "exec", "tsx", "dist/server/start-production.mjs"]
