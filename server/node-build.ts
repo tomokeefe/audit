@@ -1,51 +1,99 @@
 import path from "path";
-import { createServer } from "./index";
-import * as express from "express";
+import { createServer } from "./index.js";
+import express from "express";
+import { createReadStream, existsSync } from "fs";
+import { extname } from "path";
 
-const app = createServer();
 const port = parseInt(process.env.PORT || "3000", 10);
+const __dirname = import.meta.url.split("/").slice(0, -1).join("/");
+const distPath = path.join(__dirname, "../dist/spa");
 
-// In production, serve the built SPA files
-const __dirname = import.meta.dirname;
-const distPath = path.join(__dirname, "../spa");
+const mimeTypes: { [key: string]: string } = {
+  ".html": "text/html",
+  ".js": "application/javascript",
+  ".mjs": "application/javascript",
+  ".css": "text/css",
+  ".json": "application/json",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".gif": "image/gif",
+  ".svg": "image/svg+xml",
+  ".ico": "image/x-icon",
+  ".woff": "font/woff",
+  ".woff2": "font/woff2",
+};
 
-// Serve static files
-app.use(express.static(distPath));
+async function start() {
+  const app = await createServer();
 
-// Handle React Router - serve index.html for all non-API routes
-app.get("*", (req, res) => {
-  // Don't serve index.html for API routes
-  if (req.path.startsWith("/api/") || req.path.startsWith("/health")) {
-    return res.status(404).json({ error: "API endpoint not found" });
-  }
+  // Serve static files (SPA assets)
+  app.use((req, res, next) => {
+    // Skip middleware for API routes
+    if (req.path.startsWith("/api")) {
+      return next();
+    }
 
-  res.sendFile(path.join(distPath, "index.html"));
-});
+    // Resolve file path
+    let filePath = path.join(distPath, req.path);
 
-const server = app.listen(port, "0.0.0.0", () => {
-  console.log(`🚀 Fusion Starter server running on port ${port}`);
-  console.log(`📱 Frontend: http://localhost:${port}`);
-  console.log(`🔧 API: http://localhost:${port}/api`);
-});
+    // If requesting a directory or just /, serve index.html
+    if (
+      req.path === "/" ||
+      req.path.endsWith("/") ||
+      !extname(req.path)
+    ) {
+      filePath = path.join(distPath, "index.html");
+    }
 
-server.on("error", (error) => {
-  console.error("Server error:", error);
+    const ext = extname(filePath);
+    const contentType = mimeTypes[ext] || "application/octet-stream";
+
+    // Check if file exists
+    if (!existsSync(filePath)) {
+      // Not found - serve index.html for SPA routing
+      const indexPath = path.join(distPath, "index.html");
+      if (existsSync(indexPath)) {
+        res.setHeader("Content-Type", "text/html");
+        return createReadStream(indexPath).pipe(res);
+      }
+      return res.status(404).send("Not Found");
+    }
+
+    // Serve the file
+    res.setHeader("Content-Type", contentType);
+    createReadStream(filePath).pipe(res);
+  });
+
+  const server = app.listen(port, "0.0.0.0", () => {
+    console.log(`🚀 Server running on port ${port}`);
+    console.log(`📱 Frontend: http://localhost:${port}`);
+    console.log(`🔧 API: http://localhost:${port}/api`);
+  });
+
+  server.on("error", (error) => {
+    console.error("Server error:", error);
+    process.exit(1);
+  });
+
+  // Graceful shutdown
+  process.on("SIGTERM", () => {
+    console.log("🛑 Received SIGTERM, shutting down gracefully");
+    server.close(() => {
+      console.log("Server closed");
+      process.exit(0);
+    });
+  });
+
+  process.on("SIGINT", () => {
+    console.log("🛑 Received SIGINT, shutting down gracefully");
+    server.close(() => {
+      console.log("Server closed");
+      process.exit(0);
+    });
+  });
+}
+
+start().catch((error) => {
+  console.error("Failed to start server:", error);
   process.exit(1);
-});
-
-// Graceful shutdown
-process.on("SIGTERM", () => {
-  console.log("🛑 Received SIGTERM, shutting down gracefully");
-  server.close(() => {
-    console.log("Server closed");
-    process.exit(0);
-  });
-});
-
-process.on("SIGINT", () => {
-  console.log("🛑 Received SIGINT, shutting down gracefully");
-  server.close(() => {
-    console.log("Server closed");
-    process.exit(0);
-  });
 });
