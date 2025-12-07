@@ -23,6 +23,7 @@ export interface ScoringCache {
   evidenceData: any;
   methodology: string;
   expiresAt: Date;
+  sections?: any[]; // Store full section details including recommendations
 }
 
 // In-memory cache (should be replaced with Redis in production)
@@ -127,6 +128,7 @@ export function cacheScore(
   overallScore: number,
   evidenceData: any,
   methodology: string,
+  sections?: any[],
 ): void {
   const cacheKey = `${websiteSignature.contentHash}-${websiteSignature.structureHash}`;
   const expiresAt = new Date();
@@ -141,6 +143,7 @@ export function cacheScore(
     evidenceData,
     methodology,
     expiresAt,
+    sections,
   };
 
   scoringCache.set(cacheKey, cacheEntry);
