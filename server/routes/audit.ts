@@ -2551,7 +2551,9 @@ async function generateAudit(websiteData: any): Promise<AuditResponse> {
   const startTime = Date.now();
 
   try {
-    console.log("Calling Grok API with Brand Whisperer prompt...");
+    console.log("[AUDIT DEBUG] Starting Grok API call for:", url);
+    console.log("[AUDIT DEBUG] Website title:", websiteData.title);
+    console.log("[AUDIT DEBUG] Grok API key present:", !!GROK_API_KEY);
 
     // Brand Whisperer prompt with auto-extraction
     const systemPrompt = `You are Brand Whisperer's senior brand strategist. For URL-only inputs, FIRST extract/infer: Brand Name (from <title>/meta), Target Audience (from copy like 'for millennials' or hero sections), Challenges/Goals (infer from pain points or CTAs). If unclear, use 'General Consumer' and note it.
@@ -2635,10 +2637,11 @@ Website Data:
     );
 
     const response = await Promise.race([grokPromise, timeoutPromise]);
-    console.log("Grok API response received");
+    console.log("[AUDIT DEBUG] Grok API response status:", response.status);
 
     if (!response.ok) {
       const errorText = await response.text();
+      console.error("[AUDIT DEBUG] Grok API error response:", errorText);
       throw new Error(`Grok API error: ${response.status} - ${errorText}`);
     }
 
@@ -2646,17 +2649,23 @@ Website Data:
     const text = data.choices?.[0]?.message?.content;
 
     if (!text) {
+      console.error("[AUDIT DEBUG] No content in Grok response. Data:", JSON.stringify(data).substring(0, 200));
       throw new Error("No content in Grok API response");
     }
 
-    console.log("Grok response text length:", text.length);
+    console.log("[AUDIT DEBUG] Grok response text length:", text.length);
+    console.log("[AUDIT DEBUG] First 200 chars:", text.substring(0, 200));
 
     // Parse markdown response and convert to structured data
     const auditData = parseMarkdownAuditResponse(text);
 
     if (!auditData) {
+      console.error("[AUDIT DEBUG] Failed to parse audit response");
       throw new Error("Failed to parse audit response");
     }
+
+    console.log("[AUDIT DEBUG] Parsed audit - Overall score:", auditData.overallScore);
+    console.log("[AUDIT DEBUG] Parsed sections count:", auditData.sections.length);
 
     // Generate a unique ID
     const auditId = Date.now().toString();
@@ -2703,11 +2712,12 @@ Website Data:
 
     return auditResult;
   } catch (error) {
-    console.error("Error generating audit:", error);
+    console.error("[AUDIT DEBUG] Error generating audit:", error);
+    console.error("[AUDIT DEBUG] Error message:", error instanceof Error ? error.message : 'Unknown error');
 
     // Check if it's a Grok API overload error
     if (error instanceof Error && error.message.includes("overloaded")) {
-      console.log("Grok API is overloaded, providing fallback audit");
+      console.log("[AUDIT DEBUG] Grok API is overloaded, using fallback");
       return generateFallbackAudit(websiteData);
     }
 
@@ -2722,7 +2732,7 @@ Website Data:
     }
 
     // If all else fails, return a demo audit
-    console.log("Returning fallback demo audit due to generation error");
+    console.log("[AUDIT DEBUG] Returning fallback audit due to generation error");
     return generateFallbackAudit(websiteData);
   }
 }
