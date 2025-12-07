@@ -64,6 +64,18 @@ export async function initializeDatabase() {
           is_demo_mode BOOLEAN DEFAULT false
         );
       `,
+      // Migration: Add is_demo_mode column if it doesn't exist (for existing tables)
+      `
+        DO $$
+        BEGIN
+          IF NOT EXISTS (
+            SELECT 1 FROM information_schema.columns
+            WHERE table_name='audits' AND column_name='is_demo_mode'
+          ) THEN
+            ALTER TABLE audits ADD COLUMN is_demo_mode BOOLEAN DEFAULT false;
+          END IF;
+        END $$;
+      `,
       `CREATE INDEX IF NOT EXISTS idx_audits_url ON audits(url);`,
       `CREATE INDEX IF NOT EXISTS idx_audits_date ON audits(created_at DESC);`,
     ];
