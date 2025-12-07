@@ -39,12 +39,37 @@ const mimeTypes: { [key: string]: string } = {
 };
 
 async function start() {
+  // Import fs for directory listing
+  const { readdirSync } = await import("fs");
+
   console.log("Environment Setup:");
   console.log(`- NODE_ENV: ${process.env.NODE_ENV}`);
   console.log(`- PORT: ${port}`);
-  console.log(`- __dirname: ${__dirname}`);
+  console.log(`- CWD: ${process.cwd()}`);
   console.log(`- distPath: ${distPath}`);
   console.log(`- distPath exists: ${existsSync(distPath)}`);
+
+  // List what's in the dist directory for debugging
+  try {
+    const distDir = path.dirname(distPath);
+    if (existsSync(distDir)) {
+      const contents = readdirSync(distDir);
+      console.log(`- dist/ contents: ${contents.join(", ")}`);
+    }
+  } catch (err) {
+    console.warn("Could not list dist/ contents:", err);
+  }
+
+  // List SPA files if the directory exists
+  if (existsSync(distPath)) {
+    try {
+      const spaContents = readdirSync(distPath);
+      console.log(`- dist/spa/ contents: ${spaContents.join(", ")}`);
+    } catch (err) {
+      console.warn("Could not list dist/spa/ contents:", err);
+    }
+  }
+
   console.log(
     `- GROK_API_KEY: ${process.env.GROK_API_KEY ? "SET" : "NOT SET"}`,
   );
