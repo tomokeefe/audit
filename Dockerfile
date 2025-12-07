@@ -14,8 +14,8 @@ RUN pnpm install
 # Copy source code
 COPY . .
 
-# Build the app (client + server)
-RUN pnpm build
+# Build only the client (SPA)
+RUN pnpm run build:client
 
 # Remove dev dependencies to reduce image size
 RUN pnpm prune --prod
@@ -27,5 +27,5 @@ EXPOSE 8080
 ENV NODE_ENV=production
 ENV PORT=8080
 
-# Start the server
-CMD ["node", "dist/server/node-build.mjs"]
+# Start the server using tsx for direct TypeScript execution
+CMD ["npx", "tsx", "server/start-production.ts"]
