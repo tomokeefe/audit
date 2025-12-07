@@ -694,9 +694,15 @@ async function scrapeWebsite(url: string) {
       const uxFeatures = await analyzeUXFeatures(response.data);
       const performanceData = await analyzeWebsitePerformance(url);
 
-      console.log(`✓ Site structure: ${siteStructure.discoveredPages.length} pages discovered`);
-      console.log(`✓ UX features: ${uxFeatures.forms.count} forms, ${uxFeatures.media.images} images, ${uxFeatures.accessibility.missingAltText} missing alt tags`);
-      console.log(`✓ Performance: ${performanceData.pageSizeKB}KB, ${performanceData.responseTime}ms, SSL: ${performanceData.hasSSL}`);
+      console.log(
+        `✓ Site structure: ${siteStructure.discoveredPages.length} pages discovered`,
+      );
+      console.log(
+        `✓ UX features: ${uxFeatures.forms.count} forms, ${uxFeatures.media.images} images, ${uxFeatures.accessibility.missingAltText} missing alt tags`,
+      );
+      console.log(
+        `✓ Performance: ${performanceData.pageSizeKB}KB, ${performanceData.responseTime}ms, SSL: ${performanceData.hasSSL}`,
+      );
 
       // Crawl multiple important pages (limit to 5 to avoid timeouts)
       let multiPageResults: any[] = [];
@@ -708,17 +714,33 @@ async function scrapeWebsite(url: string) {
 
       if (siteStructure.discoveredPages.length > 0) {
         try {
-          const pagesToCrawl = Math.min(5, siteStructure.discoveredPages.length);
-          console.log(`Crawling ${pagesToCrawl} additional pages for comprehensive analysis...`);
-          multiPageResults = await crawlMultiplePages(url, siteStructure.discoveredPages, 5);
-          console.log(`✓ Successfully crawled ${multiPageResults.length} pages`);
+          const pagesToCrawl = Math.min(
+            5,
+            siteStructure.discoveredPages.length,
+          );
+          console.log(
+            `Crawling ${pagesToCrawl} additional pages for comprehensive analysis...`,
+          );
+          multiPageResults = await crawlMultiplePages(
+            url,
+            siteStructure.discoveredPages,
+            5,
+          );
+          console.log(
+            `✓ Successfully crawled ${multiPageResults.length} pages`,
+          );
 
           if (multiPageResults.length > 1) {
             crossPageAnalysis = analyzeCrossPageConsistency(multiPageResults);
-            console.log(`✓ Cross-page consistency - Brand: ${crossPageAnalysis.brandConsistency.score}, Navigation: ${crossPageAnalysis.navigationConsistency.score}, Content: ${crossPageAnalysis.contentConsistency.score}`);
+            console.log(
+              `✓ Cross-page consistency - Brand: ${crossPageAnalysis.brandConsistency.score}, Navigation: ${crossPageAnalysis.navigationConsistency.score}, Content: ${crossPageAnalysis.contentConsistency.score}`,
+            );
           }
         } catch (crawlError) {
-          console.warn("Multi-page crawl failed, continuing with single page:", crawlError);
+          console.warn(
+            "Multi-page crawl failed, continuing with single page:",
+            crawlError,
+          );
           multiPageResults = [];
         }
       } else {
@@ -2656,13 +2678,22 @@ async function generateAudit(websiteData: any): Promise<AuditResponse> {
   try {
     console.log("[AUDIT DEBUG] Starting Grok API call for:", url);
     console.log("[AUDIT DEBUG] Website title:", websiteData.title);
-    console.log("[AUDIT DEBUG] Pages analyzed:", websiteData.multiPageAnalysis?.pagesAnalyzed || 1);
-    console.log("[AUDIT DEBUG] Performance score:", websiteData.performance?.performanceScore || 'N/A');
-    console.log("[AUDIT DEBUG] Accessibility score:", websiteData.performance?.accessibilityScore || 'N/A');
+    console.log(
+      "[AUDIT DEBUG] Pages analyzed:",
+      websiteData.multiPageAnalysis?.pagesAnalyzed || 1,
+    );
+    console.log(
+      "[AUDIT DEBUG] Performance score:",
+      websiteData.performance?.performanceScore || "N/A",
+    );
+    console.log(
+      "[AUDIT DEBUG] Accessibility score:",
+      websiteData.performance?.accessibilityScore || "N/A",
+    );
     console.log("[AUDIT DEBUG] SEO elements:", {
       robotsTxt: websiteData.performance?.hasRobotsTxt || false,
       sitemap: websiteData.performance?.hasSitemap || false,
-      metaDescription: !!websiteData.description
+      metaDescription: !!websiteData.description,
     });
     console.log("[AUDIT DEBUG] Grok API key present:", !!GROK_API_KEY);
 
@@ -2723,23 +2754,31 @@ End: 'This audit shows where your brand stands—Brand Whisperer scales it to un
 
     // Prepare comprehensive multi-page content
     const multiPageContent = websiteData.multiPageAnalysis?.pageDetails
-      ? websiteData.multiPageAnalysis.pageDetails.map((page: any) =>
-          `${page.pageType?.toUpperCase() || 'PAGE'}: ${page.title || 'Untitled'} - ${page.headings?.h1?.[0] || ''}`
-        ).join('; ')
-      : 'Single page analyzed';
+      ? websiteData.multiPageAnalysis.pageDetails
+          .map(
+            (page: any) =>
+              `${page.pageType?.toUpperCase() || "PAGE"}: ${page.title || "Untitled"} - ${page.headings?.h1?.[0] || ""}`,
+          )
+          .join("; ")
+      : "Single page analyzed";
 
     // Prepare accessibility and UX metrics
-    const uxMetrics = websiteData.uxFeatures ? `
-Accessibility: ${websiteData.uxFeatures.accessibility?.hasAltText ? '✓' : '✗'} Alt text, ${websiteData.uxFeatures.accessibility?.missingAltText || 0} missing, ${websiteData.uxFeatures.accessibility?.hasAriaLabels ? '✓' : '✗'} ARIA labels, ${websiteData.uxFeatures.accessibility?.headingStructure ? '✓' : '✗'} Proper heading structure
-Forms: ${websiteData.uxFeatures.forms?.count || 0} forms, ${websiteData.uxFeatures.forms?.hasLabels ? '✓' : '✗'} Labels, ${websiteData.uxFeatures.forms?.hasValidation ? '✓' : '✗'} Validation
-Media: ${websiteData.uxFeatures.media?.images || 0} images, ${websiteData.uxFeatures.media?.videos || 0} videos, ${websiteData.uxFeatures.media?.hasLazyLoading ? '✓' : '✗'} Lazy loading
-Interactivity: ${websiteData.uxFeatures.interactivity?.buttons || 0} buttons, ${websiteData.uxFeatures.interactivity?.dropdowns || 0} dropdowns` : 'Limited UX data';
+    const uxMetrics = websiteData.uxFeatures
+      ? `
+Accessibility: ${websiteData.uxFeatures.accessibility?.hasAltText ? "✓" : "✗"} Alt text, ${websiteData.uxFeatures.accessibility?.missingAltText || 0} missing, ${websiteData.uxFeatures.accessibility?.hasAriaLabels ? "✓" : "✗"} ARIA labels, ${websiteData.uxFeatures.accessibility?.headingStructure ? "✓" : "✗"} Proper heading structure
+Forms: ${websiteData.uxFeatures.forms?.count || 0} forms, ${websiteData.uxFeatures.forms?.hasLabels ? "✓" : "✗"} Labels, ${websiteData.uxFeatures.forms?.hasValidation ? "✓" : "✗"} Validation
+Media: ${websiteData.uxFeatures.media?.images || 0} images, ${websiteData.uxFeatures.media?.videos || 0} videos, ${websiteData.uxFeatures.media?.hasLazyLoading ? "✓" : "✗"} Lazy loading
+Interactivity: ${websiteData.uxFeatures.interactivity?.buttons || 0} buttons, ${websiteData.uxFeatures.interactivity?.dropdowns || 0} dropdowns`
+      : "Limited UX data";
 
     // Prepare cross-page consistency metrics
-    const consistencyMetrics = websiteData.multiPageAnalysis?.crossPageConsistency ? `
-Brand Consistency: ${websiteData.multiPageAnalysis.crossPageConsistency.brandConsistency?.score || 0}/100 - ${websiteData.multiPageAnalysis.crossPageConsistency.brandConsistency?.issues?.join(', ') || 'No issues'}
+    const consistencyMetrics = websiteData.multiPageAnalysis
+      ?.crossPageConsistency
+      ? `
+Brand Consistency: ${websiteData.multiPageAnalysis.crossPageConsistency.brandConsistency?.score || 0}/100 - ${websiteData.multiPageAnalysis.crossPageConsistency.brandConsistency?.issues?.join(", ") || "No issues"}
 Navigation Consistency: ${websiteData.multiPageAnalysis.crossPageConsistency.navigationConsistency?.score || 0}/100
-Content Consistency: ${websiteData.multiPageAnalysis.crossPageConsistency.contentConsistency?.score || 0}/100` : 'Single page - no consistency analysis';
+Content Consistency: ${websiteData.multiPageAnalysis.crossPageConsistency.contentConsistency?.score || 0}/100`
+      : "Single page - no consistency analysis";
 
     const userPrompt = `Audit this brand's website: ${websiteData.url}. Extract/infer name, audience, challenges as needed.
 
@@ -2747,9 +2786,9 @@ CRITICAL: Base ALL scores on SPECIFIC EVIDENCE from the data below. Include quan
 
 === HOMEPAGE DATA ===
 Title: ${websiteData.title}
-Meta Description: ${websiteData.description || 'Missing'}
+Meta Description: ${websiteData.description || "Missing"}
 Main Content (first 4000 chars): ${websiteData.paragraphs.slice(0, 8).join(" ").substring(0, 4000)}
-Headings: ${websiteData.headings.slice(0, 10).join(' | ')}
+Headings: ${websiteData.headings.slice(0, 10).join(" | ")}
 Navigation: ${websiteData.navigation.substring(0, 300)}
 Footer: ${websiteData.footer.substring(0, 200)}
 
@@ -2758,25 +2797,25 @@ ${multiPageContent}
 ${consistencyMetrics}
 
 === TECHNICAL METRICS ===
-SSL: ${websiteData.performance?.hasSSL ? '✓ Secure' : '✗ Not Secure'}
-Mobile Viewport: ${websiteData.performance?.mobileViewport ? '✓ Configured' : '✗ Missing'}
+SSL: ${websiteData.performance?.hasSSL ? "✓ Secure" : "✗ Not Secure"}
+Mobile Viewport: ${websiteData.performance?.mobileViewport ? "✓ Configured" : "✗ Missing"}
 Page Size: ${websiteData.performance?.pageSizeKB || 0}KB
 Response Time: ${websiteData.performance?.responseTime || 0}ms
-${websiteData.performance?.pagespeedScore ? `PageSpeed Score: ${websiteData.performance.pagespeedScore}/100` : ''}
-${websiteData.performance?.performanceScore ? `Performance: ${websiteData.performance.performanceScore}/100` : ''}
-${websiteData.performance?.accessibilityScore ? `Accessibility: ${websiteData.performance.accessibilityScore}/100` : ''}
-${websiteData.performance?.seoScore ? `SEO: ${websiteData.performance.seoScore}/100` : ''}
-SEO: ${websiteData.performance?.hasRobotsTxt ? '✓' : '✗'} robots.txt, ${websiteData.performance?.hasSitemap ? '✓' : '✗'} sitemap
+${websiteData.performance?.pagespeedScore ? `PageSpeed Score: ${websiteData.performance.pagespeedScore}/100` : ""}
+${websiteData.performance?.performanceScore ? `Performance: ${websiteData.performance.performanceScore}/100` : ""}
+${websiteData.performance?.accessibilityScore ? `Accessibility: ${websiteData.performance.accessibilityScore}/100` : ""}
+${websiteData.performance?.seoScore ? `SEO: ${websiteData.performance.seoScore}/100` : ""}
+SEO: ${websiteData.performance?.hasRobotsTxt ? "✓" : "✗"} robots.txt, ${websiteData.performance?.hasSitemap ? "✓" : "✗"} sitemap
 
 === UX & ACCESSIBILITY ===
 ${uxMetrics}
 
 === SITE STRUCTURE ===
-Menu Items: ${websiteData.siteStructure?.navigation?.menuItems?.slice(0, 8).join(', ') || 'None found'}
-Has Search: ${websiteData.siteStructure?.navigation?.hasSearch ? 'Yes' : 'No'}
-Contact Info: ${websiteData.siteStructure?.contentStructure?.hasContactInfo ? 'Present' : 'Missing'}
-About Page: ${websiteData.siteStructure?.contentStructure?.hasAboutPage ? 'Present' : 'Missing'}
-Blog: ${websiteData.siteStructure?.contentStructure?.hasBlog ? 'Present' : 'Absent'}
+Menu Items: ${websiteData.siteStructure?.navigation?.menuItems?.slice(0, 8).join(", ") || "None found"}
+Has Search: ${websiteData.siteStructure?.navigation?.hasSearch ? "Yes" : "No"}
+Contact Info: ${websiteData.siteStructure?.contentStructure?.hasContactInfo ? "Present" : "Missing"}
+About Page: ${websiteData.siteStructure?.contentStructure?.hasAboutPage ? "Present" : "Missing"}
+Blog: ${websiteData.siteStructure?.contentStructure?.hasBlog ? "Present" : "Absent"}
 Total Discovered Pages: ${websiteData.siteStructure?.pageCount || 1}
 
 SCORING INSTRUCTIONS:
