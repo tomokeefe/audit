@@ -2232,8 +2232,17 @@ Recommendations:
       fallbackSections.length,
   );
 
-  console.log("[FALLBACK] Calculated overall score:", overallScore, "from", fallbackSections.length, "sections");
-  console.log("[FALLBACK] Section scores:", fallbackSections.map(s => s.score).join(", "));
+  console.log(
+    "[FALLBACK] Calculated overall score:",
+    overallScore,
+    "from",
+    fallbackSections.length,
+    "sections",
+  );
+  console.log(
+    "[FALLBACK] Section scores:",
+    fallbackSections.map((s) => s.score).join(", "),
+  );
 
   return {
     id: auditId,
@@ -2319,7 +2328,10 @@ async function buildAuditFromCache(
 // Parse Brand Whisperer markdown audit response and convert to structured format
 function parseMarkdownAuditResponse(text: string): any {
   try {
-    console.log("[PARSE DEBUG] Parsing markdown response, length:", text.length);
+    console.log(
+      "[PARSE DEBUG] Parsing markdown response, length:",
+      text.length,
+    );
 
     // Extract overall score from "**Overall: X/100**" format
     const overallMatch = text.match(
@@ -2329,7 +2341,12 @@ function parseMarkdownAuditResponse(text: string): any {
       ? Math.round(parseFloat(overallMatch[1]))
       : 75;
 
-    console.log("[PARSE DEBUG] Overall score match:", overallMatch?.[0], "-> score:", overallScore);
+    console.log(
+      "[PARSE DEBUG] Overall score match:",
+      overallMatch?.[0],
+      "-> score:",
+      overallScore,
+    );
 
     // Extract section scores from "N. Name – X/10" format
     const sectionMatches = text.match(
@@ -2337,7 +2354,10 @@ function parseMarkdownAuditResponse(text: string): any {
     );
     const sections: any[] = [];
 
-    console.log("[PARSE DEBUG] Section matches found:", sectionMatches?.length || 0);
+    console.log(
+      "[PARSE DEBUG] Section matches found:",
+      sectionMatches?.length || 0,
+    );
     const sectionNames = [
       "Branding & Identity",
       "Messaging & Positioning",
@@ -2447,8 +2467,16 @@ function parseMarkdownAuditResponse(text: string): any {
       rawResponse: text,
     };
 
-    console.log("[PARSE DEBUG] Parse complete - sections:", result.sections.length, "overall:", result.overallScore);
-    console.log("[PARSE DEBUG] Sample section scores:", result.sections.slice(0, 3).map(s => `${s.name}: ${s.score}`));
+    console.log(
+      "[PARSE DEBUG] Parse complete - sections:",
+      result.sections.length,
+      "overall:",
+      result.overallScore,
+    );
+    console.log(
+      "[PARSE DEBUG] Sample section scores:",
+      result.sections.slice(0, 3).map((s) => `${s.name}: ${s.score}`),
+    );
 
     return result;
   } catch (error) {
@@ -2668,7 +2696,10 @@ Website Data:
     const text = data.choices?.[0]?.message?.content;
 
     if (!text) {
-      console.error("[AUDIT DEBUG] No content in Grok response. Data:", JSON.stringify(data).substring(0, 200));
+      console.error(
+        "[AUDIT DEBUG] No content in Grok response. Data:",
+        JSON.stringify(data).substring(0, 200),
+      );
       throw new Error("No content in Grok API response");
     }
 
@@ -2683,8 +2714,14 @@ Website Data:
       throw new Error("Failed to parse audit response");
     }
 
-    console.log("[AUDIT DEBUG] Parsed audit - Overall score:", auditData.overallScore);
-    console.log("[AUDIT DEBUG] Parsed sections count:", auditData.sections.length);
+    console.log(
+      "[AUDIT DEBUG] Parsed audit - Overall score:",
+      auditData.overallScore,
+    );
+    console.log(
+      "[AUDIT DEBUG] Parsed sections count:",
+      auditData.sections.length,
+    );
 
     // Generate a unique ID
     const auditId = Date.now().toString();
@@ -2732,7 +2769,10 @@ Website Data:
     return auditResult;
   } catch (error) {
     console.error("[AUDIT DEBUG] Error generating audit:", error);
-    console.error("[AUDIT DEBUG] Error message:", error instanceof Error ? error.message : 'Unknown error');
+    console.error(
+      "[AUDIT DEBUG] Error message:",
+      error instanceof Error ? error.message : "Unknown error",
+    );
 
     // Check if it's a Grok API overload error
     if (error instanceof Error && error.message.includes("overloaded")) {
@@ -2751,7 +2791,9 @@ Website Data:
     }
 
     // If all else fails, return a demo audit
-    console.log("[AUDIT DEBUG] Returning fallback audit due to generation error");
+    console.log(
+      "[AUDIT DEBUG] Returning fallback audit due to generation error",
+    );
     return generateFallbackAudit(websiteData);
   }
 }
