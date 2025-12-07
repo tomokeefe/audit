@@ -1,8 +1,0 @@
-app = "audit-dl0hvw"
-primary_region = "ord"
-
-[build]
-dockerfile = "Dockerfile"
-
-[http_service]
-internal_port = 8080
