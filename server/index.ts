@@ -94,6 +94,7 @@ export async function createServer() {
     console.log("✓ Audit-storage routes imported");
     app.get("/api/audits", listAudits);
     app.post("/api/audits", storeAudit);
+    app.post("/api/save-audit", storeAudit);
     app.get("/api/audits/:id", getAudit);
     app.delete("/api/audits/:id", deleteAudit);
   } catch (err) {
