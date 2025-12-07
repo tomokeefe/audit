@@ -42,6 +42,9 @@ async function start() {
   // Import fs for directory listing
   const { readdirSync } = await import("fs");
 
+  console.log("========================================");
+  console.log("🚀 PRODUCTION SERVER STARTING");
+  console.log("========================================");
   console.log("Environment Setup:");
   console.log(`- NODE_ENV: ${process.env.NODE_ENV}`);
   console.log(`- PORT: ${port}`);
@@ -70,14 +73,42 @@ async function start() {
     }
   }
 
+  console.log("Configuration:");
   console.log(
-    `- GROK_API_KEY: ${process.env.GROK_API_KEY ? "SET" : "NOT SET"}`,
+    `- GROK_API_KEY: ${process.env.GROK_API_KEY ? "SET (" + process.env.GROK_API_KEY.substring(0, 10) + "...)" : "NOT SET"}`,
   );
   console.log(
-    `- DATABASE_URL: ${process.env.DATABASE_URL ? "SET" : "NOT SET"}`,
+    `- DATABASE_URL: ${process.env.DATABASE_URL ? "SET (" + process.env.DATABASE_URL.substring(0, 20) + "...)" : "NOT SET"}`,
+  );
+  console.log(
+    `- PUPPETEER_EXECUTABLE_PATH: ${process.env.PUPPETEER_EXECUTABLE_PATH || "NOT SET (will download)"}`,
   );
 
-  const app = await createServer();
+  console.log("========================================");
+  console.log("Creating Express server with API routes...");
+
+  let app;
+  try {
+    app = await createServer();
+    console.log("✅ Express server created successfully");
+    console.log("✅ API routes registered:");
+    console.log("   - GET  /api/ping");
+    console.log("   - GET  /api/health");
+    console.log("   - POST /api/audit");
+    console.log("   - GET  /api/audit/progress");
+    console.log("   - GET  /api/audits");
+    console.log("   - POST /api/audits");
+    console.log("   - GET  /api/audits/:id");
+    console.log("========================================");
+  } catch (error) {
+    console.error("========================================");
+    console.error("❌ FATAL ERROR: Failed to create server");
+    console.error("========================================");
+    console.error("Error:", error);
+    console.error("Stack:", error instanceof Error ? error.stack : "No stack trace");
+    console.error("========================================");
+    throw error;
+  }
 
   // Serve static files (SPA assets)
   app.use((req, res, next) => {

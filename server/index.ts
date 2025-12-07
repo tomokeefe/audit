@@ -119,6 +119,8 @@ export async function createServer() {
     app.post("/api/demo", handleDemo);
   } catch (err) {
     console.error("✗ Failed to import demo routes:", err);
+    console.error("✗ Error details:", err instanceof Error ? err.message : String(err));
+    console.error("✗ Stack:", err instanceof Error ? err.stack : "No stack");
     throw err;
   }
 
@@ -132,6 +134,8 @@ export async function createServer() {
     app.post("/api/audit", handleAuditStandard);
   } catch (err) {
     console.error("✗ Failed to import audit-progress routes:", err);
+    console.error("✗ Error details:", err instanceof Error ? err.message : String(err));
+    console.error("✗ Stack:", err instanceof Error ? err.stack : "No stack");
     throw err;
   }
 
@@ -150,6 +154,8 @@ export async function createServer() {
     app.delete("/api/audits/:id", deleteAudit);
   } catch (err) {
     console.error("✗ Failed to import audit-storage routes:", err);
+    console.error("✗ Error details:", err instanceof Error ? err.message : String(err));
+    console.error("✗ Stack:", err instanceof Error ? err.stack : "No stack");
     throw err;
   }
 
