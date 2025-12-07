@@ -27,10 +27,28 @@ export async function createServer() {
     console.error("Failed to initialize database on startup:", error);
   });
 
-  // Health check endpoints
+  // Health check endpoints - these are registered first to always work
   app.get("/api/ping", (_req, res) => {
-    const ping = process.env.PING_MESSAGE ?? "ping pong";
-    res.json({ message: ping });
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    const ping = process.env.PING_MESSAGE ?? "pong";
+    res.json({
+      message: ping,
+      timestamp: new Date().toISOString(),
+      env: process.env.NODE_ENV || "development"
+    });
+  });
+
+  // Simple status endpoint that always works
+  app.get("/api/status", (_req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.json({
+      status: "ok",
+      server: "running",
+      timestamp: new Date().toISOString(),
+      version: "1.0.0"
+    });
   });
 
   app.get("/api/health", async (_req, res) => {
