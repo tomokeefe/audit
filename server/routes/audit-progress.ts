@@ -360,22 +360,19 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
 // Standard audit endpoint (non-SSE) for backwards compatibility
 export const handleAuditStandard = async (req: Request, res: Response) => {
   try {
-    // Import necessary functions from audit module
-    const { scrapeWebsite, generateAudit, storeAuditResult } = await import(
-      "./audit"
-    );
-
     const { url } = req.body as AuditRequest;
 
     if (!url) {
       return res.status(400).json({ error: "URL is required" });
     }
 
-    // Check API key
+    // Check API key early
     if (!process.env.GROK_API_KEY) {
-      return res
-        .status(500)
-        .json({ error: "Server configuration error. Please contact support." });
+      console.error("GROK_API_KEY not configured - cannot process audit");
+      return res.status(500).json({
+        error:
+          "Server configuration error: API key not configured. Please contact support.",
+      });
     }
 
     // Validate URL format
@@ -389,6 +386,21 @@ export const handleAuditStandard = async (req: Request, res: Response) => {
     }
 
     console.log("Starting standard audit for URL:", url);
+
+    // Import necessary functions from audit module
+    let scrapeWebsite, generateAudit, storeAuditResult;
+    try {
+      const auditModule = await import("./audit.js");
+      scrapeWebsite = auditModule.scrapeWebsite;
+      generateAudit = auditModule.generateAudit;
+      storeAuditResult = auditModule.storeAuditResult;
+    } catch (importError) {
+      console.error("Failed to import audit module:", importError);
+      return res.status(500).json({
+        error:
+          "Server error: Failed to load audit module. Please try again later.",
+      });
+    }
 
     // Perform audit
     const websiteData = await scrapeWebsite(url);
