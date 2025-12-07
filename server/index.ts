@@ -57,67 +57,10 @@ export async function createServer() {
     res.json(response);
   });
 
-  // Audit routes
-  let handleAudit, handleDemoAudit, handleAuditProgress, handleAuditStandard, storeAudit, getAudit, listAudits, deleteAudit, handleDemo;
+  // Placeholder: Route imports disabled for debugging path-to-regexp error
+  // TODO: Re-enable once import issue is resolved
 
-  try {
-    console.log("Importing audit routes...");
-    const auditModule = await import("./routes/audit.js");
-    handleAudit = auditModule.handleAudit;
-    handleDemoAudit = auditModule.handleDemoAudit;
-    console.log("✓ Audit routes imported");
-  } catch (err) {
-    console.error("✗ Failed to import audit routes:", err);
-    throw err;
-  }
-
-  try {
-    console.log("Importing audit-progress routes...");
-    const progressModule = await import("./routes/audit-progress.js");
-    handleAuditProgress = progressModule.handleAuditProgress;
-    handleAuditStandard = progressModule.handleAuditStandard;
-    console.log("✓ Audit-progress routes imported");
-  } catch (err) {
-    console.error("✗ Failed to import audit-progress routes:", err);
-    throw err;
-  }
-
-  try {
-    console.log("Importing audit-storage routes...");
-    const storageModule = await import("./routes/audit-storage.js");
-    storeAudit = storageModule.storeAudit;
-    getAudit = storageModule.getAudit;
-    listAudits = storageModule.listAudits;
-    deleteAudit = storageModule.deleteAudit;
-    console.log("✓ Audit-storage routes imported");
-  } catch (err) {
-    console.error("✗ Failed to import audit-storage routes:", err);
-    throw err;
-  }
-
-  try {
-    console.log("Importing demo routes...");
-    const demoModule = await import("./routes/demo.js");
-    handleDemo = demoModule.handleDemo;
-    console.log("✓ Demo routes imported");
-  } catch (err) {
-    console.error("✗ Failed to import demo routes:", err);
-    throw err;
-  }
-
-  // Audit creation and progress tracking
-  app.post("/api/audit", handleAudit);
-  app.get("/api/audit/progress", handleAuditProgress);
-  app.post("/api/audit/standard", handleAuditStandard);
-
-  // Demo endpoint
-  app.post("/api/demo", handleDemo);
-
-  // Audit storage endpoints
-  app.post("/api/audits", storeAudit);
-  app.get("/api/audits", listAudits);
-  app.get("/api/audits/:id", getAudit);
-  app.delete("/api/audits/:id", deleteAudit);
+  console.log("Routes temporarily disabled for debugging");
 
   // Global error handler
   app.use((err: any, req: any, res: any, next: any) => {
