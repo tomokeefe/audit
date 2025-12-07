@@ -107,12 +107,33 @@ export async function createServer() {
     throw err;
   }
 
-  // Global error handler
+  // Global error handler - must be after all other middleware
   app.use((err: any, req: any, res: any, next: any) => {
-    console.error("Unhandled error:", err);
-    res.status(500).json({
+    console.error("Unhandled error in request:", {
+      path: req.path,
+      method: req.method,
+      error: err instanceof Error ? err.message : String(err),
+      stack: err instanceof Error ? err.stack : undefined,
+    });
+
+    // Ensure we don't send headers twice
+    if (res.headersSent) {
+      return next(err);
+    }
+
+    res.status(err.status || 500).json({
       error: "Internal server error",
       message: err?.message || "Unknown error",
+    });
+  });
+
+  // 404 handler for unmatched routes
+  app.use((req: any, res: any) => {
+    console.warn(`404: ${req.method} ${req.path}`);
+    res.status(404).json({
+      error: "Not Found",
+      path: req.path,
+      method: req.method,
     });
   });
 
