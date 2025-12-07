@@ -2814,56 +2814,35 @@ Navigation Consistency: ${websiteData.multiPageAnalysis.crossPageConsistency.nav
 Content Consistency: ${websiteData.multiPageAnalysis.crossPageConsistency.contentConsistency?.score || 0}/100`
       : "Single page - no consistency analysis";
 
-    const userPrompt = `Audit this brand's website: ${websiteData.url}. Extract/infer name, audience, challenges as needed.
+    const userPrompt = `Audit: ${websiteData.url}
 
-CRITICAL: Base ALL scores on SPECIFIC EVIDENCE from the data below. Include quantifiable metrics in your analysis (e.g., "3 of 5 images missing alt text" not "poor alt text usage"). Each recommendation should cite specific findings.
-
-=== HOMEPAGE DATA ===
+DATA:
 Title: ${websiteData.title}
-Meta Description: ${websiteData.description || "Missing"}
-Main Content (first 4000 chars): ${websiteData.paragraphs.slice(0, 8).join(" ").substring(0, 4000)}
-Headings: ${websiteData.headings.slice(0, 10).join(" | ")}
-Navigation: ${websiteData.navigation.substring(0, 300)}
-Footer: ${websiteData.footer.substring(0, 200)}
+Description: ${websiteData.description || "Missing"}
+Content: ${websiteData.paragraphs.slice(0, 5).join(" ").substring(0, 2000)}
+Headings: ${websiteData.headings.slice(0, 8).join(" | ")}
 
-=== MULTI-PAGE ANALYSIS (${websiteData.multiPageAnalysis?.pagesAnalyzed || 1} pages) ===
+MULTI-PAGE (${websiteData.multiPageAnalysis?.pagesAnalyzed || 1} pages):
 ${multiPageContent}
 ${consistencyMetrics}
 
-=== TECHNICAL METRICS ===
-SSL: ${websiteData.performance?.hasSSL ? "✓ Secure" : "✗ Not Secure"}
-Mobile Viewport: ${websiteData.performance?.mobileViewport ? "✓ Configured" : "✗ Missing"}
-Page Size: ${websiteData.performance?.pageSizeKB || 0}KB
-Response Time: ${websiteData.performance?.responseTime || 0}ms
-${websiteData.performance?.pagespeedScore ? `PageSpeed Score: ${websiteData.performance.pagespeedScore}/100` : ""}
-${websiteData.performance?.performanceScore ? `Performance: ${websiteData.performance.performanceScore}/100` : ""}
-${websiteData.performance?.accessibilityScore ? `Accessibility: ${websiteData.performance.accessibilityScore}/100` : ""}
-${websiteData.performance?.seoScore ? `SEO: ${websiteData.performance.seoScore}/100` : ""}
-SEO: ${websiteData.performance?.hasRobotsTxt ? "✓" : "✗"} robots.txt, ${websiteData.performance?.hasSitemap ? "✓" : "✗"} sitemap
+TECH:
+SSL: ${websiteData.performance?.hasSSL ? "✓" : "✗"} | Mobile: ${websiteData.performance?.mobileViewport ? "✓" : "✗"} | ${websiteData.performance?.pageSizeKB || 0}KB
+${websiteData.performance?.performanceScore ? `Perf: ${websiteData.performance.performanceScore} | ` : ""}${websiteData.performance?.accessibilityScore ? `A11y: ${websiteData.performance.accessibilityScore} | ` : ""}${websiteData.performance?.seoScore ? `SEO: ${websiteData.performance.seoScore}` : ""}
+Robots: ${websiteData.performance?.hasRobotsTxt ? "✓" : "✗"} | Sitemap: ${websiteData.performance?.hasSitemap ? "✓" : "✗"}
 
-=== UX & ACCESSIBILITY ===
+UX:
 ${uxMetrics}
 
-=== SITE STRUCTURE ===
-Menu Items: ${websiteData.siteStructure?.navigation?.menuItems?.slice(0, 8).join(", ") || "None found"}
-Has Search: ${websiteData.siteStructure?.navigation?.hasSearch ? "Yes" : "No"}
-Contact Info: ${websiteData.siteStructure?.contentStructure?.hasContactInfo ? "Present" : "Missing"}
-About Page: ${websiteData.siteStructure?.contentStructure?.hasAboutPage ? "Present" : "Missing"}
-Blog: ${websiteData.siteStructure?.contentStructure?.hasBlog ? "Present" : "Absent"}
-Total Discovered Pages: ${websiteData.siteStructure?.pageCount || 1}
+STRUCTURE:
+Nav: ${websiteData.siteStructure?.navigation?.menuItems?.slice(0, 6).join(", ") || "None"} | Search: ${websiteData.siteStructure?.navigation?.hasSearch ? "Y" : "N"}
+Contact: ${websiteData.siteStructure?.contentStructure?.hasContactInfo ? "✓" : "✗"} | About: ${websiteData.siteStructure?.contentStructure?.hasAboutPage ? "✓" : "✗"} | Blog: ${websiteData.siteStructure?.contentStructure?.hasBlog ? "✓" : "✗"}
 
-SCORING INSTRUCTIONS:
-- Score 85+ ONLY with exceptional evidence across multiple pages
-- Score 70-84 for good performance with measurable proof
-- Score 50-69 for average with clear areas for improvement
-- Score below 50 for significant issues with specific examples
-- Always justify scores with concrete findings (numbers, examples, cross-page comparisons)
-
-FORMAT REQUIREMENTS:
-- For EACH of the 10 sections, provide Evidence and 2-3 specific Recommendations
-- Follow the exact format shown in the system prompt with "Evidence:" and "Recommendations:" headers under each section
-- Make recommendations actionable and specific to that section's category
-- Do NOT provide only global recommendations - each section must have its own tailored recommendations`;
+RULES:
+- Use specific data (e.g., "3/8 images missing alt")
+- Evidence + 2-3 Recommendations for ALL 10 sections
+- Follow format exactly with "Evidence:" and "Recommendations:" headers
+- Score conservatively: 85+ needs exceptional multi-page proof`;
 
     // Add timeout to Grok API call (60 seconds max)
     const grokPromise = fetch(GROK_API_URL, {
