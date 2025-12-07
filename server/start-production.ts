@@ -7,7 +7,7 @@ async function startServer() {
   try {
     console.log("Starting server...");
 
-    const app = createServer();
+    const app = await createServer();
     const port = parseInt(process.env.PORT || "3000", 10);
 
     // In production, serve the built SPA files
