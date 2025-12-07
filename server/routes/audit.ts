@@ -2342,13 +2342,19 @@ function parseMarkdownAuditResponse(text: string): any {
         const scoreMatch = match.match(/(\d+(?:\.\d+)?)\s*\/\s*10/);
         const scoreOut10 = scoreMatch ? parseFloat(scoreMatch[1]) : 7;
         const score = Math.round((scoreOut10 / 10) * 100);
+        const sectionName = sectionNames[index] || `Section ${index + 1}`;
+
+        // Calculate issues and recommendations based on score
+        const issues = Math.max(1, Math.round((100 - score) / 15));
+        const recommendations = Math.max(1, Math.round((100 - score) / 12));
+
         sections.push({
-          name: sectionNames[index] || `Section ${index + 1}`,
+          name: sectionName,
           score: Math.max(0, Math.min(100, score)),
-          details: extractSectionDetails(
-            text,
-            sectionNames[index] || `Section ${index + 1}`,
-          ),
+          maxScore: 100,
+          issues,
+          recommendations,
+          details: extractSectionDetails(text, sectionName, score),
         });
       });
     }
@@ -2423,23 +2429,72 @@ function parseMarkdownAuditResponse(text: string): any {
   }
 }
 
-// Extract section details from markdown text
-function extractSectionDetails(text: string, sectionName: string): string {
-  try {
-    // Find the section in the text
-    const sectionRegex = new RegExp(
-      `${sectionName}[^#]*((?:(?!^##|^#)[\\s\\S])*?)(?=^##|^#|$)`,
-      "im",
-    );
-    const match = text.match(sectionRegex);
-    if (match && match[1]) {
-      return match[1].trim().substring(0, 500);
-    }
-  } catch (e) {
-    console.warn("Could not extract section details");
+// Extract section details from markdown text and format with Issues/Recommendations
+function extractSectionDetails(text: string, sectionName: string, score: number): string {
+  // Extract detailed analysis if available
+  const detailedAnalysisMatch = text.match(
+    /##\s+Detailed Analysis\s*\n([\s\S]*?)(?=##|$)/i,
+  );
+  const detailedAnalysis = detailedAnalysisMatch
+    ? detailedAnalysisMatch[1].trim().substring(0, 200)
+    : "";
+
+  // Extract recommendations
+  const recommendationsMatch = text.match(
+    /##\s+Prioritized Recommendations\s*\n([\s\S]*?)(?=##|End:|$)/i,
+  );
+  const allRecommendations = recommendationsMatch
+    ? recommendationsMatch[1]
+        .split("\n")
+        .filter((line) => line.trim().match(/^\d+\./))
+        .map((line) => line.replace(/^\d+\.\s*/, "").trim())
+        .filter((r) => r.length > 0)
+    : [];
+
+  // Generate score-based analysis
+  const performanceLevel = score >= 80 ? "strong" : score >= 60 ? "adequate" : "needs improvement";
+  const overview = detailedAnalysis || `${sectionName} analysis shows ${performanceLevel} performance with opportunities for enhancement.`;
+
+  // Generate issues based on score
+  const issues = [];
+  if (score < 70) {
+    issues.push(`${sectionName} requires significant improvement to meet industry standards`);
+  }
+  if (score < 80) {
+    issues.push(`Opportunities exist to enhance ${sectionName.toLowerCase()} effectiveness`);
+  }
+  if (score < 90) {
+    issues.push(`Minor refinements needed to optimize ${sectionName.toLowerCase()}`);
   }
 
-  return `Analysis for ${sectionName}: Website performance in this category shows room for growth. Implement recommended improvements to enhance overall performance.`;
+  // Assign relevant recommendations to this section (take a subset)
+  const sectionRecommendations = allRecommendations.slice(0, Math.min(3, allRecommendations.length));
+
+  // Build formatted details
+  let details = `Overview: ${overview}\n\n`;
+
+  if (issues.length > 0) {
+    details += "Issues:\n";
+    issues.forEach(issue => {
+      details += `- ${issue}\n`;
+    });
+    details += "\n";
+  }
+
+  if (sectionRecommendations.length > 0) {
+    details += "Recommendations:\n";
+    sectionRecommendations.forEach(rec => {
+      details += `- ${rec}\n`;
+    });
+  } else {
+    // Fallback recommendations based on common improvements
+    details += "Recommendations:\n";
+    details += `- Review and enhance ${sectionName.toLowerCase()} based on industry best practices\n`;
+    details += `- Conduct user testing to identify areas for improvement\n`;
+    details += `- Implement data-driven optimizations to boost ${sectionName.toLowerCase()} effectiveness\n`;
+  }
+
+  return details.trim();
 }
 
 // Function to generate audit using Grok
