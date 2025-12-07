@@ -28,7 +28,15 @@ const mimeTypes: { [key: string]: string } = {
 };
 
 async function start() {
-  const app = await createServer();
+  let app;
+  try {
+    console.log("Creating Express server...");
+    app = await createServer();
+    console.log("✓ Express server created successfully");
+  } catch (error) {
+    console.error("✗ Failed to create server:", error);
+    process.exit(1);
+  }
 
   // Serve static files (SPA assets)
   app.use((req, res, next) => {
