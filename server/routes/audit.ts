@@ -2818,7 +2818,21 @@ Navigation Consistency: ${websiteData.multiPageAnalysis.crossPageConsistency.nav
 Content Consistency: ${websiteData.multiPageAnalysis.crossPageConsistency.contentConsistency?.score || 0}/100`
       : "Single page - no consistency analysis";
 
-    const userPrompt = `Audit: ${websiteData.url}
+    // Check if fallback data was used
+    const usingFallbackData = websiteData.fallbackUsed === true ||
+                              websiteData.title?.includes('⚠️') ||
+                              websiteData.description?.includes('⚠️');
+
+    const fallbackWarning = usingFallbackData ? `
+⚠️⚠️⚠️ CRITICAL: FALLBACK DATA DETECTED ⚠️⚠️⚠️
+The website content could NOT be accessed (Cloudflare/bot protection or JavaScript-only rendering).
+ALL data below is PLACEHOLDER/GENERIC and DOES NOT reflect the actual website.
+Your audit MUST include a prominent warning that accuracy is severely limited due to access restrictions.
+Score conservatively (40-60 range) and note in EVERY section that real site content was not accessible.
+⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
+` : '';
+
+    const userPrompt = `${fallbackWarning}Audit: ${websiteData.url}
 
 DATA:
 Title: ${websiteData.title}
