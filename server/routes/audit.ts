@@ -2584,7 +2584,46 @@ function getDefaultRecommendations(
   return defaultRecs.slice(0, count);
 }
 
-// Function to generate audit using Grok
+/**
+ * Enhanced Multi-Page Audit Generation with Evidence-Based Analysis
+ *
+ * IMPROVEMENTS IMPLEMENTED:
+ *
+ * 1. MULTI-PAGE CRAWLING (5-6 pages analyzed):
+ *    - Crawls homepage + up to 5 additional important pages (About, Contact, Services, etc.)
+ *    - Analyzes cross-page consistency for branding, navigation, and content
+ *    - Provides comprehensive site-wide insights instead of homepage-only analysis
+ *
+ * 2. ENHANCED DATA COLLECTION:
+ *    - Increased content analysis from 1500 to 4000 characters
+ *    - Complete heading structure (H1, H2, H3) with hierarchy analysis
+ *    - Detailed image analysis (total count, alt text coverage, missing alt tags)
+ *    - Form structure and CTA analysis
+ *    - Navigation menu items and site structure
+ *
+ * 3. COMPREHENSIVE PERFORMANCE METRICS:
+ *    - PageSpeed Insights scores (performance, accessibility, SEO, best practices)
+ *    - Page load times and response times
+ *    - Mobile viewport configuration
+ *    - SSL/HTTPS security
+ *    - SEO fundamentals (robots.txt, sitemap.xml)
+ *
+ * 4. ACCESSIBILITY & UX METRICS:
+ *    - ARIA labels and semantic HTML usage
+ *    - Form labels and validation
+ *    - Image accessibility (alt text coverage)
+ *    - Heading structure compliance
+ *    - Interactive elements (buttons, dropdowns, modals)
+ *
+ * 5. EVIDENCE-BASED PROMPTING:
+ *    - Requires quantifiable metrics in all recommendations
+ *    - Mandates specific evidence citations (e.g., "3 of 12 images missing alt text")
+ *    - Enforces cross-page consistency analysis when multiple pages available
+ *    - Conservative scoring: 85+ requires exceptional evidence, not assumptions
+ *    - Technical metrics integration (performance scores, SEO elements)
+ *
+ * RESULT: More accurate, data-driven audits with actionable, measurable recommendations
+ */
 async function generateAudit(websiteData: any): Promise<AuditResponse> {
   const auditStartTime = Date.now();
   const { url } = websiteData;
