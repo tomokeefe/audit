@@ -2452,85 +2452,72 @@ function parseMarkdownAuditResponse(text: string): any {
   }
 }
 
-// Extract section details from markdown text and format with Issues/Recommendations
+// Extract section-specific details from markdown text
 function extractSectionDetails(
   text: string,
   sectionName: string,
   score: number,
   sectionIndex: number = 0,
 ): string {
-  // Extract detailed analysis if available
-  const detailedAnalysisMatch = text.match(
-    /##\s+Detailed Analysis\s*\n([\s\S]*?)(?=##|$)/i,
-  );
-  const detailedAnalysis = detailedAnalysisMatch
-    ? detailedAnalysisMatch[1].trim().substring(0, 200)
-    : "";
+  console.log(`[PARSE DEBUG] Extracting details for section: ${sectionName}`);
 
-  // Extract recommendations
-  const recommendationsMatch = text.match(
-    /##\s+Prioritized Recommendations\s*\n([\s\S]*?)(?=##|End:|$)/i,
-  );
-  const allRecommendations = recommendationsMatch
-    ? recommendationsMatch[1]
-        .split("\n")
-        .filter((line) => line.trim().match(/^\d+\./))
-        .map((line) => line.replace(/^\d+\.\s*/, "").trim())
-        .filter((r) => r.length > 0)
-    : [];
+  // Try to extract section-specific evidence and recommendations from new format
+  // Format: "N. SectionName – X/10\n   Evidence: ...\n   Recommendations:\n   - ...\n   - ..."
+  const sectionNumber = sectionIndex + 1;
 
-  // Generate score-based analysis
+  // Create regex to match this specific section block
+  const sectionPattern = new RegExp(
+    `${sectionNumber}\\.\\s+${sectionName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*[–-]\\s*[\\d.]+\\s*\\/\\s*10[\\s\\S]*?(?=\\n\\d+\\.\\s+|##\\s+Key Strengths|##\\s+Biggest|$)`,
+    'i'
+  );
+
+  const sectionMatch = text.match(sectionPattern);
+
+  let evidence = "";
+  let recommendations: string[] = [];
+
+  if (sectionMatch) {
+    const sectionBlock = sectionMatch[0];
+    console.log(`[PARSE DEBUG] Found section block for ${sectionName}, length: ${sectionBlock.length}`);
+
+    // Extract evidence
+    const evidenceMatch = sectionBlock.match(/Evidence:\s*(.+?)(?=\n\s*Recommendations:|$)/is);
+    if (evidenceMatch) {
+      evidence = evidenceMatch[1].trim();
+      console.log(`[PARSE DEBUG] Extracted evidence for ${sectionName}: ${evidence.substring(0, 100)}...`);
+    }
+
+    // Extract recommendations (lines starting with -)
+    const recsMatch = sectionBlock.match(/Recommendations:\s*([\s\S]*?)(?=\n\d+\.|##|$)/i);
+    if (recsMatch) {
+      recommendations = recsMatch[1]
+        .split('\n')
+        .filter(line => line.trim().startsWith('-'))
+        .map(line => line.replace(/^-\s*/, '').trim())
+        .filter(r => r.length > 10); // Filter out very short/invalid recommendations
+
+      console.log(`[PARSE DEBUG] Extracted ${recommendations.length} recommendations for ${sectionName}`);
+    }
+  }
+
+  // Fallback to default recommendations if none found
+  if (recommendations.length === 0) {
+    console.log(`[PARSE DEBUG] No recommendations found for ${sectionName}, using defaults`);
+    recommendations = getDefaultRecommendations(sectionName, score);
+  }
+
+  // Generate performance overview
   const performanceLevel =
     score >= 80 ? "strong" : score >= 60 ? "adequate" : "needs improvement";
-  const overview =
-    detailedAnalysis ||
-    `${sectionName} analysis shows ${performanceLevel} performance with opportunities for enhancement.`;
 
-  // Generate issues based on score
-  const issues = [];
-  if (score < 70) {
-    issues.push(
-      `${sectionName} requires significant improvement to meet industry standards`,
-    );
-  }
-  if (score < 80) {
-    issues.push(
-      `Opportunities exist to enhance ${sectionName.toLowerCase()} effectiveness`,
-    );
-  }
-  if (score < 90) {
-    issues.push(
-      `Minor refinements needed to optimize ${sectionName.toLowerCase()}`,
-    );
-  }
-
-  // Distribute recommendations across sections (not just the first 3 for everyone)
-  const recsPerSection = Math.max(1, Math.ceil(allRecommendations.length / 10));
-  const startIdx = sectionIndex * recsPerSection;
-  const sectionRecommendations = allRecommendations.slice(
-    startIdx,
-    startIdx + Math.min(recsPerSection, 3),
-  );
-
-  // If no recommendations assigned, use section-specific defaults
-  const finalRecommendations =
-    sectionRecommendations.length > 0
-      ? sectionRecommendations
-      : getDefaultRecommendations(sectionName, score);
+  const overview = evidence ||
+    `${sectionName} shows ${performanceLevel} performance based on the analysis. Score: ${score}/100.`;
 
   // Build formatted details
-  let details = `Overview: ${overview}\n\n`;
-
-  if (issues.length > 0) {
-    details += "Issues:\n";
-    issues.forEach((issue) => {
-      details += `- ${issue}\n`;
-    });
-    details += "\n";
-  }
+  let details = `${overview}\n\n`;
 
   details += "Recommendations:\n";
-  finalRecommendations.forEach((rec) => {
+  recommendations.forEach((rec) => {
     details += `- ${rec}\n`;
   });
 
