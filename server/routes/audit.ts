@@ -2864,7 +2864,13 @@ SCORING INSTRUCTIONS:
 - Score 70-84 for good performance with measurable proof
 - Score 50-69 for average with clear areas for improvement
 - Score below 50 for significant issues with specific examples
-- Always justify scores with concrete findings (numbers, examples, cross-page comparisons)`;
+- Always justify scores with concrete findings (numbers, examples, cross-page comparisons)
+
+FORMAT REQUIREMENTS:
+- For EACH of the 10 sections, provide Evidence and 2-3 specific Recommendations
+- Follow the exact format shown in the system prompt with "Evidence:" and "Recommendations:" headers under each section
+- Make recommendations actionable and specific to that section's category
+- Do NOT provide only global recommendations - each section must have its own tailored recommendations`;
 
     // Add timeout to Grok API call (60 seconds max)
     const grokPromise = fetch(GROK_API_URL, {
