@@ -32,53 +32,82 @@ const auditStorage = new Map<string, AuditResponse>();
 
 // Utility function to store audit
 async function storeAuditResult(auditData: AuditResponse): Promise<void> {
+  console.log(`🔵 ========================================`);
   console.log(`🔵 storeAuditResult CALLED for audit ${auditData.id}`);
-  console.log(`   URL: ${auditData.url}`);
-  console.log(`   Title: ${auditData.title}`);
-  console.log(`   Score: ${auditData.overallScore}`);
+  console.log(`🔵 URL: ${auditData.url}`);
+  console.log(`🔵 Title: ${auditData.title}`);
+  console.log(`🔵 Score: ${auditData.overallScore}`);
+  console.log(`🔵 Date: ${auditData.date}`);
+  console.log(`🔵 ========================================`);
 
   try {
     // Always use in-memory storage for immediate access within same session
+    console.log(`🔵 [STORE] Step 1: Storing in memory...`);
     auditStorage.set(auditData.id, auditData);
     console.log(
-      `✅ Stored audit ${auditData.id} in memory storage for sharing`,
+      `✅ [STORE] Stored audit ${auditData.id} in memory storage (${auditStorage.size} total audits in memory)`,
     );
 
     // Also save to database for persistent sharing across browsers/devices
+    const dbUrl = process.env.DATABASE_URL;
     console.log(
-      `🔵 Checking DATABASE_URL: ${process.env.DATABASE_URL ? "SET" : "NOT SET"}`,
+      `🔵 [STORE] Step 2: Checking DATABASE_URL...`,
+    );
+    console.log(
+      `🔵 [STORE] DATABASE_URL is ${dbUrl ? "SET (" + dbUrl.substring(0, 30) + "...)" : "NOT SET"}`,
     );
 
-    if (process.env.DATABASE_URL) {
+    if (dbUrl) {
       try {
-        console.log(`🔵 Attempting to import audit-service...`);
-        const { auditService } = await import("../db/audit-service");
-        console.log(`🔵 audit-service imported, calling saveAudit...`);
+        console.log(`🔵 [STORE] Step 3: Importing audit-service module...`);
+        const auditServiceModule = await import("../db/audit-service.js");
+        console.log(`✅ [STORE] audit-service module imported`);
+
+        console.log(`🔵 [STORE] Step 4: Extracting auditService from module...`);
+        const { auditService } = auditServiceModule;
+        console.log(`✅ [STORE] auditService extracted:`, typeof auditService);
+
+        console.log(`🔵 [STORE] Step 5: Calling auditService.saveAudit()...`);
+        console.log(`🔵 [STORE] Audit data to save:`, {
+          id: auditData.id,
+          url: auditData.url,
+          title: auditData.title,
+          overallScore: auditData.overallScore,
+          sectionsCount: auditData.sections?.length || 0,
+          date: auditData.date,
+        });
+
         await auditService.saveAudit(auditData);
         console.log(
-          `✅ Stored audit ${auditData.id} in database for persistent sharing`,
+          `✅ [STORE] SUCCESS! Audit ${auditData.id} saved to database`,
         );
       } catch (dbError) {
         console.error(
-          `❌ ERROR saving audit ${auditData.id} to database:`,
+          `❌ [STORE] ERROR saving audit ${auditData.id} to database:`,
           dbError,
         );
-        console.error(`❌ Error details:`, {
-          message: dbError instanceof Error ? dbError.message : String(dbError),
-          stack: dbError instanceof Error ? dbError.stack : undefined,
-        });
+        console.error(`❌ [STORE] Error type:`, typeof dbError);
+        console.error(`❌ [STORE] Error name:`, (dbError as any)?.name);
+        console.error(`❌ [STORE] Error message:`, dbError instanceof Error ? dbError.message : String(dbError));
+        console.error(`❌ [STORE] Error stack:`, dbError instanceof Error ? dbError.stack : "No stack trace");
+        console.error(`❌ [STORE] Full error object:`, JSON.stringify(dbError, null, 2));
         // Don't fail - in-memory storage is still available
       }
     } else {
       console.warn(
-        `⚠️  WARNING: DATABASE_URL not configured - audit ${auditData.id} will only be available in current session`,
+        `⚠️  [STORE] WARNING: DATABASE_URL not configured - audit ${auditData.id} will only be available in current session`,
       );
     }
   } catch (error) {
-    console.error("❌ CRITICAL ERROR in storeAuditResult:", error);
-    console.error("Stack:", error instanceof Error ? error.stack : undefined);
+    console.error("❌ [STORE] CRITICAL ERROR in storeAuditResult:", error);
+    console.error("❌ [STORE] Error type:", typeof error);
+    console.error("❌ [STORE] Error stack:", error instanceof Error ? error.stack : "No stack trace");
     // Don't throw - storage failure shouldn't break audit creation
   }
+
+  console.log(`🔵 ========================================`);
+  console.log(`🔵 [STORE] storeAuditResult COMPLETED for ${auditData.id}`);
+  console.log(`🔵 ========================================`);
 }
 
 // Export the storage for use in audit-storage.ts
