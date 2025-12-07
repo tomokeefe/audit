@@ -15,8 +15,13 @@ async function startServer() {
     console.log(`SPA path: ${distPath}`);
     console.log("Serving static files...");
 
-    // Only serve static files, no routes at all
+    // Serve static files
     app.use(express.static(distPath));
+
+    // SPA fallback - serve index.html for all non-static routes
+    app.get("*", (req, res) => {
+      res.sendFile(path.join(distPath, "index.html"));
+    });
 
     console.log("Starting server...");
     const server = app.listen(port, "0.0.0.0", () => {
