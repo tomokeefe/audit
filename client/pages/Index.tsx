@@ -458,6 +458,17 @@ export default function Index() {
 
           throw new Error(`Server responded with ${testResponse.status}`);
         } catch (error) {
+          // Check if this is an iframe environment error
+          const isIframeError = error instanceof Error &&
+            (error.message.includes("Failed to fetch") || error.name === "TypeError");
+
+          if (isIframeError) {
+            console.log("ℹ️ Running in iframe preview mode - API unavailable (this is normal)");
+            // Don't retry in iframe mode, just set minimal status and continue
+            setApiStatus({ ping: false, audits: false, error: undefined });
+            return true; // Return success to stop retrying
+          }
+
           if (error instanceof Error && error.name === "AbortError") {
             console.log(`Connection attempt ${retries + 1} timed out after 3s`);
           } else {
