@@ -6,7 +6,7 @@ import { createServer } from "./index";
 async function startServer() {
   try {
     console.log("Starting server...");
-    
+
     const app = createServer();
     const port = parseInt(process.env.PORT || "3000", 10);
 
