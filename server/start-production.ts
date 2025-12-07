@@ -27,10 +27,10 @@ const mimeTypes: { [key: string]: string } = {
 const server = createServer((req, res) => {
   // Prevent request logging noise
   const url = req.url || "/";
-  
+
   // Resolve file path
   let filePath = path.join(distPath, url);
-  
+
   // If requesting a directory or just /, serve index.html
   if (url === "/" || url.endsWith("/") || !extname(url)) {
     filePath = path.join(distPath, "index.html");
