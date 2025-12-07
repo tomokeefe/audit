@@ -35,6 +35,9 @@ export default defineConfig({
         "pg",
         "pg/lib/client",
         "pg/lib/pool",
+        "axios",
+        "cheerio",
+        "dotenv",
       ],
       output: {
         format: "es",
