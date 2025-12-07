@@ -126,6 +126,14 @@ export default function Index() {
     };
   }, []);
 
+  // Debug: Log when recentAudits changes
+  useEffect(() => {
+    console.log(`[STATE UPDATE] recentAudits changed. Count: ${recentAudits.length}`);
+    if (recentAudits.length > 0) {
+      console.log(`[STATE UPDATE] Recent audits:`, recentAudits.map(a => ({ id: a.id, title: a.title })));
+    }
+  }, [recentAudits]);
+
   const loadRecentAudits = async () => {
     try {
       setLoadingAudits(true);
