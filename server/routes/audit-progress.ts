@@ -410,8 +410,7 @@ export const handleAuditStandard = async (req: Request, res: Response) => {
     res.setHeader("Content-Type", "application/json");
     res.status(200).json(auditResult);
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : String(error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error("Standard audit error:", errorMessage);
     console.error("Full error:", error);
 

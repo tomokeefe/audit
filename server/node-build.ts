@@ -38,8 +38,12 @@ async function start() {
   console.log(`- __dirname: ${__dirname}`);
   console.log(`- distPath: ${distPath}`);
   console.log(`- distPath exists: ${existsSync(distPath)}`);
-  console.log(`- GROK_API_KEY: ${process.env.GROK_API_KEY ? "SET" : "NOT SET"}`);
-  console.log(`- DATABASE_URL: ${process.env.DATABASE_URL ? "SET" : "NOT SET"}`);
+  console.log(
+    `- GROK_API_KEY: ${process.env.GROK_API_KEY ? "SET" : "NOT SET"}`,
+  );
+  console.log(
+    `- DATABASE_URL: ${process.env.DATABASE_URL ? "SET" : "NOT SET"}`,
+  );
 
   const app = await createServer();
 
