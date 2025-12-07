@@ -38,7 +38,7 @@ export default function Header() {
             <Link
               to="/reports"
               className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
-              style={{ marginLeft: "31px" }}
+              style={{ marginLeft: "30px" }}
             >
               Reports
             </Link>
