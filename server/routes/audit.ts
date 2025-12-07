@@ -2431,7 +2431,7 @@ function parseMarkdownAuditResponse(text: string): any {
           .filter((r) => r.length > 0)
       : [];
 
-    return {
+    const result = {
       overallScore,
       sections: sections.slice(0, 10),
       strengths,
@@ -2440,8 +2440,13 @@ function parseMarkdownAuditResponse(text: string): any {
       recommendations,
       rawResponse: text,
     };
+
+    console.log("[PARSE DEBUG] Parse complete - sections:", result.sections.length, "overall:", result.overallScore);
+    console.log("[PARSE DEBUG] Sample section scores:", result.sections.slice(0, 3).map(s => `${s.name}: ${s.score}`));
+
+    return result;
   } catch (error) {
-    console.error("Error parsing markdown response:", error);
+    console.error("[PARSE DEBUG] Error parsing markdown response:", error);
     return null;
   }
 }
