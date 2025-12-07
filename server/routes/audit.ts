@@ -2449,8 +2449,8 @@ function parseMarkdownAuditResponse(text: string): any {
       result.sections.slice(0, 2).map((s) => ({
         name: s.name,
         detailsLength: s.details?.length || 0,
-        detailsPreview: s.details?.substring(0, 150) || 'No details'
-      }))
+        detailsPreview: s.details?.substring(0, 150) || "No details",
+      })),
     );
 
     return result;
@@ -2475,8 +2475,8 @@ function extractSectionDetails(
 
   // Create regex to match this specific section block
   const sectionPattern = new RegExp(
-    `${sectionNumber}\\.\\s+${sectionName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*[–-]\\s*[\\d.]+\\s*\\/\\s*10[\\s\\S]*?(?=\\n\\d+\\.\\s+|##\\s+Key Strengths|##\\s+Biggest|$)`,
-    'i'
+    `${sectionNumber}\\.\\s+${sectionName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*[–-]\\s*[\\d.]+\\s*\\/\\s*10[\\s\\S]*?(?=\\n\\d+\\.\\s+|##\\s+Key Strengths|##\\s+Biggest|$)`,
+    "i",
   );
 
   const sectionMatch = text.match(sectionPattern);
@@ -2486,31 +2486,43 @@ function extractSectionDetails(
 
   if (sectionMatch) {
     const sectionBlock = sectionMatch[0];
-    console.log(`[PARSE DEBUG] Found section block for ${sectionName}, length: ${sectionBlock.length}`);
+    console.log(
+      `[PARSE DEBUG] Found section block for ${sectionName}, length: ${sectionBlock.length}`,
+    );
 
     // Extract evidence
-    const evidenceMatch = sectionBlock.match(/Evidence:\s*(.+?)(?=\n\s*Recommendations:|$)/is);
+    const evidenceMatch = sectionBlock.match(
+      /Evidence:\s*(.+?)(?=\n\s*Recommendations:|$)/is,
+    );
     if (evidenceMatch) {
       evidence = evidenceMatch[1].trim();
-      console.log(`[PARSE DEBUG] Extracted evidence for ${sectionName}: ${evidence.substring(0, 100)}...`);
+      console.log(
+        `[PARSE DEBUG] Extracted evidence for ${sectionName}: ${evidence.substring(0, 100)}...`,
+      );
     }
 
     // Extract recommendations (lines starting with -)
-    const recsMatch = sectionBlock.match(/Recommendations:\s*([\s\S]*?)(?=\n\d+\.|##|$)/i);
+    const recsMatch = sectionBlock.match(
+      /Recommendations:\s*([\s\S]*?)(?=\n\d+\.|##|$)/i,
+    );
     if (recsMatch) {
       recommendations = recsMatch[1]
-        .split('\n')
-        .filter(line => line.trim().startsWith('-'))
-        .map(line => line.replace(/^-\s*/, '').trim())
-        .filter(r => r.length > 10); // Filter out very short/invalid recommendations
+        .split("\n")
+        .filter((line) => line.trim().startsWith("-"))
+        .map((line) => line.replace(/^-\s*/, "").trim())
+        .filter((r) => r.length > 10); // Filter out very short/invalid recommendations
 
-      console.log(`[PARSE DEBUG] Extracted ${recommendations.length} recommendations for ${sectionName}`);
+      console.log(
+        `[PARSE DEBUG] Extracted ${recommendations.length} recommendations for ${sectionName}`,
+      );
     }
   }
 
   // Fallback to default recommendations if none found
   if (recommendations.length === 0) {
-    console.log(`[PARSE DEBUG] No recommendations found for ${sectionName}, using defaults`);
+    console.log(
+      `[PARSE DEBUG] No recommendations found for ${sectionName}, using defaults`,
+    );
     recommendations = getDefaultRecommendations(sectionName, score);
   }
 
@@ -2518,7 +2530,8 @@ function extractSectionDetails(
   const performanceLevel =
     score >= 80 ? "strong" : score >= 60 ? "adequate" : "needs improvement";
 
-  const overview = evidence ||
+  const overview =
+    evidence ||
     `${sectionName} shows ${performanceLevel} performance based on the analysis. Score: ${score}/100.`;
 
   // Build formatted details
