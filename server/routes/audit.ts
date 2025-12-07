@@ -2342,7 +2342,10 @@ function parseMarkdownAuditResponse(text: string): any {
         sections.push({
           name: sectionNames[index] || `Section ${index + 1}`,
           score: Math.max(0, Math.min(100, score)),
-          details: extractSectionDetails(text, sectionNames[index] || `Section ${index + 1}`),
+          details: extractSectionDetails(
+            text,
+            sectionNames[index] || `Section ${index + 1}`,
+          ),
         });
       });
     }
