@@ -135,29 +135,5 @@ export async function createServer() {
     });
   });
 
-  // 404 handler for unmatched routes
-  app.use((req: any, res: any) => {
-    console.warn(`[404] ${req.method} ${req.path} - Route not found`, {
-      availableRoutes: [
-        "GET /api/ping",
-        "GET /api/health",
-        "GET /api/audit/progress",
-        "POST /api/audit",
-        "POST /api/demo",
-        "GET /api/audits",
-        "POST /api/audits",
-        "POST /api/save-audit",
-        "GET /api/audits/:id",
-        "DELETE /api/audits/:id",
-      ],
-    });
-    res.status(404).json({
-      error: "Not Found",
-      path: req.path,
-      method: req.method,
-      message: `Route ${req.method} ${req.path} is not registered`,
-    });
-  });
-
   return app;
 }
