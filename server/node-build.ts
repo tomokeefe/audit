@@ -81,6 +81,17 @@ async function start() {
     createReadStream(filePath).pipe(res);
   });
 
+  // 404 handler for unmatched API routes (after static file serving)
+  app.use((req: any, res: any) => {
+    console.warn(`[404] ${req.method} ${req.path} - API route not found`);
+    res.status(404).json({
+      error: "Not Found",
+      path: req.path,
+      method: req.method,
+      message: `API endpoint ${req.method} ${req.path} does not exist`,
+    });
+  });
+
   const server = app.listen(port, "0.0.0.0", () => {
     console.log(`🚀 Server running on port ${port}`);
     console.log(`📱 Frontend: http://localhost:${port}`);
