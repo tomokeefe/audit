@@ -8,21 +8,21 @@ COPY package.json pnpm-lock.yaml ./
 # Install pnpm
 RUN npm install -g pnpm
 
-# Install dependencies (allow updates to fix conflicts)
+# Install dependencies
 RUN pnpm install
 
 # Copy rest of code
 COPY . .
 
-# Build the app
+# Build the app (no environment variables needed for build)
 RUN pnpm build
 
 # Expose port
 EXPOSE 8080
 
-# Set environment
+# Runtime environment variables
 ENV NODE_ENV=production
 ENV PORT=8080
 
-# Start
+# Start the server
 CMD ["node", "dist/server/node-build.mjs"]
