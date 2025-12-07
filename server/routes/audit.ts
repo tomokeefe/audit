@@ -696,10 +696,10 @@ async function scrapeWithPuppeteer(url: string) {
     console.log(`   ✓ Content extracted. Title: "${websiteData.title.slice(0, 50)}..."`);
     console.log(`   ✓ Navigation: "${websiteData.navigation.slice(0, 100)}..."`);
 
-    await browser.close();
-
-    // Get the final HTML for additional analysis
+    // Get the final HTML for additional analysis (before closing browser)
     const html = await page.content();
+
+    await browser.close();
 
     // Perform the same analysis as axios-based scraping
     const siteStructure = await analyzeSiteStructure(url, html);
