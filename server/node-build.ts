@@ -31,6 +31,15 @@ const mimeTypes: { [key: string]: string } = {
 };
 
 async function start() {
+  console.log("Environment Setup:");
+  console.log(`- NODE_ENV: ${process.env.NODE_ENV}`);
+  console.log(`- PORT: ${port}`);
+  console.log(`- __dirname: ${__dirname}`);
+  console.log(`- distPath: ${distPath}`);
+  console.log(`- distPath exists: ${existsSync(distPath)}`);
+  console.log(`- GROK_API_KEY: ${process.env.GROK_API_KEY ? "SET" : "NOT SET"}`);
+  console.log(`- DATABASE_URL: ${process.env.DATABASE_URL ? "SET" : "NOT SET"}`);
+
   const app = await createServer();
 
   // Serve static files (SPA assets)
