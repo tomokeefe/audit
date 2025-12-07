@@ -2886,7 +2886,7 @@ SCORING INSTRUCTIONS:
         ],
         model: "grok-4-0709",
         temperature: 0.7,
-        max_tokens: 3500, // Increased for detailed evidence-based analysis
+        max_tokens: 4500, // Increased for section-specific recommendations (10 sections × ~300 tokens each)
       }),
     });
 
