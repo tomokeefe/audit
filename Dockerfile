@@ -2,11 +2,17 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy everything
-COPY . .
+# Copy package files first
+COPY package.json pnpm-lock.yaml ./
 
-# Install pnpm and dependencies
-RUN npm install -g pnpm && pnpm install --frozen-lockfile
+# Install pnpm
+RUN npm install -g pnpm
+
+# Install dependencies (allow updates to fix conflicts)
+RUN pnpm install
+
+# Copy rest of code
+COPY . .
 
 # Build the app
 RUN pnpm build
