@@ -2313,6 +2313,8 @@ async function buildAuditFromCache(
 // Parse Brand Whisperer markdown audit response and convert to structured format
 function parseMarkdownAuditResponse(text: string): any {
   try {
+    console.log("[PARSE DEBUG] Parsing markdown response, length:", text.length);
+
     // Extract overall score from "**Overall: X/100**" format
     const overallMatch = text.match(
       /\*\*Overall:\s*(\d+(?:\.\d+)?)\s*\/\s*100\*\*/i,
@@ -2320,6 +2322,8 @@ function parseMarkdownAuditResponse(text: string): any {
     const overallScore = overallMatch
       ? Math.round(parseFloat(overallMatch[1]))
       : 75;
+
+    console.log("[PARSE DEBUG] Overall score match:", overallMatch?.[0], "-> score:", overallScore);
 
     // Extract section scores from "N. Name – X/10" format
     const sectionMatches = text.match(
