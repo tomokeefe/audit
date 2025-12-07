@@ -32,43 +32,30 @@ function expressPlugin(): Plugin {
     apply: "serve", // Only apply during development (serve mode)
     configureServer(server) {
       // Initialize Express app asynchronously
-      const expressPromise = (async () => {
+      (async () => {
         try {
           const { createServer } = await import("./server/index.js");
           expressAppInstance = await createServer();
           console.log("✅ Express server initialized successfully");
+
+          // Clear and re-add middlewares with Express first
+          const middlewares = server.middlewares;
+
+          // Create a wrapper middleware that only handles /api requests
+          const apiMiddleware = (req, res, next) => {
+            if (req.url?.startsWith("/api")) {
+              expressAppInstance(req, res, next);
+            } else {
+              next();
+            }
+          };
+
+          // Add Express as a middleware
+          middlewares.use(apiMiddleware);
         } catch (error) {
           console.error("❌ Failed to initialize Express server:", error);
         }
       })();
-
-      // Return a middleware function that will be added to the middleware stack
-      return async (req, res, next) => {
-        // Wait for Express to be initialized
-        if (!expressAppInstance) {
-          await expressPromise;
-        }
-
-        // Check if this is an API request
-        if (req?.url?.startsWith("/api") && expressAppInstance) {
-          try {
-            // Call Express app with a catch-all next function
-            expressAppInstance(req, res, (err) => {
-              if (err) {
-                next(err);
-              } else {
-                next();
-              }
-            });
-          } catch (error) {
-            console.error("Error in Express middleware:", error);
-            next(error);
-          }
-        } else {
-          // For non-API requests, continue to next middleware
-          next();
-        }
-      };
     },
   };
 }
