@@ -21,7 +21,9 @@ export class AuditService {
       return;
     }
 
-    console.log(`[DB SAVE] Attempting to save audit ${audit.id} to database...`);
+    console.log(
+      `[DB SAVE] Attempting to save audit ${audit.id} to database...`,
+    );
     console.log(`[DB SAVE] URL: ${audit.url}`);
     console.log(`[DB SAVE] Title: ${audit.title}`);
     console.log(`[DB SAVE] Score: ${audit.overallScore}`);
@@ -30,7 +32,9 @@ export class AuditService {
     // Ensure date is in ISO format for PostgreSQL
     let dateValue: string;
     try {
-      dateValue = audit.date ? new Date(audit.date).toISOString() : new Date().toISOString();
+      dateValue = audit.date
+        ? new Date(audit.date).toISOString()
+        : new Date().toISOString();
       console.log(`[DB SAVE] Normalized date: ${dateValue}`);
     } catch (dateError) {
       console.error(`[DB SAVE] Error parsing date "${audit.date}":`, dateError);
@@ -65,11 +69,18 @@ export class AuditService {
       isDemoMode,
     ];
 
-    console.log(`[DB SAVE] Query values:`, values.map((v, i) => `$${i + 1}=${typeof v === 'string' ? v.substring(0, 50) : v}`));
+    console.log(
+      `[DB SAVE] Query values:`,
+      values.map(
+        (v, i) => `$${i + 1}=${typeof v === "string" ? v.substring(0, 50) : v}`,
+      ),
+    );
 
     try {
       const result = await pool.query(query, values);
-      console.log(`✅ [DB SAVE] Successfully saved audit ${audit.id} to database (${result.rowCount} row(s) affected)`);
+      console.log(
+        `✅ [DB SAVE] Successfully saved audit ${audit.id} to database (${result.rowCount} row(s) affected)`,
+      );
     } catch (error) {
       console.error(`❌ [DB SAVE] Error saving audit ${audit.id}:`, error);
       console.error(`[DB SAVE] Error details:`, {
@@ -123,7 +134,9 @@ export class AuditService {
       return [];
     }
 
-    console.log(`[DB LIST] Fetching audits (limit: ${limit}, offset: ${offset})...`);
+    console.log(
+      `[DB LIST] Fetching audits (limit: ${limit}, offset: ${offset})...`,
+    );
 
     const query =
       "SELECT * FROM audits ORDER BY created_at DESC LIMIT $1 OFFSET $2";
@@ -133,7 +146,10 @@ export class AuditService {
       console.log(`[DB LIST] Found ${result.rows.length} audit(s) in database`);
 
       if (result.rows.length > 0) {
-        console.log(`[DB LIST] Sample audit IDs:`, result.rows.slice(0, 3).map(r => r.id));
+        console.log(
+          `[DB LIST] Sample audit IDs:`,
+          result.rows.slice(0, 3).map((r) => r.id),
+        );
       }
 
       return result.rows.map((row) => ({

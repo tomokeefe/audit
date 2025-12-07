@@ -80,7 +80,9 @@ export function createFallbackData(url: string) {
     domain.split(".")[0].slice(1);
 
   console.warn(`⚠️  FALLBACK DATA USED FOR: ${url}`);
-  console.warn(`   Reason: Website content could not be accessed (Cloudflare, JS-only, or blocked)`);
+  console.warn(
+    `   Reason: Website content could not be accessed (Cloudflare, JS-only, or blocked)`,
+  );
   console.warn(`   Impact: Audit accuracy will be SEVERELY LIMITED`);
 
   return {
@@ -95,7 +97,8 @@ export function createFallbackData(url: string) {
     ],
     images: [],
     links: [],
-    navigation: "⚠️ Navigation could not be detected - site protected or uses JavaScript",
+    navigation:
+      "⚠️ Navigation could not be detected - site protected or uses JavaScript",
     footer: "⚠️ Footer content not accessible",
     brandElements: `⚠️ Brand elements could not be analyzed`,
     htmlLength: 0,
@@ -617,22 +620,24 @@ function analyzeCrossPageConsistency(crawlResults: any[]) {
 
 // Function to scrape website using Puppeteer (headless browser) for Cloudflare-protected sites
 async function scrapeWithPuppeteer(url: string) {
-  console.log(`🚀 Launching Puppeteer for ${url} (Cloudflare/bot protection detected)`);
+  console.log(
+    `🚀 Launching Puppeteer for ${url} (Cloudflare/bot protection detected)`,
+  );
 
   // Dynamic import to avoid loading puppeteer during Vite bundling
-  const puppeteer = (await import('puppeteer')).default;
+  const puppeteer = (await import("puppeteer")).default;
 
   let browser;
   try {
     browser = await puppeteer.launch({
       headless: true,
       args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-accelerated-2d-canvas',
-        '--disable-gpu',
-        '--window-size=1920x1080',
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-accelerated-2d-canvas",
+        "--disable-gpu",
+        "--window-size=1920x1080",
       ],
     });
 
@@ -641,18 +646,18 @@ async function scrapeWithPuppeteer(url: string) {
     // Set realistic viewport and user agent
     await page.setViewport({ width: 1920, height: 1080 });
     await page.setUserAgent(
-      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
     );
 
     // Navigate to the page with a timeout
     console.log(`   Navigating to ${url}...`);
     await page.goto(url, {
-      waitUntil: 'networkidle2',
+      waitUntil: "networkidle2",
       timeout: 30000,
     });
 
     // Wait a bit for JavaScript to render
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
     console.log(`   ✓ Page loaded, extracting content...`);
 
@@ -661,42 +666,47 @@ async function scrapeWithPuppeteer(url: string) {
       // Helper to get text content
       const getText = (selector: string): string => {
         const el = document.querySelector(selector);
-        return el?.textContent?.trim() || '';
+        return el?.textContent?.trim() || "";
       };
 
       // Helper to get all text from elements
       const getAllText = (selector: string): string[] => {
         const elements = document.querySelectorAll(selector);
         return Array.from(elements)
-          .map(el => el.textContent?.trim() || '')
-          .filter(text => text.length > 0);
+          .map((el) => el.textContent?.trim() || "")
+          .filter((text) => text.length > 0);
       };
 
       // Helper to get attribute
       const getAttr = (selector: string, attr: string): string => {
         const el = document.querySelector(selector);
-        return el?.getAttribute(attr) || '';
+        return el?.getAttribute(attr) || "";
       };
 
       return {
-        title: document.title || '',
-        description: getAttr('meta[name="description"]', 'content'),
-        headings: getAllText('h1, h2, h3'),
-        paragraphs: getAllText('p').slice(0, 10),
-        images: Array.from(document.querySelectorAll('img'))
-          .map(img => img.getAttribute('alt') || '')
-          .filter(alt => alt.length > 0),
-        links: getAllText('a').slice(0, 20),
-        navigation: getText('nav, .nav, .menu, .navbar') ||
-                   getAllText('nav a, .nav a, .menu a, .navbar a').join(' '),
-        footer: getText('footer'),
-        brandElements: getText('.logo, .brand, #logo, #brand'),
+        title: document.title || "",
+        description: getAttr('meta[name="description"]', "content"),
+        headings: getAllText("h1, h2, h3"),
+        paragraphs: getAllText("p").slice(0, 10),
+        images: Array.from(document.querySelectorAll("img"))
+          .map((img) => img.getAttribute("alt") || "")
+          .filter((alt) => alt.length > 0),
+        links: getAllText("a").slice(0, 20),
+        navigation:
+          getText("nav, .nav, .menu, .navbar") ||
+          getAllText("nav a, .nav a, .menu a, .navbar a").join(" "),
+        footer: getText("footer"),
+        brandElements: getText(".logo, .brand, #logo, #brand"),
         htmlLength: document.documentElement.outerHTML.length,
       };
     });
 
-    console.log(`   ✓ Content extracted. Title: "${websiteData.title.slice(0, 50)}..."`);
-    console.log(`   ✓ Navigation: "${websiteData.navigation.slice(0, 100)}..."`);
+    console.log(
+      `   ✓ Content extracted. Title: "${websiteData.title.slice(0, 50)}..."`,
+    );
+    console.log(
+      `   ✓ Navigation: "${websiteData.navigation.slice(0, 100)}..."`,
+    );
 
     // Get the final HTML for additional analysis (before closing browser)
     const html = await page.content();
@@ -708,8 +718,12 @@ async function scrapeWithPuppeteer(url: string) {
     const uxFeatures = await analyzeUXFeatures(html);
     const performanceData = await analyzeWebsitePerformance(url);
 
-    console.log(`   ✓ Site structure: ${siteStructure.discoveredPages.length} pages discovered`);
-    console.log(`   ✓ UX features: ${uxFeatures.forms.count} forms, ${uxFeatures.media.images} images`);
+    console.log(
+      `   ✓ Site structure: ${siteStructure.discoveredPages.length} pages discovered`,
+    );
+    console.log(
+      `   ✓ UX features: ${uxFeatures.forms.count} forms, ${uxFeatures.media.images} images`,
+    );
     console.log(`✅ Puppeteer scraping completed successfully for ${url}`);
 
     // Try to crawl additional pages (limited to avoid long execution)
@@ -724,7 +738,11 @@ async function scrapeWithPuppeteer(url: string) {
       try {
         const pagesToCrawl = Math.min(3, siteStructure.discoveredPages.length); // Limit to 3 for Puppeteer
         console.log(`Crawling ${pagesToCrawl} additional pages...`);
-        multiPageResults = await crawlMultiplePages(url, siteStructure.discoveredPages, 3);
+        multiPageResults = await crawlMultiplePages(
+          url,
+          siteStructure.discoveredPages,
+          3,
+        );
 
         if (multiPageResults.length > 1) {
           crossPageAnalysis = analyzeCrossPageConsistency(multiPageResults);
@@ -747,7 +765,7 @@ async function scrapeWithPuppeteer(url: string) {
       htmlLength: websiteData.htmlLength,
       url,
       fallbackUsed: false,
-      scrapedWith: 'puppeteer', // Flag to indicate Puppeteer was used
+      scrapedWith: "puppeteer", // Flag to indicate Puppeteer was used
       performance: performanceData,
       siteStructure: siteStructure,
       uxFeatures: uxFeatures,
@@ -759,17 +777,27 @@ async function scrapeWithPuppeteer(url: string) {
           (sum, page) => sum + page.contentLength,
           websiteData.htmlLength,
         ),
-        avgImagesPerPage: multiPageResults.length > 0
-          ? multiPageResults.reduce((sum, page) => sum + page.images.total, 0) / multiPageResults.length
-          : websiteData.images.length,
-        avgFormsPerPage: multiPageResults.length > 0
-          ? multiPageResults.reduce((sum, page) => sum + page.forms.count, 0) / multiPageResults.length
-          : uxFeatures.forms.count,
-        pageTypes: multiPageResults.map(page => ({ url: page.url, type: page.pageType })),
+        avgImagesPerPage:
+          multiPageResults.length > 0
+            ? multiPageResults.reduce(
+                (sum, page) => sum + page.images.total,
+                0,
+              ) / multiPageResults.length
+            : websiteData.images.length,
+        avgFormsPerPage:
+          multiPageResults.length > 0
+            ? multiPageResults.reduce(
+                (sum, page) => sum + page.forms.count,
+                0,
+              ) / multiPageResults.length
+            : uxFeatures.forms.count,
+        pageTypes: multiPageResults.map((page) => ({
+          url: page.url,
+          type: page.pageType,
+        })),
       },
       analysisDepth: "puppeteer-comprehensive",
     };
-
   } catch (error) {
     console.error(`❌ Puppeteer scraping failed for ${url}:`, error);
     if (browser) {
@@ -827,16 +855,18 @@ async function scrapeWebsite(url: string) {
       const pageText = response.data.toLowerCase();
       const title = $("title").text() || "";
       const isBlocked =
-        pageText.includes('just a moment') ||
-        pageText.includes('cloudflare') ||
-        pageText.includes('challenge') ||
-        pageText.includes('bot detection') ||
-        pageText.includes('ddos protection') ||
-        title.toLowerCase().includes('just a moment') ||
-        title.toLowerCase().includes('attention required');
+        pageText.includes("just a moment") ||
+        pageText.includes("cloudflare") ||
+        pageText.includes("challenge") ||
+        pageText.includes("bot detection") ||
+        pageText.includes("ddos protection") ||
+        title.toLowerCase().includes("just a moment") ||
+        title.toLowerCase().includes("attention required");
 
       if (isBlocked) {
-        console.warn(`⚠️  BLOCKED: ${url} is protected by Cloudflare or bot detection`);
+        console.warn(
+          `⚠️  BLOCKED: ${url} is protected by Cloudflare or bot detection`,
+        );
         console.warn(`   Falling back to Puppeteer (headless browser)...`);
         throw new Error(`CLOUDFLARE_DETECTED`); // Special error code to trigger Puppeteer
       }
@@ -982,20 +1012,27 @@ async function scrapeWebsite(url: string) {
         analysisDepth: "comprehensive-multipage",
       };
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
       console.error(`Attempt ${attempt + 1} failed for ${url}:`, errorMessage);
 
       // Check if Cloudflare was detected - try Puppeteer immediately
-      if (errorMessage.includes('CLOUDFLARE_DETECTED')) {
-        console.log(`🔄 Cloudflare detected on attempt ${attempt + 1}, trying Puppeteer...`);
+      if (errorMessage.includes("CLOUDFLARE_DETECTED")) {
+        console.log(
+          `🔄 Cloudflare detected on attempt ${attempt + 1}, trying Puppeteer...`,
+        );
         try {
           const puppeteerResult = await scrapeWithPuppeteer(url);
-          console.log(`✅ Puppeteer successfully bypassed protection for ${url}`);
+          console.log(
+            `✅ Puppeteer successfully bypassed protection for ${url}`,
+          );
           return puppeteerResult;
         } catch (puppeteerError) {
           console.error(
             `❌ Puppeteer also failed for ${url}:`,
-            puppeteerError instanceof Error ? puppeteerError.message : puppeteerError,
+            puppeteerError instanceof Error
+              ? puppeteerError.message
+              : puppeteerError,
           );
           // Continue to fallback data below
           if (attempt === 2) {
@@ -1007,7 +1044,7 @@ async function scrapeWebsite(url: string) {
 
       if (attempt === 2) {
         // Final attempt failed, try Puppeteer as last resort if not already tried
-        if (!errorMessage.includes('CLOUDFLARE_DETECTED')) {
+        if (!errorMessage.includes("CLOUDFLARE_DETECTED")) {
           console.log(`🔄 Final attempt: Trying Puppeteer for ${url}...`);
           try {
             const puppeteerResult = await scrapeWithPuppeteer(url);
@@ -1016,13 +1053,17 @@ async function scrapeWebsite(url: string) {
           } catch (puppeteerError) {
             console.error(
               `❌ Puppeteer failed on final attempt:`,
-              puppeteerError instanceof Error ? puppeteerError.message : puppeteerError,
+              puppeteerError instanceof Error
+                ? puppeteerError.message
+                : puppeteerError,
             );
           }
         }
 
         // All methods exhausted, use fallback data
-        console.log(`All scraping attempts failed for ${url}, using fallback data`);
+        console.log(
+          `All scraping attempts failed for ${url}, using fallback data`,
+        );
         return createFallbackData(url);
       }
 
@@ -3037,18 +3078,21 @@ Content Consistency: ${websiteData.multiPageAnalysis.crossPageConsistency.conten
       : "Single page - no consistency analysis";
 
     // Check if fallback data was used
-    const usingFallbackData = websiteData.fallbackUsed === true ||
-                              websiteData.title?.includes('⚠️') ||
-                              websiteData.description?.includes('⚠️');
+    const usingFallbackData =
+      websiteData.fallbackUsed === true ||
+      websiteData.title?.includes("⚠️") ||
+      websiteData.description?.includes("⚠️");
 
-    const fallbackWarning = usingFallbackData ? `
+    const fallbackWarning = usingFallbackData
+      ? `
 ⚠️⚠️⚠️ CRITICAL: FALLBACK DATA DETECTED ⚠️⚠️⚠️
 The website content could NOT be accessed (Cloudflare/bot protection or JavaScript-only rendering).
 ALL data below is PLACEHOLDER/GENERIC and DOES NOT reflect the actual website.
 Your audit MUST include a prominent warning that accuracy is severely limited due to access restrictions.
 Score conservatively (40-60 range) and note in EVERY section that real site content was not accessible.
 ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
-` : '';
+`
+      : "";
 
     const userPrompt = `${fallbackWarning}Audit: ${websiteData.url}
 

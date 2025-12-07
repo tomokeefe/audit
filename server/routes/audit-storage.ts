@@ -94,7 +94,9 @@ export const listAudits: RequestHandler = async (req, res) => {
     try {
       const audits = await auditService.listAudits(limit, offset);
 
-      console.log(`[LIST AUDITS] Retrieved ${audits.length} audits from database`);
+      console.log(
+        `[LIST AUDITS] Retrieved ${audits.length} audits from database`,
+      );
 
       if (audits.length > 0) {
         console.log(`[LIST AUDITS] Sample audit:`, {
@@ -109,9 +111,14 @@ export const listAudits: RequestHandler = async (req, res) => {
         // Ensure date is in ISO string format for frontend
         let dateValue: string;
         try {
-          dateValue = audit.date ? new Date(audit.date).toISOString() : new Date().toISOString();
+          dateValue = audit.date
+            ? new Date(audit.date).toISOString()
+            : new Date().toISOString();
         } catch (dateError) {
-          console.error(`[LIST AUDITS] Error parsing date for audit ${audit.id}:`, dateError);
+          console.error(
+            `[LIST AUDITS] Error parsing date for audit ${audit.id}:`,
+            dateError,
+          );
           dateValue = new Date().toISOString();
         }
 

@@ -128,9 +128,14 @@ export default function Index() {
 
   // Debug: Log when recentAudits changes
   useEffect(() => {
-    console.log(`[STATE UPDATE] recentAudits changed. Count: ${recentAudits.length}`);
+    console.log(
+      `[STATE UPDATE] recentAudits changed. Count: ${recentAudits.length}`,
+    );
     if (recentAudits.length > 0) {
-      console.log(`[STATE UPDATE] Recent audits:`, recentAudits.map(a => ({ id: a.id, title: a.title })));
+      console.log(
+        `[STATE UPDATE] Recent audits:`,
+        recentAudits.map((a) => ({ id: a.id, title: a.title })),
+      );
     }
   }, [recentAudits]);
 
@@ -199,7 +204,10 @@ export default function Index() {
           )
           .slice(0, 3);
 
-        console.log(`[LOAD AUDITS] Setting ${recent.length} recent audits:`, recent.map(a => ({ id: a.id, title: a.title, date: a.date })));
+        console.log(
+          `[LOAD AUDITS] Setting ${recent.length} recent audits:`,
+          recent.map((a) => ({ id: a.id, title: a.title, date: a.date })),
+        );
         setRecentAudits(recent);
 
         console.log(
