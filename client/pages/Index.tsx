@@ -172,6 +172,11 @@ export default function Index() {
 
         const audits = data.audits || [];
 
+        console.log(`[LOAD AUDITS] Received ${audits.length} audits from API`);
+        if (audits.length > 0) {
+          console.log(`[LOAD AUDITS] Sample audit:`, audits[0]);
+        }
+
         // Update API status to reflect success
         setApiStatus((prev) => ({ ...prev, audits: true, error: undefined }));
 
@@ -185,10 +190,12 @@ export default function Index() {
               new Date(b.date).getTime() - new Date(a.date).getTime(),
           )
           .slice(0, 3);
+
+        console.log(`[LOAD AUDITS] Setting ${recent.length} recent audits:`, recent.map(a => ({ id: a.id, title: a.title, date: a.date })));
         setRecentAudits(recent);
 
         console.log(
-          `Loaded ${audits.length} audits, showing ${recent.length} recent`,
+          `✅ [LOAD AUDITS] Loaded ${audits.length} audits, showing ${recent.length} recent`,
         );
       } catch (fetchError) {
         clearTimeout(timeoutId);
