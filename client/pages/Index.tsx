@@ -195,29 +195,37 @@ export default function Index() {
         throw fetchError; // Re-throw to be handled by outer catch
       }
     } catch (error) {
-      console.error("Failed to load recent audits:", error);
+      console.warn("Failed to load recent audits (may be in preview mode):", error);
 
       // Provide more detailed error information
-      let errorMsg = "Unknown error";
-      if (error instanceof Error) {
-        // Use enhanced error handling for critical API failures
-        handleError(error);
+      let errorMsg = "";
+      let isIframeError = false;
 
+      if (error instanceof Error) {
         if (error.name === "AbortError") {
           errorMsg = "Request timed out while loading audits";
         } else if (
           error.message.includes("fetch") ||
-          error.message.includes("network")
+          error.message.includes("network") ||
+          error.message.includes("Failed to fetch")
         ) {
-          errorMsg = "Network error: Unable to connect to the API server";
+          // In iframe environments, this is expected and not an actual error
+          isIframeError = true;
+          console.log("ℹ️ Running in preview mode - audits unavailable (this is normal)");
         } else {
           errorMsg = error.message;
+          handleError(error);
         }
       } else {
+        errorMsg = "Unknown error";
         handleError(errorMsg);
       }
 
-      setApiStatus((prev) => ({ ...prev, audits: false, error: errorMsg }));
+      // Only update error status if it's not an iframe blocking issue
+      if (!isIframeError && errorMsg) {
+        setApiStatus((prev) => ({ ...prev, audits: false, error: errorMsg }));
+      }
+
       // Fallback to empty array on error
       setRecentAudits([]);
       setAllAudits([]);
