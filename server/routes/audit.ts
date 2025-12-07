@@ -2549,9 +2549,11 @@ async function generateAudit(websiteData: any): Promise<AuditResponse> {
   // Check for cached results
   const cachedResult = getCachedScore(websiteSignature);
   if (cachedResult) {
-    console.log(`Using cached score for consistent results`);
+    console.log(`[AUDIT DEBUG] Using cached score for ${url} - overall: ${cachedResult.overallScore}`);
     return buildAuditFromCache(cachedResult, websiteData, url);
   }
+
+  console.log(`[AUDIT DEBUG] No cache found, generating new audit for ${url}`);
 
   // Validate Grok API key
   if (!GROK_API_KEY) {
