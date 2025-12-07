@@ -30,24 +30,19 @@ function expressPlugin(): Plugin {
   return {
     name: "express-plugin",
     apply: "serve", // Only apply during development (serve mode)
-    async configureServer(server) {
-      // Initialize Express app
-      try {
-        const { createServer } = await import("./server/index.js");
-        expressAppInstance = await createServer();
-        console.log("✅ Express server initialized successfully");
-      } catch (error) {
-        console.error("❌ Failed to initialize Express server:", error);
-      }
-
-      // Return middleware that delegates to Express app
-      return (req, res, next) => {
-        if (expressAppInstance) {
-          expressAppInstance(req, res, next);
-        } else {
-          next();
+    configureServer(server) {
+      // Initialize Express app asynchronously and use it as middleware
+      (async () => {
+        try {
+          const { createServer } = await import("./server/index.js");
+          expressAppInstance = await createServer();
+          // Insert Express middleware at the beginning of the middleware stack
+          server.middlewares.use(expressAppInstance);
+          console.log("✅ Express server initialized and mounted successfully");
+        } catch (error) {
+          console.error("❌ Failed to initialize Express server:", error);
         }
-      };
+      })();
     },
   };
 }
