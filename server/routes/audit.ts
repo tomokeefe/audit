@@ -2734,68 +2734,48 @@ For EACH section, provide:
 - Cross-page observations (if multi-page data provided)
 - 2-3 actionable recommendations SPECIFIC TO THAT SECTION
 
-Structure exactly: # Brand Whisperer Audit: [Name]
+Structure: # Brand Whisperer Audit: [Name]
 **Overall: X/100** (Grade)
 ## Section Scores
 1. Branding & Identity – X/10
-   Evidence: [e.g., "Logo present on 4/5 pages analyzed"]
-   Recommendations:
-   - [Specific recommendation for branding]
-   - [Another branding-specific recommendation]
+   Evidence: [Specific findings with data]
+   Recommendations: [2-3 actionable items]
 
 2. Messaging & Positioning – X/10
-   Evidence: [cite specific content analysis]
-   Recommendations:
-   - [Specific recommendation for messaging]
-   - [Another messaging-specific recommendation]
+   Evidence: [Specific findings]
+   Recommendations: [2-3 actionable items]
 
 3. Content Strategy – X/10
-   Evidence: [reference headings, structure, consistency metrics]
-   Recommendations:
-   - [Specific recommendation for content]
-   - [Another content-specific recommendation]
+   Evidence: [Specific findings]
+   Recommendations: [2-3 actionable items]
 
 4. Customer Experience – X/10
-   Evidence: [cite UX metrics, forms, engagement]
-   Recommendations:
-   - [Specific recommendation for CX]
-   - [Another CX-specific recommendation]
+   Evidence: [Specific findings]
+   Recommendations: [2-3 actionable items]
 
 5. Conversion Optimization – X/10
-   Evidence: [reference CTAs, forms found]
-   Recommendations:
-   - [Specific recommendation for conversions]
-   - [Another conversion-specific recommendation]
+   Evidence: [Specific findings]
+   Recommendations: [2-3 actionable items]
 
 6. Visual Design & Aesthetics – X/10
-   Evidence: [cite mobile viewport, design consistency]
-   Recommendations:
-   - [Specific recommendation for design]
-   - [Another design-specific recommendation]
+   Evidence: [Specific findings]
+   Recommendations: [2-3 actionable items]
 
 7. Usability & Navigation – X/10
-   Evidence: [navigation consistency data]
-   Recommendations:
-   - [Specific recommendation for usability]
-   - [Another usability-specific recommendation]
+   Evidence: [Specific findings]
+   Recommendations: [2-3 actionable items]
 
 8. Digital Presence & SEO – X/10
-   Evidence: [PageSpeed scores, SEO metrics]
-   Recommendations:
-   - [Specific recommendation for SEO]
-   - [Another SEO-specific recommendation]
+   Evidence: [Specific findings]
+   Recommendations: [2-3 actionable items]
 
 9. Competitor Differentiation – X/10
-   Evidence: [positioning analysis]
-   Recommendations:
-   - [Specific recommendation for differentiation]
-   - [Another differentiation-specific recommendation]
+   Evidence: [Specific findings]
+   Recommendations: [2-3 actionable items]
 
 10. Consistency & Compliance – X/10
-    Evidence: [cross-page consistency scores]
-    Recommendations:
-    - [Specific recommendation for consistency]
-    - [Another consistency-specific recommendation]
+    Evidence: [Specific findings]
+    Recommendations: [2-3 actionable items]
 
 ## Key Strengths
 - [Specific strength with evidence, e.g., "Strong PageSpeed score of 87/100"]
@@ -2915,6 +2895,11 @@ FORMAT REQUIREMENTS:
         60000,
       ),
     );
+
+    console.log("[AUDIT DEBUG] Sending request to Grok API...");
+    console.log("[AUDIT DEBUG] System prompt length:", systemPrompt.length);
+    console.log("[AUDIT DEBUG] User prompt length:", userPrompt.length);
+    console.log("[AUDIT DEBUG] Total prompt size:", systemPrompt.length + userPrompt.length);
 
     const response = await Promise.race([grokPromise, timeoutPromise]);
     console.log("[AUDIT DEBUG] Grok API response status:", response.status);
