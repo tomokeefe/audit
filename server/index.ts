@@ -58,7 +58,8 @@ export async function createServer() {
   });
 
   // Audit routes - importing one by one to identify the problematic import
-  let handleDemo, storeAudit, listAudits;
+  let handleDemo, storeAudit, listAudits, getAudit, deleteAudit;
+  let handleAuditProgress, handleAuditStandard;
 
   try {
     console.log("Importing demo routes...");
@@ -72,12 +73,30 @@ export async function createServer() {
   }
 
   try {
+    console.log("Importing audit-progress routes...");
+    const progressModule = await import("./routes/audit-progress.js");
+    handleAuditProgress = progressModule.handleAuditProgress;
+    handleAuditStandard = progressModule.handleAuditStandard;
+    console.log("✓ Audit-progress routes imported");
+    app.get("/api/audit/progress", handleAuditProgress);
+    app.post("/api/audit", handleAuditStandard);
+  } catch (err) {
+    console.error("✗ Failed to import audit-progress routes:", err);
+    throw err;
+  }
+
+  try {
     console.log("Importing audit-storage routes...");
     const storageModule = await import("./routes/audit-storage.js");
     storeAudit = storageModule.storeAudit;
     listAudits = storageModule.listAudits;
+    getAudit = storageModule.getAudit;
+    deleteAudit = storageModule.deleteAudit;
     console.log("✓ Audit-storage routes imported");
     app.get("/api/audits", listAudits);
+    app.post("/api/audits", storeAudit);
+    app.get("/api/audits/:id", getAudit);
+    app.delete("/api/audits/:id", deleteAudit);
   } catch (err) {
     console.error("✗ Failed to import audit-storage routes:", err);
     throw err;
