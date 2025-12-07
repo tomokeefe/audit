@@ -2750,7 +2750,7 @@ SCORING INSTRUCTIONS:
         ],
         model: "grok-4-0709",
         temperature: 0.7,
-        max_tokens: 2500,
+        max_tokens: 3500, // Increased for detailed evidence-based analysis
       }),
     });
 
