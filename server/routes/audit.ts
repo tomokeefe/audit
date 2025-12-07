@@ -2305,7 +2305,7 @@ async function buildAuditFromCache(
   };
 }
 
-// Parse markdown audit response from Grok and convert to structured format
+// Parse Brand Whisperer markdown audit response and convert to structured format
 function parseMarkdownAuditResponse(text: string): any {
   try {
     // Extract overall score from "**Overall: X/100**" format
@@ -2337,18 +2337,12 @@ function parseMarkdownAuditResponse(text: string): any {
     if (sectionMatches) {
       sectionMatches.forEach((match, index) => {
         const scoreMatch = match.match(/(\d+(?:\.\d+)?)\s*\/\s*10/);
-        const score = scoreMatch
-          ? Math.round((parseFloat(scoreMatch[1]) / 10) * 100)
-          : 75;
+        const scoreOut10 = scoreMatch ? parseFloat(scoreMatch[1]) : 7;
+        const score = Math.round((scoreOut10 / 10) * 100);
         sections.push({
           name: sectionNames[index] || `Section ${index + 1}`,
           score: Math.max(0, Math.min(100, score)),
-          issues: Math.floor(Math.random() * 4) + 1,
-          recommendations: Math.floor(Math.random() * 3) + 2,
-          details: extractSectionDetails(
-            text,
-            sectionNames[index] || `Section ${index + 1}`,
-          ),
+          details: extractSectionDetails(text, sectionNames[index] || `Section ${index + 1}`),
         });
       });
     }
@@ -2359,16 +2353,62 @@ function parseMarkdownAuditResponse(text: string): any {
         sections.push({
           name,
           score: overallScore,
-          issues: 2,
-          recommendations: 3,
-          details: `Analysis for ${name}: The website shows decent implementation in this area. Consider improvements based on industry standards.`,
+          details: `Analysis for ${name}: The website demonstrates this area of brand audit with industry-standard implementation.`,
         });
       });
     }
 
+    // Extract strengths from "## Key Strengths" section
+    const strengthsMatch = text.match(
+      /##\s+Key Strengths\s*\n([\s\S]*?)(?=##|$)/i,
+    );
+    const strengths = strengthsMatch
+      ? strengthsMatch[1]
+          .split("\n")
+          .filter((line) => line.trim().startsWith("-"))
+          .map((line) => line.replace(/^-\s*/, "").trim())
+          .filter((s) => s.length > 0)
+      : [];
+
+    // Extract opportunities from "## Biggest Opportunities" section
+    const opportunitiesMatch = text.match(
+      /##\s+Biggest Opportunities\s*\n([\s\S]*?)(?=##|$)/i,
+    );
+    const opportunities = opportunitiesMatch
+      ? opportunitiesMatch[1]
+          .split("\n")
+          .filter((line) => line.trim().startsWith("-"))
+          .map((line) => line.replace(/^-\s*/, "").trim())
+          .filter((o) => o.length > 0)
+      : [];
+
+    // Extract detailed analysis from "## Detailed Analysis" section
+    const detailedAnalysisMatch = text.match(
+      /##\s+Detailed Analysis\s*\n([\s\S]*?)(?=##|$)/i,
+    );
+    const detailedAnalysis = detailedAnalysisMatch
+      ? detailedAnalysisMatch[1].trim()
+      : "";
+
+    // Extract recommendations from "## Prioritized Recommendations" section
+    const recommendationsMatch = text.match(
+      /##\s+Prioritized Recommendations\s*\n([\s\S]*?)(?=##|End:|$)/i,
+    );
+    const recommendations = recommendationsMatch
+      ? recommendationsMatch[1]
+          .split("\n")
+          .filter((line) => line.trim().match(/^\d+\./))
+          .map((line) => line.replace(/^\d+\.\s*/, "").trim())
+          .filter((r) => r.length > 0)
+      : [];
+
     return {
       overallScore,
       sections: sections.slice(0, 10),
+      strengths,
+      opportunities,
+      detailedAnalysis,
+      recommendations,
       rawResponse: text,
     };
   } catch (error) {
