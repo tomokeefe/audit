@@ -979,16 +979,47 @@ async function scrapeWebsite(url: string) {
         analysisDepth: "comprehensive-multipage",
       };
     } catch (error) {
-      console.error(
-        `Attempt ${attempt + 1} failed for ${url}:`,
-        error instanceof Error ? error.message : error,
-      );
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error(`Attempt ${attempt + 1} failed for ${url}:`, errorMessage);
+
+      // Check if Cloudflare was detected - try Puppeteer immediately
+      if (errorMessage.includes('CLOUDFLARE_DETECTED')) {
+        console.log(`🔄 Cloudflare detected on attempt ${attempt + 1}, trying Puppeteer...`);
+        try {
+          const puppeteerResult = await scrapeWithPuppeteer(url);
+          console.log(`✅ Puppeteer successfully bypassed protection for ${url}`);
+          return puppeteerResult;
+        } catch (puppeteerError) {
+          console.error(
+            `❌ Puppeteer also failed for ${url}:`,
+            puppeteerError instanceof Error ? puppeteerError.message : puppeteerError,
+          );
+          // Continue to fallback data below
+          if (attempt === 2) {
+            console.log(`All methods failed for ${url}, using fallback data`);
+            return createFallbackData(url);
+          }
+        }
+      }
 
       if (attempt === 2) {
-        // Final attempt failed, use fallback data but still analyze
-        console.log(
-          `All scraping attempts failed for ${url}, using fallback data for analysis`,
-        );
+        // Final attempt failed, try Puppeteer as last resort if not already tried
+        if (!errorMessage.includes('CLOUDFLARE_DETECTED')) {
+          console.log(`🔄 Final attempt: Trying Puppeteer for ${url}...`);
+          try {
+            const puppeteerResult = await scrapeWithPuppeteer(url);
+            console.log(`✅ Puppeteer succeeded on final attempt for ${url}`);
+            return puppeteerResult;
+          } catch (puppeteerError) {
+            console.error(
+              `❌ Puppeteer failed on final attempt:`,
+              puppeteerError instanceof Error ? puppeteerError.message : puppeteerError,
+            );
+          }
+        }
+
+        // All methods exhausted, use fallback data
+        console.log(`All scraping attempts failed for ${url}, using fallback data`);
         return createFallbackData(url);
       }
 
