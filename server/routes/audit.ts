@@ -2266,25 +2266,27 @@ async function buildAuditFromCache(
   });
 
   // Use cached sections if available, otherwise generate from scores
-  const sections = cachedResult.sections || cachedResult.baseScores.map((score: number, index: number) => ({
-    name: [
-      "Branding",
-      "Design",
-      "Messaging",
-      "Usability",
-      "Content Strategy",
-      "Digital Presence",
-      "Customer Experience",
-      "Competitor Analysis",
-      "Conversion Optimization",
-      "Consistency & Compliance",
-    ][index],
-    score: score,
-    maxScore: 100,
-    issues: Math.max(1, Math.round((100 - score) / 15)),
-    recommendations: Math.max(1, Math.round((100 - score) / 20)),
-    details: `Previous analysis maintained for scoring consistency. This website was analyzed previously and scores remain valid for unchanged content.`,
-  }));
+  const sections =
+    cachedResult.sections ||
+    cachedResult.baseScores.map((score: number, index: number) => ({
+      name: [
+        "Branding",
+        "Design",
+        "Messaging",
+        "Usability",
+        "Content Strategy",
+        "Digital Presence",
+        "Customer Experience",
+        "Competitor Analysis",
+        "Conversion Optimization",
+        "Consistency & Compliance",
+      ][index],
+      score: score,
+      maxScore: 100,
+      issues: Math.max(1, Math.round((100 - score) / 15)),
+      recommendations: Math.max(1, Math.round((100 - score) / 20)),
+      details: `Previous analysis maintained for scoring consistency. This website was analyzed previously and scores remain valid for unchanged content.`,
+    }));
 
   return {
     id: Date.now().toString(),
@@ -2363,7 +2365,10 @@ function parseMarkdownAuditResponse(text: string): any {
     if (sections.length === 0) {
       sectionNames.forEach((name) => {
         const issues = Math.max(1, Math.round((100 - overallScore) / 15));
-        const recommendations = Math.max(1, Math.round((100 - overallScore) / 12));
+        const recommendations = Math.max(
+          1,
+          Math.round((100 - overallScore) / 12),
+        );
 
         sections.push({
           name,
@@ -2436,7 +2441,11 @@ function parseMarkdownAuditResponse(text: string): any {
 }
 
 // Extract section details from markdown text and format with Issues/Recommendations
-function extractSectionDetails(text: string, sectionName: string, score: number): string {
+function extractSectionDetails(
+  text: string,
+  sectionName: string,
+  score: number,
+): string {
   // Extract detailed analysis if available
   const detailedAnalysisMatch = text.match(
     /##\s+Detailed Analysis\s*\n([\s\S]*?)(?=##|$)/i,
@@ -2458,30 +2467,42 @@ function extractSectionDetails(text: string, sectionName: string, score: number)
     : [];
 
   // Generate score-based analysis
-  const performanceLevel = score >= 80 ? "strong" : score >= 60 ? "adequate" : "needs improvement";
-  const overview = detailedAnalysis || `${sectionName} analysis shows ${performanceLevel} performance with opportunities for enhancement.`;
+  const performanceLevel =
+    score >= 80 ? "strong" : score >= 60 ? "adequate" : "needs improvement";
+  const overview =
+    detailedAnalysis ||
+    `${sectionName} analysis shows ${performanceLevel} performance with opportunities for enhancement.`;
 
   // Generate issues based on score
   const issues = [];
   if (score < 70) {
-    issues.push(`${sectionName} requires significant improvement to meet industry standards`);
+    issues.push(
+      `${sectionName} requires significant improvement to meet industry standards`,
+    );
   }
   if (score < 80) {
-    issues.push(`Opportunities exist to enhance ${sectionName.toLowerCase()} effectiveness`);
+    issues.push(
+      `Opportunities exist to enhance ${sectionName.toLowerCase()} effectiveness`,
+    );
   }
   if (score < 90) {
-    issues.push(`Minor refinements needed to optimize ${sectionName.toLowerCase()}`);
+    issues.push(
+      `Minor refinements needed to optimize ${sectionName.toLowerCase()}`,
+    );
   }
 
   // Assign relevant recommendations to this section (take a subset)
-  const sectionRecommendations = allRecommendations.slice(0, Math.min(3, allRecommendations.length));
+  const sectionRecommendations = allRecommendations.slice(
+    0,
+    Math.min(3, allRecommendations.length),
+  );
 
   // Build formatted details
   let details = `Overview: ${overview}\n\n`;
 
   if (issues.length > 0) {
     details += "Issues:\n";
-    issues.forEach(issue => {
+    issues.forEach((issue) => {
       details += `- ${issue}\n`;
     });
     details += "\n";
@@ -2489,7 +2510,7 @@ function extractSectionDetails(text: string, sectionName: string, score: number)
 
   if (sectionRecommendations.length > 0) {
     details += "Recommendations:\n";
-    sectionRecommendations.forEach(rec => {
+    sectionRecommendations.forEach((rec) => {
       details += `- ${rec}\n`;
     });
   } else {
