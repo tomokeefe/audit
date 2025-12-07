@@ -2649,16 +2649,70 @@ Be insightful/candid. Structure exactly: # Brand Whisperer Audit: [Name]
 
 End: 'This audit shows where your brand stands—Brand Whisperer scales it to unicorn status. Reply for a custom strategy call.'`;
 
-    const userPrompt = `Audit this brand's website: ${websiteData.url}. Extract/infer name, audience, challenges as needed. Analyze live site thoroughly.
+    // Prepare comprehensive multi-page content
+    const multiPageContent = websiteData.multiPageAnalysis?.pageDetails
+      ? websiteData.multiPageAnalysis.pageDetails.map((page: any) =>
+          `${page.pageType?.toUpperCase() || 'PAGE'}: ${page.title || 'Untitled'} - ${page.headings?.h1?.[0] || ''}`
+        ).join('; ')
+      : 'Single page analyzed';
 
-Website Data:
-- Title: ${websiteData.title}
-- Description: ${websiteData.description}
-- Content: ${websiteData.paragraphs.slice(0, 5).join(" ").substring(0, 1500)}
-- Navigation: ${websiteData.navigation}
-- SSL: ${websiteData.performance?.hasSSL ? "Yes" : "No"}
-- Mobile: ${websiteData.performance?.mobileViewport ? "Yes" : "No"}
-- Pages: ${websiteData.siteStructure?.pageCount || 1}`;
+    // Prepare accessibility and UX metrics
+    const uxMetrics = websiteData.uxFeatures ? `
+Accessibility: ${websiteData.uxFeatures.accessibility?.hasAltText ? '✓' : '✗'} Alt text, ${websiteData.uxFeatures.accessibility?.missingAltText || 0} missing, ${websiteData.uxFeatures.accessibility?.hasAriaLabels ? '✓' : '✗'} ARIA labels, ${websiteData.uxFeatures.accessibility?.headingStructure ? '✓' : '✗'} Proper heading structure
+Forms: ${websiteData.uxFeatures.forms?.count || 0} forms, ${websiteData.uxFeatures.forms?.hasLabels ? '✓' : '✗'} Labels, ${websiteData.uxFeatures.forms?.hasValidation ? '✓' : '✗'} Validation
+Media: ${websiteData.uxFeatures.media?.images || 0} images, ${websiteData.uxFeatures.media?.videos || 0} videos, ${websiteData.uxFeatures.media?.hasLazyLoading ? '✓' : '✗'} Lazy loading
+Interactivity: ${websiteData.uxFeatures.interactivity?.buttons || 0} buttons, ${websiteData.uxFeatures.interactivity?.dropdowns || 0} dropdowns` : 'Limited UX data';
+
+    // Prepare cross-page consistency metrics
+    const consistencyMetrics = websiteData.multiPageAnalysis?.crossPageConsistency ? `
+Brand Consistency: ${websiteData.multiPageAnalysis.crossPageConsistency.brandConsistency?.score || 0}/100 - ${websiteData.multiPageAnalysis.crossPageConsistency.brandConsistency?.issues?.join(', ') || 'No issues'}
+Navigation Consistency: ${websiteData.multiPageAnalysis.crossPageConsistency.navigationConsistency?.score || 0}/100
+Content Consistency: ${websiteData.multiPageAnalysis.crossPageConsistency.contentConsistency?.score || 0}/100` : 'Single page - no consistency analysis';
+
+    const userPrompt = `Audit this brand's website: ${websiteData.url}. Extract/infer name, audience, challenges as needed.
+
+CRITICAL: Base ALL scores on SPECIFIC EVIDENCE from the data below. Include quantifiable metrics in your analysis (e.g., "3 of 5 images missing alt text" not "poor alt text usage"). Each recommendation should cite specific findings.
+
+=== HOMEPAGE DATA ===
+Title: ${websiteData.title}
+Meta Description: ${websiteData.description || 'Missing'}
+Main Content (first 4000 chars): ${websiteData.paragraphs.slice(0, 8).join(" ").substring(0, 4000)}
+Headings: ${websiteData.headings.slice(0, 10).join(' | ')}
+Navigation: ${websiteData.navigation.substring(0, 300)}
+Footer: ${websiteData.footer.substring(0, 200)}
+
+=== MULTI-PAGE ANALYSIS (${websiteData.multiPageAnalysis?.pagesAnalyzed || 1} pages) ===
+${multiPageContent}
+${consistencyMetrics}
+
+=== TECHNICAL METRICS ===
+SSL: ${websiteData.performance?.hasSSL ? '✓ Secure' : '✗ Not Secure'}
+Mobile Viewport: ${websiteData.performance?.mobileViewport ? '✓ Configured' : '✗ Missing'}
+Page Size: ${websiteData.performance?.pageSizeKB || 0}KB
+Response Time: ${websiteData.performance?.responseTime || 0}ms
+${websiteData.performance?.pagespeedScore ? `PageSpeed Score: ${websiteData.performance.pagespeedScore}/100` : ''}
+${websiteData.performance?.performanceScore ? `Performance: ${websiteData.performance.performanceScore}/100` : ''}
+${websiteData.performance?.accessibilityScore ? `Accessibility: ${websiteData.performance.accessibilityScore}/100` : ''}
+${websiteData.performance?.seoScore ? `SEO: ${websiteData.performance.seoScore}/100` : ''}
+SEO: ${websiteData.performance?.hasRobotsTxt ? '✓' : '✗'} robots.txt, ${websiteData.performance?.hasSitemap ? '✓' : '✗'} sitemap
+
+=== UX & ACCESSIBILITY ===
+${uxMetrics}
+
+=== SITE STRUCTURE ===
+Menu Items: ${websiteData.siteStructure?.navigation?.menuItems?.slice(0, 8).join(', ') || 'None found'}
+Has Search: ${websiteData.siteStructure?.navigation?.hasSearch ? 'Yes' : 'No'}
+Contact Info: ${websiteData.siteStructure?.contentStructure?.hasContactInfo ? 'Present' : 'Missing'}
+About Page: ${websiteData.siteStructure?.contentStructure?.hasAboutPage ? 'Present' : 'Missing'}
+Blog: ${websiteData.siteStructure?.contentStructure?.hasBlog ? 'Present' : 'Absent'}
+Total Discovered Pages: ${websiteData.siteStructure?.pageCount || 1}
+
+SCORING INSTRUCTIONS:
+- Score 85+ ONLY with exceptional evidence across multiple pages
+- Score 70-84 for good performance with measurable proof
+- Score 50-69 for average with clear areas for improvement
+- Score below 50 for significant issues with specific examples
+- Always justify scores with concrete findings (numbers, examples, cross-page comparisons)`;
 
     // Add timeout to Grok API call (60 seconds max)
     const grokPromise = fetch(GROK_API_URL, {
