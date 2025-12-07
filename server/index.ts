@@ -58,46 +58,10 @@ export async function createServer() {
     res.json(response);
   });
 
-  // Lazy load route handlers to avoid circular dependencies
-  try {
-    console.log("Importing demo module...");
-    const demoModule = await import("./routes/demo.js");
-    console.log("✓ Demo module imported");
-
-    console.log("Importing audit module...");
-    const auditModule = await import("./routes/audit.js");
-    console.log("✓ Audit module imported");
-
-    console.log("Importing audit progress module...");
-    const auditProgressModule = await import("./routes/audit-progress.js");
-    console.log("✓ Audit progress module imported");
-
-    console.log("Importing audit storage module...");
-    const auditStorageModule = await import("./routes/audit-storage.js");
-    console.log("✓ Audit storage module imported");
-
-    console.log("Registering demo route...");
-    app.get("/api/demo", demoModule.handleDemo);
-    console.log("✓ Demo route registered");
-
-    console.log("Registering audit routes...");
-    app.post("/api/audit", auditModule.handleAudit);
-    app.get("/api/audit/progress", auditProgressModule.handleAuditProgress);
-    app.post("/api/audit/standard", auditProgressModule.handleAuditStandard);
-    app.post("/api/audit/demo", auditModule.handleDemoAudit);
-    console.log("✓ Audit routes registered");
-
-    console.log("Registering audit storage routes...");
-    // Audit storage endpoints (order matters - specific routes before generic)
-    app.get("/api/audits", auditStorageModule.listAudits);
-    app.get("/api/audits/:id", auditStorageModule.getAudit);
-    app.post("/api/audits", auditStorageModule.storeAudit);
-    app.delete("/api/audits/:id", auditStorageModule.deleteAudit);
-    console.log("✓ Audit storage routes registered");
-  } catch (error) {
-    console.error("Failed to load route handlers:", error);
-    throw error;
-  }
+  // Temporary: placeholder routes only to test server startup
+  app.get("/api/ping", (_req, res) => {
+    res.json({ message: "pong" });
+  });
 
   // Global error handler
   app.use((err: any, req: any, res: any, next: any) => {
