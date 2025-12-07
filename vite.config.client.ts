@@ -25,8 +25,6 @@ export default defineConfig(({ mode }) => ({
 }));
 
 function expressPlugin(): Plugin {
-  let expressApp: any = null;
-
   return {
     name: "express-plugin",
     apply: "serve", // Only apply during development (serve mode)
@@ -34,14 +32,11 @@ function expressPlugin(): Plugin {
       // Dynamically load createServer to avoid build-time imports
       try {
         const { createServer } = await import("./server/index.js");
-        expressApp = await createServer();
-        // Return a pre middleware function that handles all requests
-        return () => {
-          server.middlewares.use(expressApp);
-        };
+        const app = await createServer();
+        // Use middleware to handle all requests through Express first
+        server.middlewares.use(app);
       } catch (error) {
         console.error("Failed to initialize Express server:", error);
-        throw error;
       }
     },
   };
