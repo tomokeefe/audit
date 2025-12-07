@@ -67,6 +67,40 @@ export async function createServer() {
     res.json(response);
   });
 
+  // Debug endpoint to test audit saving
+  app.post("/api/test-save", async (req, res) => {
+    console.log("🧪 [TEST] Test save endpoint called");
+    try {
+      const { storeAuditResult } = await import("./routes/audit.js");
+      const testAudit = {
+        id: `test-${Date.now()}`,
+        url: "https://test.example.com",
+        title: "Test Audit",
+        description: "Test audit for debugging",
+        overallScore: 75,
+        status: "completed",
+        date: new Date().toISOString(),
+        sections: [],
+      };
+
+      console.log("🧪 [TEST] Calling storeAuditResult with test audit...");
+      await storeAuditResult(testAudit);
+      console.log("🧪 [TEST] storeAuditResult completed");
+
+      res.json({
+        success: true,
+        message: "Test audit saved",
+        auditId: testAudit.id
+      });
+    } catch (error) {
+      console.error("🧪 [TEST] Test save failed:", error);
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
   // Audit routes - importing one by one to identify the problematic import
   let handleDemo, storeAudit, listAudits, getAudit, deleteAudit;
   let handleAuditProgress, handleAuditStandard;
