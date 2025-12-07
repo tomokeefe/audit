@@ -2878,7 +2878,10 @@ RULES:
     console.log("[AUDIT DEBUG] Sending request to Grok API...");
     console.log("[AUDIT DEBUG] System prompt length:", systemPrompt.length);
     console.log("[AUDIT DEBUG] User prompt length:", userPrompt.length);
-    console.log("[AUDIT DEBUG] Total prompt size:", systemPrompt.length + userPrompt.length);
+    console.log(
+      "[AUDIT DEBUG] Total prompt size:",
+      systemPrompt.length + userPrompt.length,
+    );
 
     const response = await Promise.race([grokPromise, timeoutPromise]);
     console.log("[AUDIT DEBUG] Grok API response status:", response.status);
@@ -2966,12 +2969,27 @@ RULES:
     return auditResult;
   } catch (error) {
     console.error("[AUDIT DEBUG] ========== ERROR GENERATING AUDIT ==========");
-    console.error("[AUDIT DEBUG] Error type:", error instanceof Error ? error.constructor.name : typeof error);
-    console.error("[AUDIT DEBUG] Error message:", error instanceof Error ? error.message : "Unknown error");
-    console.error("[AUDIT DEBUG] Error stack:", error instanceof Error ? error.stack : "No stack trace");
+    console.error(
+      "[AUDIT DEBUG] Error type:",
+      error instanceof Error ? error.constructor.name : typeof error,
+    );
+    console.error(
+      "[AUDIT DEBUG] Error message:",
+      error instanceof Error ? error.message : "Unknown error",
+    );
+    console.error(
+      "[AUDIT DEBUG] Error stack:",
+      error instanceof Error ? error.stack : "No stack trace",
+    );
     console.error("[AUDIT DEBUG] URL:", websiteData.url);
-    console.error("[AUDIT DEBUG] Time elapsed:", Date.now() - auditStartTime, "ms");
-    console.error("[AUDIT DEBUG] ================================================");
+    console.error(
+      "[AUDIT DEBUG] Time elapsed:",
+      Date.now() - auditStartTime,
+      "ms",
+    );
+    console.error(
+      "[AUDIT DEBUG] ================================================",
+    );
 
     // Check if it's a timeout error
     if (error instanceof Error && error.message.includes("timeout")) {
@@ -2993,7 +3011,9 @@ RULES:
         error.message.includes("429") ||
         error.message.includes("rate limit"))
     ) {
-      console.log("[AUDIT DEBUG] AI service unavailable or rate limited, providing fallback audit");
+      console.log(
+        "[AUDIT DEBUG] AI service unavailable or rate limited, providing fallback audit",
+      );
       return generateFallbackAudit(websiteData);
     }
 
