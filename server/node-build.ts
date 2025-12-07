@@ -105,7 +105,10 @@ async function start() {
     console.error("❌ FATAL ERROR: Failed to create server");
     console.error("========================================");
     console.error("Error:", error);
-    console.error("Stack:", error instanceof Error ? error.stack : "No stack trace");
+    console.error(
+      "Stack:",
+      error instanceof Error ? error.stack : "No stack trace",
+    );
     console.error("========================================");
     throw error;
   }

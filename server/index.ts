@@ -6,12 +6,19 @@ export async function createServer() {
   const app = express();
 
   // Middleware - CORS with explicit configuration for production
-  app.use(cors({
-    origin: true, // Reflect request origin
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Cache-Control'],
-  }));
+  app.use(
+    cors({
+      origin: true, // Reflect request origin
+      credentials: true,
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      allowedHeaders: [
+        "Content-Type",
+        "Authorization",
+        "Accept",
+        "Cache-Control",
+      ],
+    }),
+  );
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
@@ -29,25 +36,25 @@ export async function createServer() {
 
   // Health check endpoints - these are registered first to always work
   app.get("/api/ping", (_req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader("Content-Type", "application/json");
+    res.setHeader("Access-Control-Allow-Origin", "*");
     const ping = process.env.PING_MESSAGE ?? "pong";
     res.json({
       message: ping,
       timestamp: new Date().toISOString(),
-      env: process.env.NODE_ENV || "development"
+      env: process.env.NODE_ENV || "development",
     });
   });
 
   // Simple status endpoint that always works
   app.get("/api/status", (_req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader("Content-Type", "application/json");
+    res.setHeader("Access-Control-Allow-Origin", "*");
     res.json({
       status: "ok",
       server: "running",
       timestamp: new Date().toISOString(),
-      version: "1.0.0"
+      version: "1.0.0",
     });
   });
 
@@ -137,7 +144,10 @@ export async function createServer() {
     app.post("/api/demo", handleDemo);
   } catch (err) {
     console.error("✗ Failed to import demo routes:", err);
-    console.error("✗ Error details:", err instanceof Error ? err.message : String(err));
+    console.error(
+      "✗ Error details:",
+      err instanceof Error ? err.message : String(err),
+    );
     console.error("✗ Stack:", err instanceof Error ? err.stack : "No stack");
     throw err;
   }
@@ -152,7 +162,10 @@ export async function createServer() {
     app.post("/api/audit", handleAuditStandard);
   } catch (err) {
     console.error("✗ Failed to import audit-progress routes:", err);
-    console.error("✗ Error details:", err instanceof Error ? err.message : String(err));
+    console.error(
+      "✗ Error details:",
+      err instanceof Error ? err.message : String(err),
+    );
     console.error("✗ Stack:", err instanceof Error ? err.stack : "No stack");
     throw err;
   }
@@ -172,7 +185,10 @@ export async function createServer() {
     app.delete("/api/audits/:id", deleteAudit);
   } catch (err) {
     console.error("✗ Failed to import audit-storage routes:", err);
-    console.error("✗ Error details:", err instanceof Error ? err.message : String(err));
+    console.error(
+      "✗ Error details:",
+      err instanceof Error ? err.message : String(err),
+    );
     console.error("✗ Stack:", err instanceof Error ? err.stack : "No stack");
     throw err;
   }

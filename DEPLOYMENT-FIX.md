@@ -3,6 +3,7 @@
 ## Issue: "Failed to fetch" Error in Production
 
 ### Problem
+
 The frontend deployed on Fly.io cannot connect to the backend API, resulting in "TypeError: Failed to fetch" errors when trying to access `/api/ping` and other endpoints.
 
 ### Root Causes
@@ -18,7 +19,8 @@ The frontend deployed on Fly.io cannot connect to the backend API, resulting in 
 
 **Before:** Used `node:20-alpine` which lacks Chromium dependencies
 
-**After:** 
+**After:**
+
 - Uses `node:20` (full Debian-based image)
 - Installs Chromium and all required dependencies
 - Sets `PUPPETEER_EXECUTABLE_PATH` to use system Chromium
@@ -29,12 +31,19 @@ The frontend deployed on Fly.io cannot connect to the backend API, resulting in 
 **File:** `server/index.ts`
 
 ```typescript
-app.use(cors({
-  origin: true, // Reflect request origin
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Cache-Control'],
-}));
+app.use(
+  cors({
+    origin: true, // Reflect request origin
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "Accept",
+      "Cache-Control",
+    ],
+  }),
+);
 ```
 
 #### 3. Production Error Handling
@@ -49,6 +58,7 @@ app.use(cors({
 #### 4. New Diagnostic Endpoints
 
 **`GET /api/status`** - Simple endpoint that always works
+
 ```json
 {
   "status": "ok",
@@ -59,6 +69,7 @@ app.use(cors({
 ```
 
 **`GET /api/ping`** - Enhanced with CORS headers
+
 ```json
 {
   "message": "pong",
@@ -72,22 +83,26 @@ app.use(cors({
 ### For Fly.io
 
 1. **Commit Changes**
+
    ```bash
    git add .
    git commit -m "Fix production deployment issues"
    ```
 
 2. **Push to Fly.io** (if using git deployment)
+
    ```bash
    git push fly main
    ```
 
    OR **Manual Deploy**
+
    ```bash
    fly deploy
    ```
 
 3. **Monitor Deployment**
+
    ```bash
    fly logs
    ```
@@ -98,13 +113,14 @@ app.use(cors({
    - ❌ Any import errors or crashes
 
 4. **Test Health Endpoints**
+
    ```bash
    # Test basic connectivity
    curl https://your-app.fly.dev/api/status
-   
+
    # Test ping endpoint
    curl https://your-app.fly.dev/api/ping
-   
+
    # Test health endpoint
    curl https://your-app.fly.dev/api/health
    ```
@@ -112,6 +128,7 @@ app.use(cors({
 ### Expected Output
 
 **Successful Deployment Logs:**
+
 ```
 🚀 PRODUCTION SERVER STARTING
 ========================================
@@ -144,7 +161,7 @@ After deployment:
 - [ ] Visit your app URL (should load the frontend)
 - [ ] Check browser console (should not show fetch errors)
 - [ ] Try `/api/status` endpoint
-- [ ] Try `/api/ping` endpoint  
+- [ ] Try `/api/ping` endpoint
 - [ ] Create a test audit (to verify Puppeteer works)
 - [ ] Check Fly.io logs for errors
 
@@ -153,6 +170,7 @@ After deployment:
 ### If Still Getting "Failed to Fetch"
 
 1. **Check Fly.io Logs**
+
    ```bash
    fly logs --app your-app-name
    ```
@@ -173,6 +191,7 @@ After deployment:
 If you see errors like "Chromium not found":
 
 1. **Verify Chromium Installation** (in Fly.io shell)
+
    ```bash
    fly ssh console
    which chromium
@@ -186,6 +205,7 @@ If you see errors like "Chromium not found":
 ### If Database Connection Fails
 
 Check that `DATABASE_URL` is set in Fly.io secrets:
+
 ```bash
 fly secrets list
 fly secrets set DATABASE_URL="postgresql://..."
@@ -196,6 +216,7 @@ fly secrets set DATABASE_URL="postgresql://..."
 If deployment fails:
 
 1. **Revert to Previous Version**
+
    ```bash
    fly releases
    fly releases rollback <version-number>

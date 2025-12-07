@@ -14,9 +14,11 @@ The "Failed to fetch" error you're experiencing on Fly.io (`https://cfd546f1c8e5
 ## Fixes Applied ✅
 
 ### 1. Dockerfile - Puppeteer Support
+
 **File:** `Dockerfile`
 
 Changed from Alpine to full Node.js image with Chromium:
+
 ```dockerfile
 FROM node:20  # Changed from node:20-alpine
 
@@ -29,18 +31,27 @@ RUN apt-get update && apt-get install -y \
 ```
 
 ### 2. Enhanced CORS Configuration
+
 **File:** `server/index.ts`
 
 ```typescript
-app.use(cors({
-  origin: true, // Reflect request origin
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Cache-Control'],
-}));
+app.use(
+  cors({
+    origin: true, // Reflect request origin
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "Accept",
+      "Cache-Control",
+    ],
+  }),
+);
 ```
 
 ### 3. Puppeteer Error Handling
+
 **File:** `server/routes/audit.ts`
 
 - Added fallback for Puppeteer import failures
@@ -50,6 +61,7 @@ app.use(cors({
 ### 4. New Diagnostic Endpoints
 
 **`GET /api/status`** - Always-working health check
+
 ```json
 {
   "status": "ok",
@@ -60,6 +72,7 @@ app.use(cors({
 ```
 
 **Enhanced `/api/ping`** - With explicit CORS
+
 ```json
 {
   "message": "pong",
@@ -108,11 +121,13 @@ fly logs
 Once deployed, test these endpoints:
 
 1. **Status Check** (should always work)
+
    ```
    https://your-app.fly.dev/api/status
    ```
 
 2. **Ping Check**
+
    ```
    https://your-app.fly.dev/api/ping
    ```
@@ -160,13 +175,15 @@ Initializing database schema...
 ## What Changed
 
 ### Before
+
 - ❌ Alpine Linux without Chromium
 - ❌ Basic CORS (might not work in all cases)
 - ❌ Server crashes on import errors
 - ❌ Limited production diagnostics
 - ❌ No fallback for Puppeteer failures
 
-### After  
+### After
+
 - ✅ Full Node.js with Chromium installed
 - ✅ Explicit CORS configuration
 - ✅ Graceful error handling
@@ -191,14 +208,17 @@ After deployment:
 ### If You Still See Errors
 
 1. **Check Fly.io logs for startup errors**
+
    ```bash
    fly logs --app your-app-name
    ```
 
 2. **Verify environment variables are set**
+
    ```bash
    fly secrets list
    ```
+
    Should show: `DATABASE_URL`, `GROK_API_KEY`
 
 3. **Test the diagnostic endpoints first**

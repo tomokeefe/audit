@@ -711,7 +711,9 @@ async function scrapeWithPuppeteer(url: string) {
     // In production/Docker, use system Chromium
     if (process.env.PUPPETEER_EXECUTABLE_PATH) {
       launchOptions.executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
-      console.log(`Using Chromium at: ${process.env.PUPPETEER_EXECUTABLE_PATH}`);
+      console.log(
+        `Using Chromium at: ${process.env.PUPPETEER_EXECUTABLE_PATH}`,
+      );
     }
 
     browser = await puppeteer.launch(launchOptions);
