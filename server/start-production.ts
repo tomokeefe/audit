@@ -1,4 +1,3 @@
-import "dotenv/config";
 import path from "path";
 import { createReadStream } from "fs";
 import { existsSync } from "fs";
