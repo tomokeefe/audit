@@ -33,6 +33,8 @@ export default defineConfig({
         "express",
         "cors",
         "pg",
+        "pg/lib/client",
+        "pg/lib/pool",
       ],
       output: {
         format: "es",
