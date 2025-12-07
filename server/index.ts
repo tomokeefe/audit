@@ -57,10 +57,31 @@ export async function createServer() {
     res.json(response);
   });
 
-  // Placeholder: Route imports disabled for debugging path-to-regexp error
-  // TODO: Re-enable once import issue is resolved
+  // Audit routes - importing one by one to identify the problematic import
+  let handleDemo, storeAudit, listAudits;
 
-  console.log("Routes temporarily disabled for debugging");
+  try {
+    console.log("Importing demo routes...");
+    const demoModule = await import("./routes/demo.js");
+    handleDemo = demoModule.handleDemo;
+    console.log("✓ Demo routes imported");
+    app.post("/api/demo", handleDemo);
+  } catch (err) {
+    console.error("✗ Failed to import demo routes:", err);
+    throw err;
+  }
+
+  try {
+    console.log("Importing audit-storage routes...");
+    const storageModule = await import("./routes/audit-storage.js");
+    storeAudit = storageModule.storeAudit;
+    listAudits = storageModule.listAudits;
+    console.log("✓ Audit-storage routes imported");
+    app.get("/api/audits", listAudits);
+  } catch (err) {
+    console.error("✗ Failed to import audit-storage routes:", err);
+    throw err;
+  }
 
   // Global error handler
   app.use((err: any, req: any, res: any, next: any) => {
