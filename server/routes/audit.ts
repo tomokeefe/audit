@@ -40,10 +40,14 @@ async function storeAuditResult(auditData: AuditResponse): Promise<void> {
   try {
     // Always use in-memory storage for immediate access within same session
     auditStorage.set(auditData.id, auditData);
-    console.log(`✅ Stored audit ${auditData.id} in memory storage for sharing`);
+    console.log(
+      `✅ Stored audit ${auditData.id} in memory storage for sharing`,
+    );
 
     // Also save to database for persistent sharing across browsers/devices
-    console.log(`🔵 Checking DATABASE_URL: ${process.env.DATABASE_URL ? 'SET' : 'NOT SET'}`);
+    console.log(
+      `🔵 Checking DATABASE_URL: ${process.env.DATABASE_URL ? "SET" : "NOT SET"}`,
+    );
 
     if (process.env.DATABASE_URL) {
       try {
@@ -2617,7 +2621,9 @@ function parseMarkdownAuditResponse(text: string): any {
         const score = Math.round((scoreOut10 / 10) * 100);
         const sectionName = sectionNames[index] || `Section ${index + 1}`;
 
-        console.log(`[PARSE DEBUG]   ${sectionName}: ${scoreOut10}/10 → ${score}%`);
+        console.log(
+          `[PARSE DEBUG]   ${sectionName}: ${scoreOut10}/10 → ${score}%`,
+        );
 
         // Calculate issues and recommendations based on score
         const issues = Math.max(1, Math.round((100 - score) / 15));
@@ -2632,7 +2638,9 @@ function parseMarkdownAuditResponse(text: string): any {
           details: extractSectionDetails(text, sectionName, score, index),
         });
       });
-      console.log(`[PARSE DEBUG] Average score: ${Math.round(sections.reduce((sum, s) => sum + s.score, 0) / sections.length)}%`);
+      console.log(
+        `[PARSE DEBUG] Average score: ${Math.round(sections.reduce((sum, s) => sum + s.score, 0) / sections.length)}%`,
+      );
     }
 
     // If we couldn't parse sections, create default ones
