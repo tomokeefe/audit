@@ -3,7 +3,7 @@ import express from "express";
 import cors from "cors";
 import { initializeDatabase } from "./db/init.js";
 
-export function createServer() {
+export async function createServer() {
   const app = express();
 
   // Middleware
@@ -36,7 +36,7 @@ export function createServer() {
 
     if (dbConfigured) {
       try {
-        const { getPool } = await import("./db/init");
+        const { getPool } = await import("./db/init.js");
         const pool = await getPool();
         if (pool) {
           const result = await pool.query("SELECT 1");
@@ -58,17 +58,28 @@ export function createServer() {
     res.json(response);
   });
 
-  app.get("/api/demo", handleDemo);
-  app.post("/api/audit", handleAudit);
-  app.get("/api/audit/progress", handleAuditProgress);
-  app.post("/api/audit/standard", handleAuditStandard);
-  app.post("/api/audit/demo", handleDemoAudit);
+  // Lazy load route handlers to avoid circular dependencies
+  try {
+    const demoModule = await import("./routes/demo.js");
+    const auditModule = await import("./routes/audit.js");
+    const auditProgressModule = await import("./routes/audit-progress.js");
+    const auditStorageModule = await import("./routes/audit-storage.js");
 
-  // Audit storage endpoints (order matters - specific routes before generic)
-  app.get("/api/audits", listAudits); // Must come before /:id route
-  app.get("/api/audits/:id", getAudit);
-  app.post("/api/audits", storeAudit);
-  app.delete("/api/audits/:id", deleteAudit);
+    app.get("/api/demo", demoModule.handleDemo);
+    app.post("/api/audit", auditModule.handleAudit);
+    app.get("/api/audit/progress", auditProgressModule.handleAuditProgress);
+    app.post("/api/audit/standard", auditProgressModule.handleAuditStandard);
+    app.post("/api/audit/demo", auditModule.handleDemoAudit);
+
+    // Audit storage endpoints (order matters - specific routes before generic)
+    app.get("/api/audits", auditStorageModule.listAudits);
+    app.get("/api/audits/:id", auditStorageModule.getAudit);
+    app.post("/api/audits", auditStorageModule.storeAudit);
+    app.delete("/api/audits/:id", auditStorageModule.deleteAudit);
+  } catch (error) {
+    console.error("Failed to load route handlers:", error);
+    throw error;
+  }
 
   // Global error handler
   app.use((err: any, req: any, res: any, next: any) => {
