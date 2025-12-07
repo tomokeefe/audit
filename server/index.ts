@@ -23,12 +23,17 @@ export async function createServer() {
 
   app.get("/api/health", async (_req, res) => {
     const dbConfigured = !!process.env.DATABASE_URL;
+    const grokConfigured = !!process.env.GROK_API_KEY;
     const response: any = {
       status: "ok",
       timestamp: new Date().toISOString(),
-      database: {
-        configured: dbConfigured,
-        url: dbConfigured ? "***hidden***" : "NOT SET",
+      environment: {
+        nodeEnv: process.env.NODE_ENV || "development",
+        grokApiKey: grokConfigured ? "SET" : "NOT SET",
+        database: {
+          configured: dbConfigured,
+          url: dbConfigured ? "***hidden***" : "NOT SET",
+        },
       },
     };
 
@@ -38,18 +43,18 @@ export async function createServer() {
         const pool = await getPool();
         if (pool) {
           const result = await pool.query("SELECT 1");
-          response.database.connected = true;
-          response.database.status = "Connected";
+          response.environment.database.connected = true;
+          response.environment.database.status = "Connected";
         } else {
-          response.database.connected = false;
-          response.database.status = "Pool creation failed";
+          response.environment.database.connected = false;
+          response.environment.database.status = "Pool creation failed";
         }
       } catch (error) {
-        response.database.connected = false;
-        response.database.status = `Connection failed: ${error instanceof Error ? error.message : String(error)}`;
+        response.environment.database.connected = false;
+        response.environment.database.status = `Connection failed: ${error instanceof Error ? error.message : String(error)}`;
       }
     } else {
-      response.database.status =
+      response.environment.database.status =
         "NOT CONFIGURED - Audits will NOT persist to database";
     }
 
