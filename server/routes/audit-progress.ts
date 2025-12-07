@@ -104,7 +104,10 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
 
     // If API key not configured, fallback to demo audit
     console.log("DEBUG: process.env.GROK_API_KEY =", process.env.GROK_API_KEY);
-    console.log("DEBUG: process.env.GROK_API_KEY length =", process.env.GROK_API_KEY?.length);
+    console.log(
+      "DEBUG: process.env.GROK_API_KEY length =",
+      process.env.GROK_API_KEY?.length,
+    );
     if (!process.env.GROK_API_KEY) {
       console.log("GROK_API_KEY not configured, sending demo audit via SSE");
 
@@ -372,7 +375,10 @@ export const handleAuditStandard = async (req: Request, res: Response) => {
     }
 
     // Check API key
-    console.log("DEBUG handleAuditStandard: process.env.GROK_API_KEY =", process.env.GROK_API_KEY);
+    console.log(
+      "DEBUG handleAuditStandard: process.env.GROK_API_KEY =",
+      process.env.GROK_API_KEY,
+    );
     if (!process.env.GROK_API_KEY) {
       console.log("DEBUG: GROK_API_KEY is missing, returning error");
       return res
