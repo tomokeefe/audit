@@ -16,13 +16,12 @@ export async function createServer() {
     console.error("Failed to initialize database on startup:", error);
   });
 
-  // API routes with /api prefix (needed for local development)
+  // Health check endpoints
   app.get("/api/ping", (_req, res) => {
     const ping = process.env.PING_MESSAGE ?? "ping pong";
     res.json({ message: ping });
   });
 
-  // Diagnostic endpoint to check database configuration
   app.get("/api/health", async (_req, res) => {
     const dbConfigured = !!process.env.DATABASE_URL;
     const response: any = {
@@ -58,10 +57,34 @@ export async function createServer() {
     res.json(response);
   });
 
-  // Temporary: placeholder routes only to test server startup
-  app.get("/api/ping", (_req, res) => {
-    res.json({ message: "pong" });
-  });
+  // Audit routes
+  const { handleAudit, handleDemoAudit } = await import(
+    "./routes/audit.js"
+  );
+  const { handleAuditProgress, handleAuditStandard } = await import(
+    "./routes/audit-progress.js"
+  );
+  const {
+    storeAudit,
+    getAudit,
+    listAudits,
+    deleteAudit,
+  } = await import("./routes/audit-storage.js");
+  const { handleDemo } = await import("./routes/demo.js");
+
+  // Audit creation and progress tracking
+  app.post("/api/audit", handleAudit);
+  app.get("/api/audit/progress", handleAuditProgress);
+  app.post("/api/audit/standard", handleAuditStandard);
+
+  // Demo endpoint
+  app.post("/api/demo", handleDemo);
+
+  // Audit storage endpoints
+  app.post("/api/audits", storeAudit);
+  app.get("/api/audits", listAudits);
+  app.get("/api/audits/:id", getAudit);
+  app.delete("/api/audits/:id", deleteAudit);
 
   // Global error handler
   app.use((err: any, req: any, res: any, next: any) => {
