@@ -650,7 +650,7 @@ async function scrapeWithPuppeteer(url: string) {
     });
 
     // Wait a bit for JavaScript to render
-    await page.waitForTimeout(2000);
+    await new Promise(resolve => setTimeout(resolve, 2000));
 
     console.log(`   ✓ Page loaded, extracting content...`);
 
