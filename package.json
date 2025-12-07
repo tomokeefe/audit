@@ -11,11 +11,12 @@
     ]
   },
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "test": "jest --watch",
+    "dev": "vite --config vite.config.client.ts",
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "vite build --config vite.config.client.ts",
+    "build:server": "vite build --config vite.config.server.ts",
+    "start": "node dist/server/node-build.mjs",
+    "test": "vitest --run",
     "format.fix": "prettier --write .",
     "typecheck": "tsc"
   },
@@ -23,10 +24,9 @@
     "@google/generative-ai": "^0.24.1",
     "axios": "^1.11.0",
     "cheerio": "^1.1.2",
+    "cors": "^2.8.5",
     "dotenv": "^17.2.1",
-    "next": "^15.0.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "express": "^5.1.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {
