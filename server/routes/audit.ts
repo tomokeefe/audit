@@ -2490,6 +2490,7 @@ function extractSectionDetails(
   text: string,
   sectionName: string,
   score: number,
+  sectionIndex: number = 0,
 ): string {
   // Extract detailed analysis if available
   const detailedAnalysisMatch = text.match(
@@ -2536,11 +2537,18 @@ function extractSectionDetails(
     );
   }
 
-  // Assign relevant recommendations to this section (take a subset)
+  // Distribute recommendations across sections (not just the first 3 for everyone)
+  const recsPerSection = Math.max(1, Math.ceil(allRecommendations.length / 10));
+  const startIdx = sectionIndex * recsPerSection;
   const sectionRecommendations = allRecommendations.slice(
-    0,
-    Math.min(3, allRecommendations.length),
+    startIdx,
+    startIdx + Math.min(recsPerSection, 3),
   );
+
+  // If no recommendations assigned, use section-specific defaults
+  const finalRecommendations = sectionRecommendations.length > 0
+    ? sectionRecommendations
+    : getDefaultRecommendations(sectionName, score);
 
   // Build formatted details
   let details = `Overview: ${overview}\n\n`;
@@ -2553,18 +2561,10 @@ function extractSectionDetails(
     details += "\n";
   }
 
-  if (sectionRecommendations.length > 0) {
-    details += "Recommendations:\n";
-    sectionRecommendations.forEach((rec) => {
-      details += `- ${rec}\n`;
-    });
-  } else {
-    // Fallback recommendations based on common improvements
-    details += "Recommendations:\n";
-    details += `- Review and enhance ${sectionName.toLowerCase()} based on industry best practices\n`;
-    details += `- Conduct user testing to identify areas for improvement\n`;
-    details += `- Implement data-driven optimizations to boost ${sectionName.toLowerCase()} effectiveness\n`;
-  }
+  details += "Recommendations:\n";
+  finalRecommendations.forEach((rec) => {
+    details += `- ${rec}\n`;
+  });
 
   return details.trim();
 }
