@@ -686,32 +686,35 @@ async function scrapeWebsite(url: string) {
         `Successfully scraped ${url}. Title: "${title.slice(0, 50)}..."`,
       );
 
-      // Skip comprehensive analysis for now - use simple data extraction
-      console.log("Using simplified analysis to avoid timeouts...");
-      const multiPageResults = [
-        {
-          url: url,
-          title: title || "Homepage",
-          description: description || "",
-          isHomepage: true,
-          pageType: "homepage",
-          headings: {
-            h1: headings.length > 0 ? [headings[0]] : [],
-            h2: [],
-            h3: [],
-          },
-          images: { total: images.length, missingAlt: 0 },
-          forms: { count: 0, hasLabels: false },
-          contentLength: response.data.length,
-          brandElements: { logo: brandElements.length > 0 },
-          navigation: { mainNav: navigation },
-        },
-      ];
-      const crossPageAnalysis = {
+      // Enhanced multi-page analysis
+      console.log("Starting comprehensive multi-page analysis...");
+
+      // Perform site structure analysis
+      const siteStructure = await analyzeSiteStructure(url, response.data);
+      const uxFeatures = await analyzeUXFeatures(response.data);
+      const performanceData = await analyzeWebsitePerformance(url);
+
+      // Crawl multiple important pages (limit to 5 to avoid timeouts)
+      let multiPageResults: any[] = [];
+      let crossPageAnalysis: any = {
         brandConsistency: { score: 80, issues: [], recommendations: [] },
         navigationConsistency: { score: 80, issues: [], recommendations: [] },
         contentConsistency: { score: 80, issues: [], recommendations: [] },
       };
+
+      if (siteStructure.discoveredPages.length > 0) {
+        try {
+          console.log(`Crawling ${Math.min(5, siteStructure.discoveredPages.length)} additional pages...`);
+          multiPageResults = await crawlMultiplePages(url, siteStructure.discoveredPages, 5);
+
+          if (multiPageResults.length > 1) {
+            crossPageAnalysis = analyzeCrossPageConsistency(multiPageResults);
+          }
+        } catch (crawlError) {
+          console.warn("Multi-page crawl failed, continuing with single page:", crawlError);
+          multiPageResults = [];
+        }
+      }
 
       return {
         title: title.trim(),
