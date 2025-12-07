@@ -729,87 +729,20 @@ async function scrapeWebsite(url: string) {
         htmlLength: response.data.length,
         url,
         fallbackUsed: false,
-        // Enhanced UX analysis data - use basic analysis
-        performance: {
-          pageSizeKB: Math.round(response.data.length / 1024),
-          hasSSL: url.startsWith("https://"),
-          redirectCount: 0,
-          responseTime: 0,
-          mobileViewport: $('meta[name="viewport"]').length > 0,
-          hasServiceWorker: response.data.includes("serviceWorker"),
-          pagespeedScore: 0,
-          performanceScore: 0,
-          accessibilityScore: 0,
-          bestPracticesScore: 0,
-          seoScore: 0,
-          hasRobotsTxt: false,
-          hasSitemap: false,
-        },
-        siteStructure: {
-          discoveredPages: [],
-          navigation: {
-            mainNav: navigation.slice(0, 100),
-            breadcrumbs: "",
-            footer: footer.slice(0, 100),
-            menuItems: [],
-            hasSearch: navigation.includes("search"),
-            hasLanguageSelector: false,
-          },
-          contentStructure: {
-            headingLevels: headings.length > 0 ? ["h1", "h2", "h3"] : [],
-            sections: paragraphs.slice(0, 3),
-            hasContactInfo:
-              navigation.toLowerCase().includes("contact") ||
-              footer.toLowerCase().includes("contact"),
-            hasAboutPage: navigation.toLowerCase().includes("about"),
-            hasBlog: navigation.toLowerCase().includes("blog"),
-            hasProducts:
-              navigation.toLowerCase().includes("product") ||
-              navigation.toLowerCase().includes("shop"),
-          },
-          pageCount: 1,
-        },
-        uxFeatures: {
-          forms: {
-            count: $("form").length,
-            hasLabels: $("label").length > 0,
-            hasValidation: false,
-            hasContactForm: false,
-          },
-          accessibility: {
-            hasAltText: $("img[alt]").length > 0,
-            missingAltText: $("img").length - $("img[alt]").length,
-            hasSkipLinks: false,
-            hasAriaLabels: $("[aria-label], [aria-labelledby]").length > 0,
-            headingStructure: $("h1").length === 1,
-          },
-          interactivity: {
-            buttons: $("button, input[type='button'], input[type='submit']")
-              .length,
-            dropdowns: $("select, .dropdown").length,
-            modals: 0,
-            carousels: 0,
-          },
-          media: {
-            images: $("img").length,
-            videos: $("video").length,
-            hasLazyLoading: $('[loading="lazy"]').length > 0,
-          },
-          social: {
-            socialLinks: $(
-              '[href*="facebook"], [href*="twitter"], [href*="linkedin"], [href*="instagram"]',
-            ).length,
-            hasSocialSharing: false,
-          },
-        },
+        // Enhanced performance data with real metrics
+        performance: performanceData,
+        // Comprehensive site structure
+        siteStructure: siteStructure,
+        // Detailed UX and accessibility features
+        uxFeatures: uxFeatures,
         // Multi-page crawling results
         multiPageAnalysis: {
-          pagesAnalyzed: multiPageResults.length,
+          pagesAnalyzed: multiPageResults.length + 1, // +1 for homepage
           pageDetails: multiPageResults,
           crossPageConsistency: crossPageAnalysis,
           totalContentLength: multiPageResults.reduce(
             (sum, page) => sum + page.contentLength,
-            0,
+            response.data.length,
           ),
           avgImagesPerPage:
             multiPageResults.length > 0
@@ -817,14 +750,14 @@ async function scrapeWebsite(url: string) {
                   (sum, page) => sum + page.images.total,
                   0,
                 ) / multiPageResults.length
-              : 0,
+              : $("img").length,
           avgFormsPerPage:
             multiPageResults.length > 0
               ? multiPageResults.reduce(
                   (sum, page) => sum + page.forms.count,
                   0,
                 ) / multiPageResults.length
-              : 0,
+              : $("form").length,
           pageTypes: multiPageResults.map((page) => ({
             url: page.url,
             type: page.pageType,
