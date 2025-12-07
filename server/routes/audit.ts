@@ -833,9 +833,9 @@ async function scrapeWebsite(url: string) {
         title.toLowerCase().includes('attention required');
 
       if (isBlocked) {
-        console.error(`⚠️  BLOCKED: ${url} is protected by Cloudflare or bot detection`);
-        console.error(`   The scraper cannot access the actual content.`);
-        throw new Error(`Site protected by Cloudflare or bot detection - cannot access content`);
+        console.warn(`⚠️  BLOCKED: ${url} is protected by Cloudflare or bot detection`);
+        console.warn(`   Falling back to Puppeteer (headless browser)...`);
+        throw new Error(`CLOUDFLARE_DETECTED`); // Special error code to trigger Puppeteer
       }
 
       // Extract key elements
