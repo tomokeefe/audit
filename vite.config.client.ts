@@ -11,6 +11,12 @@ export default defineConfig(({ mode }) => ({
       allow: ["./client", "./shared"],
       deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "server/**"],
     },
+    proxy: {
+      "/api": {
+        target: "http://localhost:3001",
+        changeOrigin: true,
+      },
+    },
   },
   build: {
     outDir: "dist/spa",
@@ -24,38 +30,25 @@ export default defineConfig(({ mode }) => ({
   },
 }));
 
-let expressAppInstance: any = null;
-const expressReadyPromise = (async () => {
-  try {
-    const { createServer } = await import("./server/index.js");
-    expressAppInstance = await createServer();
-    console.log("✅ Express server initialized successfully");
-  } catch (error) {
-    console.error("❌ Failed to initialize Express server:", error);
-  }
-})();
-
 function expressPlugin(): Plugin {
   return {
     name: "express-plugin",
     apply: "serve", // Only apply during development (serve mode)
     async configureServer(server) {
-      // Wait for Express to be ready
-      await expressReadyPromise;
+      // Start a separate Express server on port 3001 for API routes
+      try {
+        const { createServer } = await import("./server/index.js");
+        const app = await createServer();
+        const expressServer = app.listen(3001, "localhost", () => {
+          console.log("✅ Express API server running on port 3001");
+        });
 
-      // Insert Express middleware at the beginning of the stack
-      if (expressAppInstance) {
-        // Create a custom middleware that intercepts all /api requests
-        const apiHandler = (req, res, next) => {
-          if (req.url && req.url.startsWith("/api")) {
-            expressAppInstance(req, res, next);
-          } else {
-            next();
-          }
-        };
-
-        // Use unshift to add at the beginning
-        server.middlewares.stack.unshift({ handle: apiHandler });
+        // Store the server for cleanup on Vite server close
+        server.httpServer?.on("close", () => {
+          expressServer.close();
+        });
+      } catch (error) {
+        console.error("❌ Failed to initialize Express server:", error);
       }
     },
   };
