@@ -2265,6 +2265,27 @@ async function buildAuditFromCache(
     day: "numeric",
   });
 
+  // Use cached sections if available, otherwise generate from scores
+  const sections = cachedResult.sections || cachedResult.baseScores.map((score: number, index: number) => ({
+    name: [
+      "Branding",
+      "Design",
+      "Messaging",
+      "Usability",
+      "Content Strategy",
+      "Digital Presence",
+      "Customer Experience",
+      "Competitor Analysis",
+      "Conversion Optimization",
+      "Consistency & Compliance",
+    ][index],
+    score: score,
+    maxScore: 100,
+    issues: Math.max(1, Math.round((100 - score) / 15)),
+    recommendations: Math.max(1, Math.round((100 - score) / 20)),
+    details: `Previous analysis maintained for scoring consistency. This website was analyzed previously and scores remain valid for unchanged content.`,
+  }));
+
   return {
     id: Date.now().toString(),
     url: url,
@@ -2273,25 +2294,7 @@ async function buildAuditFromCache(
     overallScore: cachedResult.overallScore,
     date: currentDate,
     status: "completed",
-    sections: cachedResult.baseScores.map((score: number, index: number) => ({
-      name: [
-        "Branding",
-        "Design",
-        "Messaging",
-        "Usability",
-        "Content Strategy",
-        "Digital Presence",
-        "Customer Experience",
-        "Competitor Analysis",
-        "Conversion Optimization",
-        "Consistency & Compliance",
-      ][index],
-      score: score,
-      maxScore: 100,
-      issues: Math.max(1, Math.round((100 - score) / 15)),
-      recommendations: Math.max(1, Math.round((100 - score) / 20)),
-      details: `Cached analysis maintaining consistent scoring for unchanged content.`,
-    })),
+    sections,
     summary: `Cached brand audit results ensuring scoring consistency`,
     metadata: {
       scoringEnhancementsApplied: [
@@ -2602,7 +2605,7 @@ Website Data:
       rawAnalysis: text,
     };
 
-    // Cache the results for consistency
+    // Cache the results for consistency (including full section details)
     const websiteSignature = generateWebsiteSignature(websiteData);
     const sectionScores = auditData.sections.map(
       (section: any) => section.score,
@@ -2613,6 +2616,7 @@ Website Data:
       auditData.overallScore,
       { evidenceQuality: 85 },
       SCORING_METHODOLOGY,
+      auditData.sections, // Store full section details including recommendations
     );
 
     return auditResult;
