@@ -260,12 +260,16 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
     });
 
     // Call the actual audit functions to get real results
+    console.log("🔵 [PROGRESS] Importing audit functions...");
     const { scrapeWebsite, generateAudit, storeAuditResult } = await import(
       "./audit"
     );
+    console.log("✅ [PROGRESS] Audit functions imported");
 
     // Perform the actual audit
+    console.log(`🔵 [PROGRESS] Starting scrape for ${url}...`);
     const websiteData = await scrapeWebsite(url);
+    console.log(`✅ [PROGRESS] Scrape completed for ${url}`);
 
     sendProgress({
       step: "finalizing",
@@ -273,7 +277,9 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
       message: "Processing analysis results...",
     });
 
+    console.log(`🔵 [PROGRESS] Generating audit for ${url}...`);
     const auditResult = await generateAudit(websiteData);
+    console.log(`✅ [PROGRESS] Audit generated with ID: ${auditResult.id}, Score: ${auditResult.overallScore}`);
 
     sendProgress({
       step: "finalizing",
@@ -282,7 +288,9 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
     });
 
     // Store the result
+    console.log(`🔵 [PROGRESS] Calling storeAuditResult for ${auditResult.id}...`);
     await storeAuditResult(auditResult);
+    console.log(`✅ [PROGRESS] storeAuditResult completed for ${auditResult.id}`);
 
     sendProgress({
       step: "completed",
@@ -361,14 +369,16 @@ export const handleAuditProgress = async (req: Request, res: Response) => {
 export const handleAuditStandard = async (req: Request, res: Response) => {
   try {
     const { url } = req.body as AuditRequest;
+    console.log("📥 [STANDARD] Received audit request for:", url);
 
     if (!url) {
+      console.log("❌ [STANDARD] No URL provided");
       return res.status(400).json({ error: "URL is required" });
     }
 
     // Check API key early
     if (!process.env.GROK_API_KEY) {
-      console.error("GROK_API_KEY not configured - cannot process audit");
+      console.error("❌ [STANDARD] GROK_API_KEY not configured - cannot process audit");
       return res.status(500).json({
         error:
           "Server configuration error: API key not configured. Please contact support.",
@@ -378,24 +388,28 @@ export const handleAuditStandard = async (req: Request, res: Response) => {
     // Validate URL format
     try {
       new URL(url);
+      console.log("✅ [STANDARD] URL validated:", url);
     } catch {
+      console.log("❌ [STANDARD] Invalid URL format:", url);
       return res.status(400).json({
         error:
           "Invalid URL format. Please enter a valid URL starting with http:// or https://",
       });
     }
 
-    console.log("Starting standard audit for URL:", url);
+    console.log("🔵 [STANDARD] Starting standard audit for URL:", url);
 
     // Import necessary functions from audit module
     let scrapeWebsite, generateAudit, storeAuditResult;
     try {
+      console.log("🔵 [STANDARD] Importing audit module...");
       const auditModule = await import("./audit.js");
       scrapeWebsite = auditModule.scrapeWebsite;
       generateAudit = auditModule.generateAudit;
       storeAuditResult = auditModule.storeAuditResult;
+      console.log("✅ [STANDARD] Audit module imported successfully");
     } catch (importError) {
-      console.error("Failed to import audit module:", importError);
+      console.error("❌ [STANDARD] Failed to import audit module:", importError);
       return res.status(500).json({
         error:
           "Server error: Failed to load audit module. Please try again later.",
@@ -403,11 +417,20 @@ export const handleAuditStandard = async (req: Request, res: Response) => {
     }
 
     // Perform audit
+    console.log(`🔵 [STANDARD] Scraping website: ${url}`);
     const websiteData = await scrapeWebsite(url);
+    console.log(`✅ [STANDARD] Website scraped. Fallback used: ${websiteData.fallbackUsed}`);
+
+    console.log(`🔵 [STANDARD] Generating audit for ${url}...`);
     const auditResult = await generateAudit(websiteData);
+    console.log(`✅ [STANDARD] Audit generated. ID: ${auditResult.id}, Score: ${auditResult.overallScore}`);
+
+    console.log(`🔵 [STANDARD] Storing audit ${auditResult.id}...`);
     await storeAuditResult(auditResult);
+    console.log(`✅ [STANDARD] Audit ${auditResult.id} storage completed`);
 
     res.setHeader("Content-Type", "application/json");
+    console.log(`✅ [STANDARD] Sending response for audit ${auditResult.id}`);
     res.status(200).json(auditResult);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
