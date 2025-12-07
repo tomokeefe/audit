@@ -119,15 +119,23 @@ export class AuditService {
   ): Promise<StoredAudit[]> {
     const pool = await getPool();
     if (!pool) {
-      console.warn("Database not available");
+      console.warn("⚠️  Database pool not available for listAudits");
       return [];
     }
+
+    console.log(`[DB LIST] Fetching audits (limit: ${limit}, offset: ${offset})...`);
 
     const query =
       "SELECT * FROM audits ORDER BY created_at DESC LIMIT $1 OFFSET $2";
 
     try {
       const result = await pool.query(query, [limit, offset]);
+      console.log(`[DB LIST] Found ${result.rows.length} audit(s) in database`);
+
+      if (result.rows.length > 0) {
+        console.log(`[DB LIST] Sample audit IDs:`, result.rows.slice(0, 3).map(r => r.id));
+      }
+
       return result.rows.map((row) => ({
         id: row.id,
         url: row.url,
