@@ -3,17 +3,18 @@ import { createServer } from "./index.js";
 import express from "express";
 import { createReadStream, existsSync } from "fs";
 import { extname } from "path";
+import { fileURLToPath } from "url";
 
 const port = parseInt(process.env.PORT || "3000", 10);
 
-// Properly handle file URLs in ESM
-const fileUrlToPath = (url: string) => {
-  const urlObj = new URL(url);
-  return urlObj.pathname;
-};
+// Get __dirname properly in ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const __dirname = path.dirname(fileUrlToPath(import.meta.url));
-const distPath = path.resolve(__dirname, "../spa");
+// The distPath assumes we're running from /app/dist/server/node-build.mjs
+// So we go up to /app and then into dist/spa
+const appRoot = path.resolve(__dirname, "../../");
+const distPath = path.resolve(appRoot, "dist/spa");
 
 const mimeTypes: { [key: string]: string } = {
   ".html": "text/html",
