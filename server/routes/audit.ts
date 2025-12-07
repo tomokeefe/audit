@@ -706,8 +706,9 @@ async function scrapeWithPuppeteer(url: string) {
     const uxFeatures = await analyzeUXFeatures(html);
     const performanceData = await analyzeWebsitePerformance(url);
 
-    console.log(`✓ Site structure: ${siteStructure.discoveredPages.length} pages discovered`);
-    console.log(`✓ UX features: ${uxFeatures.forms.count} forms, ${uxFeatures.media.images} images`);
+    console.log(`   ✓ Site structure: ${siteStructure.discoveredPages.length} pages discovered`);
+    console.log(`   ✓ UX features: ${uxFeatures.forms.count} forms, ${uxFeatures.media.images} images`);
+    console.log(`✅ Puppeteer scraping completed successfully for ${url}`);
 
     // Try to crawl additional pages (limited to avoid long execution)
     let multiPageResults: any[] = [];
