@@ -94,16 +94,38 @@ export const listAudits: RequestHandler = async (req, res) => {
     try {
       const audits = await auditService.listAudits(limit, offset);
 
-      const summaries = audits.map((audit) => ({
-        id: audit.id,
-        title: audit.title,
-        url: audit.url,
-        date: audit.date,
-        overallScore: audit.overall_score,
-        isDemoMode: audit.is_demo_mode,
-      }));
+      console.log(`[LIST AUDITS] Retrieved ${audits.length} audits from database`);
 
-      console.log(`Returning ${summaries.length} audits`);
+      if (audits.length > 0) {
+        console.log(`[LIST AUDITS] Sample audit:`, {
+          id: audits[0].id,
+          title: audits[0].title,
+          date: audits[0].date,
+          dateType: typeof audits[0].date,
+        });
+      }
+
+      const summaries = audits.map((audit) => {
+        // Ensure date is in ISO string format for frontend
+        let dateValue: string;
+        try {
+          dateValue = audit.date ? new Date(audit.date).toISOString() : new Date().toISOString();
+        } catch (dateError) {
+          console.error(`[LIST AUDITS] Error parsing date for audit ${audit.id}:`, dateError);
+          dateValue = new Date().toISOString();
+        }
+
+        return {
+          id: audit.id,
+          title: audit.title,
+          url: audit.url,
+          date: dateValue,
+          overallScore: audit.overall_score,
+          isDemoMode: audit.is_demo_mode,
+        };
+      });
+
+      console.log(`[LIST AUDITS] Returning ${summaries.length} audits`);
       res.status(200).json({ audits: summaries });
     } catch (dbError) {
       console.error("Database error when listing audits:", dbError);
