@@ -58,14 +58,52 @@ export async function createServer() {
   });
 
   // Audit routes
-  const { handleAudit, handleDemoAudit } = await import("./routes/audit.js");
-  const { handleAuditProgress, handleAuditStandard } = await import(
-    "./routes/audit-progress.js"
-  );
-  const { storeAudit, getAudit, listAudits, deleteAudit } = await import(
-    "./routes/audit-storage.js"
-  );
-  const { handleDemo } = await import("./routes/demo.js");
+  let handleAudit, handleDemoAudit, handleAuditProgress, handleAuditStandard, storeAudit, getAudit, listAudits, deleteAudit, handleDemo;
+
+  try {
+    console.log("Importing audit routes...");
+    const auditModule = await import("./routes/audit.js");
+    handleAudit = auditModule.handleAudit;
+    handleDemoAudit = auditModule.handleDemoAudit;
+    console.log("✓ Audit routes imported");
+  } catch (err) {
+    console.error("✗ Failed to import audit routes:", err);
+    throw err;
+  }
+
+  try {
+    console.log("Importing audit-progress routes...");
+    const progressModule = await import("./routes/audit-progress.js");
+    handleAuditProgress = progressModule.handleAuditProgress;
+    handleAuditStandard = progressModule.handleAuditStandard;
+    console.log("✓ Audit-progress routes imported");
+  } catch (err) {
+    console.error("✗ Failed to import audit-progress routes:", err);
+    throw err;
+  }
+
+  try {
+    console.log("Importing audit-storage routes...");
+    const storageModule = await import("./routes/audit-storage.js");
+    storeAudit = storageModule.storeAudit;
+    getAudit = storageModule.getAudit;
+    listAudits = storageModule.listAudits;
+    deleteAudit = storageModule.deleteAudit;
+    console.log("✓ Audit-storage routes imported");
+  } catch (err) {
+    console.error("✗ Failed to import audit-storage routes:", err);
+    throw err;
+  }
+
+  try {
+    console.log("Importing demo routes...");
+    const demoModule = await import("./routes/demo.js");
+    handleDemo = demoModule.handleDemo;
+    console.log("✓ Demo routes imported");
+  } catch (err) {
+    console.error("✗ Failed to import demo routes:", err);
+    throw err;
+  }
 
   // Audit creation and progress tracking
   app.post("/api/audit", handleAudit);
