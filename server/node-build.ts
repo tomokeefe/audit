@@ -7,14 +7,21 @@ import { fileURLToPath } from "url";
 
 const port = parseInt(process.env.PORT || "3000", 10);
 
-// Get __dirname properly in ESM
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Get __dirname properly in ESM - with better fallbacks
+let distPath: string;
 
-// The distPath assumes we're running from /app/dist/server/node-build.mjs
-// So we go up to /app and then into dist/spa
-const appRoot = path.resolve(__dirname, "../../");
-const distPath = path.resolve(appRoot, "dist/spa");
+try {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  // The distPath assumes we're running from /app/dist/server/node-build.mjs
+  // So we go up to /app and then into dist/spa
+  const appRoot = path.resolve(__dirname, "../../");
+  distPath = path.resolve(appRoot, "dist/spa");
+} catch (err) {
+  // Fallback: use cwd() if import.meta.url doesn't work
+  console.warn("Using cwd() fallback for distPath:", err);
+  distPath = path.resolve(process.cwd(), "dist/spa");
+}
 
 const mimeTypes: { [key: string]: string } = {
   ".html": "text/html",
