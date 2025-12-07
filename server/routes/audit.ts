@@ -2979,11 +2979,10 @@ async function generateAudit(websiteData: any): Promise<AuditResponse> {
     // Enhanced Brand Whisperer prompt requiring evidence-based analysis
     const systemPrompt = `You are Brand Whisperer's senior brand strategist with expertise in data-driven brand analysis. For URL-only inputs, FIRST extract/infer: Brand Name (from <title>/meta), Target Audience (from copy like 'for millennials' or hero sections), Challenges/Goals (infer from pain points or CTAs). If unclear, use 'General Consumer' and note it.
 
-⚠️ IF YOU SEE WARNING SYMBOLS (⚠️) IN THE DATA: The website could not be accessed (Cloudflare/bot protection). You MUST:
-1. Start your audit with a PROMINENT WARNING that the site was inaccessible
-2. Note in EVERY section that analysis is based on LIMITED/NO actual data
-3. Score all sections 40-60 (conservative due to data limitations)
-4. In "Biggest Opportunities", prioritize: "Make site accessible for automated analysis by temporarily disabling Cloudflare or bot protection"
+⚠️ IF YOU SEE WARNING SYMBOLS (⚠️) IN THE DATA: The website had limited access (Cloudflare/bot protection). You should:
+1. Note in the audit that some data may be limited
+2. Score based on available information - don't artificially lower scores
+3. Focus recommendations on what can be observed
 
 CRITICAL REQUIREMENTS:
 - Base ALL scores on SPECIFIC EVIDENCE from the provided data
