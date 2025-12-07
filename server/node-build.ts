@@ -5,8 +5,15 @@ import { createReadStream, existsSync } from "fs";
 import { extname } from "path";
 
 const port = parseInt(process.env.PORT || "3000", 10);
-const __dirname = import.meta.url.split("/").slice(0, -1).join("/");
-const distPath = path.join(__dirname, "../dist/spa");
+
+// Properly handle file URLs in ESM
+const fileUrlToPath = (url: string) => {
+  const urlObj = new URL(url);
+  return urlObj.pathname;
+};
+
+const __dirname = path.dirname(fileUrlToPath(import.meta.url));
+const distPath = path.resolve(__dirname, "../spa");
 
 const mimeTypes: { [key: string]: string } = {
   ".html": "text/html",
