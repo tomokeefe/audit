@@ -695,7 +695,11 @@ async function scrapeWebsite(url: string) {
           description: description || "",
           isHomepage: true,
           pageType: "homepage",
-          headings: { h1: headings.length > 0 ? [headings[0]] : [], h2: [], h3: [] },
+          headings: {
+            h1: headings.length > 0 ? [headings[0]] : [],
+            h2: [],
+            h3: [],
+          },
           images: { total: images.length, missingAlt: 0 },
           forms: { count: 0, hasLabels: false },
           contentLength: response.data.length,
@@ -751,15 +755,24 @@ async function scrapeWebsite(url: string) {
           contentStructure: {
             headingLevels: headings.length > 0 ? ["h1", "h2", "h3"] : [],
             sections: paragraphs.slice(0, 3),
-            hasContactInfo: navigation.toLowerCase().includes("contact") || footer.toLowerCase().includes("contact"),
+            hasContactInfo:
+              navigation.toLowerCase().includes("contact") ||
+              footer.toLowerCase().includes("contact"),
             hasAboutPage: navigation.toLowerCase().includes("about"),
             hasBlog: navigation.toLowerCase().includes("blog"),
-            hasProducts: navigation.toLowerCase().includes("product") || navigation.toLowerCase().includes("shop"),
+            hasProducts:
+              navigation.toLowerCase().includes("product") ||
+              navigation.toLowerCase().includes("shop"),
           },
           pageCount: 1,
         },
         uxFeatures: {
-          forms: { count: $("form").length, hasLabels: $("label").length > 0, hasValidation: false, hasContactForm: false },
+          forms: {
+            count: $("form").length,
+            hasLabels: $("label").length > 0,
+            hasValidation: false,
+            hasContactForm: false,
+          },
           accessibility: {
             hasAltText: $("img[alt]").length > 0,
             missingAltText: $("img").length - $("img[alt]").length,
@@ -768,7 +781,8 @@ async function scrapeWebsite(url: string) {
             headingStructure: $("h1").length === 1,
           },
           interactivity: {
-            buttons: $("button, input[type='button'], input[type='submit']").length,
+            buttons: $("button, input[type='button'], input[type='submit']")
+              .length,
             dropdowns: $("select, .dropdown").length,
             modals: 0,
             carousels: 0,
@@ -779,7 +793,9 @@ async function scrapeWebsite(url: string) {
             hasLazyLoading: $('[loading="lazy"]').length > 0,
           },
           social: {
-            socialLinks: $('[href*="facebook"], [href*="twitter"], [href*="linkedin"], [href*="instagram"]').length,
+            socialLinks: $(
+              '[href*="facebook"], [href*="twitter"], [href*="linkedin"], [href*="instagram"]',
+            ).length,
             hasSocialSharing: false,
           },
         },
