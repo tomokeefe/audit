@@ -3215,10 +3215,10 @@ End: 'This audit shows where your brand stands—Brand Whisperer scales it to un
       await storeAuditResult(auditResult);
       res.setHeader("Content-Type", "application/json");
       return res.status(200).json(auditResult);
-    } catch (geminiError) {
+    } catch (grokError) {
       console.warn(
-        "[AUDIT] Gemini API failed:",
-        geminiError instanceof Error ? geminiError.message : geminiError,
+        "[AUDIT] Grok API failed:",
+        grokError instanceof Error ? grokError.message : grokError,
       );
       // Fall back to demo audit
       const auditResult = generateFallbackAudit({
