@@ -7,7 +7,7 @@ import { extname } from "path";
 
 const port = parseInt(process.env.PORT || "3000", 10);
 const __dirname = import.meta.url.split("/").slice(0, -1).join("/");
-const distPath = path.join(__dirname, "../spa");
+const distPath = path.join(__dirname, "../dist/spa");
 
 const mimeTypes: { [key: string]: string } = {
   ".html": "text/html",
