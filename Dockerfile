@@ -15,7 +15,7 @@ RUN pnpm install
 COPY . .
 
 # Build the app (client + server)
-RUN pnpm build 2>&1 || true
+RUN pnpm build
 
 # Keep dev dependencies for tsx
 # RUN pnpm prune --prod
