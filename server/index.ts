@@ -1,33 +1,19 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-
-let routeHandlers: any = null;
-
-// Lazy load route handlers to avoid circular dependencies
-async function getRouteHandlers() {
-  if (!routeHandlers) {
-    const demo = await import("./routes/demo");
-    const audit = await import("./routes/audit");
-    const auditProgress = await import("./routes/audit-progress");
-    const auditStorage = await import("./routes/audit-storage");
-
-    routeHandlers = {
-      handleDemo: demo.handleDemo,
-      handleAudit: audit.handleAudit,
-      handleDemoAudit: audit.handleDemoAudit,
-      handleAuditProgress: auditProgress.handleAuditProgress,
-      handleAuditStandard: auditProgress.handleAuditStandard,
-      storeAudit: auditStorage.storeAudit,
-      getAudit: auditStorage.getAudit,
-      listAudits: auditStorage.listAudits,
-      deleteAudit: auditStorage.deleteAudit,
-    };
-  }
-  return routeHandlers;
-}
-
-import { initializeDatabase } from "./db/init";
+import { handleDemo } from "./routes/demo.js";
+import { handleAudit, handleDemoAudit } from "./routes/audit.js";
+import {
+  handleAuditProgress,
+  handleAuditStandard,
+} from "./routes/audit-progress.js";
+import {
+  storeAudit,
+  getAudit,
+  listAudits,
+  deleteAudit,
+} from "./routes/audit-storage.js";
+import { initializeDatabase } from "./db/init.js";
 
 export function createServer() {
   const app = express();
