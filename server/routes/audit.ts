@@ -79,21 +79,25 @@ export function createFallbackData(url: string) {
     domain.split(".")[0].charAt(0).toUpperCase() +
     domain.split(".")[0].slice(1);
 
+  console.warn(`⚠️  FALLBACK DATA USED FOR: ${url}`);
+  console.warn(`   Reason: Website content could not be accessed (Cloudflare, JS-only, or blocked)`);
+  console.warn(`   Impact: Audit accuracy will be SEVERELY LIMITED`);
+
   return {
-    title: `${companyName} - Website Analysis`,
-    description: `Brand audit analysis for ${domain}`,
-    headings: [`Welcome to ${companyName}`, "About Us", "Services", "Contact"],
+    title: `${companyName} - ⚠️ Limited Access`,
+    description: `⚠️ IMPORTANT: Unable to access full website content for ${domain}. This may be due to Cloudflare protection, JavaScript-only rendering, or access restrictions. Analysis accuracy is severely limited.`,
+    headings: [`⚠️ Limited Content Access for ${companyName}`],
     paragraphs: [
-      `This is a brand audit analysis for ${domain}.`,
-      `${companyName} appears to be a business website that may contain various sections and content.`,
-      "The website structure and content will be analyzed based on common web patterns and best practices.",
-      "This analysis focuses on brand consistency, user experience, and overall digital presence.",
+      `⚠️ CRITICAL LIMITATION: The website at ${domain} could not be fully accessed for analysis.`,
+      `Possible causes: Cloudflare protection, JavaScript-only content rendering, bot protection, or network restrictions.`,
+      `NAVIGATION, CONTENT, and TECHNICAL DATA shown in this audit are GENERIC PLACEHOLDERS and DO NOT reflect the actual website.`,
+      `For accurate audit results, please: (1) Temporarily disable Cloudflare protection, (2) Whitelist our scraper, or (3) Provide direct content access.`,
     ],
-    images: ["company logo", "hero image", "product images"],
-    links: ["Home", "About", "Services", "Contact", "Privacy Policy"],
-    navigation: "Home About Services Contact",
-    footer: "Copyright information and contact details",
-    brandElements: `${companyName} branding elements`,
+    images: [],
+    links: [],
+    navigation: "⚠️ Navigation could not be detected - site protected or uses JavaScript",
+    footer: "⚠️ Footer content not accessible",
+    brandElements: `⚠️ Brand elements could not be analyzed`,
     htmlLength: 0,
     url,
     fallbackUsed: true,
