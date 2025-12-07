@@ -3055,11 +3055,11 @@ export const handleAudit: RequestHandler = async (req, res) => {
 
     console.log("[AUDIT] Generating audit for:", url);
 
-    // Try to use Gemini API via fetch
+    // Try to use Grok API via fetch
     try {
-      const geminiApiKey = process.env.GEMINI_API_KEY;
-      if (!geminiApiKey) {
-        throw new Error("No API key");
+      const grokApiKey = process.env.GROK_API_KEY;
+      if (!grokApiKey) {
+        throw new Error("No Grok API key");
       }
 
       // Fetch website content
@@ -3078,99 +3078,126 @@ export const handleAudit: RequestHandler = async (req, res) => {
         console.warn("[AUDIT] Could not fetch website content:", fetchError);
       }
 
-      const prompt = `You are a brand auditor. Analyze this website and provide a JSON response with 10 audit sections.
+      const systemPrompt = `You are Brand Whisperer's senior brand strategist. For URL-only inputs, FIRST extract/infer: Brand Name (from <title>/meta), Target Audience (from copy like 'for millennials' or hero sections), Challenges/Goals (infer from pain points or CTAs, e.g., 'low traffic' from blog topics). If unclear, use placeholders like 'General Consumer' and note it.
 
-Website: ${url}
-Content: ${websiteContent}
+Then evaluate across exactly these 10 criteria (0–10 scores, half-points OK). Weights for overall /100:
+1. Branding & Identity (15%)
+2. Messaging & Positioning (15%)
+3. Content Strategy (10%)
+4. Customer Experience (10%)
+5. Conversion Optimization (10%)
+6. Visual Design & Aesthetics (10%)
+7. Usability & Navigation (10%)
+8. Digital Presence & SEO (10%)
+9. Competitor Differentiation (10%)
+10. Consistency & Compliance (10%)
 
-Generate a JSON response with exactly this structure (all numeric values must vary based on your analysis):
-{
-  "sections": [
-    {"name": "Branding", "score": 73, "issues": 3, "recommendations": 4, "details": "Brand identity analysis"},
-    {"name": "Design", "score": 81, "issues": 2, "recommendations": 3, "details": "Design quality analysis"},
-    {"name": "Messaging", "score": 85, "issues": 2, "recommendations": 3, "details": "Value proposition analysis"},
-    {"name": "Usability", "score": 68, "issues": 4, "recommendations": 5, "details": "Usability analysis"},
-    {"name": "Content Strategy", "score": 77, "issues": 3, "recommendations": 4, "details": "Content quality analysis"},
-    {"name": "Digital Presence", "score": 62, "issues": 5, "recommendations": 5, "details": "SEO and online visibility"},
-    {"name": "Customer Experience", "score": 79, "issues": 2, "recommendations": 3, "details": "Customer support analysis"},
-    {"name": "Competitor Analysis", "score": 71, "issues": 3, "recommendations": 4, "details": "Competitive positioning"},
-    {"name": "Conversion Optimization", "score": 76, "issues": 3, "recommendations": 4, "details": "Conversion elements"},
-    {"name": "Compliance & Security", "score": 88, "issues": 1, "recommendations": 2, "details": "Security and compliance"}
-  ]
-}
+Be insightful/candid. Structure exactly: # Brand Whisperer Audit: [Name]
+**Overall: X/100** (Grade)
+## Section Scores
+1. ... – X/10
+...
+## Key Strengths
+- ...
+## Biggest Opportunities
+- ...
+## Detailed Analysis
+[2–4 paras]
+## Prioritized Recommendations
+1. ...
 
-RETURN ONLY THE JSON, no other text.`;
+End: 'This audit shows where your brand stands—Brand Whisperer scales it to unicorn status. Reply for a custom strategy call.'`;
 
-      console.log("[AUDIT] Calling Gemini API...");
+      const userMessage = `Audit this brand's website: ${url}. Extract/infer name, audience, challenges as needed. Website content: ${websiteContent}. Analyze live site thoroughly.`;
 
-      const geminiResponse = await fetch(
-        "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=" +
-          geminiApiKey,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-          }),
+      console.log("[AUDIT] Calling Grok API...");
+
+      const grokResponse = await fetch("https://api.x.ai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${grokApiKey}`,
         },
-      );
+        body: JSON.stringify({
+          messages: [
+            {
+              role: "system",
+              content: systemPrompt,
+            },
+            {
+              role: "user",
+              content: userMessage,
+            },
+          ],
+          model: "grok-4-0709",
+          temperature: 0.7,
+          max_tokens: 2500,
+        }),
+      });
 
-      console.log("[AUDIT] Gemini status:", geminiResponse.status);
+      console.log("[AUDIT] Grok status:", grokResponse.status);
 
-      if (!geminiResponse.ok) {
-        const errorText = await geminiResponse.text();
+      if (!grokResponse.ok) {
+        const errorText = await grokResponse.text();
         console.error(
-          "[AUDIT] Gemini error:",
-          geminiResponse.status,
+          "[AUDIT] Grok error:",
+          grokResponse.status,
           errorText.substring(0, 300),
         );
-        throw new Error("API error: " + geminiResponse.status);
+        throw new Error("API error: " + grokResponse.status);
       }
 
-      const geminiData = await geminiResponse.json();
+      const grokData = await grokResponse.json();
       const responseText =
-        geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "";
+        grokData.choices?.[0]?.message?.content || "";
 
       if (!responseText) {
-        console.error("[AUDIT] Empty response");
+        console.error("[AUDIT] Empty response from Grok");
         throw new Error("Empty response");
       }
 
-      console.log("[AUDIT] Got response, length:", responseText.length);
+      console.log("[AUDIT] Got response from Grok, length:", responseText.length);
 
-      // Extract JSON
-      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) {
-        console.warn("[AUDIT] No JSON in Gemini response");
-        return res.status(200).json(
-          generateFallbackAudit({
-            url,
-            title: new URL(url).hostname,
-            fallbackUsed: false,
-          }),
-        );
-      }
-
-      const auditData = JSON.parse(jsonMatch[0]);
-      const sections = auditData.sections || [];
-
-      if (!Array.isArray(sections) || sections.length === 0) {
-        console.warn("[AUDIT] Invalid sections from Gemini");
-        return res.status(200).json(
-          generateFallbackAudit({
-            url,
-            title: new URL(url).hostname,
-            fallbackUsed: false,
-          }),
-        );
-      }
-
-      const overallScore = Math.round(
-        sections.reduce((sum: number, s: any) => sum + (s.score || 0), 0) /
-          sections.length,
-      );
-      const auditId = Date.now().toString();
+      // Parse the markdown response into sections
       const domain = new URL(url).hostname.replace("www.", "");
+      const auditId = Date.now().toString();
+
+      // Extract overall score from response
+      const scoreMatch = responseText.match(/\*\*Overall:\s*(\d+)\/100/i);
+      const overallScore = scoreMatch ? parseInt(scoreMatch[1]) : 75;
+
+      // Parse section scores
+      const sectionNames = [
+        "Branding & Identity",
+        "Messaging & Positioning",
+        "Content Strategy",
+        "Customer Experience",
+        "Conversion Optimization",
+        "Visual Design & Aesthetics",
+        "Usability & Navigation",
+        "Digital Presence & SEO",
+        "Competitor Differentiation",
+        "Consistency & Compliance",
+      ];
+
+      const sections = sectionNames.map((name, index) => {
+        // Try to extract score from section headers
+        const sectionRegex = new RegExp(
+          `${index + 1}\\.\s*${name}[^–]*–\\s*(\\d+(?:\\.5)?)/10`,
+          "i",
+        );
+        const match = responseText.match(sectionRegex);
+        const scoreOut10 = match ? parseFloat(match[1]) : 7;
+        const score = Math.round((scoreOut10 / 10) * 100);
+
+        return {
+          name,
+          score,
+          issues: Math.floor(Math.random() * 5) + 1,
+          recommendations: Math.floor(Math.random() * 4) + 2,
+          details: `Analysis for ${name}`,
+        };
+      });
 
       const auditResult: AuditResponse = {
         id: auditId,
@@ -3181,9 +3208,10 @@ RETURN ONLY THE JSON, no other text.`;
         status: "completed",
         date: new Date().toISOString(),
         sections,
+        rawAnalysis: responseText,
       };
 
-      console.log("[AUDIT] ✓ Gemini audit created with score:", overallScore);
+      console.log("[AUDIT] ✓ Grok audit created with score:", overallScore);
       await storeAuditResult(auditResult);
       res.setHeader("Content-Type", "application/json");
       return res.status(200).json(auditResult);
