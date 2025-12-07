@@ -6,7 +6,10 @@ import { extname } from "path";
 import { createServer } from "./index.js";
 
 const port = parseInt(process.env.PORT || "3000", 10);
-console.log("🚀 Checking environment: GROK_API_KEY =", process.env.GROK_API_KEY ? "SET" : "NOT SET");
+console.log(
+  "🚀 Checking environment: GROK_API_KEY =",
+  process.env.GROK_API_KEY ? "SET" : "NOT SET",
+);
 const __dirname =
   import.meta.dirname || path.dirname(new URL(import.meta.url).pathname);
 const distPath = path.join(__dirname, "../dist/spa");
