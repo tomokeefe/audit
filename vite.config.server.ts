@@ -33,11 +33,10 @@ export default defineConfig({
         "express",
         "cors",
         "pg",
-        "pg/lib/client",
-        "pg/lib/pool",
         "axios",
         "cheerio",
         "dotenv",
+        "zod",
       ],
       output: {
         format: "es",
