@@ -2617,6 +2617,14 @@ async function generateAudit(websiteData: any): Promise<AuditResponse> {
   try {
     console.log("[AUDIT DEBUG] Starting Grok API call for:", url);
     console.log("[AUDIT DEBUG] Website title:", websiteData.title);
+    console.log("[AUDIT DEBUG] Pages analyzed:", websiteData.multiPageAnalysis?.pagesAnalyzed || 1);
+    console.log("[AUDIT DEBUG] Performance score:", websiteData.performance?.performanceScore || 'N/A');
+    console.log("[AUDIT DEBUG] Accessibility score:", websiteData.performance?.accessibilityScore || 'N/A');
+    console.log("[AUDIT DEBUG] SEO elements:", {
+      robotsTxt: websiteData.performance?.hasRobotsTxt || false,
+      sitemap: websiteData.performance?.hasSitemap || false,
+      metaDescription: !!websiteData.description
+    });
     console.log("[AUDIT DEBUG] Grok API key present:", !!GROK_API_KEY);
 
     // Enhanced Brand Whisperer prompt requiring evidence-based analysis
