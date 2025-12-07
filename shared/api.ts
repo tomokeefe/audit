@@ -43,7 +43,8 @@ export interface AuditResponse {
   date: string;
   status: string;
   sections: AuditSection[];
-  summary: string;
+  summary?: string;
+  rawAnalysis?: string;
   metadata?: {
     analysisConfidence?: number;
     industryDetected?: string;
