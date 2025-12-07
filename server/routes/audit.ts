@@ -2870,8 +2870,8 @@ RULES:
 
     const timeoutPromise = new Promise<never>((_, reject) =>
       setTimeout(
-        () => reject(new Error("Grok API timeout after 60 seconds")),
-        60000,
+        () => reject(new Error("Grok API timeout after 90 seconds")),
+        90000, // Increased timeout for multi-page analysis
       ),
     );
 
