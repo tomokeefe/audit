@@ -372,7 +372,9 @@ export const handleAuditStandard = async (req: Request, res: Response) => {
     }
 
     // Check API key
+    console.log("DEBUG handleAuditStandard: process.env.GROK_API_KEY =", process.env.GROK_API_KEY);
     if (!process.env.GROK_API_KEY) {
+      console.log("DEBUG: GROK_API_KEY is missing, returning error");
       return res
         .status(500)
         .json({ error: "Server configuration error. Please contact support." });
