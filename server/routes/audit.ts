@@ -619,6 +619,9 @@ function analyzeCrossPageConsistency(crawlResults: any[]) {
 async function scrapeWithPuppeteer(url: string) {
   console.log(`🚀 Launching Puppeteer for ${url} (Cloudflare/bot protection detected)`);
 
+  // Dynamic import to avoid loading puppeteer during Vite bundling
+  const puppeteer = (await import('puppeteer')).default;
+
   let browser;
   try {
     browser = await puppeteer.launch({
