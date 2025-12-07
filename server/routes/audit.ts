@@ -2991,7 +2991,8 @@ CRITICAL REQUIREMENTS:
 - Reference CROSS-PAGE CONSISTENCY when multiple pages analyzed
 - Cite TECHNICAL METRICS (performance scores, SEO elements, accessibility features)
 - Justify each score with concrete findings, not generalizations
-- Score conservatively: 85+ requires exceptional evidence across multiple pages; 70-84 for good with proof; 50-69 for average; <50 for significant issues
+- Score fairly and realistically: 9-10 (exceptional), 7-8 (good/solid), 5-6 (average/adequate), 3-4 (needs improvement), 1-2 (serious issues)
+- Most real websites score in the 6-8 range - don't artificially deflate scores
 
 Evaluate across exactly these 10 criteria (0–10 scores, half-points OK). Weights for overall /100:
 1. Branding & Identity (15%) - Logo consistency across pages, visual identity, brand recognition
@@ -3136,7 +3137,7 @@ RULES:
 - Use specific data (e.g., "3/8 images missing alt")
 - Evidence + 2-3 Recommendations for ALL 10 sections
 - Follow format exactly with "Evidence:" and "Recommendations:" headers
-- Score conservatively: 85+ needs exceptional multi-page proof`;
+- Score fairly based on evidence: 8-10 for strong evidence, 6-7 for average, 4-5 for needs work, below 4 for serious issues`;
 
     // Add timeout to Grok API call (60 seconds max)
     const grokPromise = fetch(GROK_API_URL, {
