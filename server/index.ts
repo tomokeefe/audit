@@ -10,6 +10,12 @@ export async function createServer() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
+  // Request logging middleware for debugging
+  app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+    next();
+  });
+
   // Initialize database on server startup
   initializeDatabase().catch((error) => {
     console.error("Failed to initialize database on startup:", error);
