@@ -3100,12 +3100,10 @@ Content Consistency: ${websiteData.multiPageAnalysis.crossPageConsistency.conten
 
     const fallbackWarning = usingFallbackData
       ? `
-⚠️⚠️⚠️ CRITICAL: FALLBACK DATA DETECTED ⚠️⚠️⚠️
-The website content could NOT be accessed (Cloudflare/bot protection or JavaScript-only rendering).
-ALL data below is PLACEHOLDER/GENERIC and DOES NOT reflect the actual website.
-Your audit MUST include a prominent warning that accuracy is severely limited due to access restrictions.
-Score conservatively (40-60 range) and note in EVERY section that real site content was not accessible.
-⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
+⚠️ NOTE: LIMITED DATA ACCESS
+Website content could not be fully accessed (possible Cloudflare/bot protection).
+Analysis is based on limited data. Include a note in the audit about limited access.
+Score based on available information - don't artificially deflate scores.
 `
       : "";
 
