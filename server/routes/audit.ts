@@ -659,8 +659,25 @@ async function scrapeWebsite(url: string) {
 
       const $ = cheerio.load(response.data);
 
-      // Extract key elements
+      // Detect if site is protected by Cloudflare, bot detection, or requires JavaScript
+      const pageText = response.data.toLowerCase();
       const title = $("title").text() || "";
+      const isBlocked =
+        pageText.includes('just a moment') ||
+        pageText.includes('cloudflare') ||
+        pageText.includes('challenge') ||
+        pageText.includes('bot detection') ||
+        pageText.includes('ddos protection') ||
+        title.toLowerCase().includes('just a moment') ||
+        title.toLowerCase().includes('attention required');
+
+      if (isBlocked) {
+        console.error(`⚠️  BLOCKED: ${url} is protected by Cloudflare or bot detection`);
+        console.error(`   The scraper cannot access the actual content.`);
+        throw new Error(`Site protected by Cloudflare or bot detection - cannot access content`);
+      }
+
+      // Extract key elements
       const description = $('meta[name="description"]').attr("content") || "";
       const headings = $("h1, h2, h3")
         .map((_, el) => $(el).text())
