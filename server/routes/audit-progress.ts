@@ -369,16 +369,18 @@ export const handleAuditStandard = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "URL is required" });
     }
 
-    // Check API key
-    console.log(
-      "DEBUG handleAuditStandard: process.env.GROK_API_KEY =",
-      process.env.GROK_API_KEY,
-    );
+    // Check API key - if not configured, use fallback
     if (!process.env.GROK_API_KEY) {
-      console.log("DEBUG: GROK_API_KEY is missing, returning error");
-      return res
-        .status(500)
-        .json({ error: "Server configuration error. Please contact support." });
+      console.log("GROK_API_KEY not configured, providing fallback audit");
+      const { generateFallbackAudit } = await import("./audit");
+      const fallbackAudit = generateFallbackAudit({
+        url,
+        title: new URL(url).hostname,
+        fallbackUsed: true,
+      });
+      res.setHeader("Content-Type", "application/json");
+      res.status(200).json(fallbackAudit);
+      return;
     }
 
     // Validate URL format
