@@ -2362,10 +2362,16 @@ function parseMarkdownAuditResponse(text: string): any {
     // If we couldn't parse sections, create default ones
     if (sections.length === 0) {
       sectionNames.forEach((name) => {
+        const issues = Math.max(1, Math.round((100 - overallScore) / 15));
+        const recommendations = Math.max(1, Math.round((100 - overallScore) / 12));
+
         sections.push({
           name,
           score: overallScore,
-          details: `Analysis for ${name}: The website demonstrates this area of brand audit with industry-standard implementation.`,
+          maxScore: 100,
+          issues,
+          recommendations,
+          details: extractSectionDetails(text, name, overallScore),
         });
       });
     }
