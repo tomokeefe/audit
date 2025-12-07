@@ -5,8 +5,14 @@ import { initializeDatabase } from "./db/init.js";
 export async function createServer() {
   const app = express();
 
-  // Middleware
-  app.use(cors());
+  // Middleware - CORS with explicit configuration for production
+  app.use(cors({
+    origin: true, // Reflect request origin
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Cache-Control'],
+  }));
+
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 

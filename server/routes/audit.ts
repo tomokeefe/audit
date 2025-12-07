@@ -684,11 +684,18 @@ async function scrapeWithPuppeteer(url: string) {
   );
 
   // Dynamic import to avoid loading puppeteer during Vite bundling
-  const puppeteer = (await import("puppeteer")).default;
+  let puppeteer;
+  try {
+    puppeteer = (await import("puppeteer")).default;
+  } catch (importError) {
+    console.error("❌ Puppeteer not available:", importError);
+    throw new Error("Puppeteer not available in this environment");
+  }
 
   let browser;
   try {
-    browser = await puppeteer.launch({
+    // Use environment variable for Chromium path in production
+    const launchOptions: any = {
       headless: true,
       args: [
         "--no-sandbox",
@@ -697,8 +704,17 @@ async function scrapeWithPuppeteer(url: string) {
         "--disable-accelerated-2d-canvas",
         "--disable-gpu",
         "--window-size=1920x1080",
+        "--disable-extensions",
       ],
-    });
+    };
+
+    // In production/Docker, use system Chromium
+    if (process.env.PUPPETEER_EXECUTABLE_PATH) {
+      launchOptions.executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
+      console.log(`Using Chromium at: ${process.env.PUPPETEER_EXECUTABLE_PATH}`);
+    }
+
+    browser = await puppeteer.launch(launchOptions);
 
     const page = await browser.newPage();
 
