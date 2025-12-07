@@ -2546,9 +2546,10 @@ function extractSectionDetails(
   );
 
   // If no recommendations assigned, use section-specific defaults
-  const finalRecommendations = sectionRecommendations.length > 0
-    ? sectionRecommendations
-    : getDefaultRecommendations(sectionName, score);
+  const finalRecommendations =
+    sectionRecommendations.length > 0
+      ? sectionRecommendations
+      : getDefaultRecommendations(sectionName, score);
 
   // Build formatted details
   let details = `Overview: ${overview}\n\n`;
@@ -2570,7 +2571,10 @@ function extractSectionDetails(
 }
 
 // Get default recommendations based on section and score
-function getDefaultRecommendations(sectionName: string, score: number): string[] {
+function getDefaultRecommendations(
+  sectionName: string,
+  score: number,
+): string[] {
   const defaults: { [key: string]: string[] } = {
     "Branding & Identity": [
       "Develop comprehensive brand guidelines to ensure consistency across all touchpoints",
@@ -2649,7 +2653,9 @@ async function generateAudit(websiteData: any): Promise<AuditResponse> {
   // Check for cached results
   const cachedResult = getCachedScore(websiteSignature);
   if (cachedResult) {
-    console.log(`[AUDIT DEBUG] Using cached score for ${url} - overall: ${cachedResult.overallScore}`);
+    console.log(
+      `[AUDIT DEBUG] Using cached score for ${url} - overall: ${cachedResult.overallScore}`,
+    );
     return buildAuditFromCache(cachedResult, websiteData, url);
   }
 
