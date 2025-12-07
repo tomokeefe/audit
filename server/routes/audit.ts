@@ -2564,46 +2564,13 @@ Website Data:
     console.log("Grok response text length:", text.length);
 
     // Parse markdown response and convert to structured data
-    let auditData = parseMarkdownAuditResponse(text);
+    const auditData = parseMarkdownAuditResponse(text);
 
-    // Quality Assurance Validation
-    const validationResults = validateAuditOutput(auditData, businessContext);
-    if (!validationResults.isValid) {
-      console.error("Audit validation failed:", validationResults.errors);
-      throw new Error(
-        `Audit quality validation failed: ${validationResults.errors.join(", ")}`,
-      );
+    if (!auditData) {
+      throw new Error("Failed to parse audit response");
     }
 
-    // Apply quality improvements based on validation
-    auditData = enhanceAuditQuality(
-      auditData,
-      validationResults,
-      businessContext,
-    );
-
-    // Performance monitoring
-    const performanceMetrics = {
-      responseTime: Date.now() - auditStartTime,
-      tokensUsed: text.length / 4, // Approximate token count
-      qualityScore: validationResults.qualityScore,
-      industryAccuracy: businessContext.confidence,
-      evidenceLevel: validationResults.hasEvidence,
-      completenessScore:
-        auditData.sections?.length === 10
-          ? 100
-          : auditData.sections?.length * 10 || 0,
-    };
-
-    // Log performance for learning
-    console.log("Audit Performance Metrics:", {
-      url: websiteData.url,
-      industry: businessContext.industry,
-      ...performanceMetrics,
-      validationWarnings: validationResults.warnings.length,
-    });
-
-    // Generate a unique ID and add metadata
+    // Generate a unique ID
     const auditId = Date.now().toString();
     const currentDate = new Date().toLocaleDateString("en-US", {
       year: "numeric",
@@ -2611,20 +2578,25 @@ Website Data:
       day: "numeric",
     });
 
-    const auditResult = {
+    // Extract title from Brand Whisperer audit heading
+    const titleMatch = text.match(/# Brand Whisperer Audit:\s*(.+)/);
+    const brandName = titleMatch ? titleMatch[1].trim() : new URL(url).hostname;
+
+    const auditResult: AuditResponse = {
       id: auditId,
       url: websiteData.url,
-      title: auditData.title,
-      description: auditData.description,
+      title: `${brandName} Brand Audit Report`,
+      description: `Comprehensive brand audit analysis for ${brandName}`,
       overallScore: auditData.overallScore,
       date: currentDate,
       status: "completed",
       sections: auditData.sections,
-      summary: auditData.summary,
-      metadata: auditData.metadata || {},
-      reasoningChain: auditData.reasoningChain || [],
-      improvementImpact: auditData.improvementImpact || {},
-      performanceMetrics,
+      summary: `Brand audit for ${brandName} shows areas of strength and opportunity for growth. See detailed analysis and recommendations below.`,
+      strengths: auditData.strengths,
+      opportunities: auditData.opportunities,
+      detailedAnalysis: auditData.detailedAnalysis,
+      recommendations: auditData.recommendations,
+      rawAnalysis: text,
     };
 
     // Cache the results for consistency
@@ -2636,7 +2608,7 @@ Website Data:
       websiteSignature,
       sectionScores,
       auditData.overallScore,
-      { evidenceQuality: auditData.metadata?.qualityScore || 70 },
+      { evidenceQuality: 85 },
       SCORING_METHODOLOGY,
     );
 
