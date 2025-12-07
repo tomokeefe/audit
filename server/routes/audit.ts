@@ -2236,11 +2236,17 @@ async function buildAuditFromCache(
 function parseMarkdownAuditResponse(text: string): any {
   try {
     // Extract overall score from "**Overall: X/100**" format
-    const overallMatch = text.match(/\*\*Overall:\s*(\d+(?:\.\d+)?)\s*\/\s*100\*\*/i);
-    const overallScore = overallMatch ? Math.round(parseFloat(overallMatch[1])) : 75;
+    const overallMatch = text.match(
+      /\*\*Overall:\s*(\d+(?:\.\d+)?)\s*\/\s*100\*\*/i,
+    );
+    const overallScore = overallMatch
+      ? Math.round(parseFloat(overallMatch[1]))
+      : 75;
 
     // Extract section scores from "N. Name – X/10" format
-    const sectionMatches = text.match(/^\s*(\d+)\.\s+([^–-]+?)\s*(?:–|-)\s*(\d+(?:\.\d+)?)\s*\/\s*10/gm);
+    const sectionMatches = text.match(
+      /^\s*(\d+)\.\s+([^–-]+?)\s*(?:–|-)\s*(\d+(?:\.\d+)?)\s*\/\s*10/gm,
+    );
     const sections: any[] = [];
     const sectionNames = [
       "Branding & Identity",
@@ -2258,13 +2264,18 @@ function parseMarkdownAuditResponse(text: string): any {
     if (sectionMatches) {
       sectionMatches.forEach((match, index) => {
         const scoreMatch = match.match(/(\d+(?:\.\d+)?)\s*\/\s*10/);
-        const score = scoreMatch ? Math.round((parseFloat(scoreMatch[1]) / 10) * 100) : 75;
+        const score = scoreMatch
+          ? Math.round((parseFloat(scoreMatch[1]) / 10) * 100)
+          : 75;
         sections.push({
           name: sectionNames[index] || `Section ${index + 1}`,
           score: Math.max(0, Math.min(100, score)),
           issues: Math.floor(Math.random() * 4) + 1,
           recommendations: Math.floor(Math.random() * 3) + 2,
-          details: extractSectionDetails(text, sectionNames[index] || `Section ${index + 1}`),
+          details: extractSectionDetails(
+            text,
+            sectionNames[index] || `Section ${index + 1}`,
+          ),
         });
       });
     }
@@ -3148,15 +3159,17 @@ End: 'This audit shows where your brand stands—Brand Whisperer scales it to un
       }
 
       const grokData = await grokResponse.json();
-      const responseText =
-        grokData.choices?.[0]?.message?.content || "";
+      const responseText = grokData.choices?.[0]?.message?.content || "";
 
       if (!responseText) {
         console.error("[AUDIT] Empty response from Grok");
         throw new Error("Empty response");
       }
 
-      console.log("[AUDIT] Got response from Grok, length:", responseText.length);
+      console.log(
+        "[AUDIT] Got response from Grok, length:",
+        responseText.length,
+      );
 
       // Parse the markdown response into sections
       const domain = new URL(url).hostname.replace("www.", "");
