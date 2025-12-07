@@ -2,25 +2,28 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy package files first
+# Copy package files
 COPY package.json pnpm-lock.yaml ./
 
 # Install pnpm
-RUN npm install -g pnpm
+RUN npm install -g pnpm@10.14.0
 
 # Install dependencies
 RUN pnpm install
 
-# Copy rest of code
+# Copy source code
 COPY . .
 
-# Build the app (no environment variables needed for build)
+# Build the app (client + server)
 RUN pnpm build
 
-# Expose port
+# Remove dev dependencies to reduce image size
+RUN pnpm prune --prod
+
+# Expose port (Railway uses PORT env variable)
 EXPOSE 8080
 
-# Runtime environment variables
+# Set environment
 ENV NODE_ENV=production
 ENV PORT=8080
 
