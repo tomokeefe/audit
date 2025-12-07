@@ -28,6 +28,9 @@ export default defineConfig(({ mode }) => ({
       "@shared": path.resolve(__dirname, "./shared"),
     },
   },
+  optimizeDeps: {
+    exclude: ["puppeteer"], // Exclude server-only dependencies
+  },
 }));
 
 function expressPlugin(): Plugin {
