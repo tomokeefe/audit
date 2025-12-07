@@ -32,10 +32,15 @@ const auditStorage = new Map<string, AuditResponse>();
 
 // Utility function to store audit
 async function storeAuditResult(auditData: AuditResponse): Promise<void> {
+  console.log(`🔵 storeAuditResult CALLED for audit ${auditData.id}`);
+  console.log(`   URL: ${auditData.url}`);
+  console.log(`   Title: ${auditData.title}`);
+  console.log(`   Score: ${auditData.overallScore}`);
+
   try {
     // Always use in-memory storage for immediate access within same session
     auditStorage.set(auditData.id, auditData);
-    console.log(`Stored audit ${auditData.id} in memory storage for sharing`);
+    console.log(`✅ Stored audit ${auditData.id} in memory storage for sharing`);
 
     // Also save to database for persistent sharing across browsers/devices
     if (process.env.DATABASE_URL) {
