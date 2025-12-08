@@ -1549,7 +1549,7 @@ export default function SharedAudit() {
                     </Card>
                   </div>
 
-                  {/* Quick Actions */}
+                  {/* Quick Actions - Read-Only (No Product Access) */}
                   <div className="mt-8 p-6 bg-gray-50 rounded-lg border">
                     <h5 className="font-semibold text-gray-900 mb-4">
                       Quick Actions You Can Take Today:
@@ -1573,46 +1573,42 @@ export default function SharedAudit() {
                         <Users className="h-4 w-4 mr-2" />
                         Share this audit with your team
                       </button>
-                      <a
-                        href="/"
-                        className="flex items-center justify-start px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors"
-                      >
-                        <Globe className="h-4 w-4 mr-2" />
-                        Run another audit for comparison
-                      </a>
                       <button
                         onClick={() => window.print()}
                         className="flex items-center justify-start px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors"
                       >
                         <Lightbulb className="h-4 w-4 mr-2" />
-                        Save top 3 priority items (print)
+                        Download/Print this report
                       </button>
+                      <a
+                        href="mailto:hello@brandwhisperer.com?subject=Audit Implementation Inquiry"
+                        className="flex items-center justify-start px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors"
+                      >
+                        <Calendar className="h-4 w-4 mr-2" />
+                        Contact us for implementation help
+                      </a>
                       <a
                         href="https://calendly.com/brandwhisperer/kickoff"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center justify-start px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors"
                       >
-                        <Calendar className="h-4 w-4 mr-2" />
-                        Schedule implementation kickoff
+                        <CheckCircle className="h-4 w-4 mr-2" />
+                        Schedule a consultation
                       </a>
                     </div>
                   </div>
 
-                  {/* Social Proof / Urgency */}
-                  <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-start gap-3">
-                    <Info className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                    <div className="text-sm text-blue-800">
-                      <strong>Act Fast:</strong> Companies that implement within
-                      30 days of their audit see 2.3x faster improvements
-                      compared to those who wait.{" "}
+                  {/* Read-Only Notice */}
+                  <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
+                    <Info className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                    <div className="text-sm text-amber-800">
+                      <strong>Viewing Shared Report:</strong> This is a read-only audit report. To create your own audit or access advanced features, please contact us at{" "}
                       <a
-                        href="https://brandwhisperer.com/case-studies"
-                        className="underline hover:text-blue-900"
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        href="mailto:hello@brandwhisperer.com"
+                        className="underline hover:text-amber-900 font-semibold"
                       >
-                        See case studies →
+                        hello@brandwhisperer.com
                       </a>
                     </div>
                   </div>
