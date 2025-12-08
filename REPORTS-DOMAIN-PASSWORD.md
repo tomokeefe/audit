@@ -10,6 +10,7 @@ The `reports.brandwhisperer.io` domain is configured with **selective password p
 ## How It Works
 
 ### Public Access (No Password Required)
+
 ```
 https://reports.brandwhisperer.io/audit/a7f3c9d2-4e6b-4a1d-8f2e-9c3b4d5e6f7a
                                    ↑
@@ -19,6 +20,7 @@ https://reports.brandwhisperer.io/audit/a7f3c9d2-4e6b-4a1d-8f2e-9c3b4d5e6f7a
 When someone has a shareable audit link with a token, they can view it directly without any password.
 
 ### Protected Access (Password Required)
+
 ```
 https://reports.brandwhisperer.io
                 ↑
@@ -26,6 +28,7 @@ https://reports.brandwhisperer.io
 ```
 
 If someone navigates to the root domain without an audit token, they see a password prompt. This prevents:
+
 - Unauthorized access to the audit creation tool
 - Discovery of the main product URL
 - Random visitors accessing the platform
@@ -36,12 +39,14 @@ If someone navigates to the root domain without an audit token, they see a passw
 
 **Option 1: Environment Variable (Recommended)**
 Set in Railway dashboard:
+
 ```
 VITE_REPORTS_PASSWORD=your-secure-password-here
 ```
 
 **Option 2: Default Password**
 If no environment variable is set, the default password is:
+
 ```
 brandwhisperer2024
 ```
@@ -57,6 +62,7 @@ brandwhisperer2024
 ## User Experience
 
 ### For Share Link Recipients (No Password)
+
 1. Receive link: `reports.brandwhisperer.io/audit/[token]`
 2. Click link
 3. **Immediately see the audit report** - no password required
@@ -64,6 +70,7 @@ brandwhisperer2024
 5. **Cannot navigate to product** - isolated read-only view
 
 ### For Direct Visitors (Password Required)
+
 1. Type: `reports.brandwhisperer.io` in browser
 2. See password-protected landing page
 3. Must enter correct password
@@ -79,13 +86,13 @@ brandwhisperer2024
 const isReportsDomain = window.location.hostname === 'reports.brandwhisperer.io';
 
 <Routes>
-  <Route 
-    path="/" 
-    element={isReportsDomain ? <ProtectedLanding /> : <Index />} 
+  <Route
+    path="/"
+    element={isReportsDomain ? <ProtectedLanding /> : <Index />}
   />
-  <Route 
-    path="/audit/:id" 
-    element={isReportsDomain ? <SharedAudit /> : <AuditResults />} 
+  <Route
+    path="/audit/:id"
+    element={isReportsDomain ? <SharedAudit /> : <AuditResults />}
   />
 </Routes>
 ```
@@ -95,6 +102,7 @@ const isReportsDomain = window.location.hostname === 'reports.brandwhisperer.io'
 Located at: `client/pages/ProtectedLanding.tsx`
 
 **Features:**
+
 - Clean, professional password prompt
 - Helpful messaging for lost users
 - Email contact for support
@@ -128,6 +136,7 @@ For production use, consider:
 ## Testing
 
 ### Test Shareable Links (Should Work Without Password)
+
 ```bash
 # Visit with a token - should load directly
 curl -I https://reports.brandwhisperer.io/audit/test-token-123
@@ -136,6 +145,7 @@ curl -I https://reports.brandwhisperer.io/audit/test-token-123
 ```
 
 ### Test Root Domain (Should Show Password Page)
+
 ```bash
 # Visit root domain - should show password page
 curl -I https://reports.brandwhisperer.io
@@ -144,6 +154,7 @@ curl -I https://reports.brandwhisperer.io
 ```
 
 ### Test Password Authentication
+
 1. Visit: `https://reports.brandwhisperer.io`
 2. Enter incorrect password → Should show error
 3. Enter correct password → Should redirect to main product
@@ -151,18 +162,22 @@ curl -I https://reports.brandwhisperer.io
 ## Troubleshooting
 
 ### Issue: Password page shows for shareable links
+
 - **Cause**: Route configuration error
 - **Solution**: Verify `/audit/:id` route is above root `/` route
 
 ### Issue: Password not working
+
 - **Cause**: Environment variable not set
 - **Solution**: Check `VITE_REPORTS_PASSWORD` in Railway dashboard
 
 ### Issue: Users can still access product
+
 - **Cause**: Password redirects to wrong URL
 - **Solution**: Check redirect URL in `ProtectedLanding.tsx`
 
 ### Issue: Share links require password
+
 - **Cause**: Domain detection not working
 - **Solution**: Verify `isReportsDomain` logic in `App.tsx`
 

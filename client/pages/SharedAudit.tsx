@@ -958,12 +958,16 @@ export default function SharedAudit() {
               <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center">
                 <span className="text-white font-bold text-sm">B</span>
               </div>
-              <span className="text-xl font-bold text-gray-900">Brand Whisperer</span>
+              <span className="text-xl font-bold text-gray-900">
+                Brand Whisperer
+              </span>
             </div>
             {/* Read-only indicator */}
             <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-200 rounded-full">
               <Info className="h-3 w-3 text-blue-600" />
-              <span className="text-xs font-medium text-blue-700">Shared Audit Report (Read-Only)</span>
+              <span className="text-xs font-medium text-blue-700">
+                Shared Audit Report (Read-Only)
+              </span>
             </div>
           </div>
         </div>
@@ -1603,7 +1607,9 @@ export default function SharedAudit() {
                   <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
                     <Info className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
                     <div className="text-sm text-amber-800">
-                      <strong>Viewing Shared Report:</strong> This is a read-only audit report. To create your own audit or access advanced features, please contact us at{" "}
+                      <strong>Viewing Shared Report:</strong> This is a
+                      read-only audit report. To create your own audit or access
+                      advanced features, please contact us at{" "}
                       <a
                         href="mailto:hello@brandwhisperer.com"
                         className="underline hover:text-amber-900 font-semibold"

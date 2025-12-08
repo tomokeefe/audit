@@ -20,7 +20,8 @@ import ProtectedLanding from "./pages/ProtectedLanding";
 const queryClient = new QueryClient();
 
 // Check if we're on the custom reports domain
-const isReportsDomain = window.location.hostname === 'reports.brandwhisperer.io';
+const isReportsDomain =
+  window.location.hostname === "reports.brandwhisperer.io";
 
 const App = () => (
   <ErrorBoundary>
@@ -44,7 +45,10 @@ const App = () => (
                 path="/"
                 element={isReportsDomain ? <ProtectedLanding /> : <Index />}
               />
-              <Route path="/audit/:id" element={isReportsDomain ? <SharedAudit /> : <AuditResults />} />
+              <Route
+                path="/audit/:id"
+                element={isReportsDomain ? <SharedAudit /> : <AuditResults />}
+              />
               {/* Support old share URL format */}
               <Route path="/share/audit/:id" element={<SharedAudit />} />
               <Route path="/audits" element={<Audits />} />

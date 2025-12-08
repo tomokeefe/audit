@@ -1212,7 +1212,9 @@ Best regards`);
           setAuditData(auditToDisplay);
           // Generate secure shareable link using custom domain
           // Use reports.brandwhisperer.io to hide the product domain
-          const shareDomain = import.meta.env.VITE_SHARE_DOMAIN || 'https://reports.brandwhisperer.io';
+          const shareDomain =
+            import.meta.env.VITE_SHARE_DOMAIN ||
+            "https://reports.brandwhisperer.io";
 
           if (auditToDisplay.shareToken) {
             const shareLink = `${shareDomain}/audit/${auditToDisplay.shareToken}`;
@@ -1239,7 +1241,9 @@ Best regards`);
             const audit: AuditResponse = JSON.parse(storedData);
             setAuditData(audit);
             // Generate secure shareable link using custom domain
-            const shareDomain = import.meta.env.VITE_SHARE_DOMAIN || 'https://reports.brandwhisperer.io';
+            const shareDomain =
+              import.meta.env.VITE_SHARE_DOMAIN ||
+              "https://reports.brandwhisperer.io";
 
             if (audit.shareToken) {
               const shareLink = `${shareDomain}/audit/${audit.shareToken}`;

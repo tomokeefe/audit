@@ -18,11 +18,12 @@ Go to your DNS provider (where brandwhisperer.io is registered - GoDaddy, Namech
 
 ### Add CNAME Record
 
-| Type  | Name    | Value (from Railway)           | TTL  |
-|-------|---------|--------------------------------|------|
+| Type  | Name    | Value (from Railway)              | TTL  |
+| ----- | ------- | --------------------------------- | ---- |
 | CNAME | reports | [your-railway-app].up.railway.app | 3600 |
 
 **Example:**
+
 ```
 Type: CNAME
 Name: reports
@@ -35,7 +36,7 @@ TTL: 3600 (or Auto)
 If your DNS provider doesn't support CNAME for subdomains, use an A record:
 
 | Type | Name    | Value (IP from Railway) | TTL  |
-|------|---------|-------------------------|------|
+| ---- | ------- | ----------------------- | ---- |
 | A    | reports | [IP address]            | 3600 |
 
 ## Step 3: Verify DNS Propagation
@@ -43,6 +44,7 @@ If your DNS provider doesn't support CNAME for subdomains, use an A record:
 After adding DNS records, wait for propagation (5 minutes to 48 hours, usually < 1 hour).
 
 **Check DNS propagation:**
+
 ```bash
 # Check if CNAME is live
 dig reports.brandwhisperer.io
@@ -54,9 +56,10 @@ dig reports.brandwhisperer.io
 
 ## Step 4: Configure Environment Variable
 
-The code is already configured to use `reports.brandwhisperer.io`. 
+The code is already configured to use `reports.brandwhisperer.io`.
 
 **Railway Environment Variables:**
+
 1. Go to Railway → Your Project → Variables
 2. Add: `VITE_SHARE_DOMAIN` = `https://reports.brandwhisperer.io`
 3. Redeploy the app
@@ -64,8 +67,8 @@ The code is already configured to use `reports.brandwhisperer.io`.
 ## Step 5: Test the Setup
 
 1. Create a new audit in your app
-2. Click "Copy Link" 
-3. **Expected URL format:** 
+2. Click "Copy Link"
+3. **Expected URL format:**
    ```
    https://reports.brandwhisperer.io/audit/a7f3c9d2-4e6b-4a1d-8f2e-9c3b4d5e6f7a
    ```
@@ -97,28 +100,34 @@ App serves SharedAudit.tsx (read-only view)
 ## Troubleshooting
 
 ### Issue: "This site can't be reached"
+
 - **Cause**: DNS not propagated yet
 - **Solution**: Wait 1-24 hours for DNS propagation
 
 ### Issue: "SSL Certificate Error"
+
 - **Cause**: Railway hasn't issued SSL cert yet
 - **Solution**: Wait 5-10 minutes after DNS propagation, Railway auto-provisions SSL
 
 ### Issue: Old links still show Railway URL
+
 - **Cause**: Links were generated before environment variable was set
 - **Solution**: New audits will use the custom domain. Old links will still work but show Railway URL
 
 ### Issue: 404 Not Found on reports.brandwhisperer.io
+
 - **Cause**: Route configuration mismatch
 - **Solution**: Verify the route in `client/App.tsx` matches `/audit/:id` (no `/share` prefix)
 
 ## Migration Notes
 
 **Existing share links:**
+
 - Old format: `https://audit-dl0hvw-production.up.railway.app/share/audit/[token]`
 - Will continue to work (backward compatible)
 
 **New share links:**
+
 - New format: `https://reports.brandwhisperer.io/audit/[token]`
 - Cleaner, branded, doesn't expose product URL
 

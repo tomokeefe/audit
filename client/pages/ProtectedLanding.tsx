@@ -2,7 +2,13 @@ import { useState } from "react";
 import { Shield, Lock, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function ProtectedLanding() {
   const [password, setPassword] = useState("");
@@ -10,10 +16,11 @@ export default function ProtectedLanding() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Simple password check - in production, this should be more secure
-    const correctPassword = import.meta.env.VITE_REPORTS_PASSWORD || "brandwhisperer2024";
-    
+    const correctPassword =
+      import.meta.env.VITE_REPORTS_PASSWORD || "brandwhisperer2024";
+
     if (password === correctPassword) {
       // Redirect to main product
       window.location.href = "https://audit-dl0hvw-production.up.railway.app";
@@ -32,13 +39,17 @@ export default function ProtectedLanding() {
           </div>
           <CardTitle className="text-2xl font-bold">Protected Area</CardTitle>
           <CardDescription>
-            This area is password protected. If you have a shareable audit link, please use the complete URL.
+            This area is password protected. If you have a shareable audit link,
+            please use the complete URL.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Access Password
               </label>
               <div className="relative">
@@ -65,7 +76,10 @@ export default function ProtectedLanding() {
               </div>
             )}
 
-            <Button type="submit" className="w-full bg-orange-600 hover:bg-orange-700">
+            <Button
+              type="submit"
+              className="w-full bg-orange-600 hover:bg-orange-700"
+            >
               Access Dashboard
             </Button>
           </form>
@@ -76,13 +90,15 @@ export default function ProtectedLanding() {
                 <strong>Looking for a shared audit report?</strong>
               </p>
               <p className="text-xs text-gray-500">
-                Shareable audit links look like:<br />
+                Shareable audit links look like:
+                <br />
                 <code className="bg-gray-100 px-2 py-1 rounded text-xs">
                   reports.brandwhisperer.io/audit/[unique-id]
                 </code>
               </p>
               <p className="text-xs text-gray-500 mt-2">
-                If you received a link, please use the complete URL provided to you.
+                If you received a link, please use the complete URL provided to
+                you.
               </p>
             </div>
           </div>
@@ -90,7 +106,10 @@ export default function ProtectedLanding() {
           <div className="pt-4 border-t text-center">
             <p className="text-xs text-gray-400">
               Need help? Contact{" "}
-              <a href="mailto:hello@brandwhisperer.com" className="text-orange-600 hover:text-orange-700 underline">
+              <a
+                href="mailto:hello@brandwhisperer.com"
+                className="text-orange-600 hover:text-orange-700 underline"
+              >
                 hello@brandwhisperer.com
               </a>
             </p>
