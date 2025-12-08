@@ -2291,7 +2291,7 @@ ${featureAdaptations.map((adaptation) => `- ${adaptation}`).join("\n")}
 }
 
 // Function to generate fallback audit when AI service is unavailable
-function generateFallbackAudit(websiteData: any): AuditResponse {
+async function generateFallbackAudit(websiteData: any): Promise<AuditResponse> {
   console.log("[FALLBACK] Generating fallback audit for:", websiteData.url);
   console.log("[FALLBACK] This means the AI API failed or timed out");
 
