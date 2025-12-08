@@ -3371,7 +3371,7 @@ RULES:
     // Check if it's a Grok API overload error
     if (error instanceof Error && error.message.includes("overloaded")) {
       console.log("[AUDIT DEBUG] Grok API is overloaded, using fallback");
-      return generateFallbackAudit(websiteData);
+      return await generateFallbackAudit(websiteData);
     }
 
     // Check for other service errors
@@ -3385,14 +3385,14 @@ RULES:
       console.log(
         "[AUDIT DEBUG] AI service unavailable or rate limited, providing fallback audit",
       );
-      return generateFallbackAudit(websiteData);
+      return await generateFallbackAudit(websiteData);
     }
 
     // If all else fails, return a demo audit
     console.log(
       "[AUDIT DEBUG] Returning fallback audit due to generation error",
     );
-    return generateFallbackAudit(websiteData);
+    return await generateFallbackAudit(websiteData);
   }
 }
 
