@@ -563,7 +563,7 @@ function SuccessMetrics({ auditData }: { auditData: any }) {
       {
         name: "Overall Audit Score",
         target: "85.0%+",
-        current: `${typeof auditData.overallScore === "number" ? auditData.overallScore.toFixed(1) : auditData.overallScore}%`,
+        current: `${typeof auditData?.overallScore === "number" ? auditData.overallScore.toFixed(1) : auditData?.overallScore || "0"}%`,
       },
       { name: "Page Load Speed", target: "< 2.5s", current: "Monitor" },
       { name: "Mobile Usability Score", target: "90%+", current: "Monitor" },
