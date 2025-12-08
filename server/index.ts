@@ -132,6 +132,17 @@ export async function createServer() {
     }
   });
 
+  // Test Grok API endpoint
+  try {
+    console.log("Importing test-grok route...");
+    const testGrokModule = await import("./routes/test-grok.js");
+    const testGrokAPI = testGrokModule.testGrokAPI;
+    console.log("✓ Test-grok route imported");
+    app.get("/api/test-grok", testGrokAPI);
+  } catch (err) {
+    console.error("✗ Failed to import test-grok route:", err);
+  }
+
   // Audit routes - importing one by one to identify the problematic import
   let handleDemo, storeAudit, listAudits, getAudit, deleteAudit;
   let handleAuditProgress, handleAuditStandard;
