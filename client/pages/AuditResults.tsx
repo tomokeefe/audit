@@ -1378,7 +1378,7 @@ Best regards`);
                       className="h-3 mb-3"
                     />
                     <div className="text-sm text-gray-600">
-                      Based on {auditData.sections.length} evaluation criteria
+                      Based on {auditData.sections?.length || 0} evaluation criteria
                     </div>
                   </CardContent>
                 </Card>
@@ -1415,7 +1415,7 @@ Best regards`);
 
             {/* Section Scores */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {auditData.sections.map((section, index) => (
+              {(auditData.sections || []).map((section, index) => (
                 <Card key={index} className="hover:shadow-md transition-shadow">
                   <CardHeader className="pb-3">
                     <div className="flex justify-between items-start">
@@ -1462,7 +1462,7 @@ Best regards`);
               </CardHeader>
               <CardContent>
                 <Accordion type="multiple" className="w-full">
-                  {auditData.sections.map((section, index) => {
+                  {(auditData.sections || []).map((section, index) => {
                     const parsedContent = parseAuditContent(section.details);
                     const recommendationsContent = parsedContent.find(
                       (content) => content.type === "recommendations",
