@@ -840,7 +840,7 @@ function parseAuditContent(content: string) {
 }
 
 export default function SharedAudit() {
-  const { id } = useParams();
+  const { id } = useParams(); // This is actually the share token in the URL
   const [auditData, setAuditData] = useState<AuditResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -859,17 +859,32 @@ export default function SharedAudit() {
 
   useEffect(() => {
     if (!id) {
-      setError("Audit ID not provided");
+      setError("Share token not provided");
       setLoading(false);
       return;
     }
 
     const loadAuditData = async () => {
       try {
-        console.log(`Loading shared audit ${id}...`);
+        console.log(`Loading shared audit with token ${id.substring(0, 8)}...`);
 
-        // Fetch from backend API
-        const auditData = await apiGet<AuditResponse>(`/api/audits/${id}`);
+        // Fetch from backend API using share token endpoint
+        // Try share token endpoint first (for new secure links)
+        let auditData: AuditResponse | null = null;
+
+        try {
+          auditData = await apiGet<AuditResponse>(`/api/audits/share/${id}`);
+          console.log("✓ Loaded audit using share token");
+        } catch (tokenError) {
+          // Fallback: try as direct ID for old links
+          console.log("Share token failed, trying as direct ID (old link format)...");
+          try {
+            auditData = await apiGet<AuditResponse>(`/api/audits/${id}`);
+            console.log("✓ Loaded audit using direct ID (old format)");
+          } catch (idError) {
+            throw new Error("Audit not found with share token or ID");
+          }
+        }
 
         if (!auditData) {
           console.error("Failed to fetch audit data");
