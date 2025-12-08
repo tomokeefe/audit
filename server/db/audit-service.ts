@@ -227,6 +227,7 @@ export class AuditService {
         date: row.date,
         audit_data: row.audit_data,
         is_demo_mode: row.is_demo_mode,
+        share_token: row.share_token,
       }));
     } catch (error) {
       console.error("Error listing audits:", error);
@@ -274,6 +275,7 @@ export class AuditService {
         date: row.date,
         audit_data: row.audit_data,
         is_demo_mode: row.is_demo_mode,
+        share_token: row.share_token,
       }));
     } catch (error) {
       console.error("Error retrieving audits by URL:", error);
