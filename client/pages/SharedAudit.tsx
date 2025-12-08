@@ -949,15 +949,22 @@ export default function SharedAudit() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header with Brand Logo */}
-      <div className="bg-white border-b">
+      {/* Read-Only Shared Audit Header - No Navigation */}
+      <div className="bg-white border-b shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-center">
-            <img
-              src="https://cdn.builder.io/api/v1/image/assets%2F57f3921c477141799725b87f2761d2c2%2Ff2dd7552d6e3445893146adbf2af6d10?format=webp&width=800"
-              alt="Brand Whisperer Logo"
-              className="h-8 w-auto"
-            />
+          <div className="flex flex-col items-center justify-center space-y-2">
+            {/* Non-clickable logo - just branding */}
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center">
+                <span className="text-white font-bold text-sm">B</span>
+              </div>
+              <span className="text-xl font-bold text-gray-900">Brand Whisperer</span>
+            </div>
+            {/* Read-only indicator */}
+            <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-200 rounded-full">
+              <Info className="h-3 w-3 text-blue-600" />
+              <span className="text-xs font-medium text-blue-700">Shared Audit Report (Read-Only)</span>
+            </div>
           </div>
         </div>
       </div>
