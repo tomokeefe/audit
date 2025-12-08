@@ -3365,7 +3365,7 @@ RULES:
     // Check if it's a timeout error
     if (error instanceof Error && error.message.includes("timeout")) {
       console.log("[AUDIT DEBUG] Grok API timeout - request took too long");
-      return generateFallbackAudit(websiteData);
+      return await generateFallbackAudit(websiteData);
     }
 
     // Check if it's a Grok API overload error
