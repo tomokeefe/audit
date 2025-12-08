@@ -2296,6 +2296,9 @@ function generateFallbackAudit(websiteData: any): AuditResponse {
   console.log("[FALLBACK] This means the AI API failed or timed out");
 
   const auditId = Date.now().toString();
+  const { randomUUID } = await import("crypto");
+  const shareToken = randomUUID();
+
   const currentDate = new Date().toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
