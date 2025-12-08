@@ -2557,6 +2557,7 @@ Recommendations:
     date: currentDate,
     status: "completed",
     sections: fallbackSections,
+    shareToken: shareToken, // Add share token for secure sharing
     summary: `Brand audit analysis for ${companyName} reveals a solid foundation with strategic opportunities for enhancement. The website demonstrates professional presentation across key evaluation criteria with an overall score of ${overallScore}%.
 
 Primary strengths include effective brand consistency implementation and strong compliance standards. Key improvement opportunities focus on conversion optimization, digital presence expansion, and user experience enhancement.
