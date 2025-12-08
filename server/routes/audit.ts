@@ -3229,7 +3229,7 @@ RULES:
             content: userPrompt,
           },
         ],
-        model: "grok-4-0709",
+        model: "grok-beta",
         temperature: 0.7,
         max_tokens: 4500, // Increased for section-specific recommendations (10 sections × ~300 tokens each)
       }),
@@ -3491,7 +3491,7 @@ End: 'This audit shows where your brand stands—Brand Whisperer scales it to un
               content: userMessage,
             },
           ],
-          model: "grok-4-0709",
+          model: "grok-beta",
           temperature: 0.7,
           max_tokens: 2500,
         }),
