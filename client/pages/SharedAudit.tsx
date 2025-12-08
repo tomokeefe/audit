@@ -877,7 +877,9 @@ export default function SharedAudit() {
           console.log("✓ Loaded audit using share token");
         } catch (tokenError) {
           // Fallback: try as direct ID for old links
-          console.log("Share token failed, trying as direct ID (old link format)...");
+          console.log(
+            "Share token failed, trying as direct ID (old link format)...",
+          );
           try {
             auditData = await apiGet<AuditResponse>(`/api/audits/${id}`);
             console.log("✓ Loaded audit using direct ID (old format)");

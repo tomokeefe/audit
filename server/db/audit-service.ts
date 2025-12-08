@@ -59,7 +59,7 @@ export class AuditService {
     // Generate share token if not present
     if (!audit.shareToken) {
       // Generate UUID for share token
-      const { randomUUID } = await import('crypto');
+      const { randomUUID } = await import("crypto");
       audit.shareToken = randomUUID();
       console.log(`🔵 [DB SAVE] Generated share token: ${audit.shareToken}`);
     }
