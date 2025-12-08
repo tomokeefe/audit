@@ -11,6 +11,7 @@ export interface StoredAudit {
   date: string;
   audit_data: AuditResponse;
   is_demo_mode: boolean;
+  share_token?: string;
 }
 
 export class AuditService {
@@ -55,9 +56,17 @@ export class AuditService {
       console.log(`⚠️  [DB SAVE] Using fallback date: ${dateValue}`);
     }
 
+    // Generate share token if not present
+    if (!audit.shareToken) {
+      // Generate UUID for share token
+      const { randomUUID } = await import('crypto');
+      audit.shareToken = randomUUID();
+      console.log(`🔵 [DB SAVE] Generated share token: ${audit.shareToken}`);
+    }
+
     const query = `
-      INSERT INTO audits (id, url, title, description, overall_score, status, date, audit_data, is_demo_mode)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      INSERT INTO audits (id, url, title, description, overall_score, status, date, audit_data, is_demo_mode, share_token)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
       ON CONFLICT (id) DO UPDATE SET
         url = $2,
         title = $3,
@@ -65,7 +74,8 @@ export class AuditService {
         overall_score = $5,
         status = $6,
         audit_data = $8,
-        is_demo_mode = $9
+        is_demo_mode = $9,
+        share_token = COALESCE(audits.share_token, $10)
     `;
 
     const isDemoMode = (audit as any).isDemoMode || false;
@@ -80,6 +90,7 @@ export class AuditService {
       dateValue,
       JSON.stringify(audit),
       isDemoMode,
+      audit.shareToken,
     ];
 
     console.log(`🔵 [DB SAVE] Executing query with values:`);
@@ -136,9 +147,44 @@ export class AuditService {
         date: row.date,
         audit_data: row.audit_data,
         is_demo_mode: row.is_demo_mode,
+        share_token: row.share_token,
       };
     } catch (error) {
       console.error("Error retrieving audit:", error);
+      throw error;
+    }
+  }
+
+  async getAuditByShareToken(shareToken: string): Promise<StoredAudit | null> {
+    const pool = await getPool();
+    if (!pool) {
+      console.warn("Database not available");
+      return null;
+    }
+
+    const query = "SELECT * FROM audits WHERE share_token = $1";
+
+    try {
+      const result = await pool.query(query, [shareToken]);
+      if (result.rows.length === 0) {
+        return null;
+      }
+
+      const row = result.rows[0];
+      return {
+        id: row.id,
+        url: row.url,
+        title: row.title,
+        description: row.description,
+        overall_score: row.overall_score,
+        status: row.status,
+        date: row.date,
+        audit_data: row.audit_data,
+        is_demo_mode: row.is_demo_mode,
+        share_token: row.share_token,
+      };
+    } catch (error) {
+      console.error("Error retrieving audit by share token:", error);
       throw error;
     }
   }
