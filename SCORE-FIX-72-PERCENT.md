@@ -22,7 +22,7 @@ This model doesn't exist in the xAI/Grok API, causing every API call to fail. Wh
 **Average: (75+70+72+68+73+65+74+71+66+82) / 10 = 71.6 → rounds to 72%**
 
 ## Solution
-Changed the model name from `"grok-4-0709"` to `"grok-beta"`, which is the currently available model in the xAI API.
+Changed the model name from `"grok-4-0709"` to `"grok-4-1-fast-reasoning"`, which is the latest and most cost-effective Grok model with superior reasoning capabilities.
 
 ### Available Grok Models (as of December 2024)
 - `grok-beta` - Legacy model (currently being used)
@@ -34,16 +34,18 @@ Changed the model name from `"grok-4-0709"` to `"grok-beta"`, which is the curre
 - `grok-4-1-fast-reasoning` - Fast reasoning mode
 - `grok-4-1-fast-non-reasoning` - Fast non-reasoning mode
 
-## Recommendation
-For better audit quality, consider upgrading to:
-1. **`grok-2-1212`** - Better accuracy and instruction-following
-2. **`grok-3`** - Latest generation with improved capabilities
-3. **`grok-4`** - Best performance if available with your plan
+## Current Model
+Now using **`grok-4-1-fast-reasoning`** which offers:
+- Latest Grok 4.1 reasoning capabilities
+- 2M token context window (vs 256k in older models)
+- Superior cost efficiency: $0.20-$0.50/M tokens
+- Higher rate limits: 4M tokens/min input, 480 rpm
+- Best instruction-following and analysis quality
 
-To upgrade, change line 3232 in `server/routes/audit.ts`:
-```typescript
-model: "grok-2-1212", // or "grok-3" or "grok-4"
-```
+Alternative models if needed:
+1. **`grok-4-1-fast-non-reasoning`** - Faster responses without reasoning tokens
+2. **`grok-2-1212`** - Solid mid-tier option at $2-$10/M tokens
+3. **`grok-3`** - Good balance of performance and cost
 
 ## Files Modified
 - `server/routes/audit.ts` (lines 3232 and 3494)

@@ -36,7 +36,7 @@ export const testGrokAPI: RequestHandler = async (req, res) => {
             content: "Say hello in one sentence."
           }
         ],
-        model: "grok-beta", // Try grok-beta first
+        model: "grok-4-1-fast-reasoning", // Latest Grok 4.1 with reasoning
         temperature: 0.7,
         max_tokens: 100,
       }),
