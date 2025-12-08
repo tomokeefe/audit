@@ -15,8 +15,12 @@ import AuditComparison from "./pages/AuditComparison";
 import Reports from "./pages/Reports";
 import NotFound from "./pages/NotFound";
 import DebugTest from "./pages/DebugTest";
+import ProtectedLanding from "./pages/ProtectedLanding";
 
 const queryClient = new QueryClient();
+
+// Check if we're on the custom reports domain
+const isReportsDomain = window.location.hostname === 'reports.brandwhisperer.io';
 
 const App = () => (
   <ErrorBoundary>
@@ -27,11 +31,22 @@ const App = () => (
         <BrowserRouter>
           <ErrorBoundary>
             <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/audit/:id" element={<AuditResults />} />
-              {/* Support both old and new share URL formats */}
+              {/*
+                If on reports.brandwhisperer.io:
+                - Root shows password-protected page
+                - /audit/:id shows shared audit (public, no password)
+
+                If on main domain (Railway):
+                - Root shows normal index/dashboard
+                - /audit/:id shows audit results (for logged-in users)
+              */}
+              <Route
+                path="/"
+                element={isReportsDomain ? <ProtectedLanding /> : <Index />}
+              />
+              <Route path="/audit/:id" element={isReportsDomain ? <SharedAudit /> : <AuditResults />} />
+              {/* Support old share URL format */}
               <Route path="/share/audit/:id" element={<SharedAudit />} />
-              <Route path="/audit/:id" element={<SharedAudit />} />
               <Route path="/audits" element={<Audits />} />
               <Route path="/compare" element={<AuditComparison />} />
               <Route path="/reports" element={<Reports />} />
