@@ -29,7 +29,9 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/audit/:id" element={<AuditResults />} />
+              {/* Support both old and new share URL formats */}
               <Route path="/share/audit/:id" element={<SharedAudit />} />
+              <Route path="/audit/:id" element={<SharedAudit />} />
               <Route path="/audits" element={<Audits />} />
               <Route path="/compare" element={<AuditComparison />} />
               <Route path="/reports" element={<Reports />} />

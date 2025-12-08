@@ -1210,14 +1210,16 @@ Best regards`);
 
         if (auditToDisplay) {
           setAuditData(auditToDisplay);
-          // Generate secure shareable link using the share token (not the ID)
-          // This ensures links are unique and non-guessable
+          // Generate secure shareable link using custom domain
+          // Use reports.brandwhisperer.io to hide the product domain
+          const shareDomain = import.meta.env.VITE_SHARE_DOMAIN || 'https://reports.brandwhisperer.io';
+
           if (auditToDisplay.shareToken) {
-            const shareLink = `${window.location.origin}/share/audit/${auditToDisplay.shareToken}`;
+            const shareLink = `${shareDomain}/audit/${auditToDisplay.shareToken}`;
             setShareUrl(shareLink);
           } else {
             // Fallback for audits without share token (old audits)
-            const shareLink = `${window.location.origin}/share/audit/${id}`;
+            const shareLink = `${shareDomain}/audit/${id}`;
             setShareUrl(shareLink);
           }
           return;
@@ -1236,13 +1238,15 @@ Best regards`);
           if (storedData) {
             const audit: AuditResponse = JSON.parse(storedData);
             setAuditData(audit);
-            // Generate secure shareable link using share token
+            // Generate secure shareable link using custom domain
+            const shareDomain = import.meta.env.VITE_SHARE_DOMAIN || 'https://reports.brandwhisperer.io';
+
             if (audit.shareToken) {
-              const shareLink = `${window.location.origin}/share/audit/${audit.shareToken}`;
+              const shareLink = `${shareDomain}/audit/${audit.shareToken}`;
               setShareUrl(shareLink);
             } else {
               // Fallback for audits without share token
-              const shareLink = `${window.location.origin}/share/audit/${id}`;
+              const shareLink = `${shareDomain}/audit/${id}`;
               setShareUrl(shareLink);
             }
             console.log("✓ Loaded audit from localStorage (fallback)");
