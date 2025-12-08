@@ -3635,6 +3635,10 @@ export const handleDemoAudit: RequestHandler = async (req, res) => {
       domain.split(".")[0].charAt(0).toUpperCase() +
       domain.split(".")[0].slice(1);
 
+    // Generate share token for demo audit
+    const { randomUUID } = await import("crypto");
+    const shareToken = randomUUID();
+
     const demoAudit: AuditResponse = {
       id: Date.now().toString(),
       url: url,
@@ -3647,6 +3651,7 @@ export const handleDemoAudit: RequestHandler = async (req, res) => {
         day: "numeric",
       }),
       status: "completed",
+      shareToken: shareToken, // Add share token for secure sharing
       sections: [
         {
           name: "Branding & Identity",
