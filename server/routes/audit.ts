@@ -3286,8 +3286,11 @@ RULES:
       auditData.sections.length,
     );
 
-    // Generate a unique ID
+    // Generate a unique ID and share token
     const auditId = Date.now().toString();
+    const { randomUUID } = await import("crypto");
+    const shareToken = randomUUID();
+
     const currentDate = new Date().toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
@@ -3313,6 +3316,7 @@ RULES:
       detailedAnalysis: auditData.detailedAnalysis,
       recommendations: auditData.recommendations,
       rawAnalysis: text,
+      shareToken: shareToken, // Add share token for secure sharing
     };
 
     // Cache the results for consistency (including full section details)
