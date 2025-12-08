@@ -177,10 +177,12 @@ export async function createServer() {
     listAudits = storageModule.listAudits;
     getAudit = storageModule.getAudit;
     deleteAudit = storageModule.deleteAudit;
+    const getAuditByShareToken = storageModule.getAuditByShareToken;
     console.log("✓ Audit-storage routes imported");
     app.get("/api/audits", listAudits);
     app.post("/api/audits", storeAudit);
     app.post("/api/save-audit", storeAudit);
+    app.get("/api/audits/share/:token", getAuditByShareToken); // Share token route (must be before :id route)
     app.get("/api/audits/:id", getAudit);
     app.delete("/api/audits/:id", deleteAudit);
   } catch (err) {

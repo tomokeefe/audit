@@ -146,6 +146,51 @@ export const listAudits: RequestHandler = async (req, res) => {
   }
 };
 
+// Retrieve audit by share token (for public sharing)
+export const getAuditByShareToken: RequestHandler = async (req, res) => {
+  try {
+    const { token } = req.params;
+
+    if (!token) {
+      return res.status(400).json({ error: "Share token is required" });
+    }
+
+    console.log(`getAuditByShareToken called with token=${token.substring(0, 8)}...`);
+
+    // First try in-memory storage (for current session)
+    for (const [id, auditData] of auditStorage.entries()) {
+      if (auditData.shareToken === token) {
+        console.log(`✓ Retrieved audit by share token from memory (${auditData.title})`);
+        return res.status(200).json(auditData);
+      }
+    }
+
+    // Then try database if configured
+    if (process.env.DATABASE_URL) {
+      try {
+        const storedAudit = await auditService.getAuditByShareToken(token);
+        if (storedAudit) {
+          console.log(`✓ Retrieved audit by share token from database (${storedAudit.title})`);
+          return res.status(200).json(storedAudit.audit_data);
+        }
+      } catch (dbError) {
+        console.error(`✗ Database retrieval failed for share token:`, dbError);
+      }
+    } else {
+      console.warn(`⚠ DATABASE_URL not configured, cannot retrieve from database`);
+    }
+
+    // Audit not found anywhere
+    console.warn(`⚠ Audit with share token not found in memory or database`);
+    return res.status(404).json({ error: "Shared audit not found or link expired" });
+  } catch (error) {
+    console.error("Error retrieving audit by share token:", error);
+    res.status(500).json({
+      error: "Failed to retrieve shared audit",
+    });
+  }
+};
+
 // Delete audit
 export const deleteAudit: RequestHandler = async (req, res) => {
   try {
