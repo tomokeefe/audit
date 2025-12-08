@@ -634,6 +634,11 @@ function InteractiveTaskChecklist({ auditData }: { auditData: any }) {
 
   // Generate actionable tasks from audit sections
   const generateTasks = () => {
+    // Guard against missing sections
+    if (!auditData || !auditData.sections || !Array.isArray(auditData.sections)) {
+      return [];
+    }
+
     const quickWins = auditData.sections
       .filter(
         (s: any) =>
