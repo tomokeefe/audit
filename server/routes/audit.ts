@@ -3585,7 +3585,7 @@ End: 'This audit shows where your brand stands—Brand Whisperer scales it to un
         grokError instanceof Error ? grokError.message : grokError,
       );
       // Fall back to demo audit
-      const auditResult = generateFallbackAudit({
+      const auditResult = await generateFallbackAudit({
         url,
         title: new URL(url).hostname,
         fallbackUsed: false,
@@ -3602,7 +3602,7 @@ End: 'This audit shows where your brand stands—Brand Whisperer scales it to un
 
     try {
       const url = (req.body as AuditRequest).url || "example.com";
-      const demoAudit = generateFallbackAudit({
+      const demoAudit = await generateFallbackAudit({
         url: url,
         title: new URL(url).hostname,
         fallbackUsed: true,
