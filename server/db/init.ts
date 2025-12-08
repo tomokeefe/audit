@@ -61,7 +61,8 @@ export async function initializeDatabase() {
           date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           audit_data JSONB NOT NULL,
-          is_demo_mode BOOLEAN DEFAULT false
+          is_demo_mode BOOLEAN DEFAULT false,
+          share_token VARCHAR(36) UNIQUE
         );
       `,
       // Migration: Add is_demo_mode column if it doesn't exist (for existing tables)
@@ -76,8 +77,27 @@ export async function initializeDatabase() {
           END IF;
         END $$;
       `,
+      // Migration: Add share_token column if it doesn't exist (for existing tables)
+      `
+        DO $$
+        BEGIN
+          IF NOT EXISTS (
+            SELECT 1 FROM information_schema.columns
+            WHERE table_name='audits' AND column_name='share_token'
+          ) THEN
+            ALTER TABLE audits ADD COLUMN share_token VARCHAR(36) UNIQUE;
+          END IF;
+        END $$;
+      `,
+      // Backfill share_token for existing audits without one
+      `
+        UPDATE audits
+        SET share_token = gen_random_uuid()::text
+        WHERE share_token IS NULL;
+      `,
       `CREATE INDEX IF NOT EXISTS idx_audits_url ON audits(url);`,
       `CREATE INDEX IF NOT EXISTS idx_audits_date ON audits(created_at DESC);`,
+      `CREATE INDEX IF NOT EXISTS idx_audits_share_token ON audits(share_token);`,
     ];
 
     for (const query of queries) {

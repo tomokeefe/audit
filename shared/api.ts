@@ -39,4 +39,5 @@ export interface AuditResponse {
   detailedAnalysis?: string;
   recommendations?: string[];
   rawAnalysis?: string;
+  shareToken?: string; // Unique token for secure sharing
 }
