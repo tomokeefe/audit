@@ -4,17 +4,19 @@
 
 **Type:** Full-stack web application (SPA + API)  
 **Pattern:** Client-Server with separate frontend and backend  
-**Deployment:** Docker container on Railway  
+**Deployment:** Docker container on Railway
 
 ## Frontend Stack
 
 ### Core Framework
+
 - **React 18.3.1** - UI library
 - **TypeScript 5.9.2** - Type safety
 - **Vite 7.1.2** - Build tool and dev server
 - **React Router DOM 6.30.1** - Client-side routing
 
 ### UI Components & Styling
+
 - **Radix UI** - Headless component primitives
   - 20+ components (accordion, dialog, dropdown, etc.)
   - Accessible, unstyled base components
@@ -27,23 +29,27 @@
   - Custom components in `client/components/ui/`
 
 ### State Management & Data Fetching
+
 - **TanStack Query (React Query) 5.84.2** - Server state management
 - **React Hook Form 7.62.0** - Form state management
 - **Zod 3.25.76** - Schema validation
 
 ### Visualization
+
 - **Recharts 2.12.7** - Chart library for audit analytics
 - **Three.js 0.176.0** - 3D graphics (optional features)
 - **@react-three/fiber 8.18.0** - React renderer for Three.js
 - **@react-three/drei 9.122.0** - Three.js helpers
 
 ### Utilities
+
 - **date-fns 4.1.0** - Date manipulation
 - **clsx 2.1.1** - Conditional className utility
 - **tailwind-merge 2.6.0** - Merge Tailwind classes
 - **class-variance-authority 0.7.1** - Component variants
 
 ### UI Libraries
+
 - **Sonner 1.7.4** - Toast notifications
 - **cmdk 1.1.1** - Command menu
 - **embla-carousel-react 8.6.0** - Carousel/slider
@@ -54,11 +60,13 @@
 ## Backend Stack
 
 ### Runtime & Server
+
 - **Node.js 20** - JavaScript runtime
 - **Express 5.1.0** - Web application framework
 - **TypeScript 5.9.2** - Type safety on backend
 
 ### Web Scraping & Analysis
+
 - **Puppeteer 24.32.0** - Headless Chrome browser
   - Used for Cloudflare bypass
   - JavaScript rendering
@@ -67,6 +75,7 @@
 - **Cheerio 1.1.2** - HTML parsing (jQuery-like API)
 
 ### AI/LLM Integration
+
 - **Grok API (xAI)** - AI analysis engine
   - Analyzes website content
   - Generates brand audit insights
@@ -75,6 +84,7 @@
 - **Google Generative AI 0.24.1** - Alternative AI provider (Gemini)
 
 ### Database
+
 - **PostgreSQL** - Relational database
 - **pg 8.11.3** - PostgreSQL client for Node.js
 - **Neon** - Serverless PostgreSQL provider
@@ -83,6 +93,7 @@
   - Automatic backups
 
 ### API & Middleware
+
 - **CORS 2.8.5** - Cross-Origin Resource Sharing
 - **dotenv 17.2.1** - Environment variable management
 - **Zod 3.25.76** - Runtime type validation
@@ -90,6 +101,7 @@
 ## Build Tools & Development
 
 ### Build System
+
 - **Vite 7.1.2** - Fast build tool
   - Client: SPA build
   - Server: SSR/API build
@@ -98,27 +110,32 @@
   - `@vitejs/plugin-react-swc 4.0.0`
 
 ### Package Manager
+
 - **pnpm 10.14.0** - Fast, disk-efficient package manager
 
 ### Code Quality
+
 - **TypeScript 5.9.2** - Static type checking
 - **Prettier 3.6.2** - Code formatter
 - **Vitest 3.2.4** - Unit testing framework
 - **tsx 4.20.3** - TypeScript execution
 
 ### CSS Processing
+
 - **PostCSS 8.5.6** - CSS transformations
 - **Autoprefixer 10.4.21** - Vendor prefix automation
 
 ## Infrastructure & Deployment
 
 ### Containerization
+
 - **Docker** - Container platform
   - `Dockerfile` with Node.js 20
   - Chromium installation for Puppeteer
   - Multi-stage build (build + runtime)
 
 ### Hosting
+
 - **Railway** - Platform-as-a-Service
   - Automatic deployments from Git
   - Environment variable management
@@ -127,6 +144,7 @@
   - Custom domains
 
 ### Database Hosting
+
 - **Neon** - Serverless PostgreSQL
   - Connection pooling
   - Automatic scaling
@@ -147,11 +165,13 @@
 ### Key Endpoints
 
 **Health & Diagnostics:**
+
 - `GET /api/ping` - Server health check
 - `GET /api/status` - Simple status check
 - `GET /api/health` - Detailed health with DB status
 
 **Audit Operations:**
+
 - `POST /api/audit` - Create new audit (standard)
 - `GET /api/audit/progress` - Create audit with SSE progress
 - `GET /api/audits` - List all audits
@@ -160,6 +180,7 @@
 - `DELETE /api/audits/:id` - Delete audit
 
 **Demo/Testing:**
+
 - `POST /api/demo` - Generate demo audit
 - `POST /api/test-save` - Test audit saving
 
@@ -286,18 +307,21 @@ PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium  # Chromium path in Docker
 ## Performance Characteristics
 
 ### Build Performance
+
 - **Dev server startup:** ~500ms
 - **First build:** 5-7 minutes (Chromium download)
 - **Incremental builds:** 2-3 minutes
 - **Hot reload:** <100ms
 
 ### Runtime Performance
+
 - **Standard audit:** 15-20 seconds
 - **Puppeteer audit:** 20-30 seconds (browser startup)
 - **Database query:** <100ms
 - **API response:** 50-200ms (cached)
 
 ### Resource Usage
+
 - **Image size:** ~450MB (with Chromium)
 - **Memory (idle):** ~150MB
 - **Memory (audit active):** ~300-400MB
@@ -315,12 +339,14 @@ PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium  # Chromium path in Docker
 ## Scalability
 
 **Current architecture supports:**
+
 - Multiple concurrent audits
 - Database connection pooling
 - Stateless server (horizontal scaling ready)
 - CDN-ready static assets
 
 **Future improvements:**
+
 - Redis for caching
 - Queue system for audit processing
 - CDN integration

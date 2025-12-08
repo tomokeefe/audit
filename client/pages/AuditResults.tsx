@@ -635,7 +635,11 @@ function InteractiveTaskChecklist({ auditData }: { auditData: any }) {
   // Generate actionable tasks from audit sections
   const generateTasks = () => {
     // Guard against missing sections
-    if (!auditData || !auditData.sections || !Array.isArray(auditData.sections)) {
+    if (
+      !auditData ||
+      !auditData.sections ||
+      !Array.isArray(auditData.sections)
+    ) {
       return [];
     }
 
@@ -1378,7 +1382,8 @@ Best regards`);
                       className="h-3 mb-3"
                     />
                     <div className="text-sm text-gray-600">
-                      Based on {auditData.sections?.length || 0} evaluation criteria
+                      Based on {auditData.sections?.length || 0} evaluation
+                      criteria
                     </div>
                   </CardContent>
                 </Card>

@@ -43,7 +43,7 @@ Give users **multiple actionable options** based on their needs:
               Use this audit to guide your internal team
             </p>
           </div>
-          
+
           <div className="mt-auto space-y-2">
             <div className="text-sm text-gray-700 space-y-1">
               <div className="flex items-center gap-2">
@@ -83,7 +83,7 @@ Give users **multiple actionable options** based on their needs:
               Work with our team to implement improvements
             </p>
           </div>
-          
+
           <div className="mt-auto space-y-2">
             <div className="text-sm text-gray-700 space-y-1">
               <div className="flex items-center gap-2">
@@ -120,7 +120,7 @@ Give users **multiple actionable options** based on their needs:
               Let us handle the complete transformation
             </p>
           </div>
-          
+
           <div className="mt-auto space-y-2">
             <div className="text-sm text-gray-700 space-y-1">
               <div className="flex items-center gap-2">
@@ -147,7 +147,9 @@ Give users **multiple actionable options** based on their needs:
 
   {/* Quick Actions */}
   <div className="mt-8 p-6 bg-gray-50 rounded-lg border">
-    <h5 className="font-semibold text-gray-900 mb-4">Quick Actions You Can Take Today:</h5>
+    <h5 className="font-semibold text-gray-900 mb-4">
+      Quick Actions You Can Take Today:
+    </h5>
     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
       <Button variant="outline" className="justify-start">
         <Users className="h-4 w-4 mr-2" />
@@ -172,8 +174,11 @@ Give users **multiple actionable options** based on their needs:
   <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-start gap-3">
     <Info className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
     <div className="text-sm text-blue-800">
-      <strong>Limited Time:</strong> Companies that implement within 30 days of their audit see 2.3x faster results. 
-      <a href="#" className="underline ml-1">Learn more →</a>
+      <strong>Limited Time:</strong> Companies that implement within 30 days of
+      their audit see 2.3x faster results.
+      <a href="#" className="underline ml-1">
+        Learn more →
+      </a>
     </div>
   </div>
 </div>
@@ -186,7 +191,8 @@ Give users **multiple actionable options** based on their needs:
   <div className="flex items-center gap-3 mb-4">
     <Target className="h-6 w-6" />
     <h4 className="text-xl font-bold">
-      Your Next Steps to {auditData.overallScore >= 70 ? 'Excellence' : 'Improvement'}
+      Your Next Steps to{" "}
+      {auditData.overallScore >= 70 ? "Excellence" : "Improvement"}
     </h4>
   </div>
 
@@ -196,10 +202,12 @@ Give users **multiple actionable options** based on their needs:
       <p className="font-semibold mb-2">🚀 Priority Actions (Start Here):</p>
       <ol className="list-decimal list-inside space-y-1 text-blue-100">
         {auditData.sections
-          .filter(s => s.score < 50)
+          .filter((s) => s.score < 50)
           .slice(0, 3)
           .map((s, i) => (
-            <li key={i}>Address {s.name} ({s.score}% → Target: 70%+)</li>
+            <li key={i}>
+              Address {s.name} ({s.score}% → Target: 70%+)
+            </li>
           ))}
       </ol>
     </div>
@@ -210,15 +218,18 @@ Give users **multiple actionable options** based on their needs:
       <PlayCircle className="h-4 w-4 mr-2" />
       Book Free Strategy Call
     </Button>
-    <Button variant="outline" className="border-white text-white hover:bg-white/10">
+    <Button
+      variant="outline"
+      className="border-white text-white hover:bg-white/10"
+    >
       <Users className="h-4 w-4 mr-2" />
       Share with Team
     </Button>
   </div>
 
   <p className="text-sm text-blue-100">
-    90% of companies that act within 30 days see measurable improvements. 
-    Don't let this audit gather dust.
+    90% of companies that act within 30 days see measurable improvements. Don't
+    let this audit gather dust.
   </p>
 </div>
 ```
@@ -230,7 +241,9 @@ Give users **multiple actionable options** based on their needs:
   <div className="p-6 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border-2 border-green-200">
     <div className="flex items-center justify-between mb-4">
       <div>
-        <h4 className="text-xl font-bold text-gray-900">Your Potential Impact</h4>
+        <h4 className="text-xl font-bold text-gray-900">
+          Your Potential Impact
+        </h4>
         <p className="text-gray-600">Based on this audit's recommendations</p>
       </div>
       <div className="text-right">
@@ -280,6 +293,7 @@ Give users **multiple actionable options** based on their needs:
 ## Recommended Choice
 
 **Option 1 (Multi-Path)** is best because:
+
 - Gives users control and choice
 - Caters to different company sizes and budgets
 - Has clear, actionable next steps
