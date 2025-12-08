@@ -1749,7 +1749,7 @@ Best regards`);
                         Critical Priority
                       </h5>
                       <div className="text-sm text-red-700 space-y-1">
-                        {auditData.sections
+                        {(auditData.sections || [])
                           .filter(
                             (s) =>
                               s.priorityLevel === "critical" || s.score < 50,
@@ -1774,7 +1774,7 @@ Best regards`);
                         High Priority
                       </h5>
                       <div className="text-sm text-yellow-700 space-y-1">
-                        {auditData.sections
+                        {(auditData.sections || [])
                           .filter(
                             (s) =>
                               s.priorityLevel === "high" ||
@@ -1800,7 +1800,7 @@ Best regards`);
                         Strengths to Leverage
                       </h5>
                       <div className="text-sm text-green-700 space-y-1">
-                        {auditData.sections
+                        {(auditData.sections || [])
                           .filter((s) => s.score >= 80)
                           .map((s, index) => (
                             <div key={index} className="flex justify-between">
