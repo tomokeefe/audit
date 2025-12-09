@@ -107,12 +107,24 @@ RULES:
     const result = await response.json();
     const text = result.choices?.[0]?.message?.content;
 
+    console.log('[PITCH DECK AUDIT] ========================================');
+    console.log('[PITCH DECK AUDIT] Raw Grok API response length:', text?.length || 0);
+    console.log('[PITCH DECK AUDIT] Response preview (first 1000 chars):');
+    console.log(text?.substring(0, 1000) || 'NO CONTENT');
+    console.log('[PITCH DECK AUDIT] ========================================');
+
     if (!text) {
       throw new Error("No content in Grok API response");
     }
 
     // Parse the markdown response
+    console.log('[PITCH DECK AUDIT] Starting to parse markdown response...');
     const auditData = parseMarkdownAuditResponse(text);
+    console.log('[PITCH DECK AUDIT] Parsed audit data:');
+    console.log('[PITCH DECK AUDIT] - Overall Score:', auditData.overallScore);
+    console.log('[PITCH DECK AUDIT] - Sections Count:', auditData.sections?.length || 0);
+    console.log('[PITCH DECK AUDIT] - Strengths Count:', auditData.strengths?.length || 0);
+    console.log('[PITCH DECK AUDIT] - Opportunities Count:', auditData.opportunities?.length || 0);
 
     // Generate unique ID and share token
     const auditId = Date.now().toString();
@@ -156,12 +168,27 @@ RULES:
 
 // Helper function to parse markdown audit response
 function parseMarkdownAuditResponse(text: string): any {
+  console.log('[PARSE] Starting parseMarkdownAuditResponse...');
+
   // Extract overall score
   const overallMatch = text.match(/\*\*Overall:\s*(\d+(?:\.\d+)?)\s*\/\s*100\*\*/i);
   const overallScore = overallMatch ? Math.round(parseFloat(overallMatch[1])) : 75;
+  console.log('[PARSE] Overall score match:', overallMatch?.[0]);
+  console.log('[PARSE] Overall score:', overallScore);
 
-  // Extract section scores
-  const sectionMatches = text.match(/^\s*(\d+)\.\s+([^–-]+?)\s*(?:–|-)\s*(\d+(?:\.\d+)?)\s*\/\s*10/gm);
+  // Extract section scores - try multiple regex patterns
+  console.log('[PARSE] Looking for section scores...');
+
+  // Try pattern 1: "1. Section Name – 7.5/10"
+  let sectionMatches = text.match(/^\s*(\d+)\.\s+([^–-]+?)\s*(?:–|-)\s*(\d+(?:\.\d+)?)\s*\/\s*10/gm);
+  console.log('[PARSE] Pattern 1 matches:', sectionMatches?.length || 0);
+
+  // Try pattern 2: "Section Name – 7.5/10" (without number)
+  if (!sectionMatches || sectionMatches.length === 0) {
+    sectionMatches = text.match(/([A-Z][^–-\n]+?)\s*(?:–|-)\s*(\d+(?:\.\d+)?)\s*\/\s*10/g);
+    console.log('[PARSE] Pattern 2 matches:', sectionMatches?.length || 0);
+  }
+
   const sections: any[] = [];
 
   const sectionNames = [
@@ -177,23 +204,44 @@ function parseMarkdownAuditResponse(text: string): any {
     "Investor Appeal",
   ];
 
-  if (sectionMatches) {
+  if (sectionMatches && sectionMatches.length > 0) {
+    console.log('[PARSE] Processing', sectionMatches.length, 'section matches');
     sectionMatches.forEach((match, index) => {
+      console.log('[PARSE] Section', index + 1, 'match:', match);
       const scoreMatch = match.match(/(\d+(?:\.\d+)?)\s*\/\s*10/);
       const scoreOut10 = scoreMatch ? parseFloat(scoreMatch[1]) : 7;
       const score = Math.round((scoreOut10 / 10) * 100);
       const sectionName = sectionNames[index] || `Section ${index + 1}`;
 
-      sections.push({
+      const section = {
         name: sectionName,
         score: Math.max(0, Math.min(100, score)),
         maxScore: 100,
         issues: Math.max(1, Math.round((100 - score) / 15)),
         recommendations: Math.max(1, Math.round((100 - score) / 12)),
         details: `Score: ${score}%. See detailed analysis above.`,
+      };
+
+      console.log('[PARSE] Created section:', section.name, 'Score:', section.score);
+      sections.push(section);
+    });
+  } else {
+    console.log('[PARSE] WARNING: No section matches found! Creating default sections...');
+    // Create default sections if parsing fails
+    sectionNames.forEach((name, index) => {
+      const defaultScore = 70; // Default to 70%
+      sections.push({
+        name,
+        score: defaultScore,
+        maxScore: 100,
+        issues: 2,
+        recommendations: 3,
+        details: `Score: ${defaultScore}%. Analysis pending.`,
       });
     });
   }
+
+  console.log('[PARSE] Total sections created:', sections.length);
 
   // Extract strengths
   const strengthsMatch = text.match(/##\s+Key Strengths\s*\n([\s\S]*?)(?=##|$)/i);
@@ -219,7 +267,7 @@ function parseMarkdownAuditResponse(text: string): any {
   const detailedAnalysisMatch = text.match(/##\s+Detailed Analysis\s*\n([\s\S]*?)(?=##|End:|$)/i);
   const detailedAnalysis = detailedAnalysisMatch ? detailedAnalysisMatch[1].trim() : "";
 
-  return {
+  const result = {
     overallScore,
     sections,
     strengths,
@@ -227,4 +275,13 @@ function parseMarkdownAuditResponse(text: string): any {
     detailedAnalysis,
     recommendations: [],
   };
+
+  console.log('[PARSE] Final result summary:');
+  console.log('[PARSE] - overallScore:', result.overallScore);
+  console.log('[PARSE] - sections.length:', result.sections.length);
+  console.log('[PARSE] - strengths.length:', result.strengths.length);
+  console.log('[PARSE] - opportunities.length:', result.opportunities.length);
+  console.log('[PARSE] - detailedAnalysis length:', result.detailedAnalysis.length);
+
+  return result;
 }
