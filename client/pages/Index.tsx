@@ -484,6 +484,7 @@ export default function Index() {
             method: "GET",
             headers: { Accept: "application/json" },
             signal: controller.signal,
+            cache: 'no-store',
           });
 
           clearTimeout(timeoutId);
