@@ -945,7 +945,7 @@ export default function Index() {
       console.log("✅ Starting new audit process...");
 
       // Skip progress tracking, use standard method directly for reliability
-      await handleSubmitStandard(e);
+      if (auditType === "pitch_deck") { await handlePitchDeckSubmit(e); } else { await handleSubmitStandard(e); }
     } catch (topLevelError) {
       console.error("💥 CRITICAL ERROR in handleSubmit:", topLevelError);
       setError(
