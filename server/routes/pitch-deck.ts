@@ -123,6 +123,18 @@ export const handlePitchDeckAudit: RequestHandler = async (req, res) => {
       fileSize: file.size,
     });
 
+    console.log('[PITCH DECK] Audit generated successfully');
+    console.log('[PITCH DECK] Audit ID:', auditResult.id);
+    console.log('[PITCH DECK] Overall Score:', auditResult.overallScore);
+    console.log('[PITCH DECK] Sections count:', auditResult.sections?.length || 0);
+
+    // Store the audit result (same as website audits)
+    const { default: auditModule } = await import('./audit.js');
+    if (auditModule && typeof auditModule.storeAuditResult === 'function') {
+      await auditModule.storeAuditResult(auditResult);
+      console.log('[PITCH DECK] Audit stored successfully');
+    }
+
     // Clean up uploaded file
     try {
       await fs.unlink(file.path);
@@ -132,6 +144,7 @@ export const handlePitchDeckAudit: RequestHandler = async (req, res) => {
     }
 
     // Return audit result
+    console.log('[PITCH DECK] Returning audit result to client');
     res.json(auditResult);
   } catch (error) {
     console.error('[PITCH DECK] Error processing audit:', error);
