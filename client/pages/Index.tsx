@@ -295,6 +295,7 @@ export default function Index() {
             Accept: "application/json",
             "Content-Type": "application/json",
           },
+          cache: 'no-store',
         });
         clearTimeout(timeoutId);
         return response;
