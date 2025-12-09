@@ -500,28 +500,31 @@ export default function Index() {
 
           throw new Error(`Server responded with ${testResponse.status}`);
         } catch (error) {
-          // Check if this is an iframe environment error
-          const isIframeError =
-            error instanceof Error &&
-            (error.message.includes("Failed to fetch") ||
-              error.name === "TypeError");
+          // Better error classification
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          const errorName = error instanceof Error ? error.name : '';
 
-          if (isIframeError) {
+          console.log(`Connection attempt ${retries + 1} error:`, errorName, errorMessage);
+
+          // Check if this is a network/fetch error (could be iframe or server unavailable)
+          const isNetworkError =
+            errorName === "TypeError" ||
+            errorMessage.includes("Failed to fetch") ||
+            errorMessage.includes("fetch") ||
+            errorMessage.includes("NetworkError") ||
+            errorMessage.includes("CORS");
+
+          if (isNetworkError && retries >= maxRetries - 1) {
             console.log(
-              "ℹ️ Running in iframe preview mode - API unavailable (this is normal)",
+              "ℹ️ Network error detected - could be iframe mode or server unavailable. Gracefully degrading...",
             );
-            // Don't retry in iframe mode, just set minimal status and continue
+            // Max retries reached, stop trying
             setApiStatus({ ping: false, audits: false, error: undefined });
             return true; // Return success to stop retrying
           }
 
-          if (error instanceof Error && error.name === "AbortError") {
+          if (errorName === "AbortError") {
             console.log(`Connection attempt ${retries + 1} timed out after 3s`);
-          } else {
-            console.log(
-              `Connection attempt ${retries + 1} failed:`,
-              error instanceof Error ? error.message : error,
-            );
           }
 
           if (retries < maxRetries - 1) {
