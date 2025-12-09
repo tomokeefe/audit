@@ -1170,6 +1170,79 @@ export default function Index() {
       setIsLoading(false);
       setShowProgress(false);
     }
+  };
+
+  // Pitch deck audit submission
+  const handlePitchDeckSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedFile) {
+      setError("Please select a file");
+      return;
+    }
+
+    setIsLoading(true);
+    setError("");
+    setShowProgress(true);
+
+    try {
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      formData.append('auditType', 'pitch_deck');
+
+      console.log('Uploading pitch deck:', selectedFile.name);
+
+      const response = await fetch('/api/audit/pitch-deck', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Upload failed: ${errorText}`);
+      }
+
+      const auditResult = await response.json();
+      console.log('Pitch deck audit result:', auditResult);
+
+      // Save to database
+      try {
+        await fetch("/api/audits", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: auditResult.id,
+            url: selectedFile.name,
+            title: auditResult.title || "Pitch Deck Audit",
+            description: auditResult.description || null,
+            overallScore: auditResult.overallScore || 0,
+            status: "completed",
+            date: new Date().toISOString(),
+            audit_data: auditResult,
+          }),
+        });
+      } catch (saveError) {
+        console.error("Error saving to database:", saveError);
+      }
+
+      // Reload recent audits
+      loadRecentAudits();
+
+      // Navigate to audit results
+      navigate(`/audit/${auditResult.id}`);
+    } catch (error) {
+      console.error("Pitch deck audit error:", error);
+      setError(error instanceof Error ? error.message : "Failed to process pitch deck");
+    } finally {
+      setIsLoading(false);
+      setShowProgress(false);
+    }
+  };
+
+  // Duplicate block to fix - this should be removed in cleanup
+  const handleSubmitStandardDuplicate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!url.trim()) return;
 
     try {
       // Test API connectivity first
