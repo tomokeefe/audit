@@ -3236,7 +3236,7 @@ RULES:
           },
         ],
         model: "grok-4-1-fast-reasoning",
-        temperature: 0.7,
+        temperature: 0.1, // Low temperature for consistent, deterministic results
         max_tokens: 4500, // Increased for section-specific recommendations (10 sections × ~300 tokens each)
       }),
     });
