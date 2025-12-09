@@ -21,6 +21,8 @@ import {
   Target,
   Award,
   Activity,
+  FileText,
+  Upload,
 } from "lucide-react";
 import ErrorState, { useErrorHandler } from "@/components/ErrorState";
 import {
@@ -60,7 +62,9 @@ interface ProgressStep {
 }
 
 export default function Index() {
+  const [auditType, setAuditType] = useState<'website' | 'pitch_deck'>('website');
   const [url, setUrl] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [recentAudits, setRecentAudits] = useState<AuditSummary[]>([]);
