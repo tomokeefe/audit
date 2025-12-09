@@ -1943,8 +1943,8 @@ Best regards`);
                   </div>
                 </div>
 
-                {/* Resource Center */}
-                <ResourceCenter />
+                {/* Resource Center - only for website audits */}
+                {!isPitchDeck && <ResourceCenter />}
 
                 {/* Call to Action */}
                 <div className="mt-8 p-6 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg text-white">
