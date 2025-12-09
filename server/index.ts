@@ -206,6 +206,23 @@ export async function createServer() {
     throw err;
   }
 
+  // Pitch deck audit routes
+  try {
+    console.log("Importing pitch-deck routes...");
+    const pitchDeckModule = await import("./routes/pitch-deck.js");
+    const { uploadMiddleware, handlePitchDeckAudit } = pitchDeckModule;
+    console.log("✓ Pitch-deck routes imported");
+    app.post("/api/audit/pitch-deck", uploadMiddleware, handlePitchDeckAudit);
+  } catch (err) {
+    console.error("✗ Failed to import pitch-deck routes:", err);
+    console.error(
+      "✗ Error details:",
+      err instanceof Error ? err.message : String(err),
+    );
+    console.error("✗ Stack:", err instanceof Error ? err.stack : "No stack");
+    // Don't throw - pitch deck is a new feature, server should still work without it
+  }
+
   // Global error handler - must be after all other middleware
   app.use((err: any, req: any, res: any, next: any) => {
     console.error("Unhandled error in request:", {

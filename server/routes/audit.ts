@@ -131,6 +131,12 @@ export { scrapeWebsite };
 export { generateAudit };
 export { generateFallbackAudit };
 
+// Export pitch deck audit function
+export async function generatePitchDeckAudit(data: any) {
+  const handler = await import("./audit-pitch-deck-handler.js");
+  return handler.generatePitchDeckAudit(data);
+}
+
 // Function to create fallback website data when scraping fails
 export function createFallbackData(url: string) {
   const domain = new URL(url).hostname.replace("www.", "");
