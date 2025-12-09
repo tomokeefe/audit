@@ -928,7 +928,7 @@ export default function Index() {
   const handleSubmit = async (e: React.FormEvent) => {
     try {
       e.preventDefault();
-      console.log("🔵 Form submitted with URL:", url.trim());
+      console.log("Form submitted - Audit Type:", auditType);
 
       if (!url.trim()) {
         console.log("��� Empty URL, aborting submission");
