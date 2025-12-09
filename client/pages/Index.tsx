@@ -117,6 +117,28 @@ export default function Index() {
     handleSubmit(fakeEvent as any);
   };
 
+  // Global error handler for unhandled promise rejections
+  useEffect(() => {
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      console.error("Unhandled promise rejection:", event.reason);
+
+      // Check if it's a fetch error
+      if (event.reason instanceof Error) {
+        const msg = event.reason.message;
+        if (msg.includes("Failed to fetch") || msg.includes("fetch") || event.reason.name === "TypeError") {
+          console.log("Network/fetch error caught by global handler - preventing error propagation");
+          event.preventDefault(); // Prevent the error from showing in console as unhandled
+        }
+      }
+    };
+
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+
+    return () => {
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+    };
+  }, []);
+
   // Cleanup EventSource on component unmount
   useEffect(() => {
     return () => {
