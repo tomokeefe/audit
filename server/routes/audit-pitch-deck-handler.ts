@@ -199,12 +199,12 @@ function parseMarkdownAuditResponse(text: string): any {
   console.log('[PARSE] Looking for section scores...');
 
   // Try pattern 1: "1. Section Name – 7.5/10"
-  let sectionMatches = text.match(/^\s*(\d+)\.\s+([^–-]+?)\s*(?:–|-)\s*(\d+(?:\.\d+)?)\s*\/\s*10/gm);
+  let sectionMatches = text.match(/^\s*(\d+)\.\s+([^–\-]+?)\s*(?:–|-)\s*(\d+(?:\.\d+)?)\s*\/\s*10/gm);
   console.log('[PARSE] Pattern 1 matches:', sectionMatches?.length || 0);
 
   // Try pattern 2: "Section Name – 7.5/10" (without number)
   if (!sectionMatches || sectionMatches.length === 0) {
-    sectionMatches = text.match(/([A-Z][^–-\n]+?)\s*(?:–|-)\s*(\d+(?:\.\d+)?)\s*\/\s*10/g);
+    sectionMatches = text.match(/([A-Z][^–\-\n]+?)\s*(?:–|-)\s*(\d+(?:\.\d+)?)\s*\/\s*10/g);
     console.log('[PARSE] Pattern 2 matches:', sectionMatches?.length || 0);
   }
 
