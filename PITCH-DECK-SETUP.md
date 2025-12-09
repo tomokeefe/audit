@@ -5,6 +5,7 @@
 The backend is fully implemented and ready to process pitch deck audits:
 
 ### What's Working:
+
 - ✅ File upload endpoint: `/api/audit/pitch-deck`
 - ✅ PPT/PPTX/PDF text extraction
 - ✅ AI-powered pitch deck analysis with Grok
@@ -12,6 +13,7 @@ The backend is fully implemented and ready to process pitch deck audits:
 - ✅ Secure file handling with automatic cleanup
 
 ### Files Created:
+
 1. `server/routes/pitch-deck.ts` - Upload handler & text extraction
 2. `server/routes/audit-pitch-deck-handler.ts` - AI audit generation
 3. `client/components/AuditTypeSelector.tsx` - UI component (ready to use)
@@ -26,7 +28,9 @@ The backend is fully implemented and ready to process pitch deck audits:
 In `client/pages/Index.tsx`, replace lines 1538-1594 (the form section) with:
 
 ```tsx
-{/* Audit Input Form */}
+{
+  /* Audit Input Form */
+}
 <div className="mt-12 max-w-3xl mx-auto">
   <AuditTypeSelector
     auditType={auditType}
@@ -48,13 +52,13 @@ In `client/pages/Index.tsx`, replace lines 1538-1594 (the form section) with:
   {isLoading && (
     <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg mt-4">
       <p className="text-sm">
-        {auditType === 'pitch_deck' 
-          ? 'Analyzing pitch deck... This may take up to 60 seconds.'
-          : 'Analyzing website... This may take up to 30 seconds.'}
+        {auditType === "pitch_deck"
+          ? "Analyzing pitch deck... This may take up to 60 seconds."
+          : "Analyzing website... This may take up to 30 seconds."}
       </p>
     </div>
   )}
-</div>
+</div>;
 ```
 
 ### Option 2: Manual Testing (No UI changes needed)
@@ -99,12 +103,14 @@ The AI analyzes these 10 investor-focused criteria:
 ## 🚀 Next Steps
 
 ### Immediate (Week 1):
+
 - [x] Backend implementation ✅
 - [ ] UI integration (5 minutes)
 - [ ] Test with real pitch decks
 - [ ] Add sample deck for testing
 
 ### Future Enhancements:
+
 - **Slide-by-slide analysis** - Extract individual slides
 - **Image analysis** - Analyze charts/graphs with vision model
 - **Comparative analysis** - Compare against successful decks
@@ -115,15 +121,18 @@ The AI analyzes these 10 investor-focused criteria:
 ## 🐛 Troubleshooting
 
 ### "Failed to extract text from PPT"
+
 - Some PPT files use proprietary formats
 - Convert to PDF first as fallback
 - Check file isn't password-protected
 
 ### "File too large"
+
 - Current limit: 50MB
 - Compress large decks before upload
 
 ### "Upload failed"
+
 - Check `/uploads` directory exists and is writable
 - Verify `multer` and `mammoth` packages installed
 - Check server logs for details
@@ -139,6 +148,7 @@ Suggest pricing pitch deck audits higher than website audits:
 - Bundle (both): $449-699
 
 Why? Pitch decks have:
+
 - Higher stakes (millions in funding)
 - More niche expertise required
 - Smaller competitor market
@@ -149,6 +159,7 @@ Why? Pitch decks have:
 ## 📝 Marketing Copy
 
 **Homepage Update:**
+
 ```
 Brand Audits for Websites & Pitch Decks
   ↓
@@ -159,6 +170,7 @@ Perfect for businesses and founders raising capital.
 ```
 
 **Pitch Deck Page:**
+
 ```
 Get Your Deck Investor-Ready
 ━━━━━━━━━━━━━━━━━━━━━━

@@ -5,8 +5,8 @@ import { Globe, FileText, Upload, Search } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 interface AuditTypeSelectorProps {
-  auditType: 'website' | 'pitch_deck';
-  setAuditType: (type: 'website' | 'pitch_deck') => void;
+  auditType: "website" | "pitch_deck";
+  setAuditType: (type: "website" | "pitch_deck") => void;
   url: string;
   setUrl: (url: string) => void;
   selectedFile: File | null;
@@ -30,15 +30,18 @@ export default function AuditTypeSelector({
     if (file) {
       // Validate file type
       const validTypes = [
-        'application/vnd.ms-powerpoint',
-        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-        'application/pdf',
+        "application/vnd.ms-powerpoint",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "application/pdf",
       ];
-      
-      if (validTypes.includes(file.type) || file.name.match(/\.(ppt|pptx|pdf)$/i)) {
+
+      if (
+        validTypes.includes(file.type) ||
+        file.name.match(/\.(ppt|pptx|pdf)$/i)
+      ) {
         setSelectedFile(file);
       } else {
-        alert('Please select a valid PowerPoint (.ppt, .pptx) or PDF file');
+        alert("Please select a valid PowerPoint (.ppt, .pptx) or PDF file");
       }
     }
   };
@@ -46,7 +49,13 @@ export default function AuditTypeSelector({
   return (
     <form onSubmit={onSubmit} className="space-y-6">
       {/* Audit Type Toggle */}
-      <Tabs value={auditType} onValueChange={(value) => setAuditType(value as 'website' | 'pitch_deck')} className="w-full">
+      <Tabs
+        value={auditType}
+        onValueChange={(value) =>
+          setAuditType(value as "website" | "pitch_deck")
+        }
+        className="w-full"
+      >
         <TabsList className="grid w-full grid-cols-2 mb-6">
           <TabsTrigger value="website" className="flex items-center gap-2">
             <Globe className="h-4 w-4" />
@@ -69,7 +78,7 @@ export default function AuditTypeSelector({
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 className="pl-10 h-12 text-lg"
-                required={auditType === 'website'}
+                required={auditType === "website"}
               />
             </div>
             <Button
@@ -100,13 +109,15 @@ export default function AuditTypeSelector({
                 htmlFor="pitch-deck-file"
                 className={`flex items-center justify-center gap-3 h-12 px-6 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
                   selectedFile
-                    ? 'border-brand-500 bg-brand-50'
-                    : 'border-gray-300 bg-gray-50 hover:border-brand-400 hover:bg-brand-50'
+                    ? "border-brand-500 bg-brand-50"
+                    : "border-gray-300 bg-gray-50 hover:border-brand-400 hover:bg-brand-50"
                 }`}
               >
                 <Upload className="h-5 w-5 text-gray-600" />
                 <span className="text-gray-700">
-                  {selectedFile ? selectedFile.name : 'Choose PPT, PPTX, or PDF file'}
+                  {selectedFile
+                    ? selectedFile.name
+                    : "Choose PPT, PPTX, or PDF file"}
                 </span>
                 <input
                   id="pitch-deck-file"
@@ -114,7 +125,7 @@ export default function AuditTypeSelector({
                   accept=".ppt,.pptx,.pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/pdf"
                   onChange={handleFileChange}
                   className="hidden"
-                  required={auditType === 'pitch_deck'}
+                  required={auditType === "pitch_deck"}
                 />
               </label>
             </div>

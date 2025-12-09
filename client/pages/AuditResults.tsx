@@ -1327,7 +1327,7 @@ Best regards`);
 
   // Detect if this is a pitch deck audit
   const isPitchDeck =
-    auditData.title?.toLowerCase().includes('pitch deck') ||
+    auditData.title?.toLowerCase().includes("pitch deck") ||
     auditData.url?.match(/\.(pptx?|pdf)$/i) ||
     false;
 
@@ -1735,13 +1735,14 @@ Best regards`);
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5" />
-                  {isPitchDeck ? 'Investor Readiness Action Plan' : 'Strategic Implementation Plan'}
+                  {isPitchDeck
+                    ? "Investor Readiness Action Plan"
+                    : "Strategic Implementation Plan"}
                 </CardTitle>
                 <CardDescription>
                   {isPitchDeck
-                    ? 'Prioritized improvements to strengthen your pitch deck and increase fundraising success'
-                    : `Comprehensive action plan with prioritized recommendations, timelines, and success metrics for ${auditData.title}`
-                  }
+                    ? "Prioritized improvements to strengthen your pitch deck and increase fundraising success"
+                    : `Comprehensive action plan with prioritized recommendations, timelines, and success metrics for ${auditData.title}`}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -1776,9 +1777,12 @@ Best regards`);
                             <div key={index} className="flex items-start gap-3">
                               <CheckCircle className="h-5 w-5 text-orange-600 mt-0.5 flex-shrink-0" />
                               <div>
-                                <h5 className="font-medium text-gray-900">{section.name}</h5>
+                                <h5 className="font-medium text-gray-900">
+                                  {section.name}
+                                </h5>
                                 <p className="text-sm text-gray-600 mt-1">
-                                  {section.recommendations?.[0] || `Improve this section to strengthen investor appeal`}
+                                  {section.recommendations?.[0] ||
+                                    `Improve this section to strengthen investor appeal`}
                                 </p>
                               </div>
                             </div>
@@ -1830,13 +1834,23 @@ Best regards`);
                       </div>
                       <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 space-y-3">
                         <p className="text-sm text-purple-900 mb-4">
-                          Continue iterating your deck based on investor feedback:
+                          Continue iterating your deck based on investor
+                          feedback:
                         </p>
                         <ul className="text-sm text-purple-800 space-y-2 list-disc list-inside">
-                          <li>Track which slides generate the most questions</li>
-                          <li>A/B test different versions with different investor types</li>
-                          <li>Update traction slides monthly with latest metrics</li>
-                          <li>Refine ask based on actual fundraising conversations</li>
+                          <li>
+                            Track which slides generate the most questions
+                          </li>
+                          <li>
+                            A/B test different versions with different investor
+                            types
+                          </li>
+                          <li>
+                            Update traction slides monthly with latest metrics
+                          </li>
+                          <li>
+                            Refine ask based on actual fundraising conversations
+                          </li>
                         </ul>
                       </div>
                     </div>

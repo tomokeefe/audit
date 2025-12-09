@@ -12,18 +12,20 @@ interface PitchDeckData {
 }
 
 // In-memory cache for pitch deck audits (should use Redis in production)
-const pitchDeckCache = new Map<string, { audit: AuditResponse; timestamp: Date }>();
+const pitchDeckCache = new Map<
+  string,
+  { audit: AuditResponse; timestamp: Date }
+>();
 
 // Generate content hash for deterministic caching
 function generateContentHash(extractedText: string): string {
-  return crypto
-    .createHash('sha256')
-    .update(extractedText.trim())
-    .digest('hex');
+  return crypto.createHash("sha256").update(extractedText.trim()).digest("hex");
 }
 
-export async function generatePitchDeckAudit(data: PitchDeckData): Promise<AuditResponse> {
-  console.log('[PITCH DECK AUDIT] Generating audit for:', data.fileName);
+export async function generatePitchDeckAudit(
+  data: PitchDeckData,
+): Promise<AuditResponse> {
+  console.log("[PITCH DECK AUDIT] Generating audit for:", data.fileName);
 
   if (!GROK_API_KEY) {
     throw new Error("GROK_API_KEY not configured");
@@ -31,7 +33,7 @@ export async function generatePitchDeckAudit(data: PitchDeckData): Promise<Audit
 
   // Generate content hash for caching
   const contentHash = generateContentHash(data.extractedText);
-  console.log('[PITCH DECK AUDIT] Content hash:', contentHash);
+  console.log("[PITCH DECK AUDIT] Content hash:", contentHash);
 
   // Check cache first
   const cached = pitchDeckCache.get(contentHash);
@@ -41,7 +43,11 @@ export async function generatePitchDeckAudit(data: PitchDeckData): Promise<Audit
     const sevenDays = 7 * 24 * 60 * 60 * 1000;
 
     if (cacheAge < sevenDays) {
-      console.log('[PITCH DECK AUDIT] Using cached result (age:', Math.round(cacheAge / 1000 / 60), 'minutes)');
+      console.log(
+        "[PITCH DECK AUDIT] Using cached result (age:",
+        Math.round(cacheAge / 1000 / 60),
+        "minutes)",
+      );
       // Return cached result with updated metadata
       return {
         ...cached.audit,
@@ -53,12 +59,12 @@ export async function generatePitchDeckAudit(data: PitchDeckData): Promise<Audit
         }),
       };
     } else {
-      console.log('[PITCH DECK AUDIT] Cache expired, generating new audit');
+      console.log("[PITCH DECK AUDIT] Cache expired, generating new audit");
       pitchDeckCache.delete(contentHash);
     }
   }
 
-  console.log('[PITCH DECK AUDIT] No valid cache found, calling Grok API');
+  console.log("[PITCH DECK AUDIT] No valid cache found, calling Grok API");
 
   const systemPrompt = `You are Brand Whisperer's senior pitch deck strategist with expertise in investor presentations and fundraising. 
 
@@ -150,24 +156,36 @@ RULES:
     const result = await response.json();
     const text = result.choices?.[0]?.message?.content;
 
-    console.log('[PITCH DECK AUDIT] ========================================');
-    console.log('[PITCH DECK AUDIT] Raw Grok API response length:', text?.length || 0);
-    console.log('[PITCH DECK AUDIT] Response preview (first 1000 chars):');
-    console.log(text?.substring(0, 1000) || 'NO CONTENT');
-    console.log('[PITCH DECK AUDIT] ========================================');
+    console.log("[PITCH DECK AUDIT] ========================================");
+    console.log(
+      "[PITCH DECK AUDIT] Raw Grok API response length:",
+      text?.length || 0,
+    );
+    console.log("[PITCH DECK AUDIT] Response preview (first 1000 chars):");
+    console.log(text?.substring(0, 1000) || "NO CONTENT");
+    console.log("[PITCH DECK AUDIT] ========================================");
 
     if (!text) {
       throw new Error("No content in Grok API response");
     }
 
     // Parse the markdown response
-    console.log('[PITCH DECK AUDIT] Starting to parse markdown response...');
+    console.log("[PITCH DECK AUDIT] Starting to parse markdown response...");
     const auditData = parseMarkdownAuditResponse(text);
-    console.log('[PITCH DECK AUDIT] Parsed audit data:');
-    console.log('[PITCH DECK AUDIT] - Overall Score:', auditData.overallScore);
-    console.log('[PITCH DECK AUDIT] - Sections Count:', auditData.sections?.length || 0);
-    console.log('[PITCH DECK AUDIT] - Strengths Count:', auditData.strengths?.length || 0);
-    console.log('[PITCH DECK AUDIT] - Opportunities Count:', auditData.opportunities?.length || 0);
+    console.log("[PITCH DECK AUDIT] Parsed audit data:");
+    console.log("[PITCH DECK AUDIT] - Overall Score:", auditData.overallScore);
+    console.log(
+      "[PITCH DECK AUDIT] - Sections Count:",
+      auditData.sections?.length || 0,
+    );
+    console.log(
+      "[PITCH DECK AUDIT] - Strengths Count:",
+      auditData.strengths?.length || 0,
+    );
+    console.log(
+      "[PITCH DECK AUDIT] - Opportunities Count:",
+      auditData.opportunities?.length || 0,
+    );
 
     // Generate unique ID and share token
     const auditId = Date.now().toString();
@@ -185,29 +203,37 @@ RULES:
     const companyName = titleMatch ? titleMatch[1].trim() : "Pitch Deck";
 
     // Ensure we have sections (fallback if parsing failed)
-    const sections = auditData.sections && auditData.sections.length > 0
-      ? auditData.sections
-      : [
-          "Problem & Solution Clarity", "Market Opportunity", "Business Model",
-          "Traction & Metrics", "Competitive Advantage", "Visual Design & Flow",
-          "Team & Credibility", "Financial Projections", "Call to Action", "Investor Appeal"
-        ].map(name => {
-          const defaultRecs = [
-            `Strengthen ${name.toLowerCase()} with specific data`,
-            `Add supporting evidence and examples`,
-            `Clarify key messages for investors`
-          ];
-          return {
-            name,
-            score: 70,
-            maxScore: 100,
-            issues: 2,
-            recommendations: defaultRecs,
-            details: `Overview:\nThis section requires detailed analysis.\n\nRecommendations:\n${defaultRecs.map(r => `- ${r}`).join('\n')}`
-          };
-        });
+    const sections =
+      auditData.sections && auditData.sections.length > 0
+        ? auditData.sections
+        : [
+            "Problem & Solution Clarity",
+            "Market Opportunity",
+            "Business Model",
+            "Traction & Metrics",
+            "Competitive Advantage",
+            "Visual Design & Flow",
+            "Team & Credibility",
+            "Financial Projections",
+            "Call to Action",
+            "Investor Appeal",
+          ].map((name) => {
+            const defaultRecs = [
+              `Strengthen ${name.toLowerCase()} with specific data`,
+              `Add supporting evidence and examples`,
+              `Clarify key messages for investors`,
+            ];
+            return {
+              name,
+              score: 70,
+              maxScore: 100,
+              issues: 2,
+              recommendations: defaultRecs,
+              details: `Overview:\nThis section requires detailed analysis.\n\nRecommendations:\n${defaultRecs.map((r) => `- ${r}`).join("\n")}`,
+            };
+          });
 
-    console.log('[PITCH DECK AUDIT] Final sections count:', sections.length);
+    console.log("[PITCH DECK AUDIT] Final sections count:", sections.length);
 
     const auditResult: AuditResponse = {
       id: auditId,
@@ -227,43 +253,59 @@ RULES:
       shareToken: shareToken,
     };
 
-    console.log('[PITCH DECK AUDIT] Audit result created with', auditResult.sections.length, 'sections');
+    console.log(
+      "[PITCH DECK AUDIT] Audit result created with",
+      auditResult.sections.length,
+      "sections",
+    );
 
     // Cache the result
     pitchDeckCache.set(contentHash, {
       audit: auditResult,
       timestamp: new Date(),
     });
-    console.log('[PITCH DECK AUDIT] Cached audit result (cache size:', pitchDeckCache.size, ')');
+    console.log(
+      "[PITCH DECK AUDIT] Cached audit result (cache size:",
+      pitchDeckCache.size,
+      ")",
+    );
 
     return auditResult;
   } catch (error) {
-    console.error('[PITCH DECK AUDIT] Error:', error);
+    console.error("[PITCH DECK AUDIT] Error:", error);
     throw error;
   }
 }
 
 // Helper function to parse markdown audit response
 function parseMarkdownAuditResponse(text: string): any {
-  console.log('[PARSE] Starting parseMarkdownAuditResponse...');
+  console.log("[PARSE] Starting parseMarkdownAuditResponse...");
 
   // Extract overall score
-  const overallMatch = text.match(/\*\*Overall:\s*(\d+(?:\.\d+)?)\s*\/\s*100\*\*/i);
-  const overallScore = overallMatch ? Math.round(parseFloat(overallMatch[1])) : 75;
-  console.log('[PARSE] Overall score match:', overallMatch?.[0]);
-  console.log('[PARSE] Overall score:', overallScore);
+  const overallMatch = text.match(
+    /\*\*Overall:\s*(\d+(?:\.\d+)?)\s*\/\s*100\*\*/i,
+  );
+  const overallScore = overallMatch
+    ? Math.round(parseFloat(overallMatch[1]))
+    : 75;
+  console.log("[PARSE] Overall score match:", overallMatch?.[0]);
+  console.log("[PARSE] Overall score:", overallScore);
 
   // Extract section scores - try multiple regex patterns
-  console.log('[PARSE] Looking for section scores...');
+  console.log("[PARSE] Looking for section scores...");
 
   // Try pattern 1: "1. Section Name – 7.5/10"
-  let sectionMatches = text.match(/^\s*(\d+)\.\s+([^–\-]+?)\s*(?:–|-)\s*(\d+(?:\.\d+)?)\s*\/\s*10/gm);
-  console.log('[PARSE] Pattern 1 matches:', sectionMatches?.length || 0);
+  let sectionMatches = text.match(
+    /^\s*(\d+)\.\s+([^–\-]+?)\s*(?:–|-)\s*(\d+(?:\.\d+)?)\s*\/\s*10/gm,
+  );
+  console.log("[PARSE] Pattern 1 matches:", sectionMatches?.length || 0);
 
   // Try pattern 2: "Section Name – 7.5/10" (without number)
   if (!sectionMatches || sectionMatches.length === 0) {
-    sectionMatches = text.match(/([A-Z][^–\-\n]+?)\s*(?:–|-)\s*(\d+(?:\.\d+)?)\s*\/\s*10/g);
-    console.log('[PARSE] Pattern 2 matches:', sectionMatches?.length || 0);
+    sectionMatches = text.match(
+      /([A-Z][^–\-\n]+?)\s*(?:–|-)\s*(\d+(?:\.\d+)?)\s*\/\s*10/g,
+    );
+    console.log("[PARSE] Pattern 2 matches:", sectionMatches?.length || 0);
   }
 
   const sections: any[] = [];
@@ -282,11 +324,11 @@ function parseMarkdownAuditResponse(text: string): any {
   ];
 
   if (sectionMatches && sectionMatches.length > 0) {
-    console.log('[PARSE] Processing', sectionMatches.length, 'section matches');
+    console.log("[PARSE] Processing", sectionMatches.length, "section matches");
 
     // Extract full section content including Evidence and Recommendations
     sectionMatches.forEach((match, index) => {
-      console.log('[PARSE] Section', index + 1, 'match:', match);
+      console.log("[PARSE] Section", index + 1, "match:", match);
       const scoreMatch = match.match(/(\d+(?:\.\d+)?)\s*\/\s*10/);
       const scoreOut10 = scoreMatch ? parseFloat(scoreMatch[1]) : 7;
       const score = Math.round((scoreOut10 / 10) * 100);
@@ -294,36 +336,44 @@ function parseMarkdownAuditResponse(text: string): any {
 
       // Extract Evidence and Recommendations for this section
       // Find the section content between this section and the next
-      const nextSectionIndex = index < sectionMatches.length - 1
-        ? text.indexOf(sectionMatches[index + 1])
-        : text.indexOf('## Key Strengths');
+      const nextSectionIndex =
+        index < sectionMatches.length - 1
+          ? text.indexOf(sectionMatches[index + 1])
+          : text.indexOf("## Key Strengths");
 
       const sectionStartIndex = text.indexOf(match);
-      const sectionContent = nextSectionIndex > sectionStartIndex
-        ? text.substring(sectionStartIndex, nextSectionIndex)
-        : text.substring(sectionStartIndex, sectionStartIndex + 1000);
+      const sectionContent =
+        nextSectionIndex > sectionStartIndex
+          ? text.substring(sectionStartIndex, nextSectionIndex)
+          : text.substring(sectionStartIndex, sectionStartIndex + 1000);
 
       // Extract Evidence
-      const evidenceMatch = sectionContent.match(/Evidence:\s*([^\n]+(?:\n(?!Recommendations:)[^\n]+)*)/i);
-      const evidence = evidenceMatch ? evidenceMatch[1].trim() : '';
+      const evidenceMatch = sectionContent.match(
+        /Evidence:\s*([^\n]+(?:\n(?!Recommendations:)[^\n]+)*)/i,
+      );
+      const evidence = evidenceMatch ? evidenceMatch[1].trim() : "";
 
       // Extract Recommendations
-      const recommendationsMatch = sectionContent.match(/Recommendations:\s*([^\n]+(?:\n(?!\d+\.)[^\n]+)*)/i);
-      const recommendationsText = recommendationsMatch ? recommendationsMatch[1].trim() : '';
+      const recommendationsMatch = sectionContent.match(
+        /Recommendations:\s*([^\n]+(?:\n(?!\d+\.)[^\n]+)*)/i,
+      );
+      const recommendationsText = recommendationsMatch
+        ? recommendationsMatch[1].trim()
+        : "";
 
       // Split recommendations by semicolons or bullet points
       const recommendationsList = recommendationsText
         .split(/[;•]/)
-        .map(r => r.trim())
-        .filter(r => r.length > 10);
+        .map((r) => r.trim())
+        .filter((r) => r.length > 10);
 
       // Format details with Evidence and Recommendations sections for frontend parsing
-      let detailsText = '';
+      let detailsText = "";
       if (evidence) {
         detailsText += `Overview:\n${evidence}\n\n`;
       }
       if (recommendationsList.length > 0) {
-        detailsText += `Recommendations:\n${recommendationsList.map(r => `- ${r}`).join('\n')}`;
+        detailsText += `Recommendations:\n${recommendationsList.map((r) => `- ${r}`).join("\n")}`;
       } else {
         detailsText += `Recommendations:\n- Improve ${sectionName.toLowerCase()} to increase investor appeal`;
       }
@@ -333,22 +383,38 @@ function parseMarkdownAuditResponse(text: string): any {
         score: Math.max(0, Math.min(100, score)),
         maxScore: 100,
         issues: Math.max(1, Math.round((100 - score) / 15)),
-        recommendations: recommendationsList.length > 0 ? recommendationsList : [`Improve ${sectionName.toLowerCase()} to increase investor appeal`],
-        details: detailsText || `Score: ${score}%. See detailed analysis for specific insights.`,
+        recommendations:
+          recommendationsList.length > 0
+            ? recommendationsList
+            : [
+                `Improve ${sectionName.toLowerCase()} to increase investor appeal`,
+              ],
+        details:
+          detailsText ||
+          `Score: ${score}%. See detailed analysis for specific insights.`,
       };
 
-      console.log('[PARSE] Created section:', section.name, 'Score:', section.score, 'Recommendations:', section.recommendations.length);
+      console.log(
+        "[PARSE] Created section:",
+        section.name,
+        "Score:",
+        section.score,
+        "Recommendations:",
+        section.recommendations.length,
+      );
       sections.push(section);
     });
   } else {
-    console.log('[PARSE] WARNING: No section matches found! Creating default sections...');
+    console.log(
+      "[PARSE] WARNING: No section matches found! Creating default sections...",
+    );
     // Create default sections if parsing fails
     sectionNames.forEach((name, index) => {
       const defaultScore = 70; // Default to 70%
       const defaultRecommendations = [
         `Enhance ${name.toLowerCase()} with specific data and evidence`,
         `Add quantifiable metrics to support claims`,
-        `Strengthen messaging to increase investor confidence`
+        `Strengthen messaging to increase investor confidence`,
       ];
       sections.push({
         name,
@@ -356,15 +422,17 @@ function parseMarkdownAuditResponse(text: string): any {
         maxScore: 100,
         issues: 2,
         recommendations: defaultRecommendations,
-        details: `Overview:\nThis section scored ${defaultScore}% based on initial analysis.\n\nRecommendations:\n${defaultRecommendations.map(r => `- ${r}`).join('\n')}`,
+        details: `Overview:\nThis section scored ${defaultScore}% based on initial analysis.\n\nRecommendations:\n${defaultRecommendations.map((r) => `- ${r}`).join("\n")}`,
       });
     });
   }
 
-  console.log('[PARSE] Total sections created:', sections.length);
+  console.log("[PARSE] Total sections created:", sections.length);
 
   // Extract strengths
-  const strengthsMatch = text.match(/##\s+Key Strengths\s*\n([\s\S]*?)(?=##|$)/i);
+  const strengthsMatch = text.match(
+    /##\s+Key Strengths\s*\n([\s\S]*?)(?=##|$)/i,
+  );
   const strengths = strengthsMatch
     ? strengthsMatch[1]
         .split("\n")
@@ -374,7 +442,9 @@ function parseMarkdownAuditResponse(text: string): any {
     : [];
 
   // Extract opportunities
-  const opportunitiesMatch = text.match(/##\s+Biggest Opportunities\s*\n([\s\S]*?)(?=##|$)/i);
+  const opportunitiesMatch = text.match(
+    /##\s+Biggest Opportunities\s*\n([\s\S]*?)(?=##|$)/i,
+  );
   const opportunities = opportunitiesMatch
     ? opportunitiesMatch[1]
         .split("\n")
@@ -384,8 +454,12 @@ function parseMarkdownAuditResponse(text: string): any {
     : [];
 
   // Extract detailed analysis
-  const detailedAnalysisMatch = text.match(/##\s+Detailed Analysis\s*\n([\s\S]*?)(?=##|End:|$)/i);
-  const detailedAnalysis = detailedAnalysisMatch ? detailedAnalysisMatch[1].trim() : "";
+  const detailedAnalysisMatch = text.match(
+    /##\s+Detailed Analysis\s*\n([\s\S]*?)(?=##|End:|$)/i,
+  );
+  const detailedAnalysis = detailedAnalysisMatch
+    ? detailedAnalysisMatch[1].trim()
+    : "";
 
   const result = {
     overallScore,
@@ -396,12 +470,15 @@ function parseMarkdownAuditResponse(text: string): any {
     recommendations: [],
   };
 
-  console.log('[PARSE] Final result summary:');
-  console.log('[PARSE] - overallScore:', result.overallScore);
-  console.log('[PARSE] - sections.length:', result.sections.length);
-  console.log('[PARSE] - strengths.length:', result.strengths.length);
-  console.log('[PARSE] - opportunities.length:', result.opportunities.length);
-  console.log('[PARSE] - detailedAnalysis length:', result.detailedAnalysis.length);
+  console.log("[PARSE] Final result summary:");
+  console.log("[PARSE] - overallScore:", result.overallScore);
+  console.log("[PARSE] - sections.length:", result.sections.length);
+  console.log("[PARSE] - strengths.length:", result.strengths.length);
+  console.log("[PARSE] - opportunities.length:", result.opportunities.length);
+  console.log(
+    "[PARSE] - detailedAnalysis length:",
+    result.detailedAnalysis.length,
+  );
 
   return result;
 }

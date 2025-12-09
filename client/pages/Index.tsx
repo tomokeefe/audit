@@ -63,7 +63,9 @@ interface ProgressStep {
 }
 
 export default function Index() {
-  const [auditType, setAuditType] = useState<'website' | 'pitch_deck'>('website');
+  const [auditType, setAuditType] = useState<"website" | "pitch_deck">(
+    "website",
+  );
   const [url, setUrl] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -125,17 +127,26 @@ export default function Index() {
       // Check if it's a fetch error
       if (event.reason instanceof Error) {
         const msg = event.reason.message;
-        if (msg.includes("Failed to fetch") || msg.includes("fetch") || event.reason.name === "TypeError") {
-          console.log("Network/fetch error caught by global handler - preventing error propagation");
+        if (
+          msg.includes("Failed to fetch") ||
+          msg.includes("fetch") ||
+          event.reason.name === "TypeError"
+        ) {
+          console.log(
+            "Network/fetch error caught by global handler - preventing error propagation",
+          );
           event.preventDefault(); // Prevent the error from showing in console as unhandled
         }
       }
     };
 
-    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+    window.addEventListener("unhandledrejection", handleUnhandledRejection);
 
     return () => {
-      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+      window.removeEventListener(
+        "unhandledrejection",
+        handleUnhandledRejection,
+      );
     };
   }, []);
 
@@ -317,7 +328,7 @@ export default function Index() {
             Accept: "application/json",
             "Content-Type": "application/json",
           },
-          cache: 'no-store',
+          cache: "no-store",
         });
         clearTimeout(timeoutId);
         return response;
@@ -507,7 +518,7 @@ export default function Index() {
             method: "GET",
             headers: { Accept: "application/json" },
             signal: controller.signal,
-            cache: 'no-store',
+            cache: "no-store",
           });
 
           clearTimeout(timeoutId);
@@ -524,10 +535,15 @@ export default function Index() {
           throw new Error(`Server responded with ${testResponse.status}`);
         } catch (error) {
           // Better error classification
-          const errorMessage = error instanceof Error ? error.message : String(error);
-          const errorName = error instanceof Error ? error.name : '';
+          const errorMessage =
+            error instanceof Error ? error.message : String(error);
+          const errorName = error instanceof Error ? error.name : "";
 
-          console.log(`Connection attempt ${retries + 1} error:`, errorName, errorMessage);
+          console.log(
+            `Connection attempt ${retries + 1} error:`,
+            errorName,
+            errorMessage,
+          );
 
           // Check if this is a network/fetch error (could be iframe or server unavailable)
           const isNetworkError =
@@ -564,11 +580,11 @@ export default function Index() {
             setApiStatus({
               ping: false,
               audits: false,
-              error: "API server unavailable. Some features may be limited."
+              error: "API server unavailable. Some features may be limited.",
             });
             // Try to load cached data anyway
             setTimeout(() => {
-              loadRecentAudits().catch(err => {
+              loadRecentAudits().catch((err) => {
                 console.log("Could not load recent audits:", err);
               });
             }, 300);
@@ -585,20 +601,30 @@ export default function Index() {
 
     initializeAPI().catch((error) => {
       console.error("Failed to initialize API:", error);
-      console.error("Error type:", error instanceof Error ? error.name : typeof error);
-      console.error("Error message:", error instanceof Error ? error.message : String(error));
+      console.error(
+        "Error type:",
+        error instanceof Error ? error.name : typeof error,
+      );
+      console.error(
+        "Error message:",
+        error instanceof Error ? error.message : String(error),
+      );
 
       // Set error state so user knows what's happening
       setApiStatus({
         ping: false,
         audits: false,
-        error: "Unable to connect to API server. Please refresh the page or try again later."
+        error:
+          "Unable to connect to API server. Please refresh the page or try again later.",
       });
 
       // Still try to load cached data
       setTimeout(() => {
-        loadRecentAudits().catch(err => {
-          console.log("Could not load audits after initialization failure:", err);
+        loadRecentAudits().catch((err) => {
+          console.log(
+            "Could not load audits after initialization failure:",
+            err,
+          );
         });
       }, 1000);
     });
@@ -979,7 +1005,6 @@ export default function Index() {
       e.preventDefault();
       console.log("Form submitted - Audit Type:", auditType);
 
-
       // Prevent multiple simultaneous submissions
       if (isLoading) {
         console.log(
@@ -991,7 +1016,11 @@ export default function Index() {
       console.log("✅ Starting new audit process...");
 
       // Skip progress tracking, use standard method directly for reliability
-      if (auditType === "pitch_deck") { await handlePitchDeckSubmit(e); } else { await handleSubmitStandard(e); }
+      if (auditType === "pitch_deck") {
+        await handlePitchDeckSubmit(e);
+      } else {
+        await handleSubmitStandard(e);
+      }
     } catch (topLevelError) {
       console.error("💥 CRITICAL ERROR in handleSubmit:", topLevelError);
       setError(
@@ -1233,13 +1262,13 @@ export default function Index() {
     try {
       // Create FormData for file upload
       const formData = new FormData();
-      formData.append('file', selectedFile);
-      formData.append('auditType', 'pitch_deck');
+      formData.append("file", selectedFile);
+      formData.append("auditType", "pitch_deck");
 
-      console.log('Uploading pitch deck:', selectedFile.name);
+      console.log("Uploading pitch deck:", selectedFile.name);
 
-      const response = await fetch('/api/audit/pitch-deck', {
-        method: 'POST',
+      const response = await fetch("/api/audit/pitch-deck", {
+        method: "POST",
         body: formData,
       });
 
@@ -1249,7 +1278,7 @@ export default function Index() {
       }
 
       const auditResult = await response.json();
-      console.log('Pitch deck audit result:', auditResult);
+      console.log("Pitch deck audit result:", auditResult);
 
       // Save to database
       try {
@@ -1278,7 +1307,9 @@ export default function Index() {
       navigate(`/audit/${auditResult.id}`);
     } catch (error) {
       console.error("Pitch deck audit error:", error);
-      setError(error instanceof Error ? error.message : "Failed to process pitch deck");
+      setError(
+        error instanceof Error ? error.message : "Failed to process pitch deck",
+      );
     } finally {
       setIsLoading(false);
       setShowProgress(false);
@@ -1571,11 +1602,13 @@ export default function Index() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl md:text-6xl">
-              <span className="brand-text-gradient">Brand Audits for Websites & Pitch Decks</span>
+              <span className="brand-text-gradient">
+                Brand Audits for Websites & Pitch Decks
+              </span>
             </h1>
             <p className="mt-6 max-w-3xl mx-auto text-xl text-gray-600">
-              Get comprehensive analysis with AI-powered insights.
-              Perfect for businesses and founders raising capital.
+              Get comprehensive analysis with AI-powered insights. Perfect for
+              businesses and founders raising capital.
             </p>
           </div>
 
@@ -1607,9 +1640,7 @@ export default function Index() {
                       Dismiss
                     </button>
                     {isRetrying ? (
-                      <span className="text-xs text-red-600">
-                        Retrying...
-                      </span>
+                      <span className="text-xs text-red-600">Retrying...</span>
                     ) : (
                       <button
                         onClick={() => retry()}
@@ -1626,9 +1657,9 @@ export default function Index() {
             {isLoading && (
               <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg mt-4">
                 <p className="text-sm">
-                  {auditType === 'pitch_deck'
-                    ? 'Analyzing pitch deck... This may take up to 60 seconds.'
-                    : 'Analyzing website content and generating comprehensive brand audit... This may take up to 30 seconds.'}
+                  {auditType === "pitch_deck"
+                    ? "Analyzing pitch deck... This may take up to 60 seconds."
+                    : "Analyzing website content and generating comprehensive brand audit... This may take up to 30 seconds."}
                 </p>
               </div>
             )}

@@ -35,7 +35,7 @@ export default defineConfig(({ mode }) => ({
       "mammoth",
       "multer",
       "@types/multer",
-      "officeparser"
+      "officeparser",
     ], // Exclude server-only dependencies
   },
 }));
