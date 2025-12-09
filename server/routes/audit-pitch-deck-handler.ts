@@ -1,4 +1,5 @@
 import { AuditResponse } from "@shared/api";
+import crypto from "crypto";
 
 const GROK_API_KEY = process.env.GROK_API_KEY;
 const GROK_API_URL = "https://api.x.ai/v1/chat/completions";
@@ -10,12 +11,54 @@ interface PitchDeckData {
   fileSize: number;
 }
 
+// In-memory cache for pitch deck audits (should use Redis in production)
+const pitchDeckCache = new Map<string, { audit: AuditResponse; timestamp: Date }>();
+
+// Generate content hash for deterministic caching
+function generateContentHash(extractedText: string): string {
+  return crypto
+    .createHash('sha256')
+    .update(extractedText.trim())
+    .digest('hex');
+}
+
 export async function generatePitchDeckAudit(data: PitchDeckData): Promise<AuditResponse> {
   console.log('[PITCH DECK AUDIT] Generating audit for:', data.fileName);
 
   if (!GROK_API_KEY) {
     throw new Error("GROK_API_KEY not configured");
   }
+
+  // Generate content hash for caching
+  const contentHash = generateContentHash(data.extractedText);
+  console.log('[PITCH DECK AUDIT] Content hash:', contentHash);
+
+  // Check cache first
+  const cached = pitchDeckCache.get(contentHash);
+  if (cached) {
+    // Cache valid for 7 days
+    const cacheAge = Date.now() - cached.timestamp.getTime();
+    const sevenDays = 7 * 24 * 60 * 60 * 1000;
+
+    if (cacheAge < sevenDays) {
+      console.log('[PITCH DECK AUDIT] Using cached result (age:', Math.round(cacheAge / 1000 / 60), 'minutes)');
+      // Return cached result with updated metadata
+      return {
+        ...cached.audit,
+        id: Date.now().toString(),
+        date: new Date().toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        }),
+      };
+    } else {
+      console.log('[PITCH DECK AUDIT] Cache expired, generating new audit');
+      pitchDeckCache.delete(contentHash);
+    }
+  }
+
+  console.log('[PITCH DECK AUDIT] No valid cache found, calling Grok API');
 
   const systemPrompt = `You are Brand Whisperer's senior pitch deck strategist with expertise in investor presentations and fundraising. 
 
@@ -94,7 +137,7 @@ RULES:
           { role: "user", content: userPrompt },
         ],
         model: "grok-4-1-fast-reasoning",
-        temperature: 0.7,
+        temperature: 0.1, // Low temperature for consistent, deterministic results
         max_tokens: 4500,
       }),
     });
@@ -185,6 +228,14 @@ RULES:
     };
 
     console.log('[PITCH DECK AUDIT] Audit result created with', auditResult.sections.length, 'sections');
+
+    // Cache the result
+    pitchDeckCache.set(contentHash, {
+      audit: auditResult,
+      timestamp: new Date(),
+    });
+    console.log('[PITCH DECK AUDIT] Cached audit result (cache size:', pitchDeckCache.size, ')');
+
     return auditResult;
   } catch (error) {
     console.error('[PITCH DECK AUDIT] Error:', error);
