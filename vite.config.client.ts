@@ -34,7 +34,8 @@ export default defineConfig(({ mode }) => ({
       "pdf-parse",
       "mammoth",
       "multer",
-      "@types/multer"
+      "@types/multer",
+      "officeparser"
     ], // Exclude server-only dependencies
   },
 }));
