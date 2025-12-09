@@ -225,6 +225,8 @@ function parseMarkdownAuditResponse(text: string): any {
 
   if (sectionMatches && sectionMatches.length > 0) {
     console.log('[PARSE] Processing', sectionMatches.length, 'section matches');
+
+    // Extract full section content including Evidence and Recommendations
     sectionMatches.forEach((match, index) => {
       console.log('[PARSE] Section', index + 1, 'match:', match);
       const scoreMatch = match.match(/(\d+(?:\.\d+)?)\s*\/\s*10/);
@@ -232,16 +234,41 @@ function parseMarkdownAuditResponse(text: string): any {
       const score = Math.round((scoreOut10 / 10) * 100);
       const sectionName = sectionNames[index] || `Section ${index + 1}`;
 
+      // Extract Evidence and Recommendations for this section
+      // Find the section content between this section and the next
+      const nextSectionIndex = index < sectionMatches.length - 1
+        ? text.indexOf(sectionMatches[index + 1])
+        : text.indexOf('## Key Strengths');
+
+      const sectionStartIndex = text.indexOf(match);
+      const sectionContent = nextSectionIndex > sectionStartIndex
+        ? text.substring(sectionStartIndex, nextSectionIndex)
+        : text.substring(sectionStartIndex, sectionStartIndex + 1000);
+
+      // Extract Evidence
+      const evidenceMatch = sectionContent.match(/Evidence:\s*([^\n]+(?:\n(?!Recommendations:)[^\n]+)*)/i);
+      const evidence = evidenceMatch ? evidenceMatch[1].trim() : '';
+
+      // Extract Recommendations
+      const recommendationsMatch = sectionContent.match(/Recommendations:\s*([^\n]+(?:\n(?!\d+\.)[^\n]+)*)/i);
+      const recommendationsText = recommendationsMatch ? recommendationsMatch[1].trim() : '';
+
+      // Split recommendations by semicolons or bullet points
+      const recommendationsList = recommendationsText
+        .split(/[;•]/)
+        .map(r => r.trim())
+        .filter(r => r.length > 10);
+
       const section = {
         name: sectionName,
         score: Math.max(0, Math.min(100, score)),
         maxScore: 100,
         issues: Math.max(1, Math.round((100 - score) / 15)),
-        recommendations: Math.max(1, Math.round((100 - score) / 12)),
-        details: `Score: ${score}%. See detailed analysis above.`,
+        recommendations: recommendationsList.length > 0 ? recommendationsList : [`Improve ${sectionName.toLowerCase()} to increase investor appeal`],
+        details: evidence || `Score: ${score}%. See detailed analysis for specific insights.`,
       };
 
-      console.log('[PARSE] Created section:', section.name, 'Score:', section.score);
+      console.log('[PARSE] Created section:', section.name, 'Score:', section.score, 'Recommendations:', section.recommendations.length);
       sections.push(section);
     });
   } else {
