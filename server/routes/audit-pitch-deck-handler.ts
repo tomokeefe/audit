@@ -259,13 +259,24 @@ function parseMarkdownAuditResponse(text: string): any {
         .map(r => r.trim())
         .filter(r => r.length > 10);
 
+      // Format details with Evidence and Recommendations sections for frontend parsing
+      let detailsText = '';
+      if (evidence) {
+        detailsText += `Overview:\n${evidence}\n\n`;
+      }
+      if (recommendationsList.length > 0) {
+        detailsText += `Recommendations:\n${recommendationsList.map(r => `- ${r}`).join('\n')}`;
+      } else {
+        detailsText += `Recommendations:\n- Improve ${sectionName.toLowerCase()} to increase investor appeal`;
+      }
+
       const section = {
         name: sectionName,
         score: Math.max(0, Math.min(100, score)),
         maxScore: 100,
         issues: Math.max(1, Math.round((100 - score) / 15)),
         recommendations: recommendationsList.length > 0 ? recommendationsList : [`Improve ${sectionName.toLowerCase()} to increase investor appeal`],
-        details: evidence || `Score: ${score}%. See detailed analysis for specific insights.`,
+        details: detailsText || `Score: ${score}%. See detailed analysis for specific insights.`,
       };
 
       console.log('[PARSE] Created section:', section.name, 'Score:', section.score, 'Recommendations:', section.recommendations.length);
