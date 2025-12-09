@@ -1526,12 +1526,11 @@ export default function Index() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl md:text-6xl">
-              <span className="brand-text-gradient">Brand Audits</span>
+              <span className="brand-text-gradient">Brand Audits for Websites & Pitch Decks</span>
             </h1>
             <p className="mt-6 max-w-3xl mx-auto text-xl text-gray-600">
-              Get comprehensive website analysis with detailed scoring,
-              insights, and actionable recommendations to enhance your brand's
-              digital presence.
+              Get comprehensive analysis with AI-powered insights.
+              Perfect for businesses and founders raising capital.
             </p>
           </div>
 
