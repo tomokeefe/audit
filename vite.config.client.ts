@@ -29,7 +29,13 @@ export default defineConfig(({ mode }) => ({
     },
   },
   optimizeDeps: {
-    exclude: ["puppeteer"], // Exclude server-only dependencies
+    exclude: [
+      "puppeteer",
+      "pdf-parse",
+      "mammoth",
+      "multer",
+      "@types/multer"
+    ], // Exclude server-only dependencies
   },
 }));
 
