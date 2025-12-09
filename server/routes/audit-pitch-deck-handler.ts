@@ -1,0 +1,230 @@
+import { AuditResponse } from "@shared/api";
+
+const GROK_API_KEY = process.env.GROK_API_KEY;
+const GROK_API_URL = "https://api.x.ai/v1/chat/completions";
+
+interface PitchDeckData {
+  fileName: string;
+  fileType: string;
+  extractedText: string;
+  fileSize: number;
+}
+
+export async function generatePitchDeckAudit(data: PitchDeckData): Promise<AuditResponse> {
+  console.log('[PITCH DECK AUDIT] Generating audit for:', data.fileName);
+
+  if (!GROK_API_KEY) {
+    throw new Error("GROK_API_KEY not configured");
+  }
+
+  const systemPrompt = `You are Brand Whisperer's senior pitch deck strategist with expertise in investor presentations and fundraising. 
+
+CRITICAL REQUIREMENTS:
+- Base ALL scores on SPECIFIC EVIDENCE from the provided pitch deck content
+- Include QUANTIFIABLE observations (e.g., "15 slides analyzed", "4 financial projections missing")
+- Score fairly and realistically: 9-10 (exceptional), 7-8 (good/solid), 5-6 (average/adequate), 3-4 (needs improvement), 1-2 (serious issues)
+- Most real pitch decks score in the 6-8 range - don't artificially deflate scores
+
+Evaluate across exactly these 10 criteria (0–10 scores, half-points OK):
+1. Problem & Solution Clarity (15%) - Problem statement, solution presentation, value proposition
+2. Market Opportunity (15%) - TAM/SAM/SOM analysis, market validation, growth potential
+3. Business Model (10%) - Revenue model, pricing strategy, unit economics
+4. Traction & Metrics (10%) - Customer acquisition, revenue growth, key milestones
+5. Competitive Advantage (10%) - Differentiation, moat, competitive landscape
+6. Visual Design & Flow (10%) - Slide design, information hierarchy, storytelling
+7. Team & Credibility (10%) - Founder backgrounds, advisor quality, relevant experience
+8. Financial Projections (10%) - Revenue forecasts, burn rate, runway, fundraising needs
+9. Call to Action (5%) - Ask clarity, use of funds, next steps
+10. Investor Appeal (5%) - Overall persuasiveness, investment thesis clarity
+
+For EACH section, provide:
+- Specific evidence from the deck content
+- Quantifiable findings where available
+- 2-3 actionable recommendations SPECIFIC TO THAT SECTION
+
+Structure: # Brand Whisperer Pitch Deck Audit: [Company Name]
+**Overall: X/100** (Grade)
+## Section Scores
+1. Problem & Solution Clarity – X/10
+   Evidence: [Specific findings with data from deck]
+   Recommendations: [2-3 actionable items]
+
+2. Market Opportunity – X/10
+   Evidence: [Specific findings]
+   Recommendations: [2-3 actionable items]
+
+[Continue for all 10 sections...]
+
+## Key Strengths
+- [Specific strength with evidence]
+
+## Biggest Opportunities
+- [Specific opportunity with impact]
+
+## Detailed Analysis
+[2–4 paragraphs with specific observations from the deck]
+
+End: 'This audit shows where your pitch stands—Brand Whisperer helps founders scale to unicorn status. Reply for investor readiness coaching.'`;
+
+  const userPrompt = `Analyze this pitch deck:
+
+FILE: ${data.fileName}
+TYPE: ${data.fileType}
+SIZE: ${(data.fileSize / 1024 / 1024).toFixed(2)} MB
+
+EXTRACTED CONTENT:
+${data.extractedText.substring(0, 10000)}
+
+RULES:
+- Use specific data from the deck (e.g., "Slide 3 mentions $50M TAM")
+- Evidence + 2-3 Recommendations for ALL 10 sections
+- Follow format exactly with "Evidence:" and "Recommendations:" headers
+- Score fairly based on evidence: 8-10 for strong, 6-7 for average, 4-5 for needs work, below 4 for serious issues`;
+
+  try {
+    const response = await fetch(GROK_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${GROK_API_KEY}`,
+      },
+      body: JSON.stringify({
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
+        ],
+        model: "grok-4-1-fast-reasoning",
+        temperature: 0.7,
+        max_tokens: 4500,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Grok API error: ${response.status} - ${errorText}`);
+    }
+
+    const result = await response.json();
+    const text = result.choices?.[0]?.message?.content;
+
+    if (!text) {
+      throw new Error("No content in Grok API response");
+    }
+
+    // Parse the markdown response
+    const auditData = parseMarkdownAuditResponse(text);
+
+    // Generate unique ID and share token
+    const auditId = Date.now().toString();
+    const { randomUUID } = await import("crypto");
+    const shareToken = randomUUID();
+
+    const currentDate = new Date().toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+    // Extract company name from heading
+    const titleMatch = text.match(/# Brand Whisperer Pitch Deck Audit:\s*(.+)/);
+    const companyName = titleMatch ? titleMatch[1].trim() : "Pitch Deck";
+
+    const auditResult: AuditResponse = {
+      id: auditId,
+      url: data.fileName,
+      title: `${companyName} Pitch Deck Audit`,
+      description: `Comprehensive pitch deck analysis for ${companyName}`,
+      overallScore: auditData.overallScore,
+      date: currentDate,
+      status: "completed",
+      sections: auditData.sections,
+      summary: `Pitch deck audit for ${companyName}. See detailed analysis and recommendations below.`,
+      strengths: auditData.strengths,
+      opportunities: auditData.opportunities,
+      detailedAnalysis: auditData.detailedAnalysis,
+      recommendations: auditData.recommendations,
+      rawAnalysis: text,
+      shareToken: shareToken,
+    };
+
+    return auditResult;
+  } catch (error) {
+    console.error('[PITCH DECK AUDIT] Error:', error);
+    throw error;
+  }
+}
+
+// Helper function to parse markdown audit response
+function parseMarkdownAuditResponse(text: string): any {
+  // Extract overall score
+  const overallMatch = text.match(/\*\*Overall:\s*(\d+(?:\.\d+)?)\s*\/\s*100\*\*/i);
+  const overallScore = overallMatch ? Math.round(parseFloat(overallMatch[1])) : 75;
+
+  // Extract section scores
+  const sectionMatches = text.match(/^\s*(\d+)\.\s+([^–-]+?)\s*(?:–|-)\s*(\d+(?:\.\d+)?)\s*\/\s*10/gm);
+  const sections: any[] = [];
+
+  const sectionNames = [
+    "Problem & Solution Clarity",
+    "Market Opportunity",
+    "Business Model",
+    "Traction & Metrics",
+    "Competitive Advantage",
+    "Visual Design & Flow",
+    "Team & Credibility",
+    "Financial Projections",
+    "Call to Action",
+    "Investor Appeal",
+  ];
+
+  if (sectionMatches) {
+    sectionMatches.forEach((match, index) => {
+      const scoreMatch = match.match(/(\d+(?:\.\d+)?)\s*\/\s*10/);
+      const scoreOut10 = scoreMatch ? parseFloat(scoreMatch[1]) : 7;
+      const score = Math.round((scoreOut10 / 10) * 100);
+      const sectionName = sectionNames[index] || `Section ${index + 1}`;
+
+      sections.push({
+        name: sectionName,
+        score: Math.max(0, Math.min(100, score)),
+        maxScore: 100,
+        issues: Math.max(1, Math.round((100 - score) / 15)),
+        recommendations: Math.max(1, Math.round((100 - score) / 12)),
+        details: `Score: ${score}%. See detailed analysis above.`,
+      });
+    });
+  }
+
+  // Extract strengths
+  const strengthsMatch = text.match(/##\s+Key Strengths\s*\n([\s\S]*?)(?=##|$)/i);
+  const strengths = strengthsMatch
+    ? strengthsMatch[1]
+        .split("\n")
+        .filter((line) => line.trim().startsWith("-"))
+        .map((line) => line.replace(/^-\s*/, "").trim())
+        .filter((s) => s.length > 0)
+    : [];
+
+  // Extract opportunities
+  const opportunitiesMatch = text.match(/##\s+Biggest Opportunities\s*\n([\s\S]*?)(?=##|$)/i);
+  const opportunities = opportunitiesMatch
+    ? opportunitiesMatch[1]
+        .split("\n")
+        .filter((line) => line.trim().startsWith("-"))
+        .map((line) => line.replace(/^-\s*/, "").trim())
+        .filter((o) => o.length > 0)
+    : [];
+
+  // Extract detailed analysis
+  const detailedAnalysisMatch = text.match(/##\s+Detailed Analysis\s*\n([\s\S]*?)(?=##|End:|$)/i);
+  const detailedAnalysis = detailedAnalysisMatch ? detailedAnalysisMatch[1].trim() : "";
+
+  return {
+    overallScore,
+    sections,
+    strengths,
+    opportunities,
+    detailedAnalysis,
+    recommendations: [],
+  };
+}
