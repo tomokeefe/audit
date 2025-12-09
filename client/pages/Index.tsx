@@ -930,10 +930,6 @@ export default function Index() {
       e.preventDefault();
       console.log("Form submitted - Audit Type:", auditType);
 
-      if (!url.trim()) {
-        console.log("��� Empty URL, aborting submission");
-        return;
-      }
 
       // Prevent multiple simultaneous submissions
       if (isLoading) {
