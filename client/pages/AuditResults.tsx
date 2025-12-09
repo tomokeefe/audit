@@ -1735,11 +1735,13 @@ Best regards`);
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5" />
-                  Strategic Implementation Plan
+                  {isPitchDeck ? 'Investor Readiness Action Plan' : 'Strategic Implementation Plan'}
                 </CardTitle>
                 <CardDescription>
-                  Comprehensive action plan with prioritized recommendations,
-                  timelines, and success metrics for {auditData.title}
+                  {isPitchDeck
+                    ? 'Prioritized improvements to strengthen your pitch deck and increase fundraising success'
+                    : `Comprehensive action plan with prioritized recommendations, timelines, and success metrics for ${auditData.title}`
+                  }
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -1755,17 +1757,106 @@ Best regards`);
                   )}
                 </div>
 
-                {/* Enhanced Implementation Roadmap */}
-                <ImplementationRoadmap auditData={auditData} />
+                {isPitchDeck ? (
+                  /* Pitch Deck Specific Next Steps */
+                  <>
+                    {/* Immediate Improvements */}
+                    <div className="mb-8">
+                      <div className="flex items-center gap-2 mb-4">
+                        <Zap className="h-5 w-5 text-orange-600" />
+                        <h4 className="text-lg font-semibold text-gray-900">
+                          Immediate Improvements (This Week)
+                        </h4>
+                      </div>
+                      <div className="bg-orange-50 border border-orange-200 rounded-lg p-6 space-y-3">
+                        {(auditData.sections || [])
+                          .filter((s) => s.score < 50)
+                          .slice(0, 3)
+                          .map((section, index) => (
+                            <div key={index} className="flex items-start gap-3">
+                              <CheckCircle className="h-5 w-5 text-orange-600 mt-0.5 flex-shrink-0" />
+                              <div>
+                                <h5 className="font-medium text-gray-900">{section.name}</h5>
+                                <p className="text-sm text-gray-600 mt-1">
+                                  {section.recommendations?.[0] || `Improve this section to strengthen investor appeal`}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
 
-                {/* Interactive Task Checklist */}
-                <InteractiveTaskChecklist auditData={auditData} />
+                    {/* Pre-Pitch Meeting Prep */}
+                    <div className="mb-8">
+                      <div className="flex items-center gap-2 mb-4">
+                        <Users className="h-5 w-5 text-blue-600" />
+                        <h4 className="text-lg font-semibold text-gray-900">
+                          Before Your Next Investor Meeting
+                        </h4>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                          <h5 className="font-medium text-blue-900 mb-2 flex items-center gap-2">
+                            <Target className="h-4 w-4" />
+                            Polish Your Story
+                          </h5>
+                          <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
+                            <li>Refine problem/solution narrative</li>
+                            <li>Add concrete metrics and traction</li>
+                            <li>Strengthen competitive differentiation</li>
+                          </ul>
+                        </div>
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                          <h5 className="font-medium text-blue-900 mb-2 flex items-center gap-2">
+                            <Briefcase className="h-4 w-4" />
+                            Prepare Supporting Materials
+                          </h5>
+                          <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
+                            <li>Update financial projections</li>
+                            <li>Create one-pager executive summary</li>
+                            <li>Prepare detailed Q&A document</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
 
-                {/* ROI Calculator */}
-                <ROICalculator auditData={auditData} />
+                    {/* Long-term Deck Improvements */}
+                    <div className="mb-8">
+                      <div className="flex items-center gap-2 mb-4">
+                        <Award className="h-5 w-5 text-purple-600" />
+                        <h4 className="text-lg font-semibold text-gray-900">
+                          Ongoing Improvements
+                        </h4>
+                      </div>
+                      <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 space-y-3">
+                        <p className="text-sm text-purple-900 mb-4">
+                          Continue iterating your deck based on investor feedback:
+                        </p>
+                        <ul className="text-sm text-purple-800 space-y-2 list-disc list-inside">
+                          <li>Track which slides generate the most questions</li>
+                          <li>A/B test different versions with different investor types</li>
+                          <li>Update traction slides monthly with latest metrics</li>
+                          <li>Refine ask based on actual fundraising conversations</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  /* Website Audit Next Steps (existing) */
+                  <>
+                    {/* Enhanced Implementation Roadmap */}
+                    <ImplementationRoadmap auditData={auditData} />
 
-                {/* Success Metrics */}
-                <SuccessMetrics auditData={auditData} />
+                    {/* Interactive Task Checklist */}
+                    <InteractiveTaskChecklist auditData={auditData} />
+
+                    {/* ROI Calculator */}
+                    <ROICalculator auditData={auditData} />
+
+                    {/* Success Metrics */}
+                    <SuccessMetrics auditData={auditData} />
+                  </>
+                )}
 
                 {/* Enhanced Priority Matrix */}
                 <div className="mt-8 p-6 bg-gradient-to-br from-orange-50 to-red-50 rounded-lg border border-orange-200">
