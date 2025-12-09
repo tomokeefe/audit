@@ -42,29 +42,23 @@ const upload = multer({
   }
 });
 
-// Extract text from PPT/PPTX file (convert to docx format and extract)
+// Extract text from PPT/PPTX file using officeparser
 async function extractFromPowerPoint(filePath: string): Promise<string> {
   try {
     console.log('[PPT] Extracting text from PowerPoint:', filePath);
-    
-    // For PPTX files, we can use mammoth (it works with some Office formats)
-    // For PPT files, we'd need a different approach
-    const buffer = await fs.readFile(filePath);
-    
-    try {
-      const result = await mammoth.extractRawText({ buffer });
-      console.log('[PPT] Extracted text length:', result.value.length);
-      return result.value;
-    } catch (mammothError) {
-      console.warn('[PPT] Mammoth extraction failed, trying alternative:', mammothError);
-      // Fallback: basic text extraction from buffer
-      const text = buffer.toString('utf-8', 0, Math.min(buffer.length, 50000));
-      const cleanText = text.replace(/[^\x20-\x7E\n]/g, ' ').trim();
-      return cleanText || 'Unable to extract text from PowerPoint file';
+
+    // Use officeparser which properly handles PPTX files
+    const text = await officeParser.parseOfficeAsync(filePath);
+    console.log('[PPT] Extracted text length:', text.length);
+
+    if (!text || text.trim().length === 0) {
+      throw new Error('No text content extracted from PowerPoint file');
     }
+
+    return text.trim();
   } catch (error) {
     console.error('[PPT] Error extracting from PowerPoint:', error);
-    throw new Error('Failed to extract text from PowerPoint file');
+    throw new Error('Failed to extract text from PowerPoint file. Please ensure the file is a valid .ppt or .pptx file.');
   }
 }
 
