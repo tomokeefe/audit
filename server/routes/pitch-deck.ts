@@ -73,6 +73,8 @@ async function extractFromPDF(filePath: string): Promise<string> {
   try {
     console.log('[PDF] Extracting text from PDF:', filePath);
     const dataBuffer = await fs.readFile(filePath);
+    // @ts-ignore - pdf-parse has ESM/CJS compatibility issues
+    const pdf = pdfParse.default || pdfParse;
     const data = await pdf(dataBuffer);
     console.log('[PDF] Extracted text length:', data.text.length);
     console.log('[PDF] Number of pages:', data.numpages);
