@@ -535,11 +535,20 @@ export default function Index() {
             return attemptConnection();
           } else {
             console.log(
-              "All connection attempts failed, running fallback tests...",
+              "All connection attempts exhausted. App will continue with limited functionality.",
             );
-            // Run the full test anyway in case it's a false negative
-            await safeTestAPIConnection();
-            setTimeout(() => loadRecentAudits(), 300);
+            // Set status to show API is unavailable
+            setApiStatus({
+              ping: false,
+              audits: false,
+              error: "API server unavailable. Some features may be limited."
+            });
+            // Try to load cached data anyway
+            setTimeout(() => {
+              loadRecentAudits().catch(err => {
+                console.log("Could not load recent audits:", err);
+              });
+            }, 300);
             return false;
           }
         }
