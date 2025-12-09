@@ -2,8 +2,8 @@ import { RequestHandler } from "express";
 import multer from "multer";
 import path from "path";
 import fs from "fs/promises";
-import mammoth from "mammoth";
 import * as pdfParse from "pdf-parse";
+import officeParser from "officeparser";
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
