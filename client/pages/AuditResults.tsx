@@ -1325,6 +1325,12 @@ Best regards`);
     return "bg-red-50 border-red-200";
   };
 
+  // Detect if this is a pitch deck audit
+  const isPitchDeck =
+    auditData.title?.toLowerCase().includes('pitch deck') ||
+    auditData.url?.match(/\.(pptx?|pdf)$/i) ||
+    false;
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
