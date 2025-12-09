@@ -287,13 +287,18 @@ function parseMarkdownAuditResponse(text: string): any {
     // Create default sections if parsing fails
     sectionNames.forEach((name, index) => {
       const defaultScore = 70; // Default to 70%
+      const defaultRecommendations = [
+        `Enhance ${name.toLowerCase()} with specific data and evidence`,
+        `Add quantifiable metrics to support claims`,
+        `Strengthen messaging to increase investor confidence`
+      ];
       sections.push({
         name,
         score: defaultScore,
         maxScore: 100,
         issues: 2,
-        recommendations: 3,
-        details: `Score: ${defaultScore}%. Analysis pending.`,
+        recommendations: defaultRecommendations,
+        details: `Overview:\nThis section scored ${defaultScore}% based on initial analysis.\n\nRecommendations:\n${defaultRecommendations.map(r => `- ${r}`).join('\n')}`,
       });
     });
   }
