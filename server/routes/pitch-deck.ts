@@ -3,7 +3,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs/promises";
 import mammoth from "mammoth";
-import pdf from "pdf-parse";
+import * as pdfParse from "pdf-parse";
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
