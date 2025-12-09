@@ -129,11 +129,9 @@ export const handlePitchDeckAudit: RequestHandler = async (req, res) => {
     console.log('[PITCH DECK] Sections count:', auditResult.sections?.length || 0);
 
     // Store the audit result (same as website audits)
-    const { default: auditModule } = await import('./audit.js');
-    if (auditModule && typeof auditModule.storeAuditResult === 'function') {
-      await auditModule.storeAuditResult(auditResult);
-      console.log('[PITCH DECK] Audit stored successfully');
-    }
+    const { storeAuditResult } = await import('./audit.js');
+    await storeAuditResult(auditResult);
+    console.log('[PITCH DECK] Audit stored successfully');
 
     // Clean up uploaded file
     try {
