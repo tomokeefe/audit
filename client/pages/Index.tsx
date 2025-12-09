@@ -562,9 +562,22 @@ export default function Index() {
 
     initializeAPI().catch((error) => {
       console.error("Failed to initialize API:", error);
-      // Fallback: try to run tests anyway
-      safeTestAPIConnection();
-      setTimeout(() => loadRecentAudits(), 1000);
+      console.error("Error type:", error instanceof Error ? error.name : typeof error);
+      console.error("Error message:", error instanceof Error ? error.message : String(error));
+
+      // Set error state so user knows what's happening
+      setApiStatus({
+        ping: false,
+        audits: false,
+        error: "Unable to connect to API server. Please refresh the page or try again later."
+      });
+
+      // Still try to load cached data
+      setTimeout(() => {
+        loadRecentAudits().catch(err => {
+          console.log("Could not load audits after initialization failure:", err);
+        });
+      }, 1000);
     });
   }, []);
 
