@@ -1535,91 +1535,59 @@ export default function Index() {
             </p>
           </div>
 
-          {/* URL Input Form */}
+          {/* Audit Input Form */}
           <div className="mt-12 max-w-3xl mx-auto">
-            <form
-              onSubmit={(e) => {
-                console.log("🟡 FORM onSubmit triggered!");
-                handleSubmit(e);
-              }}
-              className="space-y-4"
-              style={{ pointerEvents: isLoading ? "none" : "auto" }}
-            >
-              <div className="flex gap-4">
-                <div className="flex-1 relative">
-                  <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                  <Input
-                    type="text"
-                    placeholder="Enter website URL to audit (e.g., example.com)"
-                    value={url}
-                    onChange={(e) => {
-                      console.log("📝 URL input changed:", e.target.value);
-                      setUrl(e.target.value);
-                    }}
-                    className="pl-10 h-12 text-lg"
-                    required
-                  />
-                </div>
-                <Button
-                  type="submit"
-                  disabled={isLoading}
-                  onClick={() => console.log("🖱️ Start Audit button clicked!")}
-                  className="h-12 px-8 bg-brand-500 hover:bg-brand-600 text-white font-semibold"
-                >
-                  {isLoading ? (
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      Analyzing...
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <Search className="h-5 w-5" />
-                      Start Audit
-                    </div>
-                  )}
-                </Button>
-              </div>
+            <AuditTypeSelector
+              auditType={auditType}
+              setAuditType={setAuditType}
+              url={url}
+              setUrl={setUrl}
+              selectedFile={selectedFile}
+              setSelectedFile={setSelectedFile}
+              isLoading={isLoading}
+              onSubmit={handleSubmit}
+            />
 
-              {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-                  <div className="flex justify-between items-start">
-                    <p className="text-sm flex-1">{error}</p>
-                    <div className="flex gap-2 ml-3">
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mt-4">
+                <div className="flex justify-between items-start">
+                  <p className="text-sm flex-1">{error}</p>
+                  <div className="flex gap-2 ml-3">
+                    <button
+                      onClick={() => {
+                        clearError();
+                        setError("");
+                      }}
+                      className="text-xs text-red-600 hover:text-red-800 underline"
+                    >
+                      Dismiss
+                    </button>
+                    {isRetrying ? (
+                      <span className="text-xs text-red-600">
+                        Retrying...
+                      </span>
+                    ) : (
                       <button
-                        onClick={() => {
-                          clearError();
-                          setError("");
-                        }}
+                        onClick={() => retry()}
                         className="text-xs text-red-600 hover:text-red-800 underline"
                       >
-                        Dismiss
+                        Retry
                       </button>
-                      {isRetrying ? (
-                        <span className="text-xs text-red-600">
-                          Retrying...
-                        </span>
-                      ) : (
-                        <button
-                          onClick={() => retry()}
-                          className="text-xs text-red-600 hover:text-red-800 underline"
-                        >
-                          Retry
-                        </button>
-                      )}
-                    </div>
+                    )}
                   </div>
                 </div>
-              )}
+              </div>
+            )}
 
-              {isLoading && (
-                <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg">
-                  <p className="text-sm">
-                    Analyzing website content and generating comprehensive brand
-                    audit... This may take up to 30 seconds.
-                  </p>
-                </div>
-              )}
-            </form>
+            {isLoading && (
+              <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg mt-4">
+                <p className="text-sm">
+                  {auditType === 'pitch_deck'
+                    ? 'Analyzing pitch deck... This may take up to 60 seconds.'
+                    : 'Analyzing website content and generating comprehensive brand audit... This may take up to 30 seconds.'}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
