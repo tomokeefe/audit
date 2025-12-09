@@ -145,17 +145,24 @@ RULES:
     const sections = auditData.sections && auditData.sections.length > 0
       ? auditData.sections
       : [
-          { name: "Problem & Solution Clarity", score: 70, maxScore: 100, issues: 2, recommendations: 3, details: "Analysis in progress" },
-          { name: "Market Opportunity", score: 70, maxScore: 100, issues: 2, recommendations: 3, details: "Analysis in progress" },
-          { name: "Business Model", score: 70, maxScore: 100, issues: 2, recommendations: 3, details: "Analysis in progress" },
-          { name: "Traction & Metrics", score: 70, maxScore: 100, issues: 2, recommendations: 3, details: "Analysis in progress" },
-          { name: "Competitive Advantage", score: 70, maxScore: 100, issues: 2, recommendations: 3, details: "Analysis in progress" },
-          { name: "Visual Design & Flow", score: 70, maxScore: 100, issues: 2, recommendations: 3, details: "Analysis in progress" },
-          { name: "Team & Credibility", score: 70, maxScore: 100, issues: 2, recommendations: 3, details: "Analysis in progress" },
-          { name: "Financial Projections", score: 70, maxScore: 100, issues: 2, recommendations: 3, details: "Analysis in progress" },
-          { name: "Call to Action", score: 70, maxScore: 100, issues: 2, recommendations: 3, details: "Analysis in progress" },
-          { name: "Investor Appeal", score: 70, maxScore: 100, issues: 2, recommendations: 3, details: "Analysis in progress" },
-        ];
+          "Problem & Solution Clarity", "Market Opportunity", "Business Model",
+          "Traction & Metrics", "Competitive Advantage", "Visual Design & Flow",
+          "Team & Credibility", "Financial Projections", "Call to Action", "Investor Appeal"
+        ].map(name => {
+          const defaultRecs = [
+            `Strengthen ${name.toLowerCase()} with specific data`,
+            `Add supporting evidence and examples`,
+            `Clarify key messages for investors`
+          ];
+          return {
+            name,
+            score: 70,
+            maxScore: 100,
+            issues: 2,
+            recommendations: defaultRecs,
+            details: `Overview:\nThis section requires detailed analysis.\n\nRecommendations:\n${defaultRecs.map(r => `- ${r}`).join('\n')}`
+          };
+        });
 
     console.log('[PITCH DECK AUDIT] Final sections count:', sections.length);
 
