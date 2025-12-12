@@ -70,30 +70,30 @@ export const CONSISTENCY_THRESHOLDS = {
 // Industry-specific weight adjustments (research-backed)
 export const INDUSTRY_ADJUSTMENTS = {
   ecommerce: {
-    conversionOptimization: +0.05, // Emphasize conversion for ecommerce
-    customerExperience: +0.03, // Customer journey critical
-    design: -0.02, // Less emphasis on pure aesthetics
-    messaging: -0.02, // Product focus over messaging
+    conversionCTA: +0.05, // Emphasize conversion for ecommerce
+    performanceSpeed: +0.03, // Fast loading critical for sales
+    visualDesignFlow: -0.02, // Less emphasis on pure aesthetics
+    contentMessaging: -0.02, // Product focus over long-form content
   },
   saas: {
-    usability: +0.07, // User experience paramount
-    contentStrategy: +0.03, // Documentation and onboarding
-    digitalPresence: +0.02, // Technical SEO important
-    design: -0.03, // Function over form
+    userExperienceNav: +0.07, // User experience paramount
+    contentMessaging: +0.03, // Documentation and onboarding copy
+    seoTechnical: +0.02, // Technical SEO important
+    visualDesignFlow: -0.03, // Function over form
   },
   healthcare: {
-    compliance: +0.1, // Regulatory requirements critical
-    customerExperience: +0.05, // Patient experience
-    usability: +0.03, // Accessibility requirements
-    conversionOptimization: -0.05, // Less focus on sales conversion
-    competitorAnalysis: -0.03, // Less competitive focus
+    accessibility: +0.1, // Regulatory requirements critical
+    securityIntegrity: +0.05, // Patient data security
+    userExperienceNav: +0.03, // Accessibility requirements
+    conversionCTA: -0.05, // Less focus on sales conversion
+    competitivePositioning: -0.03, // Less competitive focus
   },
   finance: {
-    compliance: +0.12, // Heavy regulatory requirements
-    customerExperience: +0.05, // Trust and security
-    branding: +0.03, // Credibility crucial
-    conversionOptimization: -0.05, // Relationship over conversion
-    design: -0.03, // Conservative approach
+    securityIntegrity: +0.12, // Heavy security requirements
+    accessibility: +0.05, // Compliance and trust
+    contentMessaging: +0.03, // Credibility through clear messaging
+    conversionCTA: -0.05, // Relationship over conversion
+    visualDesignFlow: -0.03, // Conservative approach
   },
 } as const;
 
