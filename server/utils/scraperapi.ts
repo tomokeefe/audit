@@ -12,12 +12,13 @@ import * as cheerio from "cheerio";
  */
 export async function scrapeWithScraperAPI(url: string) {
   const apiKey = process.env.SCRAPER_API_KEY;
-  
+
   if (!apiKey) {
     throw new Error("SCRAPER_API_KEY environment variable not set");
   }
 
   console.log(`🌐 Using ScraperAPI to access ${url}...`);
+  console.log(`   API Key: ${apiKey.substring(0, 8)}...${apiKey.substring(apiKey.length - 4)}`);
   console.log(`   ScraperAPI handles Cloudflare bypass automatically`);
 
   let response;
