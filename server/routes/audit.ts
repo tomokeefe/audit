@@ -3042,10 +3042,21 @@ function extractSectionDetails(
 
   // Special handling for Competitive Advantage & Market Positioning - MUST have SWOT
   if (sectionName === "Competitive Advantage & Market Positioning") {
-    const hasSWOT = evidence.includes("SWOT Analysis:") || evidence.includes("• SWOT");
+    // Check for complete SWOT (all 4 elements required)
+    const hasStrengths = evidence.includes("Strengths:") || evidence.includes("- Strengths:");
+    const hasWeaknesses = evidence.includes("Weaknesses:") || evidence.includes("- Weaknesses:");
+    const hasOpportunities = evidence.includes("Opportunities:") || evidence.includes("- Opportunities:");
+    const hasThreats = evidence.includes("Threats:") || evidence.includes("- Threats:");
 
-    if (!hasSWOT) {
-      console.warn(`[SWOT ENFORCEMENT] SWOT Analysis missing for ${sectionName}, adding structured SWOT`);
+    const hasCompleteSWOT = hasStrengths && hasWeaknesses && hasOpportunities && hasThreats;
+
+    if (!hasCompleteSWOT) {
+      console.warn(`[SWOT ENFORCEMENT] Incomplete SWOT for ${sectionName}`);
+      console.warn(`  Strengths: ${hasStrengths ? '✓' : '✗'}`);
+      console.warn(`  Weaknesses: ${hasWeaknesses ? '✓' : '✗'}`);
+      console.warn(`  Opportunities: ${hasOpportunities ? '✓' : '✗'}`);
+      console.warn(`  Threats: ${hasThreats ? '✓' : '✗'}`);
+      console.warn(`  Adding complete SWOT structure...`);
 
       // Extract or generate SWOT elements from evidence
       const swotSection = generateSWOTFromEvidence(evidence, score);
@@ -3057,7 +3068,7 @@ function extractSectionDetails(
         evidence = swotSection;
       }
     } else {
-      console.log(`[SWOT CHECK] ✓ SWOT Analysis found in ${sectionName}`);
+      console.log(`[SWOT CHECK] ✓ Complete SWOT Analysis found in ${sectionName} (all 4 elements present)`);
     }
   }
 
