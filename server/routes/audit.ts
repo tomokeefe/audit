@@ -3230,6 +3230,7 @@ IMPORTANT: Recommendations MUST be:
 Structure: # Brand Whisperer Audit: [Name]
 **Overall: X/100** (Grade)
 ## Section Scores
+⚠️ IMPORTANT: Include ALL 10 sections below - do not skip sections 9 and 10!
 1. Visual Design & Flow – X/10
    Evidence: [Specific findings with data - what you actually observed]
    Recommendations:
