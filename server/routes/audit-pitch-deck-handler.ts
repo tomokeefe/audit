@@ -141,11 +141,13 @@ RULES:
 - Score fairly based on evidence: 8-10 for strong, 6-7 for average, 4-5 for needs work, below 4 for serious issues`;
 
   try {
+    // Build authorization header at runtime to prevent bundler inlining
+    const authHeader = "Bearer " + GROK_API_KEY;
     const response = await fetch(GROK_API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${getGrokApiKey()}`,
+        Authorization: authHeader,
       },
       body: JSON.stringify({
         messages: [
