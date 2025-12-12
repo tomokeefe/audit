@@ -21,7 +21,7 @@ import {
   getSEOMetrics,
   calculateAveragePerformance,
 } from "../utils/phase1-enhancements";
-import { scrapeWithScraperAPI } from "../utils/scraperapi";
+import { scrapeWithFirecrawl } from "../utils/firecrawl";
 
 // Grok API configuration (x.ai)
 const GROK_API_KEY = process.env.GROK_API_KEY;
@@ -1236,23 +1236,23 @@ async function scrapeWebsite(url: string) {
           }
         }
 
-        // Try ScraperAPI if available (handles Cloudflare automatically)
-        if (process.env.SCRAPER_API_KEY) {
-          console.log(`🔄 Last resort: Trying ScraperAPI for ${url}...`);
+        // Try Firecrawl if available (AI-optimized scraping with Cloudflare bypass)
+        if (process.env.FIRECRAWL_API_KEY) {
+          console.log(`🔄 Last resort: Trying Firecrawl for ${url}...`);
           try {
-            const scraperApiResult = await scrapeWithScraperAPI(url);
-            console.log(`✅ ScraperAPI successfully accessed ${url}!`);
-            return scraperApiResult;
-          } catch (scraperApiError) {
+            const firecrawlResult = await scrapeWithFirecrawl(url);
+            console.log(`✅ Firecrawl successfully accessed ${url}!`);
+            return firecrawlResult;
+          } catch (firecrawlError) {
             console.error(
-              `❌ ScraperAPI also failed:`,
-              scraperApiError instanceof Error
-                ? scraperApiError.message
-                : scraperApiError,
+              `❌ Firecrawl also failed:`,
+              firecrawlError instanceof Error
+                ? firecrawlError.message
+                : firecrawlError,
             );
           }
         } else {
-          console.log(`⚠️  ScraperAPI not configured (no SCRAPER_API_KEY)`);
+          console.log(`⚠️  Firecrawl not configured (no FIRECRAWL_API_KEY)`);
         }
 
         // All methods exhausted, use fallback data
