@@ -181,6 +181,13 @@ export default function Index() {
   }, [recentAudits]);
 
   const loadRecentAudits = async () => {
+    // Skip if in iframe mode
+    if (isInIframe) {
+      console.log("🎭 Skipping loadRecentAudits in iframe mode");
+      setLoadingAudits(false);
+      return;
+    }
+
     try {
       setLoadingAudits(true);
 
