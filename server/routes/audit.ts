@@ -3388,6 +3388,13 @@ Weights for overall /100:
      * Weaknesses: 2-3 competitive gaps or areas lacking differentiation
      * Opportunities: 2-3 ways to better highlight unique value or stand out
      * Threats: 2-3 market factors or competitive pressures
+   - CRITICAL: SWOT MUST be formatted as a bulleted list under "• SWOT Analysis:" with each element clearly labeled
+   - Example format:
+     • SWOT Analysis:
+       - Strengths: Strong performance (95/100), Excellent mobile UX, Clear value proposition
+       - Weaknesses: Limited competitive differentiation in messaging, No visible unique features highlighted
+       - Opportunities: Leverage performance advantage in marketing, Create competitor comparison page
+       - Threats: Increasing competition, Market saturation in industry
    - Assess if brand messaging clearly communicates differentiation
 
 10. Conversion & Call-to-Action Optimization (7%)
@@ -3409,6 +3416,8 @@ IMPORTANT: Recommendations MUST be:
 - Never suggest fixing something that's already working well
 
 ⚠️ CRITICAL: Section 9 (Competitive Advantage & Market Positioning) MUST include a complete SWOT Analysis with ALL 4 elements (Strengths, Weaknesses, Opportunities, Threats) - this is NON-NEGOTIABLE!
+⚠️ FORMAT REQUIREMENT: SWOT must appear as "• SWOT Analysis:" followed by 4 dash-separated lines (- Strengths:, - Weaknesses:, - Opportunities:, - Threats:)
+⚠️ VALIDATION: If SWOT is missing ANY of the 4 elements, the audit is INCOMPLETE and INVALID!
 
 Structure: # Brand Whisperer Audit: [Name]
 **Overall: X/100** (Grade)
@@ -3466,11 +3475,13 @@ Structure: # Brand Whisperer Audit: [Name]
    Evidence:
    • Unique Offerings: [List 2-4 specific features, proprietary capabilities, or unique selling points found on the site]
    • Competitive Positioning: [How the brand compares to industry standards - e.g., "Website Performance: 9.5/10 (above industry avg ~7/10); SEO: 7/10 (avg); Load time: faster than competitors"]
-   • SWOT Analysis (ALL 4 REQUIRED):
-     - Strengths: [2-3 things brand does exceptionally well, e.g., "Strong brand positioning", "User-friendly interface", "Quality content"]
-     - Weaknesses: [2-3 competitive gaps, e.g., "Limited competitive analysis", "Missing industry benchmarks", "Unclear market position"]
-     - Opportunities: [2-3 ways to improve, e.g., "Highlight unique features more prominently", "Develop competitive comparison content", "Leverage SWOT in messaging"]
-     - Threats: [2-3 market factors, e.g., "Increased competition", "Market saturation", "Technology changes"]
+   • SWOT Analysis:
+     - Strengths: Strong performance metrics (Performance: 95/100, above industry avg), Clear brand identity, User-friendly mobile experience
+     - Weaknesses: Limited competitive differentiation in copy, No visible unique features highlighted, Generic value proposition
+     - Opportunities: Leverage performance advantage in SEO/marketing, Create "Why Us" comparison page, Highlight proprietary technology
+     - Threats: Increasing market competition, Commoditization of services, Changing consumer preferences
+
+   IMPORTANT: This exact format MUST be used. Each SWOT element MUST start with "- [Element]:" and contain 2-3 specific, comma-separated points.
    Recommendations:
    - [Specific positioning improvement based on SWOT findings]
    - [Opportunity to better highlight unique differentiators from SWOT analysis]
