@@ -40,7 +40,11 @@ export default defineConfig(({ mode }) => ({
   },
   ssr: {
     noExternal: false,
-    external: ["../server/env-runtime.js", "./server/env-runtime.js", "/server/env-runtime.js"],
+    external: [
+      "../server/env-runtime.js",
+      "./server/env-runtime.js",
+      "/server/env-runtime.js",
+    ],
   },
 }));
 

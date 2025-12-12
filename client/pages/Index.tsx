@@ -69,7 +69,8 @@ export default function Index() {
   const [url, setUrl] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   // Detect if running in iframe (Builder.io preview mode)
-  const isInIframe = typeof window !== 'undefined' && window.self !== window.top;
+  const isInIframe =
+    typeof window !== "undefined" && window.self !== window.top;
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
