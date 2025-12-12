@@ -1428,56 +1428,6 @@ Best regards`);
           </TabsList>
 
           <TabsContent value="overview" className="mt-8">
-            {/* Audit Overview */}
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle className="text-xl">Audit Overview</CardTitle>
-                <CardDescription>
-                  This audit evaluates the website of {auditData.title} as of{" "}
-                  {auditData.date}, focusing on messaging, user experience (UX),
-                  usability, and additional aspects such as design, content
-                  quality, SEO, security, and compliance. The analysis provides
-                  detailed insights and actionable recommendations.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            {/* Section Scores */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {(auditData.sections || []).map((section, index) => (
-                <Card key={index} className="hover:shadow-md transition-shadow">
-                  <CardHeader className="pb-3">
-                    <div className="flex justify-between items-start">
-                      <CardTitle className="text-lg">{section.name}</CardTitle>
-                      <div
-                        className={`text-2xl font-bold ${getScoreColor(section.score)}`}
-                      >
-                        {typeof section.score === "number"
-                          ? section.score.toFixed(1)
-                          : section.score}
-                        %
-                      </div>
-                    </div>
-                    <Progress value={section.score} className="h-2" />
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <div className="flex justify-between text-sm text-gray-600">
-                      <div className="flex items-center gap-1">
-                        <AlertTriangle className="h-4 w-4 text-red-500" />
-                        {section.issues} issues found
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                        {section.recommendations} recommendations
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="recommendations" className="mt-8">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
