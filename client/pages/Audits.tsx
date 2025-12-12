@@ -25,9 +25,21 @@ import {
   Filter,
   Plus,
   AlertCircle,
+  Trash2,
 } from "lucide-react";
 import { AuditResponse } from "@shared/api";
 import { apiGet } from "@/lib/api-client";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
 
 interface AuditSummary {
   id: string;
@@ -35,6 +47,7 @@ interface AuditSummary {
   url: string;
   date: string;
   overallScore: number;
+  isDemoMode?: boolean;
 }
 
 const getScoreColor = (score: number) => {
@@ -56,6 +69,10 @@ export default function Audits() {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("date");
   const [filterBy, setFilterBy] = useState("all");
+  const [auditTypeFilter, setAuditTypeFilter] = useState("all");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [auditToDelete, setAuditToDelete] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     const loadAudits = async () => {
@@ -80,6 +97,46 @@ export default function Audits() {
     loadAudits();
   }, []);
 
+  // Delete audit handler
+  const handleDeleteClick = (e: React.MouseEvent, auditId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setAuditToDelete(auditId);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!auditToDelete) return;
+
+    try {
+      const response = await fetch(`/api/audits/${auditToDelete}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete audit");
+      }
+
+      // Remove from local state
+      setAudits(audits.filter((a) => a.id !== auditToDelete));
+
+      toast({
+        title: "Audit deleted",
+        description: "The audit has been successfully removed.",
+      });
+    } catch (err) {
+      console.error("Error deleting audit:", err);
+      toast({
+        title: "Delete failed",
+        description: "Failed to delete the audit. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setDeleteDialogOpen(false);
+      setAuditToDelete(null);
+    }
+  };
+
   // Filter and sort audits
   const filteredAudits = audits
     .filter((audit) => {
@@ -88,17 +145,27 @@ export default function Audits() {
         audit.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         audit.url.toLowerCase().includes(searchTerm.toLowerCase());
 
+      // Audit type filter
+      const isPitchDeck = audit.title.toLowerCase().includes("pitch deck");
+      const matchesType =
+        auditTypeFilter === "all" ||
+        (auditTypeFilter === "website" && !isPitchDeck) ||
+        (auditTypeFilter === "pitch-deck" && isPitchDeck);
+
       // Score filter
       if (filterBy === "excellent")
-        return matchesSearch && audit.overallScore >= 80;
+        return matchesSearch && matchesType && audit.overallScore >= 80;
       if (filterBy === "good")
         return (
-          matchesSearch && audit.overallScore >= 60 && audit.overallScore < 80
+          matchesSearch &&
+          matchesType &&
+          audit.overallScore >= 60 &&
+          audit.overallScore < 80
         );
       if (filterBy === "needs-improvement")
-        return matchesSearch && audit.overallScore < 60;
+        return matchesSearch && matchesType && audit.overallScore < 60;
 
-      return matchesSearch;
+      return matchesSearch && matchesType;
     })
     .sort((a, b) => {
       if (sortBy === "date") {
@@ -129,12 +196,6 @@ export default function Audits() {
             </p>
           </div>
           <div className="flex gap-3 mt-4 md:mt-0">
-            <Button asChild variant="outline">
-              <Link to="/compare" className="flex items-center gap-2">
-                <BarChart3 className="h-4 w-4" />
-                Compare Audits
-              </Link>
-            </Button>
             <Button asChild>
               <Link to="/" className="flex items-center gap-2">
                 <Plus className="h-4 w-4" />
@@ -159,6 +220,17 @@ export default function Audits() {
               </div>
             </div>
             <div className="flex gap-3">
+              <Select value={auditTypeFilter} onValueChange={setAuditTypeFilter}>
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Audit type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Audits</SelectItem>
+                  <SelectItem value="website">Website Audits</SelectItem>
+                  <SelectItem value="pitch-deck">Pitch Deck Audits</SelectItem>
+                </SelectContent>
+              </Select>
+
               <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Sort by" />
@@ -246,7 +318,7 @@ export default function Audits() {
                 className="hover:shadow-lg transition-shadow cursor-pointer"
               >
                 <CardHeader>
-                  <div className="flex justify-between items-start">
+                  <div className="flex justify-between items-start gap-2">
                     <div className="flex-1 min-w-0">
                       <CardTitle className="text-lg font-semibold text-gray-900 mb-1 truncate">
                         {audit.title}
@@ -258,10 +330,20 @@ export default function Audits() {
                         {getScoreLabel(audit.overallScore)}
                       </Badge>
                     </div>
-                    <div
-                      className={`px-3 py-1 rounded-full text-sm font-semibold flex-shrink-0 ml-2 ${getScoreColor(audit.overallScore)}`}
-                    >
-                      {audit.overallScore}%
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <div
+                        className={`px-3 py-1 rounded-full text-sm font-semibold ${getScoreColor(audit.overallScore)}`}
+                      >
+                        {audit.overallScore}%
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-gray-400 hover:text-red-600 hover:bg-red-50"
+                        onClick={(e) => handleDeleteClick(e, audit.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                 </CardHeader>
@@ -284,6 +366,28 @@ export default function Audits() {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Audit</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this audit? This action cannot be
+              undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
