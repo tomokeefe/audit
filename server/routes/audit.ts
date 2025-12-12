@@ -21,6 +21,7 @@ import {
   getSEOMetrics,
   calculateAveragePerformance,
 } from "../utils/phase1-enhancements";
+import { scrapeWithScraperAPI } from "../utils/scraperapi";
 
 // Grok API configuration (x.ai)
 const GROK_API_KEY = process.env.GROK_API_KEY;
