@@ -3365,11 +3365,11 @@ Weights for overall /100:
    - Create a competitive positioning analysis with:
      * How website performance compares to industry benchmarks (use other section scores as reference)
      * Specific differentiators that set the brand apart
-   - Generate a mini SWOT analysis:
-     * Strengths: What the brand does well (from audit findings)
-     * Weaknesses: Competitive gaps or areas lacking differentiation
-     * Opportunities: Ways to better highlight unique value or stand out
-     * Threats: Market factors or competitive pressures
+   - REQUIRED: Generate a complete SWOT analysis (all 4 elements MUST be included):
+     * Strengths: 2-3 specific things the brand does well (from audit findings)
+     * Weaknesses: 2-3 competitive gaps or areas lacking differentiation
+     * Opportunities: 2-3 ways to better highlight unique value or stand out
+     * Threats: 2-3 market factors or competitive pressures
    - Assess if brand messaging clearly communicates differentiation
 
 10. Conversion & Call-to-Action Optimization (7%)
@@ -3444,16 +3444,16 @@ Structure: # Brand Whisperer Audit: [Name]
 
 9. Competitive Advantage & Market Positioning – X/10
    Evidence:
-   • Unique Offerings: [List specific features, proprietary capabilities, or unique selling points found on the site]
-   • Competitive Positioning: [How the brand compares to industry standards based on audit scores - e.g., "Website Performance: X% (above/at/below industry avg)"]
-   • SWOT Analysis:
-     - Strengths: [What the brand does well based on audit]
-     - Weaknesses: [Competitive gaps or differentiation issues]
-     - Opportunities: [Ways to better highlight unique value]
-     - Threats: [Market pressures or competitive factors]
+   • Unique Offerings: [List 2-4 specific features, proprietary capabilities, or unique selling points found on the site]
+   • Competitive Positioning: [How the brand compares to industry standards - e.g., "Website Performance: 9.5/10 (above industry avg ~7/10); SEO: 7/10 (avg); Load time: faster than competitors"]
+   • SWOT Analysis (ALL 4 REQUIRED):
+     - Strengths: [2-3 things brand does exceptionally well, e.g., "Strong brand positioning", "User-friendly interface", "Quality content"]
+     - Weaknesses: [2-3 competitive gaps, e.g., "Limited competitive analysis", "Missing industry benchmarks", "Unclear market position"]
+     - Opportunities: [2-3 ways to improve, e.g., "Highlight unique features more prominently", "Develop competitive comparison content", "Leverage SWOT in messaging"]
+     - Threats: [2-3 market factors, e.g., "Increased competition", "Market saturation", "Technology changes"]
    Recommendations:
    - [Specific positioning improvement based on SWOT findings]
-   - [Opportunity to better highlight unique differentiators]
+   - [Opportunity to better highlight unique differentiators from SWOT analysis]
 
 10. Conversion & Call-to-Action Optimization – X/10
     Evidence: [CTA analysis findings]
