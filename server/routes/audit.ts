@@ -24,13 +24,11 @@ import {
 // ScraperAPI is dynamically imported when needed (see scraping fallback chain)
 
 // Grok API configuration (x.ai)
-// Read from environment variables only to prevent key exposure
-// Use completely dynamic access through global to prevent any bundler inlining
+// Import runtime env reader to bypass Vite bundling
+import { getRuntimeEnv } from "../env-runtime.js";
+
 const getGrokApiKey = () => {
-  // Use computed property access to prevent Vite from inlining
-  const envKeyName = ["GROK", "API", "KEY"].join("_");
-  const env = global.process?.env || process.env;
-  return env[envKeyName];
+  return getRuntimeEnv("GROK_API_KEY");
 };
 const GROK_API_URL = "https://api.x.ai/v1/chat/completions";
 
