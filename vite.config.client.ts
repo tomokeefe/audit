@@ -38,6 +38,10 @@ export default defineConfig(({ mode }) => ({
       "officeparser",
     ], // Exclude server-only dependencies
   },
+  ssr: {
+    noExternal: false,
+    external: ["../server/env-runtime.js", "./server/env-runtime.js", "/server/env-runtime.js"],
+  },
 }));
 
 function expressPlugin(): Plugin {
