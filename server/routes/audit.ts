@@ -3440,10 +3440,17 @@ Structure: # Brand Whisperer Audit: [Name]
    - [Technical fix based on evidence]
 
 9. Competitive Advantage & Market Positioning – X/10
-   Evidence: [Positioning observations vs market]
+   Evidence:
+   • Unique Offerings: [List specific features, proprietary capabilities, or unique selling points found on the site]
+   • Competitive Positioning: [How the brand compares to industry standards based on audit scores - e.g., "Website Performance: X% (above/at/below industry avg)"]
+   • SWOT Analysis:
+     - Strengths: [What the brand does well based on audit]
+     - Weaknesses: [Competitive gaps or differentiation issues]
+     - Opportunities: [Ways to better highlight unique value]
+     - Threats: [Market pressures or competitive factors]
    Recommendations:
-   - [Positioning improvement based on findings]
-   - [Differentiation opportunity]
+   - [Specific positioning improvement based on SWOT findings]
+   - [Opportunity to better highlight unique differentiators]
 
 10. Conversion & Call-to-Action Optimization – X/10
     Evidence: [CTA analysis findings]
