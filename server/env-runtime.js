@@ -1,4 +1,5 @@
-// This file is NOT bundled by Vite - it reads env vars at runtime
+// This file reads env vars at runtime using eval to bypass bundlers
 export function getRuntimeEnv(key) {
-  return process.env[key];
+  // Use eval to prevent ANY bundler from inlining this
+  return eval('process.env["' + key + '"]');
 }
