@@ -83,7 +83,9 @@ export async function initializeDatabase() {
   try {
     const db = await initPool();
     if (!db) {
-      console.warn("\n⚠️  Database not configured. Skipping schema initialization.");
+      console.warn(
+        "\n⚠️  Database not configured. Skipping schema initialization.",
+      );
       console.warn("⚠️  Audits will only be stored in memory.\n");
       return;
     }

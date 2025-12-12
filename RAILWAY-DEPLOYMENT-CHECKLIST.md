@@ -7,12 +7,14 @@
 Go to Railway Dashboard → Your Project → Variables tab
 
 **Required:**
+
 ```bash
 DATABASE_URL=postgresql://neondb_owner:npg_jW9MlJdCD4SU@ep-solitary-unit-a4k3kq2j-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require
 GROK_API_KEY=xai-yuPfCYsBUT28fSjKXXiQAmy61ppmqWZE2LfG7Va3a0G8IMCwXT75nAewXFctNsCybTgzlcjd1nhXyWJe
 ```
 
 **Recommended:**
+
 ```bash
 GOOGLE_PAGESPEED_API_KEY=AIzaSyBwL1UAHDoibMLJsMDzoeIgJYY8eK1h-ks
 SCRAPER_API_KEY=8e5524715aa04bb3e52a5c7028a917d7
@@ -51,6 +53,7 @@ curl https://your-app.up.railway.app/api/health
 ```
 
 **Expected response (database working):**
+
 ```json
 {
   "status": "ok",
@@ -65,6 +68,7 @@ curl https://your-app.up.railway.app/api/health
 ```
 
 **Bad response (database NOT working):**
+
 ```json
 {
   "status": "ok",
@@ -88,6 +92,7 @@ curl https://your-app.up.railway.app/api/health
 ```
 
 **If you see this instead, database save FAILED:**
+
 ```
 ❌❌❌ CRITICAL DATABASE SAVE FAILURE ❌❌❌
 ```
@@ -107,6 +112,7 @@ curl https://your-app.up.railway.app/api/health
 **Cause:** `pg` package not installed or build failed
 
 **Fix:**
+
 ```bash
 # In your local terminal
 pnpm install pg
@@ -118,12 +124,14 @@ git push
 ### Issue: "DATABASE CONNECTION FAILED"
 
 **Possible causes:**
+
 1. DATABASE_URL is wrong
 2. Neon database is down/suspended
 3. SSL certificate issues
 4. Network/firewall blocking connection
 
 **Fix:**
+
 1. Verify DATABASE_URL in Railway matches Neon connection string
 2. Check Neon dashboard - database should be "Active"
 3. Try connecting from local machine first:
@@ -136,8 +144,10 @@ git push
 **This means database saves are silently failing**
 
 **Debug steps:**
+
 1. Check Railway logs for database save errors
 2. Look for these logs when creating audit:
+
    ```
    🔵 [STORE] Step 1: Storing in memory...
    ✅ [STORE] Stored audit in memory
