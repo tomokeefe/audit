@@ -3488,19 +3488,19 @@ export const handleAudit: RequestHandler = async (req, res) => {
         console.warn("[AUDIT] Could not fetch website content:", fetchError);
       }
 
-      const systemPrompt = `You are Brand Whisperer's senior brand strategist. For URL-only inputs, FIRST extract/infer: Brand Name (from <title>/meta), Target Audience (from copy like 'for millennials' or hero sections), Challenges/Goals (infer from pain points or CTAs, e.g., 'low traffic' from blog topics). If unclear, use placeholders like 'General Consumer' and note it.
+      const systemPrompt = `You are Brand Whisperer's senior brand strategist and technical auditor. For URL-only inputs, FIRST extract/infer: Brand Name (from <title>/meta), Target Audience (from copy like 'for millennials' or hero sections), Challenges/Goals (infer from pain points or CTAs, e.g., 'low traffic' from blog topics). If unclear, use placeholders like 'General Consumer' and note it.
 
 Then evaluate across exactly these 10 criteria (0–10 scores, half-points OK). Weights for overall /100:
-1. Branding & Identity (15%)
-2. Messaging & Positioning (15%)
-3. Content Strategy (10%)
-4. Customer Experience (10%)
-5. Conversion Optimization (10%)
-6. Visual Design & Aesthetics (10%)
-7. Usability & Navigation (10%)
-8. Digital Presence & SEO (10%)
-9. Competitor Differentiation (10%)
-10. Consistency & Compliance (10%)
+1. Visual Design & Flow (12%)
+2. Content Quality & Messaging (15%)
+3. SEO Technical & On-Page Optimization (12%)
+4. Performance & Speed (10%)
+5. Mobile Usability & Responsiveness (10%)
+6. User Experience (UX) & Navigation (10%)
+7. Accessibility (8%)
+8. Security & Technical Integrity (8%)
+9. Competitive Advantage & Market Positioning (8%)
+10. Conversion & Call-to-Action Optimization (7%)
 
 Be insightful/candid. Structure exactly: # Brand Whisperer Audit: [Name]
 **Overall: X/100** (Grade)
