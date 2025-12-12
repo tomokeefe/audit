@@ -3,6 +3,7 @@
 ## What is Firecrawl?
 
 Firecrawl is an AI-optimized web scraping service that:
+
 - **Bypasses Cloudflare** automatically
 - **Renders JavaScript** for modern SPA/React sites
 - **Returns clean data** in HTML + Markdown formats
@@ -14,9 +15,11 @@ Firecrawl is an AI-optimized web scraping service that:
 ## Integration Details
 
 ### Environment Variable
+
 ```env
 FIRECRAWL_API_KEY=fc-c9b839a8b217422da5ecbc12b25db0c0
 ```
+
 ✅ Already configured via DevServerControl
 
 ### Scraping Flow (Updated)
@@ -45,12 +48,14 @@ The audit now attempts scraping in this order:
 ### New Files Created
 
 **`server/utils/firecrawl.ts`**
+
 - Main Firecrawl integration
 - POST to Firecrawl API v1 endpoint
 - Extracts HTML, Markdown, and metadata
 - Performs full UX and structure analysis
 
 **Modified Files**:
+
 - `server/routes/audit.ts`:
   - Replaced `scrapeWithScraperAPI` → `scrapeWithFirecrawl`
   - Updated imports and fallback logic
@@ -59,6 +64,7 @@ The audit now attempts scraping in this order:
 ### How It Works
 
 **Firecrawl API Call**:
+
 ```typescript
 POST https://api.firecrawl.dev/v1/scrape
 Headers:
@@ -75,6 +81,7 @@ Body:
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -111,6 +118,7 @@ When Firecrawl is used successfully:
 ```
 
 **If it fails**:
+
 ```
 ❌ Firecrawl scraping failed for https://skydeo.com:
    Error: [error message]
@@ -122,33 +130,36 @@ When Firecrawl is used successfully:
 ### Cost Considerations
 
 **Firecrawl Pricing**:
+
 - **Free tier**: 500 credits/month
 - **Hobby**: $20/mo for 3,000 credits
 - **Standard**: $100/mo for 20,000 credits
 - **Scale**: $400/mo for 100,000 credits
 
 **Credit Usage**:
+
 - 1 scrape = 1 credit (base)
 - JavaScript rendering = +1 credit
 - **Total per audit**: ~2 credits
 
 **Our Usage**:
+
 - Only used as last resort (after Axios and Puppeteer fail)
 - Estimate: ~50-100 audits/month for heavily protected sites
 - Cost: ~100-200 credits/month = **Free tier is sufficient**
 
 ### Advantages Over ScraperAPI
 
-| Feature | ScraperAPI | Firecrawl |
-|---------|-----------|-----------|
-| Cloudflare bypass | ✅ | ✅ |
-| JavaScript rendering | ⚠️ Optional ($) | ✅ Included |
-| Clean HTML output | ❌ | ✅ |
-| Markdown format | ❌ | ✅ |
-| Metadata extraction | ❌ | ✅ OG tags, keywords |
-| AI-optimized | ❌ | ✅ |
-| Free tier | 1,000 credits | 500 credits |
-| Cost efficiency | $$ | $ |
+| Feature              | ScraperAPI      | Firecrawl            |
+| -------------------- | --------------- | -------------------- |
+| Cloudflare bypass    | ✅              | ✅                   |
+| JavaScript rendering | ⚠️ Optional ($) | ✅ Included          |
+| Clean HTML output    | ❌              | ✅                   |
+| Markdown format      | ❌              | ✅                   |
+| Metadata extraction  | ❌              | ✅ OG tags, keywords |
+| AI-optimized         | ❌              | ✅                   |
+| Free tier            | 1,000 credits   | 500 credits          |
+| Cost efficiency      | $$              | $                    |
 
 ### Testing Firecrawl
 
@@ -160,6 +171,7 @@ When Firecrawl is used successfully:
 4. Watch console logs (F12 → Console)
 
 **Expected Result**:
+
 ```
 Attempt 1-3: Axios → ❌ HTTP 403
 Puppeteer → ❌ Failed (missing libraries)
@@ -178,11 +190,13 @@ Audit shows:
 ### Monitoring Credits
 
 **Check Firecrawl Dashboard**:
+
 1. Go to https://firecrawl.dev/dashboard
 2. View "API Credits" usage
 3. Monitor monthly consumption
 
 **In Logs**:
+
 - Every Firecrawl call is logged
 - Success/failure status shown
 - Failed calls still consume credits!
@@ -190,20 +204,24 @@ Audit shows:
 ### Error Handling
 
 **Authentication Errors (401/403)**:
+
 - Check `FIRECRAWL_API_KEY` is correct
 - Verify account is active on Firecrawl dashboard
 - Ensure API key hasn't expired
 
 **Payment Required (402)**:
+
 - Monthly credit quota exhausted
 - Upgrade plan or wait for monthly reset
 
 **Rate Limit (429)**:
+
 - Too many requests in short time
 - Implement exponential backoff
 - Consider upgrading plan
 
 **Invalid Response**:
+
 - Site may be completely inaccessible
 - Firecrawl couldn't bypass protection
 - Check Firecrawl status page

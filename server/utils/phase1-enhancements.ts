@@ -205,8 +205,12 @@ export async function getPerformanceMetrics(
       apiUrl += `&key=${apiKey}`;
       console.log(`🔑 Using PageSpeed Insights API key for ${url}`);
     } else {
-      console.warn(`⚠️  No PageSpeed API key - using free tier (25 requests/day limit)`);
-      console.warn(`   Get API key: https://developers.google.com/speed/docs/insights/v5/get-started`);
+      console.warn(
+        `⚠️  No PageSpeed API key - using free tier (25 requests/day limit)`,
+      );
+      console.warn(
+        `   Get API key: https://developers.google.com/speed/docs/insights/v5/get-started`,
+      );
     }
 
     console.log(`📊 Fetching Lighthouse data for ${url}...`);
@@ -215,7 +219,7 @@ export async function getPerformanceMetrics(
     const response = await axios.get(apiUrl, {
       timeout: 45000, // Increased timeout for comprehensive analysis
       headers: {
-        'User-Agent': 'Brand-Whisperer-Audit/1.0',
+        "User-Agent": "Brand-Whisperer-Audit/1.0",
       },
     });
 
@@ -261,14 +265,18 @@ export async function getPerformanceMetrics(
     console.error(`   Error: ${errorMsg}`);
 
     if (statusCode === 429) {
-      console.error(`   ⚠️  RATE LIMIT EXCEEDED - Add GOOGLE_PAGESPEED_API_KEY to .env for higher limits`);
+      console.error(
+        `   ⚠️  RATE LIMIT EXCEEDED - Add GOOGLE_PAGESPEED_API_KEY to .env for higher limits`,
+      );
     } else if (statusCode === 400) {
       console.error(`   ⚠️  Invalid URL or site not accessible to Google`);
     } else if (statusCode) {
       console.error(`   HTTP Status: ${statusCode}`);
     }
 
-    console.error(`   Impact: Audit will continue with reduced accuracy (no Lighthouse data)`);
+    console.error(
+      `   Impact: Audit will continue with reduced accuracy (no Lighthouse data)`,
+    );
 
     return null;
   }

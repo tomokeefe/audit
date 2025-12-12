@@ -13,6 +13,7 @@ This update transitions the website audit criteria from brand-focused evaluation
 ## 📊 New 10 Criteria (Updated)
 
 ### Previous Criteria (v2.0 - Brand-Focused):
+
 1. Branding & Identity (15%)
 2. Messaging & Positioning (15%)
 3. Content Strategy (10%)
@@ -25,6 +26,7 @@ This update transitions the website audit criteria from brand-focused evaluation
 10. Consistency & Compliance (10%)
 
 ### New Criteria (v3.0 - Technical-Focused):
+
 1. **Visual Design & Flow (12%)** - Layout consistency, aesthetics, navigation logic
 2. **Content Quality & Messaging (15%)** - Copy clarity, brand voice, keyword integration
 3. **SEO Technical & On-Page Optimization (12%)** - Meta tags, schema markup, crawlability
@@ -43,6 +45,7 @@ This update transitions the website audit criteria from brand-focused evaluation
 ## 🔍 Key Changes
 
 ### Emphasis Shifts:
+
 - **Increased Focus:**
   - Technical SEO (10% → 12%)
   - Performance & Speed (new dedicated 10%)
@@ -59,7 +62,9 @@ This update transitions the website audit criteria from brand-focused evaluation
 ### New Evaluation Guidelines (Based on PDF):
 
 #### 1. Visual Design & Flow (12%)
+
 **Evaluation Criteria:**
+
 - Logo placement and brand identity alignment
 - Color palette consistency
 - Typography hierarchy
@@ -72,7 +77,9 @@ This update transitions the website audit criteria from brand-focused evaluation
 ---
 
 #### 2. Content Quality & Messaging (15%)
+
 **Evaluation Criteria:**
+
 - Headline strength and impact
 - Copy tone alignment with brand voice
 - Keyword integration (natural, no stuffing)
@@ -86,7 +93,9 @@ This update transitions the website audit criteria from brand-focused evaluation
 ---
 
 #### 3. SEO Technical & On-Page Optimization (12%)
+
 **Evaluation Criteria:**
+
 - Title tags optimization
 - Meta descriptions quality
 - Header tag structure (H1-H6)
@@ -101,7 +110,9 @@ This update transitions the website audit criteria from brand-focused evaluation
 ---
 
 #### 4. Performance & Speed (10%)
+
 **Evaluation Criteria:**
+
 - Page load time (target: <3 seconds)
 - Image optimization
 - CSS/JS minification
@@ -114,7 +125,9 @@ This update transitions the website audit criteria from brand-focused evaluation
 ---
 
 #### 5. Mobile Usability & Responsiveness (10%)
+
 **Evaluation Criteria:**
+
 - Responsive design across devices
 - Touch-friendly elements (44x44px minimum)
 - Viewport meta tag configuration
@@ -126,7 +139,9 @@ This update transitions the website audit criteria from brand-focused evaluation
 ---
 
 #### 6. User Experience (UX) & Navigation (10%)
+
 **Evaluation Criteria:**
+
 - User journey mapping (home → CTA)
 - Breadcrumb navigation
 - Search functionality
@@ -139,7 +154,9 @@ This update transitions the website audit criteria from brand-focused evaluation
 ---
 
 #### 7. Accessibility (8%)
+
 **Evaluation Criteria:**
+
 - WCAG 2.1 standards compliance
 - Alt text for all images
 - Color contrast ratios (>4.5:1 for text)
@@ -153,7 +170,9 @@ This update transitions the website audit criteria from brand-focused evaluation
 ---
 
 #### 8. Security & Technical Integrity (8%)
+
 **Evaluation Criteria:**
+
 - HTTPS implementation
 - Valid SSL certificate
 - Broken links/images detection
@@ -165,7 +184,9 @@ This update transitions the website audit criteria from brand-focused evaluation
 ---
 
 #### 9. Competitive Advantage & Market Positioning (8%)
+
 **Evaluation Criteria:**
+
 - Comparison to 2-3 key competitors
 - Unique value proposition clarity
 - Messaging alignment
@@ -177,7 +198,9 @@ This update transitions the website audit criteria from brand-focused evaluation
 ---
 
 #### 10. Conversion & Call-to-Action Optimization (7%)
+
 **Evaluation Criteria:**
+
 - CTA placement and visibility
 - Button design and copy
 - Form length and complexity
@@ -191,7 +214,9 @@ This update transitions the website audit criteria from brand-focused evaluation
 ## 📝 Files Modified
 
 ### 1. `server/constants/scoring.ts`
+
 **Changes:**
+
 - Updated `SECTION_WEIGHTS` object with new criteria names and percentages
 - Updated `SECTION_WEIGHTS_ARRAY` to match new order
 - Updated `INDUSTRY_ADJUSTMENTS` to use new field names
@@ -199,7 +224,9 @@ This update transitions the website audit criteria from brand-focused evaluation
 - Changed `SCORING_METHODOLOGY` from "research-based-standardized" to "technical-audit-based"
 
 ### 2. `server/routes/audit.ts`
+
 **Changes:**
+
 - Updated main AI prompt with new 10 criteria and detailed evaluation guidelines (lines 3077-3170)
 - Updated fallback AI prompt with new criteria (lines 3491-3503)
 - Updated `sectionNames` arrays in two locations (lines 2672-2683, 3582-3593)
@@ -227,6 +254,7 @@ This update transitions the website audit criteria from brand-focused evaluation
 ## 🧪 Testing Recommendations
 
 ### Test Cases:
+
 1. **Run Website Audit:** Test on a real website (e.g., skydeo.com)
    - Verify all 10 new section names appear correctly
    - Check that scores reflect technical criteria
@@ -236,7 +264,7 @@ This update transitions the website audit criteria from brand-focused evaluation
    - Verify section names match new criteria
    - Ensure descriptions are technically accurate
 
-3. **Verify Weights:** 
+3. **Verify Weights:**
    - Confirm weights sum to 100%
    - Test industry-specific adjustments still work
 
@@ -245,6 +273,7 @@ This update transitions the website audit criteria from brand-focused evaluation
    - Overall score calculation should be accurate
 
 ### Expected Results:
+
 - Audits should focus more on technical aspects (SEO, performance, accessibility)
 - Recommendations should be more actionable and measurable
 - Evidence should reference technical metrics (PageSpeed scores, WCAG compliance, etc.)
@@ -254,6 +283,7 @@ This update transitions the website audit criteria from brand-focused evaluation
 ## 📈 Expected Impact
 
 ### Positive Changes:
+
 ✅ **More Actionable:** Technical criteria provide clear, measurable improvement areas  
 ✅ **Tool-Based:** Recommendations can reference specific tools (PageSpeed, WAVE, etc.)  
 ✅ **Industry Standard:** Aligns with web development best practices  
@@ -261,6 +291,7 @@ This update transitions the website audit criteria from brand-focused evaluation
 ✅ **Client Value:** More specific, implementable recommendations
 
 ### Potential Considerations:
+
 ⚠️ **Less Brand Focus:** Pure brand strategy elements are de-emphasized  
 ⚠️ **Technical Terminology:** May require client education on technical terms  
 ⚠️ **Tool Dependencies:** Some evaluations assume access to specific tools
@@ -270,15 +301,18 @@ This update transitions the website audit criteria from brand-focused evaluation
 ## 🔄 Migration Notes
 
 ### For Existing Audits:
+
 - Old audits (v2.0) remain valid with their original criteria
 - New audits (v3.0) will use the updated criteria
 - Consider re-running audits for clients to show new technical insights
 
 ### For Pitch Deck Audits:
+
 - **No changes** - Pitch deck criteria remain unchanged
 - Only website audits use the new v3.0 criteria
 
 ### For Product & Mobile App Audits (Phase 2 & 3):
+
 - These will be designed with technical focus from the start
 - Align with v3.0 methodology for consistency
 
@@ -287,9 +321,11 @@ This update transitions the website audit criteria from brand-focused evaluation
 ## 📚 Reference
 
 ### Source Document:
+
 Based on "10 criterias.pdf" provided by user containing technical audit evaluation guidelines.
 
 ### Related Documentation:
+
 - `server/constants/scoring.ts` - Scoring weights and industry adjustments
 - `server/routes/audit.ts` - Main audit generation logic
 - `PHASE2-PRODUCT-AUDITS-ROADMAP.md` - Future product audit criteria

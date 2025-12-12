@@ -68,11 +68,13 @@ The audit system now uses the following fallback sequence:
 #### 1. `server/routes/audit.ts`
 
 **Lines 23-24:** Removed Firecrawl import, added ScraperAPI comment
+
 ```typescript
 // ScraperAPI is dynamically imported when needed (see scraping fallback chain)
 ```
 
 **Lines 1200-1232:** Added ScraperAPI fallback after Puppeteer in Cloudflare flow
+
 ```typescript
 // Try ScraperAPI as backup when Puppeteer fails
 if (process.env.SCRAPER_API_KEY) {
@@ -89,6 +91,7 @@ if (process.env.SCRAPER_API_KEY) {
 ```
 
 **Lines 1239-1256:** Replaced Firecrawl with ScraperAPI as last resort
+
 ```typescript
 // Try ScraperAPI if available (handles Cloudflare and anti-bot measures automatically)
 if (process.env.SCRAPER_API_KEY) {
@@ -108,6 +111,7 @@ if (process.env.SCRAPER_API_KEY) {
 
 **Status:** Already exists from previous implementation
 **Features:**
+
 - `scrapeWithScraperAPI(url)` function
 - Comprehensive content extraction
 - UX features analysis
@@ -144,6 +148,7 @@ http://api.scraperapi.com/?api_key={KEY}&url={URL}&render=true
 ```
 
 **Parameters:**
+
 - `api_key`: Authentication (from SCRAPER_API_KEY env var)
 - `url`: Target website URL (URL-encoded)
 - `render=true`: Enables JavaScript execution (required for dynamic sites)
@@ -157,6 +162,7 @@ http://api.scraperapi.com/?api_key={KEY}&url={URL}&render=true
 ### For Protected Sites (e.g., skydeo.com)
 
 **Before ScraperAPI:**
+
 ```
 ❌ Limited Content Access
 ❌ Fallback data used
@@ -165,6 +171,7 @@ http://api.scraperapi.com/?api_key={KEY}&url={URL}&render=true
 ```
 
 **After ScraperAPI:**
+
 ```
 ✅ Full content access
 ✅ Rich HTML extraction
@@ -175,6 +182,7 @@ http://api.scraperapi.com/?api_key={KEY}&url={URL}&render=true
 ### Logging Examples
 
 **Success:**
+
 ```
 🌐 Using ScraperAPI to access https://example.com...
    ScraperAPI handles Cloudflare bypass automatically
@@ -188,6 +196,7 @@ http://api.scraperapi.com/?api_key={KEY}&url={URL}&render=true
 ```
 
 **Authentication Error:**
+
 ```
 ❌ ScraperAPI scraping failed for https://example.com:
    Error: Request failed with status code 401
@@ -195,6 +204,7 @@ http://api.scraperapi.com/?api_key={KEY}&url={URL}&render=true
 ```
 
 **Rate Limit:**
+
 ```
 ❌ ScraperAPI scraping failed for https://example.com:
    Error: Request failed with status code 429
@@ -258,21 +268,21 @@ http://api.scraperapi.com/?api_key={KEY}&url={URL}&render=true
 
 ### What Changed
 
-| Aspect | Firecrawl | ScraperAPI |
-|--------|-----------|------------|
-| **API Key Env Var** | `FIRECRAWL_API_KEY` | `SCRAPER_API_KEY` |
-| **Pricing Model** | Per-scrape credits | Per-request credits |
-| **Cloudflare Handling** | Built-in | Built-in |
-| **JavaScript Rendering** | Always on | `render=true` parameter |
-| **Response Format** | HTML + Markdown | HTML only |
-| **Timeout** | 30s | 60s |
+| Aspect                   | Firecrawl           | ScraperAPI              |
+| ------------------------ | ------------------- | ----------------------- |
+| **API Key Env Var**      | `FIRECRAWL_API_KEY` | `SCRAPER_API_KEY`       |
+| **Pricing Model**        | Per-scrape credits  | Per-request credits     |
+| **Cloudflare Handling**  | Built-in            | Built-in                |
+| **JavaScript Rendering** | Always on           | `render=true` parameter |
+| **Response Format**      | HTML + Markdown     | HTML only               |
+| **Timeout**              | 30s                 | 60s                     |
 
 ### Benefits of Switch
 
 ✅ **More Reliable:** Industry-standard service  
 ✅ **Better Documentation:** Extensive API docs  
 ✅ **Flexible Pricing:** Pay-as-you-go model  
-✅ **Proven Track Record:** Used by thousands of companies  
+✅ **Proven Track Record:** Used by thousands of companies
 
 ---
 
@@ -281,6 +291,7 @@ http://api.scraperapi.com/?api_key={KEY}&url={URL}&render=true
 ### Issue: "SCRAPER_API_KEY environment variable not set"
 
 **Solution:**
+
 ```bash
 # Set via DevServerControl (recommended)
 DevServerControl.set_env_variable("SCRAPER_API_KEY", "YOUR_KEY_HERE")
@@ -293,6 +304,7 @@ echo 'SCRAPER_API_KEY=YOUR_KEY_HERE' >> .env
 
 **Cause:** Invalid or expired API key  
 **Solution:**
+
 1. Verify API key at https://dashboard.scraperapi.com
 2. Update environment variable
 3. Restart dev server
@@ -301,6 +313,7 @@ echo 'SCRAPER_API_KEY=YOUR_KEY_HERE' >> .env
 
 **Cause:** Rate limit exceeded  
 **Solution:**
+
 1. Check usage at ScraperAPI dashboard
 2. Upgrade plan or wait for rate limit reset
 3. Consider caching audit results
@@ -309,6 +322,7 @@ echo 'SCRAPER_API_KEY=YOUR_KEY_HERE' >> .env
 
 **Cause:** Site blocking ScraperAPI or very small page  
 **Solution:**
+
 1. Verify URL is accessible
 2. Check if site has extreme anti-scraping measures
 3. Contact ScraperAPI support for advanced options

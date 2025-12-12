@@ -3,6 +3,7 @@
 ## What is ScraperAPI?
 
 ScraperAPI is a paid service that handles:
+
 - **Cloudflare bypass** automatically
 - **Rotating proxies** (millions of IPs)
 - **Browser fingerprinting** to avoid detection
@@ -14,9 +15,11 @@ ScraperAPI is a paid service that handles:
 ## Integration Details
 
 ### Environment Variable
+
 ```env
 SCRAPER_API_KEY=fc-c9b839a8b217422da5ecbc12b25db0c0
 ```
+
 ✅ Already configured via DevServerControl
 
 ### Scraping Flow
@@ -45,12 +48,14 @@ The audit now attempts scraping in this order:
 ### New Files Created
 
 **`server/utils/scraperapi.ts`**
+
 - Main ScraperAPI integration
 - Handles API requests through their endpoint
 - Parses HTML and extracts website data
 - Performs UX and structure analysis
 
 **Modified Files**:
+
 - `server/routes/audit.ts`:
   - Added import for `scrapeWithScraperAPI`
   - Integrated as fallback after Puppeteer fails
@@ -59,16 +64,19 @@ The audit now attempts scraping in this order:
 ### How It Works
 
 **ScraperAPI Endpoint**:
+
 ```typescript
 const scraperApiUrl = `http://api.scraperapi.com/?api_key=${apiKey}&url=${encodeURIComponent(url)}&render=true`;
 ```
 
 **Parameters**:
+
 - `api_key`: Your ScraperAPI key
 - `url`: Target website to scrape
 - `render=true`: Enable JavaScript rendering (essential for modern sites)
 
 **Response**:
+
 - Returns fully rendered HTML
 - Handles all Cloudflare challenges automatically
 - Timeout: 60 seconds (they need time to bypass protection)
@@ -92,6 +100,7 @@ When ScraperAPI is used, you'll see:
 ```
 
 **If it fails**:
+
 ```
 ❌ ScraperAPI scraping failed for https://skydeo.com:
    Error: [error message]
@@ -102,16 +111,19 @@ When ScraperAPI is used, you'll see:
 ### Cost Considerations
 
 **ScraperAPI Pricing** (as of integration):
+
 - **Free tier**: 1,000 credits
 - **Standard**: $49/mo for 100,000 credits
 - **Professional**: $149/mo for 500,000 credits
 
 **Credit Usage**:
+
 - 1 credit = 1 API call
 - JavaScript rendering (`render=true`): 5 credits per call
 - CAPTCHA solving: 10+ credits per call
 
 **Our Usage**:
+
 - Only used as last resort (after Axios and Puppeteer fail)
 - ~5 credits per audit attempt on protected sites
 - Estimate: ~200 audits per month for heavily protected sites
@@ -126,6 +138,7 @@ When ScraperAPI is used, you'll see:
 4. Watch console logs (F12 → Console)
 
 **Expected Result**:
+
 ```
 Attempt 1: Axios → ❌ HTTP 403
 Attempt 2: Axios → ❌ HTTP 403
@@ -146,40 +159,47 @@ Audit shows:
 If you want to conserve ScraperAPI credits:
 
 **Sites WITHOUT Cloudflare** (won't use ScraperAPI):
+
 - `patagonia.com` - Axios will work
 - `example.com` - Axios will work
 - Your own sites - Probably Axios will work
 
 **Sites WITH Cloudflare** (will use ScraperAPI):
+
 - `skydeo.com` - Needs ScraperAPI
 - Many modern SaaS sites - May need ScraperAPI
 
 ### Monitoring Credits
 
 **Check ScraperAPI Dashboard**:
+
 1. Go to https://dashboard.scraperapi.com/
 2. Login with your account
 3. View "API Calls" and "Credits Remaining"
 
 **In Logs**:
+
 - Every ScraperAPI call logs when it's being used
 - Failed calls still consume credits!
 
 ### Fallback Behavior
 
 If ScraperAPI is **not configured** (no API key):
+
 ```
 ⚠️  ScraperAPI not configured (no SCRAPER_API_KEY)
 All scraping attempts failed for https://skydeo.com, using fallback data
 ```
 
 If ScraperAPI **fails** (auth error, timeout, rate limit):
+
 ```
 ❌ ScraperAPI also failed: [error]
 All scraping attempts failed for https://skydeo.com, using fallback data
 ```
 
 In both cases, falls back to:
+
 - ✅ PageSpeed Insights (still attempted)
 - ❌ Generic placeholder content
 - Result: 30-40% score with "Limited Access" warning
@@ -197,18 +217,22 @@ In both cases, falls back to:
 ### Error Handling
 
 **Authentication Errors (401/403)**:
+
 - Check `SCRAPER_API_KEY` is correct
 - Verify account is active on ScraperAPI dashboard
 
 **Rate Limit (429)**:
+
 - You've exceeded your monthly quota
 - Upgrade plan or wait for monthly reset
 
 **Timeout Errors**:
+
 - Site is very slow or ScraperAPI is overloaded
 - Retry later or increase timeout (currently 60s)
 
 **Invalid Response**:
+
 - Site returned non-HTML content
 - ScraperAPI couldn't bypass protection
 - Check ScraperAPI dashboard for detailed logs
@@ -216,12 +240,14 @@ In both cases, falls back to:
 ### Next Steps
 
 **For Production Deployment**:
+
 1. Set `SCRAPER_API_KEY` as environment variable in production
 2. Monitor credit usage
 3. Consider implementing credit budget limits
 4. Add caching to avoid re-scraping same sites
 
 **For Cost Optimization**:
+
 1. Cache successful scrapes for 24 hours
 2. Only use ScraperAPI for sites that previously failed
 3. Implement user notification: "This site requires premium scraping"

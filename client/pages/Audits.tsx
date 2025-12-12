@@ -220,7 +220,10 @@ export default function Audits() {
               </div>
             </div>
             <div className="flex gap-3">
-              <Select value={auditTypeFilter} onValueChange={setAuditTypeFilter}>
+              <Select
+                value={auditTypeFilter}
+                onValueChange={setAuditTypeFilter}
+              >
                 <SelectTrigger className="w-48">
                   <SelectValue placeholder="Audit type" />
                 </SelectTrigger>

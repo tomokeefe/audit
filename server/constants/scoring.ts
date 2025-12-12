@@ -8,9 +8,9 @@ export const SECTION_WEIGHTS = {
   visualDesignFlow: 0.12, // Layout consistency, aesthetics, navigation logic
   contentMessaging: 0.15, // Copy clarity, brand voice, keyword integration
   seoTechnical: 0.12, // Meta tags, schema markup, crawlability
-  performanceSpeed: 0.10, // Load times, Core Web Vitals, optimization
-  mobileUsability: 0.10, // Responsive design, mobile UX
-  userExperienceNav: 0.10, // Intuitiveness, user journeys, accessibility
+  performanceSpeed: 0.1, // Load times, Core Web Vitals, optimization
+  mobileUsability: 0.1, // Responsive design, mobile UX
+  userExperienceNav: 0.1, // Intuitiveness, user journeys, accessibility
   accessibility: 0.08, // WCAG compliance, inclusivity standards
   securityIntegrity: 0.08, // HTTPS, SSL, trust signals
   competitivePositioning: 0.08, // Market differentiation, unique value

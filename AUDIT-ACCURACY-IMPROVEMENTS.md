@@ -3,13 +3,15 @@
 ## Issues Identified
 
 ### 1. "Limited Access" Problem
+
 - **Symptom**: Websites like skydeo.com showing "⚠️ Limited Access"
 - **Root Causes**:
   1. Axios scraping blocked by Cloudflare/bot protection
   2. Puppeteer fallback failing (missing Chromium, advanced bot detection, or config issues)
   3. Falls back to `createFallbackData()` with generic placeholders
-  
+
 ### 2. Scores Seem Off
+
 - **Root Causes**:
   1. Using fallback data (generic placeholders) instead of real website content
   2. PageSpeed Insights data may not be properly integrated into AI analysis
@@ -17,6 +19,7 @@
   4. AI recommendations not well-grounded in objective metrics
 
 ### 3. PageSpeed Insights Integration Issues
+
 - **Current State**: Already integrated in `server/utils/phase1-enhancements.ts`
 - **Problems**:
   1. No API key configured → strict rate limits on free tier
@@ -29,16 +32,18 @@
 ### Solution 1: Enhanced Puppeteer Configuration
 
 **Changes Needed**:
+
 1. Add better error logging for Puppeteer failures
 2. Implement stealth mode to bypass advanced bot detection
 3. Add retry logic with different strategies
 4. Ensure Chromium is available in production (Dockerfile)
 
 **Implementation**:
+
 ```typescript
 // Enhanced Puppeteer with puppeteer-extra and stealth plugin
-import puppeteer from 'puppeteer-extra';
-import StealthPlugin from 'puppeteer-extra-plugin-stealth';
+import puppeteer from "puppeteer-extra";
+import StealthPlugin from "puppeteer-extra-plugin-stealth";
 
 puppeteer.use(StealthPlugin());
 
@@ -46,11 +51,12 @@ puppeteer.use(StealthPlugin());
 try {
   const result = await scrapeWithPuppeteer(url);
 } catch (error) {
-  console.error('❌ Puppeteer failed:', {
+  console.error("❌ Puppeteer failed:", {
     url,
     error: error.message,
     hasChromium: !!process.env.PUPPETEER_EXECUTABLE_PATH,
-    suggestion: 'Check Chromium installation or consider using API-based scraping'
+    suggestion:
+      "Check Chromium installation or consider using API-based scraping",
   });
 }
 ```
@@ -61,11 +67,13 @@ try {
 **Proposed**: Add API key for 25,000 requests/day
 
 **Setup**:
+
 1. Get API key from: https://developers.google.com/speed/docs/insights/v5/get-started
 2. Add to environment variables: `GOOGLE_PAGESPEED_API_KEY`
 3. Update API call to include key
 
 **Benefits**:
+
 - 1,000x more requests per day
 - More reliable data
 - Better audit accuracy
@@ -75,6 +83,7 @@ try {
 **Make Lighthouse data more prominent in audit**:
 
 1. **In AI Prompt**: Add dedicated section for objective metrics
+
    ```
    OBJECTIVE PERFORMANCE DATA (from Google Lighthouse):
    - Performance Score: {performanceScore}/100
@@ -85,7 +94,7 @@ try {
      * LCP: {lcp}ms (target: <2500ms)
      * FID: {fid}ms (target: <100ms)
      * CLS: {cls} (target: <0.1)
-   
+
    USE THESE OBJECTIVE SCORES to calibrate your analysis.
    ```
 
@@ -95,7 +104,7 @@ try {
    ```typescript
    const pagespeedMetrics = await getPerformanceMetrics(url);
    if (!pagespeedMetrics) {
-     console.warn('⚠️ PageSpeed Insights unavailable - audit accuracy reduced');
+     console.warn("⚠️ PageSpeed Insights unavailable - audit accuracy reduced");
      // Continue with limited data but flag in results
    }
    ```
@@ -105,6 +114,7 @@ try {
 When Puppeteer fails, try these alternatives:
 
 1. **Playwright** (more modern, better bot detection bypass)
+
    ```bash
    npm install playwright
    ```
@@ -140,25 +150,25 @@ Instead of generic placeholders, when scraping fails:
    - Meta tags (description, og:image, etc.)
    - Title
    - Favicon
-   
 2. **Use public APIs** for partial data:
    - Google PageSpeed (even if scraping fails, this often works)
    - Wayback Machine for historical data
    - DNS/WHOIS for basic info
 
 3. **Clearly communicate limitations**:
+
    ```
    ⚠️ AUDIT LIMITATION NOTICE:
-   
+
    We were unable to fully access {domain} due to:
    - Cloudflare protection or advanced bot detection
    - JavaScript-only content rendering
-   
+
    This audit is based on:
    ✓ Google Lighthouse performance data
    ✓ Website metadata
    ✗ Full content analysis (unavailable)
-   
+
    Accuracy: 40% (Limited)
    Recommendation: Contact support for manual audit
    ```
@@ -166,17 +176,20 @@ Instead of generic placeholders, when scraping fails:
 ## Implementation Priority
 
 ### High Priority (Implement First)
+
 1. ✅ Add Google PageSpeed Insights API key
 2. ✅ Enhance Lighthouse data integration in AI prompt
 3. ✅ Improve Puppeteer error logging
 4. ✅ Better fallback data messaging
 
 ### Medium Priority
+
 1. Add puppeteer-extra with stealth plugin
 2. Implement retry logic with different strategies
 3. Add Playwright as alternative
 
 ### Low Priority (Future)
+
 1. API-based scraping service integration
 2. Manual audit request system
 3. Cached/historical data fallbacks
@@ -184,6 +197,7 @@ Instead of generic placeholders, when scraping fails:
 ## Expected Impact
 
 **With these improvements**:
+
 - **"Limited access" cases**: Reduce from ~30% to ~10%
 - **Audit accuracy**: Increase from ~70% to ~90%
 - **Lighthouse data usage**: Increase from ~40% to ~95%

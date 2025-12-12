@@ -964,7 +964,11 @@ export default function Index() {
         const timeoutId = setTimeout(() => {
           console.warn("EventSource audit timed out after 3 minutes");
           cleanup();
-          reject(new Error("Audit timed out after 3 minutes. This can happen with complex websites. The audit may still be processing - please check your recent audits."));
+          reject(
+            new Error(
+              "Audit timed out after 3 minutes. This can happen with complex websites. The audit may still be processing - please check your recent audits.",
+            ),
+          );
         }, 180000); // 3 minute timeout
 
         // Clear timeout if request completes normally
@@ -1229,7 +1233,10 @@ export default function Index() {
         ) {
           errorMessage =
             "Network error. Unable to connect to the server. Please check your connection and try again.";
-        } else if (error.message.includes("timeout") || error.name === "TimeoutError") {
+        } else if (
+          error.message.includes("timeout") ||
+          error.name === "TimeoutError"
+        ) {
           errorMessage =
             "Audit timed out after 3 minutes. This can happen with complex websites or slow connections. The audit may still be processing - please check your recent audits in a moment, or try again.";
         } else {
@@ -1244,7 +1251,12 @@ export default function Index() {
       setError(errorMessage);
 
       // If it was a timeout, reload audits after a delay to catch background-completed audits
-      if (error instanceof Error && (error.message.includes("timeout") || error.name === "TimeoutError" || error.name === "AbortError")) {
+      if (
+        error instanceof Error &&
+        (error.message.includes("timeout") ||
+          error.name === "TimeoutError" ||
+          error.name === "AbortError")
+      ) {
         console.log("Scheduling audit list reload after timeout...");
         setTimeout(() => {
           loadRecentAudits().catch((err) => {

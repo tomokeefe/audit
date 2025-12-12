@@ -168,13 +168,17 @@ export async function createFallbackData(url: string) {
 
   // CRITICAL: Even in fallback mode, attempt to get PageSpeed Insights data
   // Google can often access sites that we cannot (bypasses Cloudflare)
-  console.log(`\n🔍 FALLBACK MODE: Attempting PageSpeed Insights despite scraping failure...`);
+  console.log(
+    `\n🔍 FALLBACK MODE: Attempting PageSpeed Insights despite scraping failure...`,
+  );
   let performanceData;
   try {
     performanceData = await analyzeWebsitePerformance(url);
     if (performanceData.performanceScore > 0) {
       console.log(`✅ SUCCESS: PageSpeed data retrieved in fallback mode!`);
-      console.log(`   This provides objective metrics despite content access failure`);
+      console.log(
+        `   This provides objective metrics despite content access failure`,
+      );
     } else {
       console.warn(`⚠️  PageSpeed also unavailable in fallback mode`);
       performanceData = {
@@ -194,7 +198,10 @@ export async function createFallbackData(url: string) {
       };
     }
   } catch (perfError) {
-    console.error(`❌ Performance analysis failed in fallback mode:`, perfError);
+    console.error(
+      `❌ Performance analysis failed in fallback mode:`,
+      perfError,
+    );
     performanceData = {
       pageSizeKB: 0,
       hasSSL: url.startsWith("https://"),
@@ -294,7 +301,9 @@ async function analyzeWebsitePerformance(url: string) {
   };
 
   // CRITICAL: Always attempt PageSpeed Insights first - Google can access sites we can't
-  console.log("🔍 Fetching PageSpeed Insights metrics (independent of scraping)...");
+  console.log(
+    "🔍 Fetching PageSpeed Insights metrics (independent of scraping)...",
+  );
   try {
     const pagespeedMetrics = await getPerformanceMetrics(url);
     if (pagespeedMetrics) {
@@ -308,7 +317,10 @@ async function analyzeWebsitePerformance(url: string) {
       console.warn(`⚠️  PageSpeed Insights returned no data for ${url}`);
     }
   } catch (pagespeedError) {
-    console.error(`❌ PageSpeed Insights failed for ${url}:`, pagespeedError instanceof Error ? pagespeedError.message : pagespeedError);
+    console.error(
+      `❌ PageSpeed Insights failed for ${url}:`,
+      pagespeedError instanceof Error ? pagespeedError.message : pagespeedError,
+    );
   }
 
   // Attempt to get basic metrics from direct HTTP request
@@ -334,7 +346,9 @@ async function analyzeWebsitePerformance(url: string) {
 
     console.log(`✅ Basic performance metrics collected via HTTP`);
   } catch (httpError) {
-    console.warn(`⚠️  HTTP performance check failed (${httpError instanceof Error ? httpError.message : httpError})`);
+    console.warn(
+      `⚠️  HTTP performance check failed (${httpError instanceof Error ? httpError.message : httpError})`,
+    );
     console.warn(`   Continuing with PageSpeed data only...`);
   }
 
@@ -344,7 +358,9 @@ async function analyzeWebsitePerformance(url: string) {
     const seoMetrics = await getSEOMetrics(url);
     performanceData.hasRobotsTxt = seoMetrics.hasRobotsTxt;
     performanceData.hasSitemap = seoMetrics.hasSitemap;
-    console.log(`✅ SEO metrics checked: robots.txt=${seoMetrics.hasRobotsTxt}, sitemap=${seoMetrics.hasSitemap}`);
+    console.log(
+      `✅ SEO metrics checked: robots.txt=${seoMetrics.hasRobotsTxt}, sitemap=${seoMetrics.hasSitemap}`,
+    );
   } catch (seoError) {
     console.warn(`⚠️  SEO metrics check failed:`, seoError);
   }
@@ -938,31 +954,42 @@ async function scrapeWithPuppeteer(url: string) {
     };
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : String(error);
-    const errorStack = error instanceof Error ? error.stack : '';
+    const errorStack = error instanceof Error ? error.stack : "";
 
     console.error(`❌ ========================================`);
     console.error(`❌ Puppeteer FAILED for ${url}`);
     console.error(`❌ ========================================`);
     console.error(`   Error Message: ${errorMsg}`);
-    console.error(`   Error Type: ${error instanceof Error ? error.name : typeof error}`);
+    console.error(
+      `   Error Type: ${error instanceof Error ? error.name : typeof error}`,
+    );
 
     // Detailed diagnostics
-    if (errorMsg.includes('Failed to launch')) {
+    if (errorMsg.includes("Failed to launch")) {
       console.error(`   \n⚠️  DIAGNOSIS: Chromium launch failed`);
       console.error(`   Possible causes:`);
-      console.error(`   - Chromium not installed (run: apt-get install chromium-browser)`);
+      console.error(
+        `   - Chromium not installed (run: apt-get install chromium-browser)`,
+      );
       console.error(`   - PUPPETEER_EXECUTABLE_PATH not set or incorrect`);
       console.error(`   - Missing dependencies in Docker/production`);
-      console.error(`   \n✓ SOLUTION: Set PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser`);
-    } else if (errorMsg.includes('timeout') || errorMsg.includes('Navigation timeout')) {
+      console.error(
+        `   \n✓ SOLUTION: Set PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser`,
+      );
+    } else if (
+      errorMsg.includes("timeout") ||
+      errorMsg.includes("Navigation timeout")
+    ) {
       console.error(`   \n⚠️  DIAGNOSIS: Page load timeout (>30s)`);
       console.error(`   Possible causes:`);
       console.error(`   - Site is very slow or unresponsive`);
       console.error(`   - Network issues`);
       console.error(`   - Site blocking automated browsers`);
-    } else if (errorMsg.includes('net::ERR') || errorMsg.includes('ERR_')) {
+    } else if (errorMsg.includes("net::ERR") || errorMsg.includes("ERR_")) {
       console.error(`   \n⚠️  DIAGNOSIS: Network error`);
-      console.error(`   The site may be down, blocking requests, or has network issues`);
+      console.error(
+        `   The site may be down, blocking requests, or has network issues`,
+      );
     } else {
       console.error(`   \n⚠️  DIAGNOSIS: Unknown Puppeteer error`);
       console.error(`   Stack trace: ${errorStack?.substring(0, 200)}...`);
@@ -976,7 +1003,7 @@ async function scrapeWithPuppeteer(url: string) {
       try {
         await browser.close();
       } catch (closeError) {
-        console.error('Failed to close browser:', closeError);
+        console.error("Failed to close browser:", closeError);
       }
     }
     throw error;
@@ -1215,14 +1242,20 @@ async function scrapeWebsite(url: string) {
           if (process.env.SCRAPER_API_KEY) {
             console.log(`🔄 Puppeteer failed, trying ScraperAPI for ${url}...`);
             try {
-              const { scrapeWithScraperAPI } = await import("../utils/scraperapi.js");
+              const { scrapeWithScraperAPI } = await import(
+                "../utils/scraperapi.js"
+              );
               const scraperResult = await scrapeWithScraperAPI(url);
-              console.log(`✅ ScraperAPI successfully bypassed protection for ${url}!`);
+              console.log(
+                `✅ ScraperAPI successfully bypassed protection for ${url}!`,
+              );
               return scraperResult;
             } catch (scraperError) {
               console.error(
                 `❌ ScraperAPI also failed:`,
-                scraperError instanceof Error ? scraperError.message : scraperError,
+                scraperError instanceof Error
+                  ? scraperError.message
+                  : scraperError,
               );
             }
           }
@@ -1257,7 +1290,9 @@ async function scrapeWebsite(url: string) {
         if (process.env.SCRAPER_API_KEY) {
           console.log(`🔄 Last resort: Trying ScraperAPI for ${url}...`);
           try {
-            const { scrapeWithScraperAPI } = await import("../utils/scraperapi.js");
+            const { scrapeWithScraperAPI } = await import(
+              "../utils/scraperapi.js"
+            );
             const scraperResult = await scrapeWithScraperAPI(url);
             console.log(`✅ ScraperAPI successfully accessed ${url}!`);
             return scraperResult;
@@ -2844,25 +2879,39 @@ function parseMarkdownAuditResponse(text: string): any {
 
     // Ensure we have all 10 sections - add missing ones with default scores
     if (sections.length > 0 && sections.length < 10) {
-      console.log(`[PARSE DEBUG] Only ${sections.length} sections found, filling in missing sections...`);
-      const existingSectionNames = sections.map(s => s.name);
-      const missingSections = sectionNames.filter(name => !existingSectionNames.includes(name));
+      console.log(
+        `[PARSE DEBUG] Only ${sections.length} sections found, filling in missing sections...`,
+      );
+      const existingSectionNames = sections.map((s) => s.name);
+      const missingSections = sectionNames.filter(
+        (name) => !existingSectionNames.includes(name),
+      );
 
       missingSections.forEach((name, index) => {
         const sectionIndex = sectionNames.indexOf(name);
         // Use overall score as baseline for missing sections
-        const score = Math.max(50, Math.min(100, overallScore + (Math.random() * 10 - 5))); // ±5 points variance
+        const score = Math.max(
+          50,
+          Math.min(100, overallScore + (Math.random() * 10 - 5)),
+        ); // ±5 points variance
         const issues = Math.max(1, Math.round((100 - score) / 15));
         const recommendations = Math.max(1, Math.round((100 - score) / 12));
 
-        console.log(`[PARSE DEBUG] Adding missing section: ${name} with score ${Math.round(score)}`);
+        console.log(
+          `[PARSE DEBUG] Adding missing section: ${name} with score ${Math.round(score)}`,
+        );
         sections.push({
           name,
           score: Math.round(score),
           maxScore: 100,
           issues,
           recommendations,
-          details: extractSectionDetails(text, name, Math.round(score), sectionIndex),
+          details: extractSectionDetails(
+            text,
+            name,
+            Math.round(score),
+            sectionIndex,
+          ),
         });
       });
 
@@ -2871,7 +2920,9 @@ function parseMarkdownAuditResponse(text: string): any {
         return sectionNames.indexOf(a.name) - sectionNames.indexOf(b.name);
       });
 
-      console.log(`[PARSE DEBUG] After filling missing sections: ${sections.length} total sections`);
+      console.log(
+        `[PARSE DEBUG] After filling missing sections: ${sections.length} total sections`,
+      );
     }
 
     // If we couldn't parse sections at all, create default ones
@@ -3043,19 +3094,25 @@ function extractSectionDetails(
   // Special handling for Competitive Advantage & Market Positioning - MUST have SWOT
   if (sectionName === "Competitive Advantage & Market Positioning") {
     // Check for complete SWOT (all 4 elements required)
-    const hasStrengths = evidence.includes("Strengths:") || evidence.includes("- Strengths:");
-    const hasWeaknesses = evidence.includes("Weaknesses:") || evidence.includes("- Weaknesses:");
-    const hasOpportunities = evidence.includes("Opportunities:") || evidence.includes("- Opportunities:");
-    const hasThreats = evidence.includes("Threats:") || evidence.includes("- Threats:");
+    const hasStrengths =
+      evidence.includes("Strengths:") || evidence.includes("- Strengths:");
+    const hasWeaknesses =
+      evidence.includes("Weaknesses:") || evidence.includes("- Weaknesses:");
+    const hasOpportunities =
+      evidence.includes("Opportunities:") ||
+      evidence.includes("- Opportunities:");
+    const hasThreats =
+      evidence.includes("Threats:") || evidence.includes("- Threats:");
 
-    const hasCompleteSWOT = hasStrengths && hasWeaknesses && hasOpportunities && hasThreats;
+    const hasCompleteSWOT =
+      hasStrengths && hasWeaknesses && hasOpportunities && hasThreats;
 
     if (!hasCompleteSWOT) {
       console.warn(`[SWOT ENFORCEMENT] Incomplete SWOT for ${sectionName}`);
-      console.warn(`  Strengths: ${hasStrengths ? '✓' : '✗'}`);
-      console.warn(`  Weaknesses: ${hasWeaknesses ? '✓' : '✗'}`);
-      console.warn(`  Opportunities: ${hasOpportunities ? '✓' : '✗'}`);
-      console.warn(`  Threats: ${hasThreats ? '✓' : '✗'}`);
+      console.warn(`  Strengths: ${hasStrengths ? "✓" : "✗"}`);
+      console.warn(`  Weaknesses: ${hasWeaknesses ? "✓" : "✗"}`);
+      console.warn(`  Opportunities: ${hasOpportunities ? "✓" : "✗"}`);
+      console.warn(`  Threats: ${hasThreats ? "✓" : "✗"}`);
       console.warn(`  Adding complete SWOT structure...`);
 
       // Extract or generate SWOT elements from evidence
@@ -3068,7 +3125,9 @@ function extractSectionDetails(
         evidence = swotSection;
       }
     } else {
-      console.log(`[SWOT CHECK] ✓ Complete SWOT Analysis found in ${sectionName} (all 4 elements present)`);
+      console.log(
+        `[SWOT CHECK] ✓ Complete SWOT Analysis found in ${sectionName} (all 4 elements present)`,
+      );
     }
   }
 
@@ -3104,20 +3163,30 @@ function generateSWOTFromEvidence(evidence: string, score: number): string {
 
   // Adjust based on score
   if (isHighScore) {
-    strengths = "Strong market positioning, Clear brand identity, Effective differentiation";
-    weaknesses = "Minor gaps in competitive messaging, Room for enhanced positioning";
-    opportunities = "Leverage strengths in marketing campaigns, Expand market presence, Monitor competitor trends";
-    threats = "Market saturation, Emerging competitors, Changing consumer preferences";
+    strengths =
+      "Strong market positioning, Clear brand identity, Effective differentiation";
+    weaknesses =
+      "Minor gaps in competitive messaging, Room for enhanced positioning";
+    opportunities =
+      "Leverage strengths in marketing campaigns, Expand market presence, Monitor competitor trends";
+    threats =
+      "Market saturation, Emerging competitors, Changing consumer preferences";
   } else if (isMediumScore) {
     strengths = "Established brand presence, Some unique offerings identified";
-    weaknesses = "Limited competitive differentiation, Unclear value proposition, Generic market positioning";
-    opportunities = "Develop unique value propositions, Create competitive comparison content, Strengthen brand messaging";
-    threats = "Strong competitor presence, Market commoditization, Difficulty standing out in crowded market";
+    weaknesses =
+      "Limited competitive differentiation, Unclear value proposition, Generic market positioning";
+    opportunities =
+      "Develop unique value propositions, Create competitive comparison content, Strengthen brand messaging";
+    threats =
+      "Strong competitor presence, Market commoditization, Difficulty standing out in crowded market";
   } else {
     strengths = "Brand foundation exists, Potential for growth";
-    weaknesses = "Weak competitive positioning, No clear differentiators, Generic messaging that blends with competitors";
-    opportunities = "Complete competitive analysis, Identify and highlight unique strengths, Rebuild positioning strategy";
-    threats = "Easily overlooked by customers, Competitor dominance, Risk of market irrelevance";
+    weaknesses =
+      "Weak competitive positioning, No clear differentiators, Generic messaging that blends with competitors";
+    opportunities =
+      "Complete competitive analysis, Identify and highlight unique strengths, Rebuild positioning strategy";
+    threats =
+      "Easily overlooked by customers, Competitor dominance, Risk of market irrelevance";
   }
 
   return `• SWOT Analysis:
@@ -3137,139 +3206,179 @@ function getDefaultRecommendations(
   const isMediumScore = score >= 50 && score < 75;
 
   const defaults: { [key: string]: string[] } = {
-    "Visual Design & Flow": isHighScore ? [
-      "Consider A/B testing alternate layouts to further optimize visual hierarchy",
-      "Review analytics to identify any navigation patterns that could be streamlined",
-      "Explore emerging design trends that align with your brand identity",
-    ] : isMediumScore ? [
-      "Review logo placement and brand consistency across all pages for potential improvements",
-      "Evaluate typography hierarchy and whitespace usage for better visual balance",
-      "Test navigation menu logic with users to identify any friction points",
-    ] : [
-      "Audit logo placement and brand identity consistency across all pages",
-      "Improve typography hierarchy and whitespace for better readability",
-      "Restructure navigation menu for clearer user flow and better CTA visibility",
-    ],
-    "Content Quality & Messaging": isHighScore ? [
-      "Consider content refresh strategy to maintain relevance and engagement",
-      "Test headline variations to maximize click-through rates",
-      "Expand high-performing content topics based on user engagement data",
-    ] : isMediumScore ? [
-      "Review headlines for impact and ensure copy tone aligns with brand voice",
-      "Check for opportunities to integrate keywords more naturally",
-      "Assess readability scores and identify content that could better address user pain points",
-    ] : [
-      "Revise headlines to improve clarity and engagement",
-      "Optimize keyword integration without stuffing",
-      "Improve readability (aim for Flesch score >60) and focus on user needs",
-    ],
-    "SEO Technical & On-Page Optimization": isHighScore ? [
-      "Monitor search performance and identify opportunities for featured snippets",
-      "Explore advanced schema markup types for enhanced search visibility",
-      "Review and optimize for emerging search features and zero-click searches",
-    ] : isMediumScore ? [
-      "Review title tags and meta descriptions for optimization opportunities",
-      "Check header tag structure (H1-H6) for improvements",
-      "Consider implementing additional schema markup types",
-    ] : [
-      "Audit and optimize title tags and meta descriptions across all pages",
-      "Fix header tag structure (H1-H6) and improve URL architecture",
-      "Implement schema markup and verify robots.txt/sitemap configuration",
-    ],
-    "Performance & Speed": isHighScore ? [
-      "Explore advanced optimization techniques like edge caching or CDN improvements",
-      "Monitor Core Web Vitals trends and address any degradation proactively",
-      "Consider implementing service workers for offline functionality",
-    ] : isMediumScore ? [
-      "Look for opportunities to reduce page load time through image optimization",
-      "Review CSS/JS files for minification opportunities",
-      "Test different caching strategies to improve repeat visitor experience",
-    ] : [
-      "Prioritize reducing page load time to under 3 seconds",
-      "Compress images and minify CSS/JS files",
-      "Implement browser caching and improve server response time",
-    ],
-    "Mobile Usability & Responsiveness": isHighScore ? [
-      "Test on latest mobile devices to ensure optimal experience",
-      "Explore progressive web app (PWA) features for enhanced mobile experience",
-      "Monitor mobile analytics for any emerging usability patterns",
-    ] : isMediumScore ? [
-      "Test responsive design across various device sizes for consistency",
-      "Review touch target sizes to ensure they meet accessibility standards",
-      "Check for any mobile-specific UX issues",
-    ] : [
-      "Fix responsive design issues across different device sizes",
-      "Increase touch target sizes to minimum 44x44px",
-      "Address mobile-specific issues like intrusive pop-ups or navigation problems",
-    ],
-    "User Experience (UX) & Navigation": isHighScore ? [
-      "Conduct user testing to identify micro-optimization opportunities",
-      "Explore personalization features based on user behavior",
-      "Review analytics for any unexpected user paths or drop-off points",
-    ] : isMediumScore ? [
-      "Map out user journeys to identify potential friction points",
-      "Consider adding breadcrumb navigation if not present",
-      "Review search functionality and error page handling",
-    ] : [
-      "Simplify user journeys from landing to conversion",
-      "Add breadcrumb navigation and improve search functionality",
-      "Apply UX heuristics to identify and fix major usability issues",
-    ],
-    "Accessibility": isHighScore ? [
-      "Review for WCAG 2.1 AAA compliance opportunities",
-      "Test with actual assistive technology users for feedback",
-      "Explore advanced accessibility features like skip links or ARIA live regions",
-    ] : isMediumScore ? [
-      "Review alt text coverage and quality across all images",
-      "Check color contrast ratios on interactive elements",
-      "Test keyboard navigation completeness",
-    ] : [
-      "Implement WCAG 2.1 AA standards including alt text for all images",
-      "Fix color contrast ratios to meet minimum 4.5:1 requirement",
-      "Enable complete keyboard navigation and screen reader support",
-    ],
-    "Security & Technical Integrity": isHighScore ? [
-      "Review security headers for additional hardening opportunities",
-      "Consider implementing Content Security Policy (CSP)",
-      "Monitor for new security best practices and vulnerabilities",
-    ] : isMediumScore ? [
-      "Verify HTTPS is enforced across all pages",
-      "Run a link audit to identify any broken links",
-      "Review security headers for completeness",
-    ] : [
-      "Ensure HTTPS is enabled with valid SSL certificate across all pages",
-      "Fix all broken links and images",
-      "Address mixed content warnings and security vulnerabilities",
-    ],
-    "Competitive Advantage & Market Positioning": isHighScore ? [
-      "Conduct competitive analysis to identify emerging differentiation opportunities",
-      "Leverage SWOT strengths in marketing messaging and search presence",
-      "Monitor competitor changes and explore new market positioning strategies",
-      "Consider expanding unique offerings into adjacent market segments",
-    ] : isMediumScore ? [
-      "Conduct detailed SWOT analysis to identify differentiation opportunities",
-      "Highlight unique features and benefits that set you apart from competitors",
-      "Research 2-3 key competitors to benchmark positioning and messaging",
-      "Develop competitive advantage messaging framework based on unique strengths",
-    ] : [
-      "Create comprehensive SWOT analysis and share relevant strengths with customers",
-      "Clearly articulate unique value propositions vs key competitors",
-      "Establish clear market positioning and differentiation strategy",
-      "Implement competitive intelligence monitoring to track market changes",
-    ],
-    "Conversion & Call-to-Action Optimization": isHighScore ? [
-      "Implement A/B tests for CTAs to identify incremental improvements",
-      "Explore advanced personalization for CTAs based on user segment",
-      "Review conversion funnel analytics for optimization opportunities",
-    ] : isMediumScore ? [
-      "Test different CTA placements and copy variations",
-      "Review form length and identify fields that could be made optional",
-      "Analyze conversion paths for potential friction points",
-    ] : [
-      "Optimize CTA button design, placement, and copy",
-      "Reduce form length by removing unnecessary fields",
-      "Implement clear conversion paths with reduced friction",
-    ],
+    "Visual Design & Flow": isHighScore
+      ? [
+          "Consider A/B testing alternate layouts to further optimize visual hierarchy",
+          "Review analytics to identify any navigation patterns that could be streamlined",
+          "Explore emerging design trends that align with your brand identity",
+        ]
+      : isMediumScore
+        ? [
+            "Review logo placement and brand consistency across all pages for potential improvements",
+            "Evaluate typography hierarchy and whitespace usage for better visual balance",
+            "Test navigation menu logic with users to identify any friction points",
+          ]
+        : [
+            "Audit logo placement and brand identity consistency across all pages",
+            "Improve typography hierarchy and whitespace for better readability",
+            "Restructure navigation menu for clearer user flow and better CTA visibility",
+          ],
+    "Content Quality & Messaging": isHighScore
+      ? [
+          "Consider content refresh strategy to maintain relevance and engagement",
+          "Test headline variations to maximize click-through rates",
+          "Expand high-performing content topics based on user engagement data",
+        ]
+      : isMediumScore
+        ? [
+            "Review headlines for impact and ensure copy tone aligns with brand voice",
+            "Check for opportunities to integrate keywords more naturally",
+            "Assess readability scores and identify content that could better address user pain points",
+          ]
+        : [
+            "Revise headlines to improve clarity and engagement",
+            "Optimize keyword integration without stuffing",
+            "Improve readability (aim for Flesch score >60) and focus on user needs",
+          ],
+    "SEO Technical & On-Page Optimization": isHighScore
+      ? [
+          "Monitor search performance and identify opportunities for featured snippets",
+          "Explore advanced schema markup types for enhanced search visibility",
+          "Review and optimize for emerging search features and zero-click searches",
+        ]
+      : isMediumScore
+        ? [
+            "Review title tags and meta descriptions for optimization opportunities",
+            "Check header tag structure (H1-H6) for improvements",
+            "Consider implementing additional schema markup types",
+          ]
+        : [
+            "Audit and optimize title tags and meta descriptions across all pages",
+            "Fix header tag structure (H1-H6) and improve URL architecture",
+            "Implement schema markup and verify robots.txt/sitemap configuration",
+          ],
+    "Performance & Speed": isHighScore
+      ? [
+          "Explore advanced optimization techniques like edge caching or CDN improvements",
+          "Monitor Core Web Vitals trends and address any degradation proactively",
+          "Consider implementing service workers for offline functionality",
+        ]
+      : isMediumScore
+        ? [
+            "Look for opportunities to reduce page load time through image optimization",
+            "Review CSS/JS files for minification opportunities",
+            "Test different caching strategies to improve repeat visitor experience",
+          ]
+        : [
+            "Prioritize reducing page load time to under 3 seconds",
+            "Compress images and minify CSS/JS files",
+            "Implement browser caching and improve server response time",
+          ],
+    "Mobile Usability & Responsiveness": isHighScore
+      ? [
+          "Test on latest mobile devices to ensure optimal experience",
+          "Explore progressive web app (PWA) features for enhanced mobile experience",
+          "Monitor mobile analytics for any emerging usability patterns",
+        ]
+      : isMediumScore
+        ? [
+            "Test responsive design across various device sizes for consistency",
+            "Review touch target sizes to ensure they meet accessibility standards",
+            "Check for any mobile-specific UX issues",
+          ]
+        : [
+            "Fix responsive design issues across different device sizes",
+            "Increase touch target sizes to minimum 44x44px",
+            "Address mobile-specific issues like intrusive pop-ups or navigation problems",
+          ],
+    "User Experience (UX) & Navigation": isHighScore
+      ? [
+          "Conduct user testing to identify micro-optimization opportunities",
+          "Explore personalization features based on user behavior",
+          "Review analytics for any unexpected user paths or drop-off points",
+        ]
+      : isMediumScore
+        ? [
+            "Map out user journeys to identify potential friction points",
+            "Consider adding breadcrumb navigation if not present",
+            "Review search functionality and error page handling",
+          ]
+        : [
+            "Simplify user journeys from landing to conversion",
+            "Add breadcrumb navigation and improve search functionality",
+            "Apply UX heuristics to identify and fix major usability issues",
+          ],
+    Accessibility: isHighScore
+      ? [
+          "Review for WCAG 2.1 AAA compliance opportunities",
+          "Test with actual assistive technology users for feedback",
+          "Explore advanced accessibility features like skip links or ARIA live regions",
+        ]
+      : isMediumScore
+        ? [
+            "Review alt text coverage and quality across all images",
+            "Check color contrast ratios on interactive elements",
+            "Test keyboard navigation completeness",
+          ]
+        : [
+            "Implement WCAG 2.1 AA standards including alt text for all images",
+            "Fix color contrast ratios to meet minimum 4.5:1 requirement",
+            "Enable complete keyboard navigation and screen reader support",
+          ],
+    "Security & Technical Integrity": isHighScore
+      ? [
+          "Review security headers for additional hardening opportunities",
+          "Consider implementing Content Security Policy (CSP)",
+          "Monitor for new security best practices and vulnerabilities",
+        ]
+      : isMediumScore
+        ? [
+            "Verify HTTPS is enforced across all pages",
+            "Run a link audit to identify any broken links",
+            "Review security headers for completeness",
+          ]
+        : [
+            "Ensure HTTPS is enabled with valid SSL certificate across all pages",
+            "Fix all broken links and images",
+            "Address mixed content warnings and security vulnerabilities",
+          ],
+    "Competitive Advantage & Market Positioning": isHighScore
+      ? [
+          "Conduct competitive analysis to identify emerging differentiation opportunities",
+          "Leverage SWOT strengths in marketing messaging and search presence",
+          "Monitor competitor changes and explore new market positioning strategies",
+          "Consider expanding unique offerings into adjacent market segments",
+        ]
+      : isMediumScore
+        ? [
+            "Conduct detailed SWOT analysis to identify differentiation opportunities",
+            "Highlight unique features and benefits that set you apart from competitors",
+            "Research 2-3 key competitors to benchmark positioning and messaging",
+            "Develop competitive advantage messaging framework based on unique strengths",
+          ]
+        : [
+            "Create comprehensive SWOT analysis and share relevant strengths with customers",
+            "Clearly articulate unique value propositions vs key competitors",
+            "Establish clear market positioning and differentiation strategy",
+            "Implement competitive intelligence monitoring to track market changes",
+          ],
+    "Conversion & Call-to-Action Optimization": isHighScore
+      ? [
+          "Implement A/B tests for CTAs to identify incremental improvements",
+          "Explore advanced personalization for CTAs based on user segment",
+          "Review conversion funnel analytics for optimization opportunities",
+        ]
+      : isMediumScore
+        ? [
+            "Test different CTA placements and copy variations",
+            "Review form length and identify fields that could be made optional",
+            "Analyze conversion paths for potential friction points",
+          ]
+        : [
+            "Optimize CTA button design, placement, and copy",
+            "Reduce form length by removing unnecessary fields",
+            "Implement clear conversion paths with reduced friction",
+          ],
   };
 
   const defaultRecs = defaults[sectionName] || [
@@ -3613,7 +3722,9 @@ Score based on available information - don't artificially deflate scores.
       : "";
 
     // Build Lighthouse metrics section (if available)
-    const hasLighthouseData = websiteData.performance?.performanceScore || websiteData.performance?.accessibilityScore;
+    const hasLighthouseData =
+      websiteData.performance?.performanceScore ||
+      websiteData.performance?.accessibilityScore;
     const lighthouseSection = hasLighthouseData
       ? `
 ═══════════════════════════════════════════════════
@@ -3621,10 +3732,10 @@ Score based on available information - don't artificially deflate scores.
 ═══════════════════════════════════════════════════
 These are REAL scores from Google Lighthouse - use them to calibrate your analysis!
 
-Performance:     ${websiteData.performance.performanceScore || 'N/A'}/100 ${websiteData.performance.performanceScore >= 90 ? '🟢 Excellent' : websiteData.performance.performanceScore >= 50 ? '🟡 Needs Work' : websiteData.performance.performanceScore ? '🔴 Poor' : ''}
-Accessibility:   ${websiteData.performance.accessibilityScore || 'N/A'}/100 ${websiteData.performance.accessibilityScore >= 90 ? '🟢 Excellent' : websiteData.performance.accessibilityScore >= 50 ? '🟡 Needs Work' : websiteData.performance.accessibilityScore ? '🔴 Poor' : ''}
-SEO:             ${websiteData.performance.seoScore || 'N/A'}/100 ${websiteData.performance.seoScore >= 90 ? '🟢 Excellent' : websiteData.performance.seoScore >= 50 ? '🟡 Needs Work' : websiteData.performance.seoScore ? '🔴 Poor' : ''}
-Best Practices:  ${websiteData.performance.bestPracticesScore || 'N/A'}/100 ${websiteData.performance.bestPracticesScore >= 90 ? '🟢 Excellent' : websiteData.performance.bestPracticesScore >= 50 ? '🟡 Needs Work' : websiteData.performance.bestPracticesScore ? '🔴 Poor' : ''}
+Performance:     ${websiteData.performance.performanceScore || "N/A"}/100 ${websiteData.performance.performanceScore >= 90 ? "🟢 Excellent" : websiteData.performance.performanceScore >= 50 ? "🟡 Needs Work" : websiteData.performance.performanceScore ? "🔴 Poor" : ""}
+Accessibility:   ${websiteData.performance.accessibilityScore || "N/A"}/100 ${websiteData.performance.accessibilityScore >= 90 ? "🟢 Excellent" : websiteData.performance.accessibilityScore >= 50 ? "🟡 Needs Work" : websiteData.performance.accessibilityScore ? "🔴 Poor" : ""}
+SEO:             ${websiteData.performance.seoScore || "N/A"}/100 ${websiteData.performance.seoScore >= 90 ? "🟢 Excellent" : websiteData.performance.seoScore >= 50 ? "🟡 Needs Work" : websiteData.performance.seoScore ? "🔴 Poor" : ""}
+Best Practices:  ${websiteData.performance.bestPracticesScore || "N/A"}/100 ${websiteData.performance.bestPracticesScore >= 90 ? "🟢 Excellent" : websiteData.performance.bestPracticesScore >= 50 ? "🟡 Needs Work" : websiteData.performance.bestPracticesScore ? "🔴 Poor" : ""}
 
 ⚠️ IMPORTANT: Use these Lighthouse scores to ground your section scores!
 - Section 4 (Performance): Should align with Lighthouse Performance score
@@ -3653,7 +3764,7 @@ ${consistencyMetrics}
 ${lighthouseSection}
 TECH:
 SSL: ${websiteData.performance?.hasSSL ? "✓" : "✗"} | Mobile: ${websiteData.performance?.mobileViewport ? "✓" : "✗"} | ${websiteData.performance?.pageSizeKB || 0}KB
-Page Load: ${websiteData.performance?.responseTime ? `${websiteData.performance.responseTime}ms` : 'N/A'} | Redirects: ${websiteData.performance?.redirectCount || 0}
+Page Load: ${websiteData.performance?.responseTime ? `${websiteData.performance.responseTime}ms` : "N/A"} | Redirects: ${websiteData.performance?.redirectCount || 0}
 Robots: ${websiteData.performance?.hasRobotsTxt ? "✓" : "✗"} | Sitemap: ${websiteData.performance?.hasSitemap ? "✓" : "✗"}
 
 UX:
@@ -4004,17 +4115,17 @@ End: 'This audit shows where your brand stands—Brand Whisperer scales it to un
 
       // Parse section scores
       const sectionNames = [
-      "Visual Design & Flow",
-      "Content Quality & Messaging",
-      "SEO Technical & On-Page Optimization",
-      "Performance & Speed",
-      "Mobile Usability & Responsiveness",
-      "User Experience (UX) & Navigation",
-      "Accessibility",
-      "Security & Technical Integrity",
-      "Competitive Advantage & Market Positioning",
-      "Conversion & Call-to-Action Optimization",
-    ];
+        "Visual Design & Flow",
+        "Content Quality & Messaging",
+        "SEO Technical & On-Page Optimization",
+        "Performance & Speed",
+        "Mobile Usability & Responsiveness",
+        "User Experience (UX) & Navigation",
+        "Accessibility",
+        "Security & Technical Integrity",
+        "Competitive Advantage & Market Positioning",
+        "Conversion & Call-to-Action Optimization",
+      ];
 
       const sections = sectionNames.map((name, index) => {
         // Try to extract score from section headers

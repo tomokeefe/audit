@@ -1435,8 +1435,8 @@ Best regards`);
                   Audit Results by Category
                 </CardTitle>
                 <CardDescription>
-                  Expand each section below to view scores, analysis, and detailed
-                  recommendations.
+                  Expand each section below to view scores, analysis, and
+                  detailed recommendations.
                 </CardDescription>
               </CardHeader>
               <CardContent>
