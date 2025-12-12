@@ -3752,7 +3752,7 @@ export const handleDemoAudit: RequestHandler = async (req, res) => {
           details: `CTA placement is strategic with good visibility on key pages. Button design is clear and actionable. Form lengths are reasonable though simplification opportunities exist. Conversion paths are defined but could benefit from A/B testing and friction reduction to improve conversion rates.`,
         },
       ],
-      summary: `${companyName} demonstrates solid brand fundamentals with clear opportunities for enhancement. The website shows promise in brand consistency and visual design, while areas like content quality and SEO performance would benefit from focused improvements. Implementing the recommended changes would significantly strengthen the overall digital brand presence and user experience.`,
+      summary: `${companyName} demonstrates solid technical fundamentals with clear opportunities for enhancement. The website shows strengths in security and visual design, while areas like accessibility, performance optimization, and SEO would benefit from focused improvements. Implementing the recommended changes would significantly strengthen the overall digital presence, user experience, and search visibility.`,
     };
 
     // Recalculate overall score based on section scores
