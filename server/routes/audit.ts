@@ -106,9 +106,13 @@ async function storeAuditResult(auditData: AuditResponse): Promise<void> {
         // Don't fail - in-memory storage is still available
       }
     } else {
-      console.warn(
-        `⚠️  [STORE] WARNING: DATABASE_URL not configured - audit ${auditData.id} will only be available in current session`,
-      );
+      console.error(`\n${"=".repeat(80)}`);
+      console.error(`❌❌❌ DATABASE NOT CONFIGURED ❌❌❌`);
+      console.error(`❌ DATABASE_URL is not set in Railway environment variables!`);
+      console.error(`❌ Audit ${auditData.id} will be LOST on server restart!`);
+      console.error(`❌ ALL audits and shared links will break on every deployment!`);
+      console.error(`❌ ACTION REQUIRED: Add DATABASE_URL to Railway`);
+      console.error(`${"=".repeat(80)}\n`);
     }
   } catch (error) {
     console.error("❌ [STORE] CRITICAL ERROR in storeAuditResult:", error);
