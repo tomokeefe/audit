@@ -3357,9 +3357,17 @@ Weights for overall /100:
    - Flag any vulnerabilities or security concerns
 
 9. Competitive Advantage & Market Positioning (8%)
-   - Compare to 2-3 competitors on unique value proposition
-   - Evaluate messaging alignment and differentiation
-   - Assess if brand stands out in market/search results
+   - Identify unique offerings and features (e.g., proprietary tech, custom capabilities, specific numbers/metrics)
+   - Compare positioning vs 2-3 competitors (or industry standards if competitors not evident)
+   - Create a competitive positioning analysis with:
+     * How website performance compares to industry benchmarks (use other section scores as reference)
+     * Specific differentiators that set the brand apart
+   - Generate a mini SWOT analysis:
+     * Strengths: What the brand does well (from audit findings)
+     * Weaknesses: Competitive gaps or areas lacking differentiation
+     * Opportunities: Ways to better highlight unique value or stand out
+     * Threats: Market factors or competitive pressures
+   - Assess if brand messaging clearly communicates differentiation
 
 10. Conversion & Call-to-Action Optimization (7%)
     - Review CTA placement, button design, form length
