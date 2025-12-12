@@ -2,8 +2,10 @@ import { AuditResponse } from "@shared/api";
 import crypto from "crypto";
 
 const getGrokApiKey = () => {
+  // Use computed property access to prevent Vite from inlining
+  const envKeyName = ["GROK", "API", "KEY"].join("_");
   const env = global.process?.env || process.env;
-  return env.GROK_API_KEY;
+  return env[envKeyName];
 };
 const GROK_API_URL = "https://api.x.ai/v1/chat/completions";
 
