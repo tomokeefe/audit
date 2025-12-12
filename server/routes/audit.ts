@@ -3803,11 +3803,14 @@ RULES:
 - Score fairly based on evidence: 8-10 for strong evidence, 6-7 for average, 4-5 for needs work, below 4 for serious issues`;
 
     // Add timeout to Grok API call (60 seconds max)
+    // Build authorization header at runtime to prevent bundler inlining
+    const runtimeApiKey = getGrokApiKey();
+    const authHeader = "Bearer " + runtimeApiKey;
     const grokPromise = fetch(GROK_API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${getGrokApiKey()}`,
+        Authorization: authHeader,
       },
       body: JSON.stringify({
         messages: [
@@ -4079,11 +4082,13 @@ End: 'This audit shows where your brand stands—Brand Whisperer scales it to un
 
       console.log("[AUDIT] Calling Grok API...");
 
+      // Build authorization header at runtime to prevent bundler inlining
+      const authHeader = "Bearer " + grokApiKey;
       const grokResponse = await fetch("https://api.x.ai/v1/chat/completions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${grokApiKey}`,
+          Authorization: authHeader,
         },
         body: JSON.stringify({
           messages: [
