@@ -12,7 +12,6 @@ import AuditResults from "./pages/AuditResults";
 import SharedAudit from "./pages/SharedAudit";
 import Audits from "./pages/Audits";
 import NotFound from "./pages/NotFound";
-import DebugTest from "./pages/DebugTest";
 import ProtectedLanding from "./pages/ProtectedLanding";
 
 const queryClient = new QueryClient();
@@ -50,7 +49,6 @@ const App = () => (
               {/* Support old share URL format */}
               <Route path="/share/audit/:id" element={<SharedAudit />} />
               <Route path="/audits" element={<Audits />} />
-              <Route path="/debug-test" element={<DebugTest />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
