@@ -960,11 +960,12 @@ export default function Index() {
           currentEventSourceRef.current = null;
         };
 
-        // Timeout fallback
+        // Timeout fallback (matches standard audit timeout)
         const timeoutId = setTimeout(() => {
+          console.warn("EventSource audit timed out after 3 minutes");
           cleanup();
-          reject(new Error("Request timed out"));
-        }, 120000); // 2 minute timeout
+          reject(new Error("Audit timed out after 3 minutes. This can happen with complex websites. The audit may still be processing - please check your recent audits."));
+        }, 180000); // 3 minute timeout
 
         // Clear timeout if request completes normally
         const originalResolve = resolve;
@@ -1099,7 +1100,7 @@ export default function Index() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(auditRequest),
-        signal: createTimeoutSignal(120000), // 120s timeout for multi-page crawl
+        signal: createTimeoutSignal(180000), // 180s (3 min) timeout for complex audits with ScraperAPI
       });
 
       console.log("API response status:", response.status);
@@ -1228,9 +1229,9 @@ export default function Index() {
         ) {
           errorMessage =
             "Network error. Unable to connect to the server. Please check your connection and try again.";
-        } else if (error.message.includes("timeout")) {
+        } else if (error.message.includes("timeout") || error.name === "TimeoutError") {
           errorMessage =
-            "Request timed out. Please try with a different website or try again later.";
+            "Audit timed out after 3 minutes. This can happen with complex websites or slow connections. The audit may still be processing - please check your recent audits in a moment, or try again.";
         } else {
           errorMessage = error.message;
         }
@@ -1241,6 +1242,16 @@ export default function Index() {
       }
 
       setError(errorMessage);
+
+      // If it was a timeout, reload audits after a delay to catch background-completed audits
+      if (error instanceof Error && (error.message.includes("timeout") || error.name === "TimeoutError" || error.name === "AbortError")) {
+        console.log("Scheduling audit list reload after timeout...");
+        setTimeout(() => {
+          loadRecentAudits().catch((err) => {
+            console.log("Could not reload audits after timeout:", err);
+          });
+        }, 5000); // Wait 5 seconds then check if audit completed
+      }
     } finally {
       setIsLoading(false);
       setShowProgress(false);
@@ -1360,7 +1371,7 @@ export default function Index() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(auditRequest),
-        signal: createTimeoutSignal(120000), // 120s timeout for multi-page crawl
+        signal: createTimeoutSignal(180000), // 180s (3 min) timeout for complex audits with ScraperAPI
       });
 
       console.log("API response status:", response.status);
