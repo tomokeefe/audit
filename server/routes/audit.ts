@@ -2670,16 +2670,16 @@ function parseMarkdownAuditResponse(text: string): any {
       sectionMatches?.length || 0,
     );
     const sectionNames = [
-      "Branding & Identity",
-      "Messaging & Positioning",
-      "Content Strategy",
-      "Customer Experience",
-      "Conversion Optimization",
-      "Visual Design & Aesthetics",
-      "Usability & Navigation",
-      "Digital Presence & SEO",
-      "Competitor Differentiation",
-      "Consistency & Compliance",
+      "Visual Design & Flow",
+      "Content Quality & Messaging",
+      "SEO Technical & On-Page Optimization",
+      "Performance & Speed",
+      "Mobile Usability & Responsiveness",
+      "User Experience (UX) & Navigation",
+      "Accessibility",
+      "Security & Technical Integrity",
+      "Competitive Advantage & Market Positioning",
+      "Conversion & Call-to-Action Optimization",
     ];
 
     if (sectionMatches) {
@@ -3580,17 +3580,17 @@ End: 'This audit shows where your brand stands—Brand Whisperer scales it to un
 
       // Parse section scores
       const sectionNames = [
-        "Branding & Identity",
-        "Messaging & Positioning",
-        "Content Strategy",
-        "Customer Experience",
-        "Conversion Optimization",
-        "Visual Design & Aesthetics",
-        "Usability & Navigation",
-        "Digital Presence & SEO",
-        "Competitor Differentiation",
-        "Consistency & Compliance",
-      ];
+      "Visual Design & Flow",
+      "Content Quality & Messaging",
+      "SEO Technical & On-Page Optimization",
+      "Performance & Speed",
+      "Mobile Usability & Responsiveness",
+      "User Experience (UX) & Navigation",
+      "Accessibility",
+      "Security & Technical Integrity",
+      "Competitive Advantage & Market Positioning",
+      "Conversion & Call-to-Action Optimization",
+    ];
 
       const sections = sectionNames.map((name, index) => {
         // Try to extract score from section headers
