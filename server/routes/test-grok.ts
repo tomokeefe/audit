@@ -26,11 +26,13 @@ export const testGrok: RequestHandler = async (req, res) => {
   }
 
   try {
+    // Build authorization header at runtime to prevent bundler inlining
+    const authHeader = "Bearer " + GROK_API_KEY;
     const response = await fetch(GROK_API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${GROK_API_KEY}`,
+        Authorization: authHeader,
       },
       body: JSON.stringify({
         model: "grok-2-1212",
