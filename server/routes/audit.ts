@@ -25,8 +25,11 @@ import {
 
 // Grok API configuration (x.ai)
 // Read from environment variables only to prevent key exposure
-// Use dynamic access to prevent Vite from inlining the value during bundling
-const getGrokApiKey = () => process.env["GROK_API_KEY"];
+// Use completely dynamic access through global to prevent any bundler inlining
+const getGrokApiKey = () => {
+  const env = global.process?.env || process.env;
+  return env.GROK_API_KEY;
+};
 const GROK_API_URL = "https://api.x.ai/v1/chat/completions";
 
 // In-memory storage for audit results (shared with audit-storage.ts)
