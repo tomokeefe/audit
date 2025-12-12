@@ -3428,6 +3428,33 @@ Score based on available information - don't artificially deflate scores.
 `
       : "";
 
+    // Build Lighthouse metrics section (if available)
+    const hasLighthouseData = websiteData.performance?.performanceScore || websiteData.performance?.accessibilityScore;
+    const lighthouseSection = hasLighthouseData
+      ? `
+═══════════════════════════════════════════════════
+📊 GOOGLE LIGHTHOUSE SCORES (Objective Metrics)
+═══════════════════════════════════════════════════
+These are REAL scores from Google Lighthouse - use them to calibrate your analysis!
+
+Performance:     ${websiteData.performance.performanceScore || 'N/A'}/100 ${websiteData.performance.performanceScore >= 90 ? '🟢 Excellent' : websiteData.performance.performanceScore >= 50 ? '🟡 Needs Work' : websiteData.performance.performanceScore ? '🔴 Poor' : ''}
+Accessibility:   ${websiteData.performance.accessibilityScore || 'N/A'}/100 ${websiteData.performance.accessibilityScore >= 90 ? '🟢 Excellent' : websiteData.performance.accessibilityScore >= 50 ? '🟡 Needs Work' : websiteData.performance.accessibilityScore ? '🔴 Poor' : ''}
+SEO:             ${websiteData.performance.seoScore || 'N/A'}/100 ${websiteData.performance.seoScore >= 90 ? '🟢 Excellent' : websiteData.performance.seoScore >= 50 ? '🟡 Needs Work' : websiteData.performance.seoScore ? '🔴 Poor' : ''}
+Best Practices:  ${websiteData.performance.bestPracticesScore || 'N/A'}/100 ${websiteData.performance.bestPracticesScore >= 90 ? '🟢 Excellent' : websiteData.performance.bestPracticesScore >= 50 ? '🟡 Needs Work' : websiteData.performance.bestPracticesScore ? '🔴 Poor' : ''}
+
+⚠️ IMPORTANT: Use these Lighthouse scores to ground your section scores!
+- Section 4 (Performance): Should align with Lighthouse Performance score
+- Section 7 (Accessibility): Should align with Lighthouse Accessibility score
+- Section 3 (SEO): Should align with Lighthouse SEO score
+═══════════════════════════════════════════════════
+`
+      : `
+⚠️ LIGHTHOUSE DATA UNAVAILABLE
+Lighthouse/PageSpeed Insights data could not be retrieved.
+Possible reasons: Rate limit, site not accessible to Google, API error.
+Continue with other available data but note this limitation.
+`;
+
     const userPrompt = `${fallbackWarning}Audit: ${websiteData.url}
 
 DATA:
@@ -3439,10 +3466,10 @@ Headings: ${websiteData.headings.slice(0, 8).join(" | ")}
 MULTI-PAGE (${websiteData.multiPageAnalysis?.pagesAnalyzed || 1} pages):
 ${multiPageContent}
 ${consistencyMetrics}
-
+${lighthouseSection}
 TECH:
 SSL: ${websiteData.performance?.hasSSL ? "✓" : "✗"} | Mobile: ${websiteData.performance?.mobileViewport ? "✓" : "✗"} | ${websiteData.performance?.pageSizeKB || 0}KB
-${websiteData.performance?.performanceScore ? `Perf: ${websiteData.performance.performanceScore} | ` : ""}${websiteData.performance?.accessibilityScore ? `A11y: ${websiteData.performance.accessibilityScore} | ` : ""}${websiteData.performance?.seoScore ? `SEO: ${websiteData.performance.seoScore}` : ""}
+Page Load: ${websiteData.performance?.responseTime ? `${websiteData.performance.responseTime}ms` : 'N/A'} | Redirects: ${websiteData.performance?.redirectCount || 0}
 Robots: ${websiteData.performance?.hasRobotsTxt ? "✓" : "✗"} | Sitemap: ${websiteData.performance?.hasSitemap ? "✓" : "✗"}
 
 UX:
