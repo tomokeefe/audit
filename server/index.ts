@@ -157,9 +157,13 @@ export async function createServer() {
     const grokKey = process.env.GROK_API_KEY;
     res.json({
       hasGrokKey: !!grokKey,
-      grokKeyPreview: grokKey ? `${grokKey.substring(0, 12)}...${grokKey.slice(-8)}` : "NOT SET",
+      grokKeyPreview: grokKey
+        ? `${grokKey.substring(0, 12)}...${grokKey.slice(-8)}`
+        : "NOT SET",
       nodeEnv: process.env.NODE_ENV,
-      allEnvKeys: Object.keys(process.env).filter(k => !k.includes('PASSWORD') && !k.includes('SECRET')).sort(),
+      allEnvKeys: Object.keys(process.env)
+        .filter((k) => !k.includes("PASSWORD") && !k.includes("SECRET"))
+        .sort(),
     });
   });
 

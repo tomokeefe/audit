@@ -26,7 +26,8 @@ import {
 // Grok API configuration (x.ai)
 // TEMPORARY: Hardcoded to bypass environment variable caching issues in Builder.io
 // TODO: Remove hardcoded key before committing to git - use environment variables in production
-const HARDCODED_GROK_KEY = "xai-PsoOOgLma7fSQale13NPDiYbJI5J9OOlL2nFDfnzxigtxzBhkyfsvV9DZzxHWLBhdrRJHYEiD3jX9WK5";
+const HARDCODED_GROK_KEY =
+  "xai-PsoOOgLma7fSQale13NPDiYbJI5J9OOlL2nFDfnzxigtxzBhkyfsvV9DZzxHWLBhdrRJHYEiD3jX9WK5";
 const getGrokApiKey = () => HARDCODED_GROK_KEY || process.env.GROK_API_KEY;
 const GROK_API_URL = "https://api.x.ai/v1/chat/completions";
 
@@ -3496,7 +3497,12 @@ async function generateAudit(websiteData: any): Promise<AuditResponse> {
       metaDescription: !!websiteData.description,
     });
     console.log("[AUDIT DEBUG] Grok API key present:", !!GROK_API_KEY);
-    console.log("[AUDIT DEBUG] Grok API key preview:", GROK_API_KEY ? `${GROK_API_KEY.substring(0, 8)}...${GROK_API_KEY.slice(-4)}` : "NOT SET");
+    console.log(
+      "[AUDIT DEBUG] Grok API key preview:",
+      GROK_API_KEY
+        ? `${GROK_API_KEY.substring(0, 8)}...${GROK_API_KEY.slice(-4)}`
+        : "NOT SET",
+    );
 
     // Enhanced Brand Whisperer prompt requiring evidence-based analysis
     const systemPrompt = `You are Brand Whisperer's senior brand strategist with expertise in data-driven brand analysis. For URL-only inputs, FIRST extract/infer: Brand Name (from <title>/meta), Target Audience (from copy like 'for millennials' or hero sections), Challenges/Goals (infer from pain points or CTAs). If unclear, use 'General Consumer' and note it.
