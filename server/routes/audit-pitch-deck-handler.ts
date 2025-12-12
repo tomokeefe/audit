@@ -317,16 +317,16 @@ function parseMarkdownAuditResponse(text: string): any {
   const sections: any[] = [];
 
   const sectionNames = [
+    "Narrative Structure & Flow",
     "Problem & Solution Clarity",
-    "Market Opportunity",
-    "Business Model",
+    "Market Opportunity & Positioning",
     "Traction & Metrics",
     "Competitive Advantage",
-    "Visual Design & Flow",
+    "Visual Design & Aesthetics",
     "Team & Credibility",
-    "Financial Projections",
-    "Call to Action",
-    "Investor Appeal",
+    "Financial Projections & Model",
+    "Call to Action & Investor Appeal",
+    "Risks & Mitigation",
   ];
 
   if (sectionMatches && sectionMatches.length > 0) {
