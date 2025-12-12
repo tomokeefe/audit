@@ -187,19 +187,40 @@ function extractInternalLinks(html: string, domain: string): string[] {
 }
 
 /**
- * Get performance metrics from Google PageSpeed Insights (free, no API key needed)
+ * Get performance metrics from Google PageSpeed Insights
+ * Uses API key if available (GOOGLE_PAGESPEED_API_KEY env var) for higher rate limits
+ * Free tier: 25 requests/day | With API key: 25,000 requests/day
  */
 export async function getPerformanceMetrics(
   url: string,
 ): Promise<PerformanceMetrics | null> {
   try {
     const encodedUrl = encodeURIComponent(url);
-    const response = await axios.get(
-      `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodedUrl}&category=performance&category=accessibility&category=best-practices&category=seo`,
-      {
-        timeout: 30000,
+    const apiKey = process.env.GOOGLE_PAGESPEED_API_KEY;
+
+    // Build API URL with optional API key
+    let apiUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodedUrl}&category=performance&category=accessibility&category=best-practices&category=seo`;
+
+    if (apiKey) {
+      apiUrl += `&key=${apiKey}`;
+      console.log(`🔑 Using PageSpeed Insights API key for ${url}`);
+    } else {
+      console.warn(`⚠️  No PageSpeed API key - using free tier (25 requests/day limit)`);
+      console.warn(`   Get API key: https://developers.google.com/speed/docs/insights/v5/get-started`);
+    }
+
+    console.log(`📊 Fetching Lighthouse data for ${url}...`);
+    const startTime = Date.now();
+
+    const response = await axios.get(apiUrl, {
+      timeout: 45000, // Increased timeout for comprehensive analysis
+      headers: {
+        'User-Agent': 'Brand-Whisperer-Audit/1.0',
       },
-    );
+    });
+
+    const elapsed = Date.now() - startTime;
+    console.log(`✅ Lighthouse data fetched in ${elapsed}ms`);
 
     const lighthouses = response.data.lighthouseResult;
     const categories = lighthouses.categories || {};
@@ -207,7 +228,7 @@ export async function getPerformanceMetrics(
     // Extract Core Web Vitals
     const metrics = lighthouses.audits?.metrics?.details?.items?.[0] || {};
 
-    return {
+    const result = {
       pagespeedScore: Math.round((categories.performance?.score || 0) * 100),
       performanceScore: Math.round((categories.performance?.score || 0) * 100),
       accessibilityScore: Math.round(
@@ -223,11 +244,32 @@ export async function getPerformanceMetrics(
         cls: metrics.cumulativeLayoutShift || 0,
       },
     };
+
+    console.log(`📈 Lighthouse Scores:`, {
+      performance: result.performanceScore,
+      accessibility: result.accessibilityScore,
+      seo: result.seoScore,
+      bestPractices: result.bestPracticesScore,
+    });
+
+    return result;
   } catch (error) {
-    console.warn(
-      "Failed to get PageSpeed metrics:",
-      error instanceof Error ? error.message : "Unknown error",
-    );
+    const errorMsg = error instanceof Error ? error.message : "Unknown error";
+    const statusCode = (error as any)?.response?.status;
+
+    console.error(`❌ PageSpeed Insights FAILED for ${url}:`);
+    console.error(`   Error: ${errorMsg}`);
+
+    if (statusCode === 429) {
+      console.error(`   ⚠️  RATE LIMIT EXCEEDED - Add GOOGLE_PAGESPEED_API_KEY to .env for higher limits`);
+    } else if (statusCode === 400) {
+      console.error(`   ⚠️  Invalid URL or site not accessible to Google`);
+    } else if (statusCode) {
+      console.error(`   HTTP Status: ${statusCode}`);
+    }
+
+    console.error(`   Impact: Audit will continue with reduced accuracy (no Lighthouse data)`);
+
     return null;
   }
 }
