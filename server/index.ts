@@ -152,6 +152,17 @@ export async function createServer() {
     }
   });
 
+  // Debug endpoint to check environment variables
+  app.get("/api/debug-env", (req, res) => {
+    const grokKey = process.env.GROK_API_KEY;
+    res.json({
+      hasGrokKey: !!grokKey,
+      grokKeyPreview: grokKey ? `${grokKey.substring(0, 12)}...${grokKey.slice(-8)}` : "NOT SET",
+      nodeEnv: process.env.NODE_ENV,
+      allEnvKeys: Object.keys(process.env).filter(k => !k.includes('PASSWORD') && !k.includes('SECRET')).sort(),
+    });
+  });
+
   // Audit routes - importing one by one to identify the problematic import
   let storeAudit, listAudits, getAudit, deleteAudit;
   let handleAuditProgress, handleAuditStandard;
