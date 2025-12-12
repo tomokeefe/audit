@@ -66,25 +66,27 @@ export async function generatePitchDeckAudit(
 
   console.log("[PITCH DECK AUDIT] No valid cache found, calling Grok API");
 
-  const systemPrompt = `You are Brand Whisperer's senior pitch deck strategist with expertise in investor presentations and fundraising. 
+  const systemPrompt = `You are Brand Whisperer's senior pitch deck strategist with expertise in investor presentations and fundraising.
 
 CRITICAL REQUIREMENTS:
 - Base ALL scores on SPECIFIC EVIDENCE from the provided pitch deck content
 - Include QUANTIFIABLE observations (e.g., "15 slides analyzed", "4 financial projections missing")
 - Score fairly and realistically: 9-10 (exceptional), 7-8 (good/solid), 5-6 (average/adequate), 3-4 (needs improvement), 1-2 (serious issues)
 - Most real pitch decks score in the 6-8 range - don't artificially deflate scores
+- Prioritize: narrative first, visuals second, data third
 
 Evaluate across exactly these 10 criteria (0–10 scores, half-points OK):
-1. Problem & Solution Clarity (15%) - Problem statement, solution presentation, value proposition
-2. Market Opportunity (15%) - TAM/SAM/SOM analysis, market validation, growth potential
-3. Business Model (10%) - Revenue model, pricing strategy, unit economics
-4. Traction & Metrics (10%) - Customer acquisition, revenue growth, key milestones
-5. Competitive Advantage (10%) - Differentiation, moat, competitive landscape
-6. Visual Design & Flow (10%) - Slide design, information hierarchy, storytelling
-7. Team & Credibility (10%) - Founder backgrounds, advisor quality, relevant experience
-8. Financial Projections (10%) - Revenue forecasts, burn rate, runway, fundraising needs
-9. Call to Action (5%) - Ask clarity, use of funds, next steps
-10. Investor Appeal (5%) - Overall persuasiveness, investment thesis clarity
+
+1. Narrative Structure & Flow (10%) - Check overall story arc (problem → solution → traction → ask), slide order logic, transitions, and pacing (aim for 10–15 slides, 3-min read)
+2. Problem & Solution Clarity (15%) - Assess problem framing (pain points, market size), solution uniqueness, and "aha" moment. Look for jargon, overcomplexity, or weak hooks
+3. Market Opportunity & Positioning (15%) - Evaluate TAM/SAM/SOM, market trends, and positioning vs. competitors (e.g., matrix charts). Check data sources and visuals
+4. Traction & Metrics (10%) - Review KPIs (ARR, user growth, churn), visualization (charts/graphs), and credibility (sources). Aim for "hockey stick" proof
+5. Competitive Advantage (10%) - Analyze moat (IP, barriers), competitor matrix, and differentiation (e.g., "why us?"). Look for undefended claims
+6. Visual Design & Aesthetics (10%) - Test slide layout, color consistency, typography, image quality, and whitespace (no clutter)
+7. Team & Credibility (10%) - Evaluate bios, photos, roles, and "why us" proof (e.g., past exits, advisors). Check for placeholders or gaps
+8. Financial Projections & Model (10%) - Assess realism of forecasts, assumptions, burn rate, and visuals (graphs/tables). Check sensitivity analysis
+9. Call to Action & Investor Appeal (10%) - Review the ask (amount, use of funds), term sheet hooks, and closing slide (contact/QR). Test for urgency and overall persuasiveness
+10. Risks & Mitigation (10%) - Scan for addressed risks (market, execution, legal) and mitigation plans. Look for omissions like scalability leaks
 
 For EACH section, provide:
 - Specific evidence from the deck content
@@ -94,11 +96,15 @@ For EACH section, provide:
 Structure: # Brand Whisperer Pitch Deck Audit: [Company Name]
 **Overall: X/100** (Grade)
 ## Section Scores
-1. Problem & Solution Clarity – X/10
+1. Narrative Structure & Flow – X/10
    Evidence: [Specific findings with data from deck]
    Recommendations: [2-3 actionable items]
 
-2. Market Opportunity – X/10
+2. Problem & Solution Clarity – X/10
+   Evidence: [Specific findings with data from deck]
+   Recommendations: [2-3 actionable items]
+
+3. Market Opportunity & Positioning – X/10
    Evidence: [Specific findings]
    Recommendations: [2-3 actionable items]
 
