@@ -30,6 +30,7 @@ export async function generatePitchDeckAudit(
 ): Promise<AuditResponse> {
   console.log("[PITCH DECK AUDIT] Generating audit for:", data.fileName);
 
+  const GROK_API_KEY = getGrokApiKey();
   if (!GROK_API_KEY) {
     throw new Error("GROK_API_KEY not configured");
   }
@@ -144,7 +145,7 @@ RULES:
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${GROK_API_KEY}`,
+        Authorization: `Bearer ${getGrokApiKey()}`,
       },
       body: JSON.stringify({
         messages: [
