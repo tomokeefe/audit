@@ -3040,14 +3040,6 @@ function extractSectionDetails(
     recommendations = getDefaultRecommendations(sectionName, score);
   }
 
-  // Generate performance overview
-  const performanceLevel =
-    score >= 80 ? "strong" : score >= 60 ? "adequate" : "needs improvement";
-
-  const overview =
-    evidence ||
-    `${sectionName} shows ${performanceLevel} performance based on the analysis. Score: ${score}/100.`;
-
   // Special handling for Competitive Advantage & Market Positioning - MUST have SWOT
   if (sectionName === "Competitive Advantage & Market Positioning") {
     const hasSWOT = evidence.includes("SWOT Analysis:") || evidence.includes("• SWOT");
@@ -3064,8 +3056,18 @@ function extractSectionDetails(
       } else {
         evidence = swotSection;
       }
+    } else {
+      console.log(`[SWOT CHECK] ✓ SWOT Analysis found in ${sectionName}`);
     }
   }
+
+  // Generate performance overview (after SWOT enhancement)
+  const performanceLevel =
+    score >= 80 ? "strong" : score >= 60 ? "adequate" : "needs improvement";
+
+  const overview =
+    evidence ||
+    `${sectionName} shows ${performanceLevel} performance based on the analysis. Score: ${score}/100.`;
 
   // Build formatted details
   let details = `${overview}\n\n`;
