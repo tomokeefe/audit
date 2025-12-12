@@ -276,6 +276,24 @@ RULES:
       ")",
     );
 
+    // CRITICAL: Save to database for persistence across deployments
+    try {
+      const auditServiceModule = await import("../db/audit-service.js");
+      const { auditService } = auditServiceModule;
+      await auditService.saveAudit(auditResult);
+      console.log(
+        `[PITCH DECK AUDIT] ✅ Saved to database: ${auditResult.id}`,
+      );
+    } catch (dbError) {
+      console.error(
+        `[PITCH DECK AUDIT] ❌ CRITICAL: Failed to save to database:`,
+        dbError,
+      );
+      console.error(
+        `[PITCH DECK AUDIT] ⚠️ Audit will be lost on server restart!`,
+      );
+    }
+
     return auditResult;
   } catch (error) {
     console.error("[PITCH DECK AUDIT] Error:", error);

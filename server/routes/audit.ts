@@ -83,10 +83,11 @@ async function storeAuditResult(auditData: AuditResponse): Promise<void> {
           `✅ [STORE] SUCCESS! Audit ${auditData.id} saved to database`,
         );
       } catch (dbError) {
-        console.error(
-          `❌ [STORE] ERROR saving audit ${auditData.id} to database:`,
-          dbError,
-        );
+        console.error(`\n${"=".repeat(80)}`);
+        console.error(`❌❌❌ CRITICAL DATABASE SAVE FAILURE ❌❌❌`);
+        console.error(`❌ [STORE] Audit ID: ${auditData.id}`);
+        console.error(`❌ [STORE] URL: ${auditData.url}`);
+        console.error(`❌ [STORE] This audit will be LOST on server restart!`);
         console.error(`❌ [STORE] Error type:`, typeof dbError);
         console.error(`❌ [STORE] Error name:`, (dbError as any)?.name);
         console.error(
@@ -97,6 +98,7 @@ async function storeAuditResult(auditData: AuditResponse): Promise<void> {
           `❌ [STORE] Error stack:`,
           dbError instanceof Error ? dbError.stack : "No stack trace",
         );
+        console.error(`${"=".repeat(80)}\n`);
         console.error(
           `❌ [STORE] Full error object:`,
           JSON.stringify(dbError, null, 2),
