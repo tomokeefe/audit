@@ -165,6 +165,52 @@ export function createFallbackData(url: string) {
   console.warn(`      4. Add GOOGLE_PAGESPEED_API_KEY for better metrics`);
   console.warn(`⚠️  ========================================\n`);
 
+  // CRITICAL: Even in fallback mode, attempt to get PageSpeed Insights data
+  // Google can often access sites that we cannot (bypasses Cloudflare)
+  console.log(`\n🔍 FALLBACK MODE: Attempting PageSpeed Insights despite scraping failure...`);
+  let performanceData;
+  try {
+    performanceData = await analyzeWebsitePerformance(url);
+    if (performanceData.performanceScore > 0) {
+      console.log(`✅ SUCCESS: PageSpeed data retrieved in fallback mode!`);
+      console.log(`   This provides objective metrics despite content access failure`);
+    } else {
+      console.warn(`⚠️  PageSpeed also unavailable in fallback mode`);
+      performanceData = {
+        pageSizeKB: 0,
+        hasSSL: url.startsWith("https://"),
+        redirectCount: 0,
+        responseTime: 0,
+        mobileViewport: false,
+        hasServiceWorker: false,
+        pagespeedScore: 0,
+        performanceScore: 0,
+        accessibilityScore: 0,
+        bestPracticesScore: 0,
+        seoScore: 0,
+        hasRobotsTxt: false,
+        hasSitemap: false,
+      };
+    }
+  } catch (perfError) {
+    console.error(`❌ Performance analysis failed in fallback mode:`, perfError);
+    performanceData = {
+      pageSizeKB: 0,
+      hasSSL: url.startsWith("https://"),
+      redirectCount: 0,
+      responseTime: 0,
+      mobileViewport: false,
+      hasServiceWorker: false,
+      pagespeedScore: 0,
+      performanceScore: 0,
+      accessibilityScore: 0,
+      bestPracticesScore: 0,
+      seoScore: 0,
+      hasRobotsTxt: false,
+      hasSitemap: false,
+    };
+  }
+
   return {
     title: `${companyName} - ⚠️ Limited Access`,
     description: `⚠️ IMPORTANT: Unable to access full website content for ${domain}. This may be due to Cloudflare protection, JavaScript-only rendering, or access restrictions. Analysis accuracy is severely limited.`,
@@ -184,15 +230,8 @@ export function createFallbackData(url: string) {
     htmlLength: 0,
     url,
     fallbackUsed: true,
-    // Limited fallback data for UX analysis
-    performance: {
-      pageSizeKB: 0,
-      hasSSL: url.startsWith("https://"),
-      redirectCount: 0,
-      responseTime: 0,
-      mobileViewport: false,
-      hasServiceWorker: false,
-    },
+    // Performance data from PageSpeed Insights (if available) or fallback
+    performance: performanceData,
     siteStructure: {
       discoveredPages: [],
       navigation: {
