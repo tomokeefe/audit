@@ -1235,6 +1235,25 @@ async function scrapeWebsite(url: string) {
           }
         }
 
+        // Try ScraperAPI if available (handles Cloudflare automatically)
+        if (process.env.SCRAPER_API_KEY) {
+          console.log(`🔄 Last resort: Trying ScraperAPI for ${url}...`);
+          try {
+            const scraperApiResult = await scrapeWithScraperAPI(url);
+            console.log(`✅ ScraperAPI successfully accessed ${url}!`);
+            return scraperApiResult;
+          } catch (scraperApiError) {
+            console.error(
+              `❌ ScraperAPI also failed:`,
+              scraperApiError instanceof Error
+                ? scraperApiError.message
+                : scraperApiError,
+            );
+          }
+        } else {
+          console.log(`⚠️  ScraperAPI not configured (no SCRAPER_API_KEY)`);
+        }
+
         // All methods exhausted, use fallback data
         console.log(
           `All scraping attempts failed for ${url}, using fallback data`,
