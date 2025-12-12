@@ -1431,12 +1431,12 @@ Best regards`);
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Lightbulb className="h-5 w-5 text-green-600" />
-                  Detailed Recommendations by Category
+                  <BarChart3 className="h-5 w-5 text-brand-600" />
+                  Audit Results by Category
                 </CardTitle>
                 <CardDescription>
-                  Expand each section below to view specific recommendations and
-                  action items.
+                  Expand each section below to view scores, analysis, and detailed
+                  recommendations.
                 </CardDescription>
               </CardHeader>
               <CardContent>
