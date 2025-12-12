@@ -138,6 +138,20 @@ export async function createServer() {
     }
   });
 
+  // Debug endpoint to test Grok API connection
+  app.post("/api/test-grok", async (req, res) => {
+    try {
+      const { testGrok } = await import("./routes/test-grok.js");
+      await testGrok(req, res, () => {});
+    } catch (error) {
+      console.error("Failed to load test-grok route:", error);
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  });
+
   // Audit routes - importing one by one to identify the problematic import
   let storeAudit, listAudits, getAudit, deleteAudit;
   let handleAuditProgress, handleAuditStandard;
