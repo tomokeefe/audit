@@ -1210,6 +1210,23 @@ async function scrapeWebsite(url: string) {
               ? puppeteerError.message
               : puppeteerError,
           );
+
+          // Try ScraperAPI as backup when Puppeteer fails
+          if (process.env.SCRAPER_API_KEY) {
+            console.log(`🔄 Puppeteer failed, trying ScraperAPI for ${url}...`);
+            try {
+              const { scrapeWithScraperAPI } = await import("../utils/scraperapi.js");
+              const scraperResult = await scrapeWithScraperAPI(url);
+              console.log(`✅ ScraperAPI successfully bypassed protection for ${url}!`);
+              return scraperResult;
+            } catch (scraperError) {
+              console.error(
+                `❌ ScraperAPI also failed:`,
+                scraperError instanceof Error ? scraperError.message : scraperError,
+              );
+            }
+          }
+
           // Continue to fallback data below
           if (attempt === 2) {
             console.log(`All methods failed for ${url}, using fallback data`);
