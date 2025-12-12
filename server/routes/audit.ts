@@ -237,23 +237,42 @@ export function createFallbackData(url: string) {
 
 // Function to analyze website performance and UX metrics (Phase 1 Enhanced)
 async function analyzeWebsitePerformance(url: string) {
-  try {
-    const performanceData = {
-      pageSizeKB: 0,
-      hasSSL: false,
-      redirectCount: 0,
-      responseTime: 0,
-      mobileViewport: false,
-      hasServiceWorker: false,
-      pagespeedScore: 0,
-      performanceScore: 0,
-      accessibilityScore: 0,
-      bestPracticesScore: 0,
-      seoScore: 0,
-      hasRobotsTxt: false,
-      hasSitemap: false,
-    };
+  const performanceData = {
+    pageSizeKB: 0,
+    hasSSL: url.startsWith("https://"),
+    redirectCount: 0,
+    responseTime: 0,
+    mobileViewport: false,
+    hasServiceWorker: false,
+    pagespeedScore: 0,
+    performanceScore: 0,
+    accessibilityScore: 0,
+    bestPracticesScore: 0,
+    seoScore: 0,
+    hasRobotsTxt: false,
+    hasSitemap: false,
+  };
 
+  // CRITICAL: Always attempt PageSpeed Insights first - Google can access sites we can't
+  console.log("🔍 Fetching PageSpeed Insights metrics (independent of scraping)...");
+  try {
+    const pagespeedMetrics = await getPerformanceMetrics(url);
+    if (pagespeedMetrics) {
+      performanceData.pagespeedScore = pagespeedMetrics.pagespeedScore;
+      performanceData.performanceScore = pagespeedMetrics.performanceScore;
+      performanceData.accessibilityScore = pagespeedMetrics.accessibilityScore;
+      performanceData.bestPracticesScore = pagespeedMetrics.bestPracticesScore;
+      performanceData.seoScore = pagespeedMetrics.seoScore;
+      console.log(`✅ PageSpeed data retrieved successfully`);
+    } else {
+      console.warn(`⚠️  PageSpeed Insights returned no data for ${url}`);
+    }
+  } catch (pagespeedError) {
+    console.error(`❌ PageSpeed Insights failed for ${url}:`, pagespeedError instanceof Error ? pagespeedError.message : pagespeedError);
+  }
+
+  // Attempt to get basic metrics from direct HTTP request
+  try {
     const startTime = Date.now();
     const response = await axios.get(url, {
       timeout: 6000,
@@ -264,7 +283,6 @@ async function analyzeWebsitePerformance(url: string) {
 
     performanceData.responseTime = endTime - startTime;
     performanceData.pageSizeKB = Math.round(response.data.length / 1024);
-    performanceData.hasSSL = url.startsWith("https://");
     performanceData.redirectCount = response.request._redirectCount || 0;
 
     // Check for mobile viewport and other UX indicators
@@ -274,42 +292,24 @@ async function analyzeWebsitePerformance(url: string) {
       response.data.includes("serviceWorker") ||
       response.data.includes("sw.js");
 
-    // Phase 1: Get PageSpeed Insights metrics
-    console.log("Fetching PageSpeed Insights metrics...");
-    const pagespeedMetrics = await getPerformanceMetrics(url);
-    if (pagespeedMetrics) {
-      performanceData.pagespeedScore = pagespeedMetrics.pagespeedScore;
-      performanceData.performanceScore = pagespeedMetrics.performanceScore;
-      performanceData.accessibilityScore = pagespeedMetrics.accessibilityScore;
-      performanceData.bestPracticesScore = pagespeedMetrics.bestPracticesScore;
-      performanceData.seoScore = pagespeedMetrics.seoScore;
-    }
+    console.log(`✅ Basic performance metrics collected via HTTP`);
+  } catch (httpError) {
+    console.warn(`⚠️  HTTP performance check failed (${httpError instanceof Error ? httpError.message : httpError})`);
+    console.warn(`   Continuing with PageSpeed data only...`);
+  }
 
-    // Phase 1: Check SEO metrics
-    console.log("Checking SEO metrics...");
+  // Always attempt SEO metrics check (robots.txt, sitemap)
+  try {
+    console.log("🔍 Checking SEO metrics...");
     const seoMetrics = await getSEOMetrics(url);
     performanceData.hasRobotsTxt = seoMetrics.hasRobotsTxt;
     performanceData.hasSitemap = seoMetrics.hasSitemap;
-
-    return performanceData;
-  } catch (error) {
-    console.warn("Performance analysis failed:", error);
-    return {
-      pageSizeKB: 0,
-      hasSSL: url.startsWith("https://"),
-      redirectCount: 0,
-      responseTime: 0,
-      mobileViewport: false,
-      hasServiceWorker: false,
-      pagespeedScore: 0,
-      performanceScore: 0,
-      accessibilityScore: 0,
-      bestPracticesScore: 0,
-      seoScore: 0,
-      hasRobotsTxt: false,
-      hasSitemap: false,
-    };
+    console.log(`✅ SEO metrics checked: robots.txt=${seoMetrics.hasRobotsTxt}, sitemap=${seoMetrics.hasSitemap}`);
+  } catch (seoError) {
+    console.warn(`⚠️  SEO metrics check failed:`, seoError);
   }
+
+  return performanceData;
 }
 
 // Function to discover and analyze site structure
