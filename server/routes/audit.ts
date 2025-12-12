@@ -144,11 +144,26 @@ export function createFallbackData(url: string) {
     domain.split(".")[0].charAt(0).toUpperCase() +
     domain.split(".")[0].slice(1);
 
-  console.warn(`⚠️  FALLBACK DATA USED FOR: ${url}`);
-  console.warn(
-    `   Reason: Website content could not be accessed (Cloudflare, JS-only, or blocked)`,
-  );
-  console.warn(`   Impact: Audit accuracy will be SEVERELY LIMITED`);
+  console.warn(`\n⚠️  ========================================`);
+  console.warn(`⚠️  FALLBACK MODE ACTIVATED FOR: ${url}`);
+  console.warn(`⚠️  ========================================`);
+  console.warn(`   \ud83d\udeab Reason: All scraping methods failed`);
+  console.warn(`   Methods attempted:`);
+  console.warn(`      1. ✗ Axios (standard HTTP) - Failed`);
+  console.warn(`      2. ✗ Puppeteer (headless browser) - Failed`);
+  console.warn(`   \n⚠️  AUDIT LIMITATIONS:`);
+  console.warn(`      - Cannot analyze content, navigation, or UX`);
+  console.warn(`      - Using generic placeholder data`);
+  console.warn(`      - Audit accuracy: ~20% (very limited)`);
+  console.warn(`   \n✓ STILL AVAILABLE:`);
+  console.warn(`      - Google Lighthouse performance data (if accessible)`);
+  console.warn(`      - Basic URL/domain analysis`);
+  console.warn(`   \n\ud83d\udca1 RECOMMENDATIONS:`);
+  console.warn(`      1. Check if site is publicly accessible`);
+  console.warn(`      2. Temporarily disable Cloudflare protection`);
+  console.warn(`      3. Whitelist our scraper IP`);
+  console.warn(`      4. Add GOOGLE_PAGESPEED_API_KEY for better metrics`);
+  console.warn(`⚠️  ========================================\n`);
 
   return {
     title: `${companyName} - ⚠️ Limited Access`,
@@ -882,9 +897,47 @@ async function scrapeWithPuppeteer(url: string) {
       analysisDepth: "puppeteer-comprehensive",
     };
   } catch (error) {
-    console.error(`❌ Puppeteer scraping failed for ${url}:`, error);
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    const errorStack = error instanceof Error ? error.stack : '';
+
+    console.error(`❌ ========================================`);
+    console.error(`❌ Puppeteer FAILED for ${url}`);
+    console.error(`❌ ========================================`);
+    console.error(`   Error Message: ${errorMsg}`);
+    console.error(`   Error Type: ${error instanceof Error ? error.name : typeof error}`);
+
+    // Detailed diagnostics
+    if (errorMsg.includes('Failed to launch')) {
+      console.error(`   \n⚠️  DIAGNOSIS: Chromium launch failed`);
+      console.error(`   Possible causes:`);
+      console.error(`   - Chromium not installed (run: apt-get install chromium-browser)`);
+      console.error(`   - PUPPETEER_EXECUTABLE_PATH not set or incorrect`);
+      console.error(`   - Missing dependencies in Docker/production`);
+      console.error(`   \n✓ SOLUTION: Set PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser`);
+    } else if (errorMsg.includes('timeout') || errorMsg.includes('Navigation timeout')) {
+      console.error(`   \n⚠️  DIAGNOSIS: Page load timeout (>30s)`);
+      console.error(`   Possible causes:`);
+      console.error(`   - Site is very slow or unresponsive`);
+      console.error(`   - Network issues`);
+      console.error(`   - Site blocking automated browsers`);
+    } else if (errorMsg.includes('net::ERR') || errorMsg.includes('ERR_')) {
+      console.error(`   \n⚠️  DIAGNOSIS: Network error`);
+      console.error(`   The site may be down, blocking requests, or has network issues`);
+    } else {
+      console.error(`   \n⚠️  DIAGNOSIS: Unknown Puppeteer error`);
+      console.error(`   Stack trace: ${errorStack?.substring(0, 200)}...`);
+    }
+
+    console.error(`   \n❌ Impact: Will fall back to generic placeholder data`);
+    console.error(`   Audit accuracy will be SEVERELY LIMITED for ${url}`);
+    console.error(`❌ ========================================\n`);
+
     if (browser) {
-      await browser.close();
+      try {
+        await browser.close();
+      } catch (closeError) {
+        console.error('Failed to close browser:', closeError);
+      }
     }
     throw error;
   }
