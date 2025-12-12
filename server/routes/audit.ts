@@ -2903,55 +2903,55 @@ function getDefaultRecommendations(
   score: number,
 ): string[] {
   const defaults: { [key: string]: string[] } = {
-    "Branding & Identity": [
-      "Develop comprehensive brand guidelines to ensure consistency across all touchpoints",
-      "Strengthen visual identity with consistent use of colors, fonts, and imagery",
-      "Create a cohesive brand voice that resonates with your target audience",
+    "Visual Design & Flow": [
+      "Improve logo placement and ensure consistent brand identity across all pages",
+      "Enhance typography hierarchy and whitespace for better visual balance",
+      "Optimize navigation menu logic and CTA visibility for intuitive user flow",
     ],
-    "Messaging & Positioning": [
-      "Clarify your unique value proposition and communicate it prominently",
-      "Develop compelling messaging that speaks to customer pain points and needs",
-      "Strengthen calls-to-action with benefit-focused language",
+    "Content Quality & Messaging": [
+      "Strengthen headline impact and ensure copy tone matches brand voice",
+      "Optimize keyword integration naturally without stuffing",
+      "Improve readability (target Flesch score >60) and focus on solving user pain points",
     ],
-    "Content Strategy": [
-      "Establish a consistent content publishing schedule with an editorial calendar",
-      "Optimize content for search engines with keyword research and on-page SEO",
-      "Create diverse content types including blog posts, videos, and infographics",
+    "SEO Technical & On-Page Optimization": [
+      "Optimize title tags and meta descriptions for all pages",
+      "Improve header tag structure (H1-H6) and URL architecture",
+      "Implement schema markup and ensure robots.txt/sitemap are configured properly",
     ],
-    "Customer Experience": [
-      "Implement proactive customer support features like live chat or chatbots",
-      "Create comprehensive self-service resources and FAQs",
-      "Map the customer journey to identify and eliminate friction points",
+    "Performance & Speed": [
+      "Reduce page load time to under 3 seconds through image optimization",
+      "Minify CSS/JS files and implement browser caching",
+      "Improve server response time and optimize Core Web Vitals",
     ],
-    "Conversion Optimization": [
-      "Optimize call-to-action placement and design for maximum visibility",
-      "Simplify forms and reduce friction in the conversion process",
-      "Add trust signals like testimonials, reviews, and security badges",
+    "Mobile Usability & Responsiveness": [
+      "Ensure responsive design works seamlessly across all device sizes",
+      "Optimize touch-friendly elements and mobile navigation",
+      "Fix mobile-specific issues like intrusive pop-ups or unclickable buttons",
     ],
-    "Visual Design & Aesthetics": [
-      "Modernize visual design to align with current trends and user expectations",
-      "Improve color contrast and typography for better readability",
-      "Create a responsive design that works seamlessly across all devices",
+    "User Experience (UX) & Navigation": [
+      "Simplify user journeys from landing to conversion",
+      "Implement breadcrumb navigation and improve search functionality",
+      "Apply Nielsen's UX heuristics to reduce friction points",
     ],
-    "Usability & Navigation": [
-      "Simplify navigation structure to reduce cognitive load",
-      "Implement breadcrumb navigation for better wayfinding",
-      "Ensure mobile-friendly touch targets and interaction patterns",
+    "Accessibility": [
+      "Implement WCAG 2.1 AA standards including proper alt text for all images",
+      "Improve color contrast ratios to minimum 4.5:1 for text",
+      "Enable full keyboard navigation and screen reader compatibility",
     ],
-    "Digital Presence & SEO": [
-      "Implement comprehensive on-page SEO including meta tags and structured data",
-      "Build high-quality backlinks through content marketing and partnerships",
-      "Optimize page speed and Core Web Vitals for better search rankings",
+    "Security & Technical Integrity": [
+      "Ensure HTTPS is enabled with valid SSL certificate",
+      "Fix all broken links and images across the site",
+      "Address any mixed content warnings and security vulnerabilities",
     ],
-    "Competitor Differentiation": [
-      "Conduct competitive analysis to identify differentiation opportunities",
-      "Highlight unique features and benefits that set you apart",
-      "Develop messaging that clearly communicates your competitive advantages",
+    "Competitive Advantage & Market Positioning": [
+      "Clearly articulate unique value proposition compared to 2-3 key competitors",
+      "Strengthen messaging alignment to stand out in search results",
+      "Highlight competitive differentiators prominently on homepage",
     ],
-    "Consistency & Compliance": [
-      "Conduct accessibility audit and implement WCAG 2.1 AA standards",
-      "Ensure privacy policies and legal disclosures are up to date",
-      "Maintain brand consistency across all pages and channels",
+    "Conversion & Call-to-Action Optimization": [
+      "Optimize CTA button design, placement, and persuasive copy",
+      "Reduce form length and friction in conversion paths",
+      "Implement A/B testing for CTAs and landing page elements",
     ],
   };
 
