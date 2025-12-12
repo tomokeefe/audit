@@ -1,6 +1,9 @@
 import { RequestHandler } from "express";
 
-const getGrokApiKey = () => process.env.GROK_API_KEY;
+const getGrokApiKey = () => {
+  const env = global.process?.env || process.env;
+  return env.GROK_API_KEY;
+};
 const GROK_API_URL = "https://api.x.ai/v1/chat/completions";
 
 export const testGrok: RequestHandler = async (req, res) => {

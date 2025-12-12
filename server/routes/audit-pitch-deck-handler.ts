@@ -1,7 +1,10 @@
 import { AuditResponse } from "@shared/api";
 import crypto from "crypto";
 
-const GROK_API_KEY = process.env.GROK_API_KEY;
+const getGrokApiKey = () => {
+  const env = global.process?.env || process.env;
+  return env.GROK_API_KEY;
+};
 const GROK_API_URL = "https://api.x.ai/v1/chat/completions";
 
 interface PitchDeckData {
