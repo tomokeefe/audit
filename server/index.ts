@@ -30,8 +30,14 @@ export async function createServer() {
   });
 
   // Initialize database on server startup
+  console.log("\n🔵 Starting database initialization...\n");
   initializeDatabase().catch((error) => {
-    console.error("Failed to initialize database on startup:", error);
+    console.error("\n" + "=".repeat(80));
+    console.error("❌❌❌ DATABASE INITIALIZATION FAILED ❌❌❌");
+    console.error("❌ Error:", error);
+    console.error("❌ Server will continue but audits won't persist!");
+    console.error("❌ Check DATABASE_URL environment variable");
+    console.error("=".repeat(80) + "\n");
   });
 
   // Health check endpoints - these are registered first to always work
