@@ -2902,56 +2902,140 @@ function getDefaultRecommendations(
   sectionName: string,
   score: number,
 ): string[] {
+  // Score-based recommendations: high scores get optimization tips, low scores get fix suggestions
+  const isHighScore = score >= 75;
+  const isMediumScore = score >= 50 && score < 75;
+
   const defaults: { [key: string]: string[] } = {
-    "Visual Design & Flow": [
-      "Improve logo placement and ensure consistent brand identity across all pages",
-      "Enhance typography hierarchy and whitespace for better visual balance",
-      "Optimize navigation menu logic and CTA visibility for intuitive user flow",
+    "Visual Design & Flow": isHighScore ? [
+      "Consider A/B testing alternate layouts to further optimize visual hierarchy",
+      "Review analytics to identify any navigation patterns that could be streamlined",
+      "Explore emerging design trends that align with your brand identity",
+    ] : isMediumScore ? [
+      "Review logo placement and brand consistency across all pages for potential improvements",
+      "Evaluate typography hierarchy and whitespace usage for better visual balance",
+      "Test navigation menu logic with users to identify any friction points",
+    ] : [
+      "Audit logo placement and brand identity consistency across all pages",
+      "Improve typography hierarchy and whitespace for better readability",
+      "Restructure navigation menu for clearer user flow and better CTA visibility",
     ],
-    "Content Quality & Messaging": [
-      "Strengthen headline impact and ensure copy tone matches brand voice",
-      "Optimize keyword integration naturally without stuffing",
-      "Improve readability (target Flesch score >60) and focus on solving user pain points",
+    "Content Quality & Messaging": isHighScore ? [
+      "Consider content refresh strategy to maintain relevance and engagement",
+      "Test headline variations to maximize click-through rates",
+      "Expand high-performing content topics based on user engagement data",
+    ] : isMediumScore ? [
+      "Review headlines for impact and ensure copy tone aligns with brand voice",
+      "Check for opportunities to integrate keywords more naturally",
+      "Assess readability scores and identify content that could better address user pain points",
+    ] : [
+      "Revise headlines to improve clarity and engagement",
+      "Optimize keyword integration without stuffing",
+      "Improve readability (aim for Flesch score >60) and focus on user needs",
     ],
-    "SEO Technical & On-Page Optimization": [
-      "Optimize title tags and meta descriptions for all pages",
-      "Improve header tag structure (H1-H6) and URL architecture",
-      "Implement schema markup and ensure robots.txt/sitemap are configured properly",
+    "SEO Technical & On-Page Optimization": isHighScore ? [
+      "Monitor search performance and identify opportunities for featured snippets",
+      "Explore advanced schema markup types for enhanced search visibility",
+      "Review and optimize for emerging search features and zero-click searches",
+    ] : isMediumScore ? [
+      "Review title tags and meta descriptions for optimization opportunities",
+      "Check header tag structure (H1-H6) for improvements",
+      "Consider implementing additional schema markup types",
+    ] : [
+      "Audit and optimize title tags and meta descriptions across all pages",
+      "Fix header tag structure (H1-H6) and improve URL architecture",
+      "Implement schema markup and verify robots.txt/sitemap configuration",
     ],
-    "Performance & Speed": [
-      "Reduce page load time to under 3 seconds through image optimization",
-      "Minify CSS/JS files and implement browser caching",
-      "Improve server response time and optimize Core Web Vitals",
+    "Performance & Speed": isHighScore ? [
+      "Explore advanced optimization techniques like edge caching or CDN improvements",
+      "Monitor Core Web Vitals trends and address any degradation proactively",
+      "Consider implementing service workers for offline functionality",
+    ] : isMediumScore ? [
+      "Look for opportunities to reduce page load time through image optimization",
+      "Review CSS/JS files for minification opportunities",
+      "Test different caching strategies to improve repeat visitor experience",
+    ] : [
+      "Prioritize reducing page load time to under 3 seconds",
+      "Compress images and minify CSS/JS files",
+      "Implement browser caching and improve server response time",
     ],
-    "Mobile Usability & Responsiveness": [
-      "Ensure responsive design works seamlessly across all device sizes",
-      "Optimize touch-friendly elements and mobile navigation",
-      "Fix mobile-specific issues like intrusive pop-ups or unclickable buttons",
+    "Mobile Usability & Responsiveness": isHighScore ? [
+      "Test on latest mobile devices to ensure optimal experience",
+      "Explore progressive web app (PWA) features for enhanced mobile experience",
+      "Monitor mobile analytics for any emerging usability patterns",
+    ] : isMediumScore ? [
+      "Test responsive design across various device sizes for consistency",
+      "Review touch target sizes to ensure they meet accessibility standards",
+      "Check for any mobile-specific UX issues",
+    ] : [
+      "Fix responsive design issues across different device sizes",
+      "Increase touch target sizes to minimum 44x44px",
+      "Address mobile-specific issues like intrusive pop-ups or navigation problems",
     ],
-    "User Experience (UX) & Navigation": [
+    "User Experience (UX) & Navigation": isHighScore ? [
+      "Conduct user testing to identify micro-optimization opportunities",
+      "Explore personalization features based on user behavior",
+      "Review analytics for any unexpected user paths or drop-off points",
+    ] : isMediumScore ? [
+      "Map out user journeys to identify potential friction points",
+      "Consider adding breadcrumb navigation if not present",
+      "Review search functionality and error page handling",
+    ] : [
       "Simplify user journeys from landing to conversion",
-      "Implement breadcrumb navigation and improve search functionality",
-      "Apply Nielsen's UX heuristics to reduce friction points",
+      "Add breadcrumb navigation and improve search functionality",
+      "Apply UX heuristics to identify and fix major usability issues",
     ],
-    "Accessibility": [
-      "Implement WCAG 2.1 AA standards including proper alt text for all images",
-      "Improve color contrast ratios to minimum 4.5:1 for text",
-      "Enable full keyboard navigation and screen reader compatibility",
+    "Accessibility": isHighScore ? [
+      "Review for WCAG 2.1 AAA compliance opportunities",
+      "Test with actual assistive technology users for feedback",
+      "Explore advanced accessibility features like skip links or ARIA live regions",
+    ] : isMediumScore ? [
+      "Review alt text coverage and quality across all images",
+      "Check color contrast ratios on interactive elements",
+      "Test keyboard navigation completeness",
+    ] : [
+      "Implement WCAG 2.1 AA standards including alt text for all images",
+      "Fix color contrast ratios to meet minimum 4.5:1 requirement",
+      "Enable complete keyboard navigation and screen reader support",
     ],
-    "Security & Technical Integrity": [
-      "Ensure HTTPS is enabled with valid SSL certificate",
-      "Fix all broken links and images across the site",
-      "Address any mixed content warnings and security vulnerabilities",
+    "Security & Technical Integrity": isHighScore ? [
+      "Review security headers for additional hardening opportunities",
+      "Consider implementing Content Security Policy (CSP)",
+      "Monitor for new security best practices and vulnerabilities",
+    ] : isMediumScore ? [
+      "Verify HTTPS is enforced across all pages",
+      "Run a link audit to identify any broken links",
+      "Review security headers for completeness",
+    ] : [
+      "Ensure HTTPS is enabled with valid SSL certificate across all pages",
+      "Fix all broken links and images",
+      "Address mixed content warnings and security vulnerabilities",
     ],
-    "Competitive Advantage & Market Positioning": [
-      "Clearly articulate unique value proposition compared to 2-3 key competitors",
-      "Strengthen messaging alignment to stand out in search results",
-      "Highlight competitive differentiators prominently on homepage",
+    "Competitive Advantage & Market Positioning": isHighScore ? [
+      "Monitor competitor changes and adjust messaging to maintain differentiation",
+      "Explore new market positioning opportunities",
+      "Consider expanding into adjacent market segments",
+    ] : isMediumScore ? [
+      "Review messaging compared to 2-3 key competitors for differentiation",
+      "Identify unique value propositions that could be highlighted more prominently",
+      "Assess how the brand appears in search results vs competitors",
+    ] : [
+      "Clearly articulate unique value proposition vs key competitors",
+      "Strengthen messaging to stand out in search results",
+      "Highlight competitive differentiators more prominently",
     ],
-    "Conversion & Call-to-Action Optimization": [
-      "Optimize CTA button design, placement, and persuasive copy",
-      "Reduce form length and friction in conversion paths",
-      "Implement A/B testing for CTAs and landing page elements",
+    "Conversion & Call-to-Action Optimization": isHighScore ? [
+      "Implement A/B tests for CTAs to identify incremental improvements",
+      "Explore advanced personalization for CTAs based on user segment",
+      "Review conversion funnel analytics for optimization opportunities",
+    ] : isMediumScore ? [
+      "Test different CTA placements and copy variations",
+      "Review form length and identify fields that could be made optional",
+      "Analyze conversion paths for potential friction points",
+    ] : [
+      "Optimize CTA button design, placement, and copy",
+      "Reduce form length by removing unnecessary fields",
+      "Implement clear conversion paths with reduced friction",
     ],
   };
 
