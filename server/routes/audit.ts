@@ -24,7 +24,8 @@ import {
 // ScraperAPI is dynamically imported when needed (see scraping fallback chain)
 
 // Grok API configuration (x.ai)
-const GROK_API_KEY = process.env.GROK_API_KEY;
+// Read dynamically to prevent caching issues when environment variables change
+const getGrokApiKey = () => process.env.GROK_API_KEY;
 const GROK_API_URL = "https://api.x.ai/v1/chat/completions";
 
 // In-memory storage for audit results (shared with audit-storage.ts)
