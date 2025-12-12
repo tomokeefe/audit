@@ -24,11 +24,9 @@ import {
 // ScraperAPI is dynamically imported when needed (see scraping fallback chain)
 
 // Grok API configuration (x.ai)
-// TEMPORARY: Hardcoded to bypass environment variable caching issues in Builder.io
-// TODO: Remove hardcoded key before committing to git - use environment variables in production
-const HARDCODED_GROK_KEY =
-  "xai-PsoOOgLma7fSQale13NPDiYbJI5J9OOlL2nFDfnzxigtxzBhkyfsvV9DZzxHWLBhdrRJHYEiD3jX9WK5";
-const getGrokApiKey = () => HARDCODED_GROK_KEY || process.env.GROK_API_KEY;
+// Grok API configuration (x.ai)
+// Read from environment variables only to prevent key exposure
+const getGrokApiKey = () => process.env.GROK_API_KEY;
 const GROK_API_URL = "https://api.x.ai/v1/chat/completions";
 
 // In-memory storage for audit results (shared with audit-storage.ts)
