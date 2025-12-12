@@ -3390,6 +3390,8 @@ IMPORTANT: Recommendations MUST be:
 - If score is low (<5/10), suggest fixes for identified problems
 - Never suggest fixing something that's already working well
 
+⚠️ CRITICAL: Section 9 (Competitive Advantage & Market Positioning) MUST include a complete SWOT Analysis with ALL 4 elements (Strengths, Weaknesses, Opportunities, Threats) - this is NON-NEGOTIABLE!
+
 Structure: # Brand Whisperer Audit: [Name]
 **Overall: X/100** (Grade)
 ## Section Scores
