@@ -108,9 +108,13 @@ async function storeAuditResult(auditData: AuditResponse): Promise<void> {
     } else {
       console.error(`\n${"=".repeat(80)}`);
       console.error(`❌❌❌ DATABASE NOT CONFIGURED ❌❌❌`);
-      console.error(`❌ DATABASE_URL is not set in Railway environment variables!`);
+      console.error(
+        `❌ DATABASE_URL is not set in Railway environment variables!`,
+      );
       console.error(`❌ Audit ${auditData.id} will be LOST on server restart!`);
-      console.error(`❌ ALL audits and shared links will break on every deployment!`);
+      console.error(
+        `❌ ALL audits and shared links will break on every deployment!`,
+      );
       console.error(`❌ ACTION REQUIRED: Add DATABASE_URL to Railway`);
       console.error(`${"=".repeat(80)}\n`);
     }

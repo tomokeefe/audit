@@ -41,7 +41,10 @@ try {
   await auditService.saveAudit(auditResult);
   console.log(`[PITCH DECK AUDIT] ✅ Saved to database: ${auditResult.id}`);
 } catch (dbError) {
-  console.error(`[PITCH DECK AUDIT] ❌ CRITICAL: Failed to save to database:`, dbError);
+  console.error(
+    `[PITCH DECK AUDIT] ❌ CRITICAL: Failed to save to database:`,
+    dbError,
+  );
   console.error(`[PITCH DECK AUDIT] ⚠️ Audit will be lost on server restart!`);
 }
 ```
@@ -51,11 +54,16 @@ try {
 **File:** `server/routes/audit.ts`
 
 **Before:**
+
 ```typescript
-console.error(`❌ [STORE] ERROR saving audit ${auditData.id} to database:`, dbError);
+console.error(
+  `❌ [STORE] ERROR saving audit ${auditData.id} to database:`,
+  dbError,
+);
 ```
 
 **After:**
+
 ```typescript
 console.error(`\n${"=".repeat(80)}`);
 console.error(`❌❌❌ CRITICAL DATABASE SAVE FAILURE ❌❌❌`);
@@ -77,7 +85,9 @@ if (!process.env.DATABASE_URL) {
   console.error(`❌❌❌ DATABASE NOT CONFIGURED ❌❌❌`);
   console.error(`❌ DATABASE_URL is not set in Railway environment variables!`);
   console.error(`❌ Audit ${auditData.id} will be LOST on server restart!`);
-  console.error(`❌ ALL audits and shared links will break on every deployment!`);
+  console.error(
+    `❌ ALL audits and shared links will break on every deployment!`,
+  );
   console.error(`❌ ACTION REQUIRED: Add DATABASE_URL to Railway`);
   console.error(`${"=".repeat(80)}\n`);
 }
@@ -148,6 +158,7 @@ DATABASE_URL=postgresql://neondb_owner:npg_jW9MlJdCD4SU@ep-solitary-unit-a4k3kq2
 ```
 
 **Without this variable:**
+
 - ❌ Audits lost on every deployment
 - ❌ Shared links break
 - ❌ Users lose all historical data
@@ -155,12 +166,14 @@ DATABASE_URL=postgresql://neondb_owner:npg_jW9MlJdCD4SU@ep-solitary-unit-a4k3kq2
 ## Testing Checklist
 
 ### Before Deployment
+
 - [x] Verify DATABASE_URL is set in Railway
 - [x] Test audit creation saves to database
 - [x] Test shared link retrieval from database
 - [x] Test server restart recovers audits from database
 
 ### After Deployment
+
 - [ ] Create a test audit
 - [ ] Get the share link
 - [ ] Trigger a new deployment (or restart server)
@@ -174,6 +187,7 @@ DATABASE_URL=postgresql://neondb_owner:npg_jW9MlJdCD4SU@ep-solitary-unit-a4k3kq2
 ### Logs to Watch For
 
 **Success:**
+
 ```
 ✅ [STORE] SUCCESS! Audit abc123 saved to database
 [PITCH DECK AUDIT] ✅ Saved to database: pitch-deck-456
@@ -181,6 +195,7 @@ DATABASE_URL=postgresql://neondb_owner:npg_jW9MlJdCD4SU@ep-solitary-unit-a4k3kq2
 ```
 
 **Failures (CRITICAL):**
+
 ```
 ❌❌❌ CRITICAL DATABASE SAVE FAILURE ❌❌❌
 ❌ [STORE] This audit will be LOST on server restart!
@@ -194,11 +209,13 @@ DATABASE_URL=postgresql://neondb_owner:npg_jW9MlJdCD4SU@ep-solitary-unit-a4k3kq2
 ### Health Check Endpoints
 
 **Check database connection:**
+
 ```bash
 curl https://your-app.up.railway.app/api/health
 ```
 
 Expected response:
+
 ```json
 {
   "status": "ok",
@@ -215,17 +232,20 @@ Expected response:
 ## Performance Impact
 
 ### In-Memory Cache Benefits (Preserved)
+
 - ✅ Fast retrieval for recent audits (same session)
 - ✅ Reduces database queries for repeated access
 - ✅ Content-hash based caching for pitch decks (avoid re-processing)
 
 ### Database Benefits (Enhanced)
+
 - ✅ Audits persist across deployments
 - ✅ Shared links never break
 - ✅ Cross-browser/device access
 - ✅ Audit history preserved
 
 ### Latency
+
 - **Same session:** ~5ms (in-memory cache)
 - **After restart:** ~50-100ms (database query)
 - **Acceptable:** Database query only on first access per session
@@ -237,6 +257,7 @@ Expected response:
 **Good News:** The database table already exists and contains historical audits.
 
 **Verify:**
+
 ```sql
 -- Count existing audits
 SELECT COUNT(*) FROM audits;
@@ -251,6 +272,7 @@ SELECT COUNT(*) FROM audits WHERE share_token IS NOT NULL;
 ### Backfill Share Tokens
 
 Already handled by migration in `server/db/init.ts`:
+
 ```sql
 UPDATE audits
 SET share_token = gen_random_uuid()::text
@@ -272,12 +294,14 @@ If issues occur after deployment:
 ## Future Improvements
 
 ### Short-term (Next Sprint)
+
 - [ ] Add Redis for distributed caching (optional)
 - [ ] Implement audit expiration (30/60/90 days)
 - [ ] Add database backup strategy
 - [ ] Monitor database disk usage
 
 ### Long-term (Phase 2)
+
 - [ ] Implement audit versioning
 - [ ] Add audit diff/comparison
 - [ ] Export audit history to CSV/JSON
