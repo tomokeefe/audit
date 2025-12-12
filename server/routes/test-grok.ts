@@ -1,6 +1,8 @@
 import { RequestHandler } from "express";
 
-const getGrokApiKey = () => process.env.GROK_API_KEY;
+// TEMPORARY: Hardcoded to bypass environment variable caching
+const HARDCODED_GROK_KEY = "xai-PsoOOgLma7fSQale13NPDiYbJI5J9OOlL2nFDfnzxigtxzBhkyfsvV9DZzxHWLBhdrRJHYEiD3jX9WK5";
+const getGrokApiKey = () => HARDCODED_GROK_KEY || process.env.GROK_API_KEY;
 const GROK_API_URL = "https://api.x.ai/v1/chat/completions";
 
 export const testGrok: RequestHandler = async (req, res) => {
