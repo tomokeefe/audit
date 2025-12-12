@@ -1030,70 +1030,22 @@ export default function SharedAudit() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Navigation Tabs */}
-        <Tabs defaultValue="results" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 max-w-md mx-auto mb-8">
-            <TabsTrigger value="results">Audit Results</TabsTrigger>
-            <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
-            <TabsTrigger value="next-steps">Strategic Plan</TabsTrigger>
+        <Tabs defaultValue="overview" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto mb-8">
+            <TabsTrigger value="overview">Audit Overview</TabsTrigger>
+            <TabsTrigger value="next-steps">Next Steps</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="results" className="mt-8">
-            {/* Audit Overview */}
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle className="text-xl">Audit Overview</CardTitle>
-                <CardDescription>
-                  This audit evaluates the website of {auditData.title} as of{" "}
-                  {auditData.date}, focusing on messaging, user experience (UX),
-                  usability, and additional aspects such as design, content
-                  quality, SEO, security, and compliance. The analysis provides
-                  detailed insights and actionable recommendations.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            {/* Section Scores */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {auditData.sections.map((section, index) => (
-                <Card key={index} className="hover:shadow-md transition-shadow">
-                  <CardHeader className="pb-3">
-                    <div className="flex justify-between items-start">
-                      <CardTitle className="text-lg">{section.name}</CardTitle>
-                      <div
-                        className={`text-2xl font-bold ${getScoreColor(section.score)}`}
-                      >
-                        {section.score}%
-                      </div>
-                    </div>
-                    <Progress value={section.score} className="h-2" />
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <div className="flex justify-between text-sm text-gray-600">
-                      <div className="flex items-center gap-1">
-                        <AlertTriangle className="h-4 w-4 text-red-500" />
-                        {section.issues} issues found
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                        {section.recommendations} recommendations
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="recommendations" className="mt-8">
+          <TabsContent value="overview" className="mt-8">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Lightbulb className="h-5 w-5 text-green-600" />
-                  Detailed Recommendations by Category
+                  <BarChart3 className="h-5 w-5 text-orange-600" />
+                  Audit Results by Category
                 </CardTitle>
                 <CardDescription>
-                  Expand each section below to view specific recommendations and
-                  action items.
+                  Expand each section below to view scores, analysis, and
+                  detailed recommendations.
                 </CardDescription>
               </CardHeader>
               <CardContent>
