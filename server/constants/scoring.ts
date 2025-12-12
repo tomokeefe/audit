@@ -108,5 +108,5 @@ export const VALIDATION_RULES = {
 } as const;
 
 // Scoring methodology version
-export const SCORING_VERSION = "2.0.0" as const;
-export const SCORING_METHODOLOGY = "research-based-standardized" as const;
+export const SCORING_VERSION = "3.0.0" as const; // Major update: New technical criteria focus
+export const SCORING_METHODOLOGY = "technical-audit-based" as const;
