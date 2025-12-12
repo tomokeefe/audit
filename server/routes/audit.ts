@@ -3702,54 +3702,54 @@ export const handleDemoAudit: RequestHandler = async (req, res) => {
       shareToken: shareToken, // Add share token for secure sharing
       sections: [
         {
-          name: "Branding & Identity",
+          name: "Visual Design & Flow",
+          score: Math.floor(Math.random() * 20) + 70,
+          details: `The ${companyName} website demonstrates good visual consistency with clear logo placement and coherent color palette. Typography hierarchy is generally well-implemented. Navigation structure is intuitive, though CTA visibility could be enhanced for better user flow.`,
+        },
+        {
+          name: "Content Quality & Messaging",
           score: Math.floor(Math.random() * 20) + 75,
-          details: `The ${companyName} brand shows good consistency across key elements. The logo placement and color scheme maintain coherence throughout the website. However, there are opportunities to strengthen brand voice and messaging alignment to create a more unified brand experience.`,
+          details: `Content demonstrates strong headline effectiveness and appropriate brand voice. Copy tone is consistent and engaging. Keyword integration appears natural without stuffing. Readability is solid, though some sections could benefit from clearer focus on solving specific user pain points.`,
         },
         {
-          name: "Messaging & Positioning",
-          score: Math.floor(Math.random() * 20) + 70,
-          details: `The messaging shows clarity in core value propositions with room for enhancement. Content communicates the brand's positioning, though messaging consistency across different sections could be improved for stronger impact.`,
-        },
-        {
-          name: "Content Strategy",
-          score: Math.floor(Math.random() * 25) + 55,
-          details: `Content quality and organization demonstrate foundational elements of a good strategy. There are opportunities to strengthen call-to-action elements and improve information architecture for better user engagement and conversion optimization.`,
-        },
-        {
-          name: "Customer Experience",
-          score: Math.floor(Math.random() * 20) + 65,
-          details: `The customer experience shows promise with clear navigation elements and basic user journey flows. Improvements in mobile responsiveness and accessibility features would enhance overall usability and user satisfaction.`,
-        },
-        {
-          name: "Conversion Optimization",
-          score: Math.floor(Math.random() * 25) + 55,
-          details: `Conversion elements show potential but lack optimization. Forms, CTAs, and trust signals could be strengthened to improve conversion rates and user engagement with clear calls-to-action.`,
-        },
-        {
-          name: "Visual Design & Aesthetics",
-          score: Math.floor(Math.random() * 20) + 70,
-          details: `The visual design demonstrates solid foundations with appropriate use of whitespace and typography. The color palette supports brand recognition, though there are opportunities to enhance visual hierarchy and create more engaging aesthetic elements.`,
-        },
-        {
-          name: "Usability & Navigation",
-          score: Math.floor(Math.random() * 25) + 65,
-          details: `Navigation structure is generally clear and intuitive. The website facilitates basic user flows, though improvements in information architecture and flow consistency across pages would enhance overall usability.`,
-        },
-        {
-          name: "Digital Presence & SEO",
-          score: Math.floor(Math.random() * 30) + 50,
-          details: `Technical SEO and online visibility show room for improvement. Title tags and meta descriptions could be optimized, and the website structure would benefit from improvements in heading hierarchy and content optimization.`,
-        },
-        {
-          name: "Competitor Differentiation",
+          name: "SEO Technical & On-Page Optimization",
           score: Math.floor(Math.random() * 25) + 60,
-          details: `The brand demonstrates some differentiation from competitors. Opportunities exist to strengthen unique value propositions and create more distinctive positioning in the competitive landscape.`,
+          details: `Technical SEO shows foundational elements in place. Title tags and meta descriptions are present but could be optimized for better search performance. Header tag structure (H1-H6) is generally sound. Schema markup implementation would enhance crawlability and search visibility.`,
         },
         {
-          name: "Consistency & Compliance",
-          score: Math.floor(Math.random() * 20) + 75,
-          details: `Compliance measures appear adequate with HTTPS implementation. Privacy policy and legal information are accessible. Further enhancements in brand consistency across touchpoints would strengthen professional credibility.`,
+          name: "Performance & Speed",
+          score: Math.floor(Math.random() * 30) + 55,
+          details: `Page load times are acceptable but could be improved. Image optimization opportunities exist to reduce load time below 3 seconds. CSS/JS minification is partially implemented. Server response time and caching strategies would benefit from optimization to improve Core Web Vitals.`,
+        },
+        {
+          name: "Mobile Usability & Responsiveness",
+          score: Math.floor(Math.random() * 20) + 70,
+          details: `The website shows good responsive design across devices. Touch-friendly elements are generally well-implemented. Viewport meta tag is configured properly. Mobile speed is adequate, though some pop-up behaviors could be optimized for better mobile UX.`,
+        },
+        {
+          name: "User Experience (UX) & Navigation",
+          score: Math.floor(Math.random() * 25) + 65,
+          details: `User journeys from homepage to conversion are generally clear. Breadcrumb navigation and site structure support good wayfinding. Search functionality is present. Error page handling could be improved. The site demonstrates adherence to several UX heuristics with room for enhancement.`,
+        },
+        {
+          name: "Accessibility",
+          score: Math.floor(Math.random() * 30) + 50,
+          details: `Accessibility shows room for improvement. Alt text is present on many images but not all. Color contrast ratios meet minimum standards on most elements but some areas need adjustment. Keyboard navigation works on core elements. Screen reader compatibility would benefit from enhanced ARIA labels and semantic HTML improvements.`,
+        },
+        {
+          name: "Security & Technical Integrity",
+          score: Math.floor(Math.random() * 15) + 80,
+          details: `Security foundations are solid with valid HTTPS and SSL certificate implementation. No broken links or major technical errors detected. Mixed content warnings are absent. The site demonstrates good technical integrity with proper trust signals in place.`,
+        },
+        {
+          name: "Competitive Advantage & Market Positioning",
+          score: Math.floor(Math.random() * 25) + 60,
+          details: `The brand shows moderate differentiation in its market space. Unique value proposition is communicated but could be more prominent. Messaging alignment with target audience is good. Opportunities exist to strengthen competitive positioning and stand out more distinctly in search results and market comparisons.`,
+        },
+        {
+          name: "Conversion & Call-to-Action Optimization",
+          score: Math.floor(Math.random() * 25) + 65,
+          details: `CTA placement is strategic with good visibility on key pages. Button design is clear and actionable. Form lengths are reasonable though simplification opportunities exist. Conversion paths are defined but could benefit from A/B testing and friction reduction to improve conversion rates.`,
         },
       ],
       summary: `${companyName} demonstrates solid brand fundamentals with clear opportunities for enhancement. The website shows promise in brand consistency and visual design, while areas like content quality and SEO performance would benefit from focused improvements. Implementing the recommended changes would significantly strengthen the overall digital brand presence and user experience.`,
