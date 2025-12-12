@@ -6,33 +6,73 @@ let initialized = false;
 async function initPool() {
   if (pool) return pool;
 
+  const DATABASE_URL = process.env.DATABASE_URL;
+
+  // If DATABASE_URL is not set, don't try to connect
+  if (!DATABASE_URL) {
+    console.error("\n" + "=".repeat(80));
+    console.error("❌ DATABASE_URL NOT SET IN ENVIRONMENT");
+    console.error("❌ Audits will be lost on server restart!");
+    console.error("❌ Shared links will break on every deployment!");
+    console.error("=".repeat(80) + "\n");
+    return null;
+  }
+
   try {
-    // Try to load pg module, but handle gracefully if not available
+    console.log("\n" + "=".repeat(80));
+    console.log("🔵 INITIALIZING DATABASE CONNECTION");
+    console.log("🔵 DATABASE_URL:", DATABASE_URL.substring(0, 30) + "...");
+    console.log("=".repeat(80));
+
+    // Try to load pg module
     let pgModule: any = null;
 
     try {
       pgModule = await import("pg");
+      console.log("✅ pg module loaded successfully");
     } catch (importError) {
-      console.warn("pg module not available - using fallback mode");
-      return null;
+      console.error("\n" + "=".repeat(80));
+      console.error("❌❌❌ CRITICAL ERROR ❌❌❌");
+      console.error("❌ Failed to load 'pg' module");
+      console.error("❌ Error:", importError);
+      console.error("❌ This means PostgreSQL support is broken!");
+      console.error("❌ ALL AUDITS WILL BE LOST ON SERVER RESTART!");
+      console.error("=".repeat(80) + "\n");
+      throw importError; // Throw instead of returning null
     }
 
-    if (!pgModule) return null;
+    if (!pgModule) {
+      throw new Error("pg module is null after import");
+    }
 
     const { Pool } = pgModule;
 
     pool = new Pool({
-      connectionString: process.env.DATABASE_URL,
+      connectionString: DATABASE_URL,
       ssl: {
         rejectUnauthorized: false,
       },
     });
 
-    console.log("Database pool created");
+    // Test the connection immediately
+    console.log("🔵 Testing database connection...");
+    const testResult = await pool.query("SELECT NOW()");
+    console.log("✅ Database connection successful!");
+    console.log("✅ Server time:", testResult.rows[0].now);
+    console.log("=".repeat(80) + "\n");
+
     return pool;
   } catch (error) {
-    console.error("Failed to initialize database pool:", error);
-    return null;
+    console.error("\n" + "=".repeat(80));
+    console.error("❌❌❌ DATABASE CONNECTION FAILED ❌❌❌");
+    console.error("❌ Error:", error);
+    console.error("❌ DATABASE_URL:", DATABASE_URL?.substring(0, 50) + "...");
+    console.error("❌ ALL AUDITS WILL BE LOST ON SERVER RESTART!");
+    console.error("❌ SHARED LINKS WILL NOT WORK!");
+    console.error("=".repeat(80) + "\n");
+
+    // Re-throw the error so the server knows about it
+    throw error;
   }
 }
 
@@ -43,7 +83,8 @@ export async function initializeDatabase() {
   try {
     const db = await initPool();
     if (!db) {
-      console.warn("Database not configured. Skipping schema initialization.");
+      console.warn("\n⚠️  Database not configured. Skipping schema initialization.");
+      console.warn("⚠️  Audits will only be stored in memory.\n");
       return;
     }
 
