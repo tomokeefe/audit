@@ -1212,7 +1212,7 @@ async function scrapeWebsite(url: string) {
           // Continue to fallback data below
           if (attempt === 2) {
             console.log(`All methods failed for ${url}, using fallback data`);
-            return createFallbackData(url);
+            return await createFallbackData(url);
           }
         }
       }
@@ -1239,7 +1239,7 @@ async function scrapeWebsite(url: string) {
         console.log(
           `All scraping attempts failed for ${url}, using fallback data`,
         );
-        return createFallbackData(url);
+        return await createFallbackData(url);
       }
 
       // Wait before retrying (exponential backoff)
@@ -1248,7 +1248,7 @@ async function scrapeWebsite(url: string) {
   }
 
   // This should never be reached, but just in case
-  return createFallbackData(url);
+  return await createFallbackData(url);
 }
 
 // Function to detect business type and industry
