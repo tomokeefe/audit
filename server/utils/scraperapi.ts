@@ -44,6 +44,40 @@ export async function scrapeWithScraperAPI(url: string) {
     if (!response.data || response.data.length < 100) {
       throw new Error(`ScraperAPI returned insufficient content (${response.data.length} bytes)`);
     }
+  } catch (renderError) {
+    // If render=true fails with 500, try without rendering
+    const statusCode = (renderError as any)?.response?.status;
+    if (statusCode === 500 && renderMode) {
+      console.warn(`   ⚠️  render=true failed with 500, trying without rendering...`);
+      try {
+        const scraperApiUrlNoRender = `http://api.scraperapi.com/?api_key=${apiKey}&url=${encodeURIComponent(url)}`;
+        const startTime = Date.now();
+
+        response = await axios.get(scraperApiUrlNoRender, {
+          timeout: 60000,
+          headers: {
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          },
+        });
+
+        const elapsed = Date.now() - startTime;
+        console.log(`   ✓ ScraperAPI (no render) response received in ${elapsed}ms`);
+        console.log(`   ✓ Content length: ${response.data.length} bytes`);
+        renderMode = false;
+      } catch (noRenderError) {
+        console.error(`   ❌ Both render=true and render=false failed`);
+        throw renderError; // Throw original error
+      }
+    } else {
+      throw renderError;
+    }
+  }
+
+  // Validation check moved outside try-catch
+  try {
+    if (!response || !response.data || response.data.length < 100) {
+      throw new Error(`ScraperAPI returned insufficient content (${response?.data?.length || 0} bytes)`);
+    }
 
     // Parse the HTML response
     const $ = cheerio.load(response.data);
