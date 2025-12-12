@@ -1421,14 +1421,13 @@ Best regards`);
       {/* Detailed Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Navigation Tabs */}
-        <Tabs defaultValue="results" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 max-w-md mx-auto mb-8">
-            <TabsTrigger value="results">Audit Results</TabsTrigger>
-            <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
+        <Tabs defaultValue="overview" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto mb-8">
+            <TabsTrigger value="overview">Audit Overview</TabsTrigger>
             <TabsTrigger value="next-steps">Next Steps</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="results" className="mt-8">
+          <TabsContent value="overview" className="mt-8">
             {/* Audit Overview */}
             <Card className="mb-8">
               <CardHeader>
