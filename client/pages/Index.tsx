@@ -501,6 +501,16 @@ export default function Index() {
     // Add debug logging
     console.log("Component mounted, initializing API connection...");
 
+    // Skip API calls if running in iframe (Builder.io preview mode)
+    if (isInIframe) {
+      console.log("🎭 Running in iframe preview mode - skipping API calls");
+      setApiStatus({ ping: false, audits: false, error: undefined });
+      setLoadingAudits(false);
+      setRecentAudits([]);
+      setAllAudits([]);
+      return;
+    }
+
     // Test API connection with retry logic for server startup
     const initializeAPI = async () => {
       let retries = 0;
