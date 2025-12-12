@@ -3262,16 +3262,21 @@ Weights for overall /100:
    - Review title tags, meta descriptions, header tags (H1-H6)
    - Check URL structure, internal/external links, alt text for images
    - Evaluate schema markup, robots.txt/sitemap presence
+   - **MUST ALIGN with Lighthouse SEO score if provided** (e.g., if Lighthouse shows 85/100, your score should be ~8.5/10)
    - Cite any Google Search Console errors if available
 
 4. Performance & Speed (10%)
+   - **CRITICAL: Use Lighthouse Performance score as primary evidence**
+   - If Lighthouse shows 90/100 → your score should be ~9/10
+   - If Lighthouse shows 50/100 → your score should be ~5/10
    - Test page speed (aim <3 seconds), image optimization
    - Check minification of CSS/JS, caching, server response time
-   - Reference Google PageSpeed Insights or performance data provided
+   - Never score this section without referencing Lighthouse data (if available)
 
 5. Mobile Usability & Responsiveness (10%)
    - Test responsive design, touch-friendly elements, viewport meta tag
    - Check mobile speed and usability issues (pop-ups, unclickable buttons)
+   - Consider Lighthouse mobile performance scores
    - Evaluate cross-device experience
 
 6. User Experience (UX) & Navigation (10%)
@@ -3280,9 +3285,12 @@ Weights for overall /100:
    - Apply UX heuristics (Nielsen's 10 principles)
 
 7. Accessibility (8%)
+   - **MUST ALIGN with Lighthouse Accessibility score if provided**
+   - If Lighthouse shows 95/100 → your score should be ~9.5/10
    - Test for WCAG standards: alt text, color contrast (>4.5:1)
    - Check keyboard navigation, screen reader compatibility
    - Evaluate semantic HTML and ARIA labels
+   - Cite specific accessibility issues from Lighthouse report
 
 8. Security & Technical Integrity (8%)
    - Check HTTPS, SSL certificate validity
