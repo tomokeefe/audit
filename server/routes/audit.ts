@@ -3075,16 +3075,58 @@ CRITICAL REQUIREMENTS:
 - Most real websites score in the 6-8 range - don't artificially deflate scores
 
 Evaluate across exactly these 10 criteria (0–10 scores, half-points OK). Weights for overall /100:
-1. Branding & Identity (15%) - Logo consistency across pages, visual identity, brand recognition
-2. Messaging & Positioning (15%) - Value proposition clarity, target audience alignment, unique positioning
-3. Content Strategy (10%) - Content quality, structure, cross-page consistency, SEO optimization
-4. Customer Experience (10%) - User journey, engagement elements, trust signals, social proof
-5. Conversion Optimization (10%) - CTAs, forms, contact accessibility, conversion paths
-6. Visual Design & Aesthetics (10%) - Design consistency, mobile responsiveness, visual hierarchy
-7. Usability & Navigation (10%) - Navigation consistency, site structure, accessibility features
-8. Digital Presence & SEO (10%) - Technical SEO (robots.txt, sitemap), page speed, meta tags
-9. Competitor Differentiation (10%) - Unique value, market positioning, brand distinction
-10. Consistency & Compliance (10%) - Cross-page brand consistency, accessibility compliance, standards
+
+1. Visual Design & Flow (12%)
+   - Check logo placement, color palette alignment with brand identity, typography hierarchy, whitespace usage
+   - Evaluate intuitive navigation (menu logic, CTA visibility, user flow)
+   - Assess design consistency across pages
+
+2. Content Quality & Messaging (15%)
+   - Assess headline strength, copy tone matching brand voice
+   - Check keyword integration without stuffing, duplicate content issues
+   - Evaluate call-to-action effectiveness, grammar, readability (Flesch score >60)
+   - Analyze if content solves user pain points
+
+3. SEO Technical & On-Page Optimization (12%)
+   - Review title tags, meta descriptions, header tags (H1-H6)
+   - Check URL structure, internal/external links, alt text for images
+   - Evaluate schema markup, robots.txt/sitemap presence
+   - Cite any Google Search Console errors if available
+
+4. Performance & Speed (10%)
+   - Test page speed (aim <3 seconds), image optimization
+   - Check minification of CSS/JS, caching, server response time
+   - Reference Google PageSpeed Insights or performance data provided
+
+5. Mobile Usability & Responsiveness (10%)
+   - Test responsive design, touch-friendly elements, viewport meta tag
+   - Check mobile speed and usability issues (pop-ups, unclickable buttons)
+   - Evaluate cross-device experience
+
+6. User Experience (UX) & Navigation (10%)
+   - Map user journeys (e.g., home to CTA), breadcrumb navigation
+   - Check search functionality, error pages, accessibility
+   - Apply UX heuristics (Nielsen's 10 principles)
+
+7. Accessibility (8%)
+   - Test for WCAG standards: alt text, color contrast (>4.5:1)
+   - Check keyboard navigation, screen reader compatibility
+   - Evaluate semantic HTML and ARIA labels
+
+8. Security & Technical Integrity (8%)
+   - Check HTTPS, SSL certificate validity
+   - Identify broken links/images, mixed content
+   - Flag any vulnerabilities or security concerns
+
+9. Competitive Advantage & Market Positioning (8%)
+   - Compare to 2-3 competitors on unique value proposition
+   - Evaluate messaging alignment and differentiation
+   - Assess if brand stands out in market/search results
+
+10. Conversion & Call-to-Action Optimization (7%)
+    - Review CTA placement, button design, form length
+    - Analyze conversion paths and friction points
+    - Suggest A/B testing opportunities
 
 For EACH section, provide:
 - Specific evidence (quote data, cite metrics)
@@ -3095,43 +3137,43 @@ For EACH section, provide:
 Structure: # Brand Whisperer Audit: [Name]
 **Overall: X/100** (Grade)
 ## Section Scores
-1. Branding & Identity – X/10
+1. Visual Design & Flow – X/10
    Evidence: [Specific findings with data]
    Recommendations: [2-3 actionable items]
 
-2. Messaging & Positioning – X/10
+2. Content Quality & Messaging – X/10
    Evidence: [Specific findings]
    Recommendations: [2-3 actionable items]
 
-3. Content Strategy – X/10
+3. SEO Technical & On-Page Optimization – X/10
    Evidence: [Specific findings]
    Recommendations: [2-3 actionable items]
 
-4. Customer Experience – X/10
+4. Performance & Speed – X/10
    Evidence: [Specific findings]
    Recommendations: [2-3 actionable items]
 
-5. Conversion Optimization – X/10
+5. Mobile Usability & Responsiveness – X/10
    Evidence: [Specific findings]
    Recommendations: [2-3 actionable items]
 
-6. Visual Design & Aesthetics – X/10
+6. User Experience (UX) & Navigation – X/10
    Evidence: [Specific findings]
    Recommendations: [2-3 actionable items]
 
-7. Usability & Navigation – X/10
+7. Accessibility – X/10
    Evidence: [Specific findings]
    Recommendations: [2-3 actionable items]
 
-8. Digital Presence & SEO – X/10
+8. Security & Technical Integrity – X/10
    Evidence: [Specific findings]
    Recommendations: [2-3 actionable items]
 
-9. Competitor Differentiation – X/10
+9. Competitive Advantage & Market Positioning – X/10
    Evidence: [Specific findings]
    Recommendations: [2-3 actionable items]
 
-10. Consistency & Compliance – X/10
+10. Conversion & Call-to-Action Optimization – X/10
     Evidence: [Specific findings]
     Recommendations: [2-3 actionable items]
 
