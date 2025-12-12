@@ -1408,8 +1408,7 @@ Best regards`);
                       className="h-3 mb-3"
                     />
                     <div className="text-sm text-gray-600">
-                      Based on {auditData.sections?.length || 0} evaluation
-                      criteria
+                      Based on 10 evaluation criteria
                     </div>
                   </CardContent>
                 </Card>
