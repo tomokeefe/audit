@@ -11,8 +11,6 @@ import Index from "./pages/Index";
 import AuditResults from "./pages/AuditResults";
 import SharedAudit from "./pages/SharedAudit";
 import Audits from "./pages/Audits";
-import AuditComparison from "./pages/AuditComparison";
-import Reports from "./pages/Reports";
 import NotFound from "./pages/NotFound";
 import DebugTest from "./pages/DebugTest";
 import ProtectedLanding from "./pages/ProtectedLanding";
@@ -52,8 +50,6 @@ const App = () => (
               {/* Support old share URL format */}
               <Route path="/share/audit/:id" element={<SharedAudit />} />
               <Route path="/audits" element={<Audits />} />
-              <Route path="/compare" element={<AuditComparison />} />
-              <Route path="/reports" element={<Reports />} />
               <Route path="/debug-test" element={<DebugTest />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
