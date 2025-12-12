@@ -3844,11 +3844,19 @@ Then evaluate across exactly these 10 criteria (0–10 scores, half-points OK). 
 9. Competitive Advantage & Market Positioning (8%) - MUST include SWOT analysis with Strengths, Weaknesses, Opportunities, Threats
 10. Conversion & Call-to-Action Optimization (7%)
 
-IMPORTANT: For section 9 (Competitive Advantage), you MUST provide a complete SWOT analysis with ALL 4 elements:
-- Strengths: 2-3 things the brand does well
-- Weaknesses: 2-3 competitive gaps
-- Opportunities: 2-3 ways to improve positioning
-- Threats: 2-3 market challenges
+IMPORTANT: For section 9 (Competitive Advantage), you MUST provide a complete SWOT analysis with ALL 4 elements in this EXACT format:
+• SWOT Analysis:
+  - Strengths: [Item 1], [Item 2], [Item 3]
+  - Weaknesses: [Item 1], [Item 2], [Item 3]
+  - Opportunities: [Item 1], [Item 2], [Item 3]
+  - Threats: [Item 1], [Item 2], [Item 3]
+
+Example:
+• SWOT Analysis:
+  - Strengths: Strong performance (95/100), Clear brand identity, Mobile-friendly design
+  - Weaknesses: Limited competitive differentiation, Generic messaging, No unique features highlighted
+  - Opportunities: Leverage performance in marketing, Create comparison content, Highlight proprietary tech
+  - Threats: Increasing competition, Market saturation, Changing consumer preferences
 
 Be insightful/candid. Structure exactly: # Brand Whisperer Audit: [Name]
 **Overall: X/100** (Grade)
