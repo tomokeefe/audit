@@ -312,11 +312,19 @@ export default function Index() {
 
   // Safe wrapper that checks environment before running API tests
   const safeTestAPIConnection = async () => {
+    if (isInIframe) {
+      console.log("🎭 Skipping API test in iframe mode");
+      return;
+    }
     return await testAPIConnection();
   };
 
   // Improved API connectivity test with timeout and retry
   const testAPIConnection = async () => {
+    if (isInIframe) {
+      console.log("🎭 Skipping API test in iframe mode");
+      return;
+    }
     console.log("Testing API connection...");
 
     let pingOk = false;
