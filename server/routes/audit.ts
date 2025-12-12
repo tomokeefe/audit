@@ -3465,6 +3465,7 @@ async function generateAudit(websiteData: any): Promise<AuditResponse> {
   console.log(`[AUDIT DEBUG] No cache found, generating new audit for ${url}`);
 
   // Validate Grok API key
+  const GROK_API_KEY = getGrokApiKey();
   if (!GROK_API_KEY) {
     console.error("GROK_API_KEY not configured");
     throw new Error("Grok API key not configured");
@@ -3493,6 +3494,7 @@ async function generateAudit(websiteData: any): Promise<AuditResponse> {
       metaDescription: !!websiteData.description,
     });
     console.log("[AUDIT DEBUG] Grok API key present:", !!GROK_API_KEY);
+    console.log("[AUDIT DEBUG] Grok API key preview:", GROK_API_KEY ? `${GROK_API_KEY.substring(0, 8)}...${GROK_API_KEY.slice(-4)}` : "NOT SET");
 
     // Enhanced Brand Whisperer prompt requiring evidence-based analysis
     const systemPrompt = `You are Brand Whisperer's senior brand strategist with expertise in data-driven brand analysis. For URL-only inputs, FIRST extract/infer: Brand Name (from <title>/meta), Target Audience (from copy like 'for millennials' or hero sections), Challenges/Goals (infer from pain points or CTAs). If unclear, use 'General Consumer' and note it.
@@ -3999,7 +4001,7 @@ export const handleAudit: RequestHandler = async (req, res) => {
 
     // Try to use Grok API via fetch
     try {
-      const grokApiKey = process.env.GROK_API_KEY;
+      const grokApiKey = getGrokApiKey();
       if (!grokApiKey) {
         throw new Error("No Grok API key");
       }
