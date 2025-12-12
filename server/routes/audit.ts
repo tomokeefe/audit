@@ -3810,8 +3810,14 @@ Then evaluate across exactly these 10 criteria (0–10 scores, half-points OK). 
 6. User Experience (UX) & Navigation (10%)
 7. Accessibility (8%)
 8. Security & Technical Integrity (8%)
-9. Competitive Advantage & Market Positioning (8%)
+9. Competitive Advantage & Market Positioning (8%) - MUST include SWOT analysis with Strengths, Weaknesses, Opportunities, Threats
 10. Conversion & Call-to-Action Optimization (7%)
+
+IMPORTANT: For section 9 (Competitive Advantage), you MUST provide a complete SWOT analysis with ALL 4 elements:
+- Strengths: 2-3 things the brand does well
+- Weaknesses: 2-3 competitive gaps
+- Opportunities: 2-3 ways to improve positioning
+- Threats: 2-3 market challenges
 
 Be insightful/candid. Structure exactly: # Brand Whisperer Audit: [Name]
 **Overall: X/100** (Grade)
