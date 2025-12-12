@@ -3,32 +3,32 @@
  * Research-based section weights and scoring parameters for consistent audit results
  */
 
-// Standardized section weights based on digital marketing ROI studies
+// Standardized section weights based on technical auditing best practices
 export const SECTION_WEIGHTS = {
-  branding: 0.18, // Brand recall impacts 18% of conversion decisions
-  design: 0.13, // Visual hierarchy affects user engagement
-  messaging: 0.13, // Content clarity drives conversion lift
-  usability: 0.13, // Nielsen studies: critical for user retention
-  contentStrategy: 0.09, // Supporting role in user journey
-  digitalPresence: 0.09, // SEO/performance: organic acquisition
-  customerExperience: 0.05, // Cross-touchpoint optimization
-  competitorAnalysis: 0.05, // Benchmarking insights
-  conversionOptimization: 0.1, // Direct revenue impact
-  compliance: 0.05, // Regulatory requirements (varies by industry)
+  visualDesignFlow: 0.12, // Layout consistency, aesthetics, navigation logic
+  contentMessaging: 0.15, // Copy clarity, brand voice, keyword integration
+  seoTechnical: 0.12, // Meta tags, schema markup, crawlability
+  performanceSpeed: 0.10, // Load times, Core Web Vitals, optimization
+  mobileUsability: 0.10, // Responsive design, mobile UX
+  userExperienceNav: 0.10, // Intuitiveness, user journeys, accessibility
+  accessibility: 0.08, // WCAG compliance, inclusivity standards
+  securityIntegrity: 0.08, // HTTPS, SSL, trust signals
+  competitivePositioning: 0.08, // Market differentiation, unique value
+  conversionCTA: 0.07, // CTA effectiveness, persuasion elements
 } as const;
 
 // Convert to array format for calculations (matches section order)
 export const SECTION_WEIGHTS_ARRAY = [
-  SECTION_WEIGHTS.branding, // 0: Branding
-  SECTION_WEIGHTS.design, // 1: Design
-  SECTION_WEIGHTS.messaging, // 2: Messaging
-  SECTION_WEIGHTS.usability, // 3: Usability
-  SECTION_WEIGHTS.contentStrategy, // 4: Content Strategy
-  SECTION_WEIGHTS.digitalPresence, // 5: Digital Presence
-  SECTION_WEIGHTS.customerExperience, // 6: Customer Experience
-  SECTION_WEIGHTS.competitorAnalysis, // 7: Competitor Analysis
-  SECTION_WEIGHTS.conversionOptimization, // 8: Conversion Optimization
-  SECTION_WEIGHTS.compliance, // 9: Consistency & Compliance
+  SECTION_WEIGHTS.visualDesignFlow, // 0: Visual Design & Flow
+  SECTION_WEIGHTS.contentMessaging, // 1: Content Quality & Messaging
+  SECTION_WEIGHTS.seoTechnical, // 2: SEO Technical & On-Page
+  SECTION_WEIGHTS.performanceSpeed, // 3: Performance & Speed
+  SECTION_WEIGHTS.mobileUsability, // 4: Mobile Usability & Responsiveness
+  SECTION_WEIGHTS.userExperienceNav, // 5: User Experience & Navigation
+  SECTION_WEIGHTS.accessibility, // 6: Accessibility
+  SECTION_WEIGHTS.securityIntegrity, // 7: Security & Technical Integrity
+  SECTION_WEIGHTS.competitivePositioning, // 8: Competitive Advantage & Market Positioning
+  SECTION_WEIGHTS.conversionCTA, // 9: Conversion & CTA Optimization
 ] as const;
 
 // Validate weights sum to 1.0
