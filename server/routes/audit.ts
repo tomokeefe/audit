@@ -3158,7 +3158,9 @@ CRITICAL REQUIREMENTS:
 - Score fairly and realistically: 9-10 (exceptional), 7-8 (good/solid), 5-6 (average/adequate), 3-4 (needs improvement), 1-2 (serious issues)
 - Most real websites score in the 6-8 range - don't artificially deflate scores
 
-Evaluate across exactly these 10 criteria (0–10 scores, half-points OK). Weights for overall /100:
+Evaluate across ALL 10 criteria below (0–10 scores, half-points OK).
+⚠️ CRITICAL: YOU MUST include ALL 10 sections in your response - do not skip any sections.
+Weights for overall /100:
 
 1. Visual Design & Flow (12%)
    - Check logo placement, color palette alignment with brand identity, typography hierarchy, whitespace usage
