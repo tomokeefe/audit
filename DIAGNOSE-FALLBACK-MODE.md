@@ -25,21 +25,25 @@ The system falls back to demo audits when:
 **Look for these warning messages in Railway logs:**
 
 ### ❌ API Key Missing
+
 ```
 GROK_API_KEY not configured, sending fallback audit via SSE
 ```
 
 ### ❌ API Timeout
+
 ```
 [AUDIT DEBUG] Grok API timeout - request took too long
 ```
 
 ### ❌ API Error
+
 ```
 [AUDIT DEBUG] Grok API is overloaded, using fallback
 ```
 
 ### ❌ Fallback Mode Confirmed
+
 ```
 [FALLBACK] Generating fallback audit for: example.com
 ```
@@ -55,6 +59,7 @@ GROK_API_KEY not configured, sending fallback audit via SSE
 5. Should be: `xai-yuPfCYsBUT28fSjKXXiQAmy61ppmqWZE2LfG7Va3a0G8IMCwXT75nAewXFctNsCybTgzlcjd1nhXyWJe`
 
 **If missing or wrong:**
+
 1. Add/fix the variable
 2. Redeploy the service
 
@@ -74,19 +79,23 @@ curl -X POST https://api.x.ai/v1/chat/completions \
 ```
 
 **Expected response:**
+
 ```json
 {
-  "choices": [{
-    "message": {
-      "content": "Hello! How can I help you?"
+  "choices": [
+    {
+      "message": {
+        "content": "Hello! How can I help you?"
+      }
     }
-  }]
+  ]
 }
 ```
 
 **Error responses:**
 
 **401 Unauthorized:**
+
 ```json
 {
   "error": {
@@ -94,9 +103,11 @@ curl -X POST https://api.x.ai/v1/chat/completions \
   }
 }
 ```
+
 → GROK_API_KEY is wrong
 
 **429 Too Many Requests:**
+
 ```json
 {
   "error": {
@@ -104,9 +115,11 @@ curl -X POST https://api.x.ai/v1/chat/completions \
   }
 }
 ```
+
 → Quota exceeded, wait or upgrade
 
 **503 Service Unavailable:**
+
 ```json
 {
   "error": {
@@ -114,6 +127,7 @@ curl -X POST https://api.x.ai/v1/chat/completions \
   }
 }
 ```
+
 → Grok API is down, try again later
 
 ## Step 4: Check Audit Creation Flow
@@ -121,6 +135,7 @@ curl -X POST https://api.x.ai/v1/chat/completions \
 **Watch Railway logs while creating an audit:**
 
 ### ✅ Good Flow (Real AI)
+
 ```
 🔵 Starting audit for: example.com
 🔵 Scraping website...
@@ -133,6 +148,7 @@ curl -X POST https://api.x.ai/v1/chat/completions \
 ```
 
 ### ❌ Bad Flow (Fallback Mode)
+
 ```
 🔵 Starting audit for: example.com
 GROK_API_KEY not configured, sending fallback audit via SSE
@@ -155,10 +171,12 @@ OR
 ### Issue 1: GROK_API_KEY Not Set
 
 **Symptoms:**
+
 - Logs say "GROK_API_KEY not configured"
 - Every audit uses fallback mode immediately
 
 **Fix:**
+
 1. Railway Dashboard → Variables
 2. Add: `GROK_API_KEY` = `xai-yuPfCYsBUT28fSjKXXiQAmy61ppmqWZE2LfG7Va3a0G8IMCwXT75nAewXFctNsCybTgzlcjd1nhXyWJe`
 3. Restart service
@@ -167,15 +185,18 @@ OR
 ### Issue 2: Grok API Timeout
 
 **Symptoms:**
+
 - Logs say "Grok API timeout - request took too long"
 - Happens after 2-3 minutes of processing
 
 **Causes:**
+
 - Complex website with lots of content
 - Grok API is slow
 - Network latency
 
 **Fixes:**
+
 1. Increase timeout (already set to 3 minutes)
 2. Simplify audit prompt
 3. Reduce content sent to Grok
@@ -183,10 +204,12 @@ OR
 ### Issue 3: Grok API Quota Exceeded
 
 **Symptoms:**
+
 - Logs show "Rate limit exceeded" or similar
 - Works for first few audits, then fails
 
 **Fix:**
+
 - Check x.ai dashboard for quota usage
 - Wait for quota reset
 - Upgrade plan if needed
@@ -194,10 +217,12 @@ OR
 ### Issue 4: Grok API Key Invalid
 
 **Symptoms:**
+
 - Logs show "Invalid API key" or 401 errors
 - Every request fails
 
 **Fix:**
+
 1. Verify API key in x.ai dashboard
 2. Generate new API key if needed
 3. Update in Railway
@@ -208,6 +233,7 @@ OR
 **If Grok API is down and you need audits now:**
 
 The fallback mode still works, but:
+
 - Scores are generic (72%)
 - No personalized analysis
 - Old criteria format
