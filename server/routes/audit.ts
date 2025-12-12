@@ -3804,7 +3804,7 @@ RULES:
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${GROK_API_KEY}`,
+        Authorization: `Bearer ${getGrokApiKey()}`,
       },
       body: JSON.stringify({
         messages: [
