@@ -3216,50 +3216,77 @@ For EACH section, provide:
 - Specific evidence (quote data, cite metrics)
 - Quantifiable findings where available
 - Cross-page observations (if multi-page data provided)
-- 2-3 actionable recommendations SPECIFIC TO THAT SECTION
+- 2-3 actionable recommendations BASED ON ACTUAL FINDINGS (not generic advice)
+
+IMPORTANT: Recommendations MUST be:
+- Based on specific issues or opportunities found in the evidence
+- If score is high (8+/10), suggest optimizations or monitoring, not fixes
+- If score is medium (5-7/10), suggest improvements to specific elements
+- If score is low (<5/10), suggest fixes for identified problems
+- Never suggest fixing something that's already working well
 
 Structure: # Brand Whisperer Audit: [Name]
 **Overall: X/100** (Grade)
 ## Section Scores
 1. Visual Design & Flow – X/10
-   Evidence: [Specific findings with data]
-   Recommendations: [2-3 actionable items]
+   Evidence: [Specific findings with data - what you actually observed]
+   Recommendations:
+   - [Based on evidence above, not generic advice]
+   - [Another specific recommendation from findings]
 
 2. Content Quality & Messaging – X/10
-   Evidence: [Specific findings]
-   Recommendations: [2-3 actionable items]
+   Evidence: [Specific findings - headlines analyzed, readability scores, etc.]
+   Recommendations:
+   - [Specific action based on findings]
+   - [Another evidence-based recommendation]
 
 3. SEO Technical & On-Page Optimization – X/10
-   Evidence: [Specific findings]
-   Recommendations: [2-3 actionable items]
+   Evidence: [What you found - missing tags, schema status, etc.]
+   Recommendations:
+   - [Fix or optimize based on evidence]
+   - [Another SEO improvement from findings]
 
 4. Performance & Speed – X/10
-   Evidence: [Specific findings]
-   Recommendations: [2-3 actionable items]
+   Evidence: [Metrics observed - load times, file sizes, etc.]
+   Recommendations:
+   - [Specific optimization based on metrics]
+   - [Another performance improvement]
 
 5. Mobile Usability & Responsiveness – X/10
-   Evidence: [Specific findings]
-   Recommendations: [2-3 actionable items]
+   Evidence: [Mobile testing findings]
+   Recommendations:
+   - [Mobile-specific fix or optimization]
+   - [Another mobile improvement]
 
 6. User Experience (UX) & Navigation – X/10
-   Evidence: [Specific findings]
-   Recommendations: [2-3 actionable items]
+   Evidence: [UX observations and user flow analysis]
+   Recommendations:
+   - [UX improvement based on findings]
+   - [Navigation enhancement from evidence]
 
 7. Accessibility – X/10
-   Evidence: [Specific findings]
-   Recommendations: [2-3 actionable items]
+   Evidence: [Accessibility audit findings - alt text, contrast, etc.]
+   Recommendations:
+   - [Specific accessibility fix needed]
+   - [Another WCAG improvement]
 
 8. Security & Technical Integrity – X/10
-   Evidence: [Specific findings]
-   Recommendations: [2-3 actionable items]
+   Evidence: [Security findings - HTTPS, SSL, broken links, etc.]
+   Recommendations:
+   - [Security improvement if needed]
+   - [Technical fix based on evidence]
 
 9. Competitive Advantage & Market Positioning – X/10
-   Evidence: [Specific findings]
-   Recommendations: [2-3 actionable items]
+   Evidence: [Positioning observations vs market]
+   Recommendations:
+   - [Positioning improvement based on findings]
+   - [Differentiation opportunity]
 
 10. Conversion & Call-to-Action Optimization – X/10
-    Evidence: [Specific findings]
-    Recommendations: [2-3 actionable items]
+    Evidence: [CTA analysis findings]
+    Recommendations:
+    - [CTA improvement based on evidence]
+    - [Conversion optimization from findings]
 
 ## Key Strengths
 - [Specific strength with evidence, e.g., "Strong PageSpeed score of 87/100"]
