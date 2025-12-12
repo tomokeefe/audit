@@ -20,14 +20,17 @@ export async function scrapeWithScraperAPI(url: string) {
   console.log(`🌐 Using ScraperAPI to access ${url}...`);
   console.log(`   ScraperAPI handles Cloudflare bypass automatically`);
 
+  let response;
+  let renderMode = true;
+
   try {
-    // ScraperAPI endpoint - they handle the complexity
+    // Try with render=true first (handles JavaScript)
     const scraperApiUrl = `http://api.scraperapi.com/?api_key=${apiKey}&url=${encodeURIComponent(url)}&render=true`;
-    
-    console.log(`   ⏳ Requesting page through ScraperAPI (may take 10-30s)...`);
+
+    console.log(`   ⏳ Requesting page through ScraperAPI with rendering (may take 10-30s)...`);
     const startTime = Date.now();
 
-    const response = await axios.get(scraperApiUrl, {
+    response = await axios.get(scraperApiUrl, {
       timeout: 60000, // ScraperAPI can be slower (rendering, proxy rotation)
       headers: {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -102,20 +105,28 @@ export async function scrapeWithScraperAPI(url: string) {
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : String(error);
     const statusCode = (error as any)?.response?.status;
-    
+    const responseData = (error as any)?.response?.data;
+
     console.error(`❌ ScraperAPI scraping failed for ${url}:`);
     console.error(`   Error: ${errorMsg}`);
-    
+
     if (statusCode === 401 || statusCode === 403) {
       console.error(`   ⚠️  Authentication error - check SCRAPER_API_KEY`);
+      console.error(`   API Key used: ${apiKey?.substring(0, 8)}...`);
     } else if (statusCode === 429) {
       console.error(`   ⚠️  Rate limit exceeded - upgrade ScraperAPI plan or wait`);
+    } else if (statusCode === 500) {
+      console.error(`   ⚠️  ScraperAPI server error (500) - their service may be having issues`);
+      console.error(`   Response data:`, responseData);
+      console.error(`   Recommendation: Try without render parameter or contact ScraperAPI support`);
     } else if (statusCode) {
       console.error(`   HTTP Status: ${statusCode}`);
+      console.error(`   Response data:`, responseData);
     }
-    
+
     console.error(`   ScraperAPI credits may have been consumed for this attempt`);
-    
+    console.error(`   Full error object:`, error);
+
     throw error;
   }
 }
