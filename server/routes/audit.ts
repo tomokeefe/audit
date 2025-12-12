@@ -138,7 +138,7 @@ export async function generatePitchDeckAudit(data: any) {
 }
 
 // Function to create fallback website data when scraping fails
-export function createFallbackData(url: string) {
+export async function createFallbackData(url: string) {
   const domain = new URL(url).hostname.replace("www.", "");
   const companyName =
     domain.split(".")[0].charAt(0).toUpperCase() +
